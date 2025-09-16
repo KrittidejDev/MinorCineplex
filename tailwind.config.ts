@@ -10,6 +10,14 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        gray: {
+          gc1b: "#E5364B",
+          g070c1b: "#070C1B",
+          g21263f: "#21263F",
+          g565f7e: "#565F7E",
+          g8b93b0: "#8B93B0",
+          gc8cedd: "#C8CEDD",
+        },
         red: {
           DEFAULT: "#FF0000",
           r548: "#E54548",

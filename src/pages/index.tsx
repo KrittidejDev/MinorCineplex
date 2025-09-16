@@ -2,6 +2,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { Button } from "@/components/ui/button";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
+import { CldImage } from "next-cloudinary";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,6 +30,15 @@ export default function Home() {
       <Button className="text-5xl bg-red-548  text-blue2EE p-10">
         Major Ticket Theme
       </Button>
+      <CldImage
+        src="cld-sample-5" // Use this sample image or upload your own via the Media Explorer
+        width="500" // Transform the image: auto-crop to square aspect_ratio
+        height="500"
+        crop={{
+          type: "auto",
+          source: true,
+        }}
+      />
     </div>
   );
 }

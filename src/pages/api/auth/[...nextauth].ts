@@ -1,4 +1,4 @@
-import NextAuth from "next-auth";
+import NextAuth, { NextAuthOptions, User } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { compare } from "bcryptjs";
 import { PrismaClient } from "@/generated/prisma";
@@ -13,8 +13,11 @@ export default NextAuth({
         email: { label: "Email", type: "text" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials: any) {
+      async authorize(
+        credentials: Record<"email" | "password", string> | undefined
+      ): Promise<User | null> {
         if (!credentials?.email || !credentials?.password) return null;
+
         const user = await prisma.user.findUnique({
           where: { email: credentials.email },
         });
@@ -23,8 +26,12 @@ export default NextAuth({
         const isValid = await compare(credentials.password, user.password);
         if (!isValid) return null;
 
-        return { id: user.id, email: user.email, name: user.name };
-        return;
+        // return object ต้องไม่เป็น undefined
+        return {
+          id: user.id.toString(), // NextAuth แนะนำให้ id เป็น string
+          name: user.name,
+          email: user.email,
+        };
       },
     }),
   ],

@@ -2,6 +2,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { Button } from "@/components/ui/button";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
+import Step from "@/components/Steps/Step";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

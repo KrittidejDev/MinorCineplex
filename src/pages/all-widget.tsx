@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import DoneRight from "@/components/Icons/DoneRound";
+import { ErrorAlert, SuccessAlert } from "@/components/ui/alert";
 import React from "react";
 
 const AllWidget = () => {
@@ -57,6 +58,16 @@ const AllWidget = () => {
           <div className="stp-done"><DoneRight /></div>
         </div>
       </div>
+
+      {/* Alert */}
+      <div className="mt-20">
+        <h1 className="text-xl font-bold">Alert</h1>
+      </div>
+      <div className="flex flex-col gap-5 mt-5">
+        <ErrorAlert />
+        <SuccessAlert />
+      </div>
+
     </div>
   );
 };

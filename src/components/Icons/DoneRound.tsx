@@ -1,4 +1,16 @@
-const DoneRight = ({ width = "30", height = "30", color = "#FFFF" }) => {
+import React from "react";
+
+interface DoneRoundProps {
+  width?: string | number;
+  height?: string | number;
+  color?: string;
+}
+
+const DoneRound: React.FC<DoneRoundProps> = ({
+  width = "24",
+  height = "24",
+  color = "#FFF",
+}) => {
   return (
     <svg
       width={width}
@@ -10,9 +22,10 @@ const DoneRight = ({ width = "30", height = "30", color = "#FFFF" }) => {
       <path
         d="M5 14L8.23309 16.4248C8.66178 16.7463 9.26772 16.6728 9.60705 16.2581L18 6"
         stroke={color}
-        stroke-linecap="round"
+        strokeLinecap="round"
       />
     </svg>
   );
 };
-export default DoneRight;
+
+export default DoneRound;

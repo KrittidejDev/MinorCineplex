@@ -10,44 +10,42 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        gray: {
-          gc1b: "#E5364B",
-          g070c1b: "#070C1B",
-          g21263f: "#21263F",
-          g565f7e: "#565F7E",
-          g8b93b0: "#8B93B0",
-          gc8cedd: "#C8CEDD",
+        base: {
+          gray0: '#070C1B',
+          gray100: '#21263F',
+          gray200: '#565F7E',
+          gray300: '#8B93B0',
+          gray400: '#C8CEDD',
+          white: '#FFFFFF',
         },
-        red: {
-          DEFAULT: "#FF0000",
-          r548: "#E54548",
-          r009: "#FF0009",
-        },
-
-        yellow: {
-          DEFAULT: "#FFFF00",
-          orange: "#FFCC00",
-        },
-        orange: {
-          DEFAULT: "#FF6600",
-        },
-        purple: {
-          DEFAULT: "#8A2BE2",
+        brand: {
+          blue100: '#4E7BEE',
+          blue200: '#1E29A8',
+          blue300: '#0C1580',
+          green: '#00A372',
+          red: '#E5364B',
         },
       },
       fontFamily: {
-        sans: ["var(--font-geist-sans)", "Poppins", "sans-serif"],
-        mono: ["var(--font-geist-mono)", "monospace"],
-        headline: ["Poppins", "sans-serif"],
-        body: ["Inter", "sans-serif"],
+        sans: ["Roboto", "sans-serif"],
+        mono: ["Roboto Mono", "monospace"],
+        headline: ["Roboto", "sans-serif"],
+        body: ["Roboto", "sans-serif"],
       },
       fontSize: {
-        "headline-1": ["2.5rem", { lineHeight: "3rem", fontWeight: "700" }],
-        "headline-2": ["2rem", { lineHeight: "2.5rem", fontWeight: "600" }],
-        "headline-3": ["1.5rem", { lineHeight: "2rem", fontWeight: "600" }],
-        "headline-4": ["1.25rem", { lineHeight: "1.75rem", fontWeight: "600" }],
-        "body-1": ["1rem", { lineHeight: "1.5rem" }],
-        "body-2": ["0.875rem", { lineHeight: "1.25rem" }],
+        // Headline styles
+        "headline-1": ["3.5rem", { lineHeight: "4rem", fontWeight: "700" }], // 56px/64px
+        "headline-2": ["2.25rem", { lineHeight: "2.75rem", fontWeight: "700" }], // 36px/44px
+        "headline-3": ["1.5rem", { lineHeight: "1.875rem", fontWeight: "700" }], // 24px/30px
+        "headline-4": ["1.25rem", { lineHeight: "1.625rem", fontWeight: "700" }], // 20px/26px
+        
+        // Body styles
+        "body-1-medium": ["1rem", { lineHeight: "1.5rem", fontWeight: "500" }], // 16px/24px Medium
+        "body-1-regular": ["1rem", { lineHeight: "1.5rem", fontWeight: "400" }], // 16px/24px Regular
+        "body-2-medium": ["0.875rem", { lineHeight: "1.25rem", fontWeight: "500" }], // 14px/20px Medium
+        "body-2-regular": ["0.875rem", { lineHeight: "1.25rem", fontWeight: "400" }], // 14px/20px Regular
+        "body-3-medium": ["0.75rem", { lineHeight: "1.125rem", fontWeight: "500" }], // 12px/18px Medium
+        "body-3-regular": ["0.75rem", { lineHeight: "1.125rem", fontWeight: "400" }], // 12px/18px Regular
       },
       borderRadius: {
         lg: "var(--radius)",

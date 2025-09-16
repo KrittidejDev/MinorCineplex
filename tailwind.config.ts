@@ -10,21 +10,32 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        base: {
-          gray0: '#070C1B',
-          gray100: '#21263F',
-          gray200: '#565F7E',
-          gray300: '#8B93B0',
-          gray400: '#C8CEDD',
-          white: '#FFFFFF',
+        gray: {
+          gc1b: '#070C1B',
+          g63f: '#21263F',
+          gf7e: '#565F7E',
+          g3b0: '#8B93B0',
+          gedd: '#C8CEDD',
         },
-        brand: {
-          blue100: '#4E7BEE',
-          blue200: '#1E29A8',
-          blue300: '#0C1580',
-          green: '#00A372',
-          red: '#E5364B',
+        
+        white: {
+          wfff: '#FFFFFF',
         },
+        
+        blue: {
+          bbee: '#4E7BEE',
+          b9a8: '#1E29A8',
+          b580: '#0C1580',
+        },
+
+        green: {
+          g372: '#00A372',
+        },
+
+        red: {
+          r64b: '#E5364B',
+        },
+
       },
       fontFamily: {
         sans: ["Roboto", "sans-serif"],

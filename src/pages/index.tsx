@@ -28,7 +28,7 @@ export default function Home() {
     <div
       className={`${geistSans.className} ${geistMono.className} font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20`}
     >
-      <Button className="text-5xl bg-base-gray0 text-base-white p-10">
+      <Button className="text-5xl bg-base-gray0 text-white-wfff p-10">
         Major Ticket Theme
       </Button>
     </div>

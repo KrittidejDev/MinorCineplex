@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import DoneRight from "@/components/Icons/DoneRound";
 import { ErrorAlert, SuccessAlert } from "@/components/ui/alert";
+import {DefaultCheckbox, DisabledCheckbox } from "@/components/ui/checkbox"
 import React from "react";
 
 const AllWidget = () => {
@@ -67,6 +68,14 @@ const AllWidget = () => {
         <ErrorAlert />
         <SuccessAlert />
       </div>
+
+      {/* checkbox */}
+      <div className="flex flex-col gap-2 mt-20">
+      <DefaultCheckbox label="Option 1" />
+      <DefaultCheckbox label="Option 1" defaultChecked />
+      <DefaultCheckbox label="Option 1" />
+      <DisabledCheckbox/>
+    </div>
 
     </div>
   );

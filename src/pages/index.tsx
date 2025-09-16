@@ -34,6 +34,7 @@ export default function Home() {
         src="cld-sample-5" // Use this sample image or upload your own via the Media Explorer
         width="500" // Transform the image: auto-crop to square aspect_ratio
         height="500"
+        alt="Sample image"
         crop={{
           type: "auto",
           source: true,

@@ -3,7 +3,7 @@ import cloudinary from "@/lib/cloudinary";
 export interface UploadResult {
   public_id: string;
   url: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export const uploadFile = (buffer: Buffer): Promise<UploadResult> => {

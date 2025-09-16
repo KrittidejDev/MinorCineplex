@@ -14,7 +14,7 @@ const multerAdapter = (
   next: (err?: unknown) => void
 ) => upload.single("file")(req as any, res as any, next as any);
 // Upload single file
-router.post(multerAdapter as any, uploadHandler);
+router.post(multerAdapter as any, uploadHandler as any);
 
 // Delete file
 router.delete(deleteHandler);

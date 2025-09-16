@@ -5,7 +5,11 @@ import InputTextFeild from "../Inputs/InputTextFeild";
 import { Button } from "../ui/button";
 import InputPassword from "../Inputs/InputPassword";
 
-const SignInForm = ({ onSubmit }) => {
+interface SignInFormProps {
+  onSubmit: (data: { emailOrUsername: string; password: string }) => void;
+}
+
+const SignInForm = ({ onSubmit }: SignInFormProps) => {
   const schema = yup.object().shape({
     emailOrUsername: yup.string().required("Email is required"),
     // .matches(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, "Invalid email format"),
@@ -36,6 +40,9 @@ const SignInForm = ({ onSubmit }) => {
                 label={"Email / Username"}
                 placeholder="Email or Username"
                 errors={errors.emailOrUsername?.message}
+                require={true}
+                type="text"
+                disabled={false}
               />
             )}
             name="emailOrUsername"
@@ -52,6 +59,8 @@ const SignInForm = ({ onSubmit }) => {
                 label={"Password"}
                 placeholder="Password"
                 errors={errors.password?.message}
+                require={true}
+                disabled={false}
               />
             )}
             name="password"
@@ -75,6 +84,5 @@ const SignInForm = ({ onSubmit }) => {
   );
 };
 
-SignInForm.propTypes = {};
 
 export default SignInForm;

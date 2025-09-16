@@ -1,6 +1,6 @@
 import Icon from "@/components/Icons/Icon";
 import { Button } from "@/components/ui/button";
-import { userService } from "@/services/userServices";
+// import { userService } from "@/config/userServices";
 import React from "react";
 
 const Home = () => {

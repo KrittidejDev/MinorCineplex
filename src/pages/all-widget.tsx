@@ -5,93 +5,48 @@ import React from "react";
 const AllWidget = () => {
   return (
     <div className="flex flex-col items-center">
-      <div className="flex flex-row gap-10 justify-center items-center py-10">
-        <div className="flex flex-col gap-10">
-          <Button
-            className="w-[123px] h-12 bg-[hsla(223,82%,62%,1)] text-white font-roboto-condensed font-bold text-base leading-6 rounded px-10 py-3 gap-1.5 hover:bg-[hsla(223,82%,52%,1)] active:bg-[#0e1c80] transition-colors"
-            style={{ fontFamily: "var(--font-roboto-condensed)" }}
-          >
-            Button
-          </Button>
+      <div className="flex flex-col items-center">
+        <div className="flex flex-row gap-10 justify-center items-center py-10">
+          {/* Column 1: Blue Buttons */}
+          <div className="flex flex-col gap-10">
+            <Button className="btn-base blue-normal">Button</Button>
 
-          <Button
-            className="w-[123px] h-12 bg-[hsla(223,82%,52%,1)] text-white font-roboto-condensed font-bold text-base leading-6 rounded px-10 py-3 gap-1.5 hover:[hsla(235,70%,39%,1)] active:bg-[hsla(223,82%,52%,1)] transition-colors"
-            style={{ fontFamily: "var(--font-roboto-condensed)" }}
-          >
-            Button
-          </Button>
+            <Button className="btn-base blue-secondary-normal">Button</Button>
 
-          <Button
-            className="w-[123px] h-12 bg-[#0e1c80] text-white font-roboto-condensed font-bold text-base leading-6 rounded px-10 py-3 gap-1.5 hover:[hsla(235,70%,39%,1)] active:bg-[hsla(223,82%,52%,1)] transition-colors"
-            style={{ fontFamily: "var(--font-roboto-condensed)" }}
-          >
-            Button
-          </Button>
+            <Button className="btn-base blue-dark-normal">Button</Button>
 
-          <Button
-            className="w-[123px] h-12 bg-[hsla(223,82%,62%,1)] text-white font-roboto-condensed font-bold text-base leading-6 rounded px-10 py-3 gap-1.5 hover:bg-[hsla(223,82%,52%,1)] active:bg-[#0e1c80] transition-colors opacity-50"
-            style={{ fontFamily: "var(--font-roboto-condensed)" }}
-          >
-            Button
-          </Button>
-        </div>
-        <div className="flex flex-col gap-10">
-          <Button
-            className="w-[123px] h-12 bg-transparent border border-white text-white font-roboto-condensed font-bold text-base leading-6 rounded px-10 py-3 gap-1.5 hover:bg-[hsla(227,19%,62%,1)] active:bg-slate-600 active:border-0  transition-colors "
-            style={{ fontFamily: "var(--font-roboto-condensed)" }}
-          >
-            Button
-          </Button>
+            <Button className="btn-base blue-disabled">Button</Button>
+          </div>
 
-          <Button
-            className="w-[123px] h-12 bg-[hsla(227,19%,62%,1)] text-white font-roboto-condensed font-bold text-base leading-6 rounded px-10 py-3 gap-1.5 hover:[hsla(235,70%,39%,1)] active:bg-[hsla(223,82%,52%,1)] transition-colors"
-            style={{ fontFamily: "var(--font-roboto-condensed)" }}
-          >
-            Button
-          </Button>
+          {/* Column 2: Outline & Gray Buttons */}
+          <div className="flex flex-col gap-10">
+            <Button className="btn-base white-outline-normal">Button</Button>
 
-          <Button
-            className="w-[123px] h-12 bg-slate-600 text-white font-roboto-condensed font-bold text-base leading-6 rounded px-10 py-3 gap-1.5 hover:[hsla(235,70%,39%,1)] active:bg-[hsla(223,82%,52%,1)] transition-colors"
-            style={{ fontFamily: "var(--font-roboto-condensed)" }}
-          >
-            Button
-          </Button>
+            <Button className="btn-base gray-normal">Button</Button>
 
-          <Button
-            className="w-[123px] h-12 bg-transparent border border-white text-white font-roboto-condensed font-bold text-base leading-6 rounded px-10 py-3 gap-1.5 hover:bg-[hsla(227,19%,62%,1)] active:bg-[hsla(223,82%,62%,0.2)] active:border-0  transition-colors opacity-50"
-            style={{ fontFamily: "var(--font-roboto-condensed)" }}
-          >
-            Button
-          </Button>
-        </div>
-        <div className="flex flex-col gap-10">
-          <Button
-            className="w-[123px] h-12 bg-transparent  text-white font-roboto-condensed font-bold text-base leading-6 rounded px-10 py-3 gap-1.5 hover:opacity-50 active:opacity-40 transition-colors underline"
-            style={{ fontFamily: "var(--font-roboto-condensed)" }}
-          >
-            Button
-          </Button>
+            <Button className="btn-base slate-normal">Button</Button>
 
-          <Button
-            className="w-[123px] h-12 bg-transparent  text-white font-roboto-condensed font-bold text-base leading-6 rounded px-10 py-3 gap-1.5 hover:bg-[hsla(223,82%,62%,0.1)] active:bg-[hsla(223,82%,62%,0.2)] transition-colors underline opacity-50"
-            style={{ fontFamily: "var(--font-roboto-condensed)" }}
-          >
-            Button
-          </Button>
+            <Button className="btn-base white-outline-disabled">Button</Button>
+          </div>
 
-          <Button
-            className="w-[123px] h-12 bg-transparent  text-white font-roboto-condensed font-bold text-base leading-6 rounded px-10 py-3 gap-1.5 hover:bg-[hsla(223,82%,62%,0.1)] active:bg-[hsla(223,82%,62%,0.2)] transition-colors underline opacity-40"
-            style={{ fontFamily: "var(--font-roboto-condensed)" }}
-          >
-            Button
-          </Button>
+          {/* Column 3: Transparent Link Buttons */}
+          <div className="flex flex-col gap-10">
+            <Button className="btn-base transparent-underline-normal">
+              Button
+            </Button>
 
-          <Button
-            className="w-[123px] h-12 bg-transparent  text-white font-roboto-condensed font-bold text-base leading-6 rounded px-10 py-3 gap-1.5 hover:bg-[hsla(223,82%,62%,0.1)] active:bg-[hsla(223,82%,62%,0.2)] transition-colors underline opacity-30"
-            style={{ fontFamily: "var(--font-roboto-condensed)" }}
-          >
-            Button
-          </Button>
+            <Button className="btn-base transparent-underline-semi">
+              Button
+            </Button>
+
+            <Button className="btn-base transparent-underline-more">
+              Button
+            </Button>
+
+            <Button className="btn-base transparent-underline-most">
+              Button
+            </Button>
+          </div>
         </div>
       </div>
       <div className="mt-10 flex flex-col items-center gap-5">

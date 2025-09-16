@@ -137,8 +137,186 @@ body {
 
 /*   custom btn */
 
-.btn-signin {
-  @apply py-10 px-5 bg-red;
+
+/* Base Button Styles */
+.btn-base {
+  width: 123px;
+  height: 48px;
+  font-family: var(--font-roboto-condensed);
+  font-weight: bold;
+  font-size: 16px;
+  line-height: 24px;
+  border-radius: 4px;
+  padding: 12px 40px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  border: none;
+}
+
+/* Blue Button States - hsla(223,82%,62%,1) */
+.blue-normal {
+  background-color: hsla(223,82%,62%,1);
+  color: white;
+}
+
+.blue-normal:hover {
+  background-color: hsla(223,82%,52%,1);
+}
+
+.blue-normal:active {
+  background-color: #0e1c80;
+}
+
+.blue-disabled {
+  background-color: hsla(223,82%,62%,1);
+  color: white;
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Blue Secondary States - hsla(223,82%,52%,1) */
+.blue-secondary-normal {
+  background-color: hsla(223,82%,52%,1);
+  color: white;
+}
+
+.blue-secondary-normal:hover {
+  background-color: hsla(235,70%,39%,1);
+}
+
+.blue-secondary-normal:active {
+  background-color: hsla(223,82%,52%,1);
+}
+
+/* Blue Dark States - #0e1c80 */
+.blue-dark-normal {
+  background-color: #0e1c80;
+  color: white;
+}
+
+.blue-dark-normal:hover {
+  background-color: hsla(235,70%,39%,1);
+}
+
+.blue-dark-normal:active {
+  background-color: hsla(223,82%,52%,1);
+}
+
+/* White Outline States */
+.white-outline-normal {
+  background-color: transparent;
+  border: 1px solid white;
+  color: white;
+}
+
+.white-outline-normal:hover {
+  background-color: hsla(227,19%,62%,1);
+}
+
+.white-outline-normal:active {
+  background-color: #64748b;
+  border: none;
+}
+
+.white-outline-disabled {
+  background-color: transparent;
+  border: 1px solid white;
+  color: white;
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.white-outline-disabled:active {
+  background-color: hsla(223,82%,62%,0.2);
+  border: none;
+}
+
+/* Gray Button States - hsla(227,19%,62%,1) */
+.gray-normal {
+  background-color: hsla(227,19%,62%,1);
+  color: white;
+}
+
+.gray-normal:hover {
+  background-color: hsla(235,70%,39%,1);
+}
+
+.gray-normal:active {
+  background-color: hsla(223,82%,52%,1);
+}
+
+/* Slate Button States */
+.slate-normal {
+  background-color: #64748b;
+  color: white;
+}
+
+.slate-normal:hover {
+  background-color: hsla(235,70%,39%,1);
+}
+
+.slate-normal:active {
+  background-color: hsla(223,82%,52%,1);
+}
+
+/* Transparent Link States */
+.transparent-underline-normal {
+  background-color: transparent;
+  color: white;
+  text-decoration: underline;
+}
+
+.transparent-underline-normal:hover {
+  opacity: 0.5;
+}
+
+.transparent-underline-normal:active {
+  opacity: 0.4;
+}
+
+.transparent-underline-semi {
+  background-color: transparent;
+  color: white;
+  text-decoration: underline;
+  opacity: 0.5;
+}
+
+.transparent-underline-semi:hover {
+  background-color: hsla(223,82%,62%,0.1);
+}
+
+.transparent-underline-semi:active {
+  background-color: hsla(223,82%,62%,0.2);
+}
+
+.transparent-underline-more {
+  background-color: transparent;
+  color: white;
+  text-decoration: underline;
+  opacity: 0.4;
+}
+
+.transparent-underline-more:hover {
+  background-color: hsla(223,82%,62%,0.1);
+}
+
+.transparent-underline-more:active {
+  background-color: hsla(223,82%,62%,0.2);
+}
+
+.transparent-underline-most {
+  background-color: transparent;
+  color: white;
+  text-decoration: underline;
+  opacity: 0.3;
+}
+
+.transparent-underline-most:hover {
+  background-color: hsla(223,82%,62%,0.1);
+}
+
+.transparent-underline-most:active {
+  background-color: hsla(223,82%,62%,0.2);
 }
 
 /* Custom Step */

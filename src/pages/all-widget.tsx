@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { SuccessNotification, ErrorNotification } from "@/components/ui/notifications";
 import React from "react";
 
 const AllWidget = () => {
@@ -8,6 +9,9 @@ const AllWidget = () => {
         <div>button</div>
         <Button className="btn-signin">btn-signin</Button>
       </div>
+      <div>notifications</div>
+      <SuccessNotification />
+      <ErrorNotification />
     </div>
   );
 };

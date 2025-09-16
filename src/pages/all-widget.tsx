@@ -72,7 +72,7 @@ const AllWidget = () => {
       {/* checkbox */}
       <div className="flex flex-col gap-2 mt-20">
       <DefaultCheckbox label="Option 1" />
-      <DefaultCheckbox label="Option 1" />
+      <DefaultCheckbox label="Option 1" defaultChecked />
       <DefaultCheckbox label="Option 1" />
       <DisabledCheckbox/>
     </div>

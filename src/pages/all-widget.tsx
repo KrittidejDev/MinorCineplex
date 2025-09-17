@@ -1,8 +1,9 @@
 import { Button } from "@/components/ui/button";
 import DoneRight from "@/components/Icons/DoneRound";
 import { ErrorAlert, SuccessAlert } from "@/components/ui/alert";
-import {DefaultCheckbox, DisabledCheckbox } from "@/components/ui/checkbox"
+import { DefaultCheckbox, DisabledCheckbox } from "@/components/ui/checkbox"
 import { Modal } from "@/components/ui/Modal";
+import BookingCard from "@/components/ui/bookking-card";
 import React from "react";
 
 const AllWidget = () => {
@@ -76,11 +77,29 @@ const AllWidget = () => {
 
       {/* checkbox */}
       <div className="flex flex-col gap-2 mt-20">
-      <DefaultCheckbox label="Option 1" />
-      <DefaultCheckbox label="Option 1" defaultChecked />
-      <DefaultCheckbox label="Option 1" />
-      <DisabledCheckbox/>
-    </div>
+        <DefaultCheckbox label="Option 1" />
+        <DefaultCheckbox label="Option 1" defaultChecked />
+        <DefaultCheckbox label="Option 1" />
+        <DisabledCheckbox />
+      </div>
+
+      {/* Booking Card */}
+      <div className="mt-20 w-full">
+        <BookingCard
+          movieTitle="The Dark Knight"
+          moviePoster="https://images.unsplash.com/photo-1531259683007-016a9b2c5f38?w=200&h=300&fit=crop&crop=center"
+          location="Minor Cineplex Arkham"
+          date="24 Jun 2024"
+          time="16:30"
+          hall="Hall 1"
+          bookingNumber="AK11223"
+          bookedDate="24 Jun 2024"
+          selectedSeats="C9, C10"
+          ticketCount={2}
+          paymentMethod="Credit card"
+          isPaid={true}
+        />
+      </div>
 
     </div>
   )

@@ -18,7 +18,7 @@ export default function Home() {
         {/* section 1 */}
         <NowShowingComingSoon />
         {/* section 2 */}
-        {/* section 3 */}
+        
       </div>
     </NavAndFooterWithBanner>
   );

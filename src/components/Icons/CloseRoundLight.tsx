@@ -1,12 +1,12 @@
 import React from "react";
 
-interface DoneRoundProps {
+interface CloseRoundLightProps {
   width?: string | number;
   height?: string | number;
   color?: string;
 }
 
-const DoneRound: React.FC<DoneRoundProps> = ({
+const CloseRoundLight: React.FC<CloseRoundLightProps> = ({
   width = "24",
   height = "24",
   color = "#FFF",
@@ -20,12 +20,19 @@ const DoneRound: React.FC<DoneRoundProps> = ({
       xmlns="http://www.w3.org/2000/svg"
     >
       <path
-        d="M5 14L8.23309 16.4248C8.66178 16.7463 9.26772 16.6728 9.60705 16.2581L18 6"
+        d="M18 6L6 18"
         stroke={color}
         strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M6 6L18 18"
+        stroke={color}
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   );
 };
 
-export default DoneRound;
+export default CloseRoundLight;

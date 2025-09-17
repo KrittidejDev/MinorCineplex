@@ -1,6 +1,16 @@
 import React from "react";
 
-const Icon = ({ width = "24", height = "24", color = "#C8CEDD" }) => {
+interface DateTodayLightProps {
+  width?: string | number;
+  height?: string | number;
+  color?: string;
+}
+
+const DateTodayLight: React.FC<DateTodayLightProps> = ({
+  width = "24",
+  height = "24",
+  color = "#FFF",
+}) => {
   return (
     <svg
       width={width}
@@ -9,6 +19,7 @@ const Icon = ({ width = "24", height = "24", color = "#C8CEDD" }) => {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
+      <rect x="3" y="6" width="18" height="15" rx="2" stroke={color} />
       <path
         d="M3 10C3 8.11438 3 7.17157 3.58579 6.58579C4.17157 6 5.11438 6 7 6H17C18.8856 6 19.8284 6 20.4142 6.58579C21 7.17157 21 8.11438 21 10H3Z"
         fill={color}
@@ -19,4 +30,4 @@ const Icon = ({ width = "24", height = "24", color = "#C8CEDD" }) => {
   );
 };
 
-export default Icon;
+export default DateTodayLight;

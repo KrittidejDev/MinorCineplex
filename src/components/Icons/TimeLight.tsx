@@ -1,12 +1,12 @@
 import React from "react";
 
-interface DoneRoundProps {
+interface TimeLightProps {
   width?: string | number;
   height?: string | number;
   color?: string;
 }
 
-const DoneRound: React.FC<DoneRoundProps> = ({
+const TimeLight: React.FC<TimeLightProps> = ({
   width = "24",
   height = "24",
   color = "#FFF",
@@ -19,8 +19,9 @@ const DoneRound: React.FC<DoneRoundProps> = ({
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
+      <circle cx="12" cy="12" r="8.5" stroke={color} />
       <path
-        d="M5 14L8.23309 16.4248C8.66178 16.7463 9.26772 16.6728 9.60705 16.2581L18 6"
+        d="M16.5 12H12.25C12.1119 12 12 11.8881 12 11.75V8.5"
         stroke={color}
         strokeLinecap="round"
       />
@@ -28,4 +29,4 @@ const DoneRound: React.FC<DoneRoundProps> = ({
   );
 };
 
-export default DoneRound;
+export default TimeLight;

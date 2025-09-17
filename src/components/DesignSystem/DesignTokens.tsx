@@ -53,18 +53,18 @@ export const colorTokens: ColorToken[] = [
 // Font size tokens from tailwind config
 export const fontSizeTokens: FontSizeToken[] = [
   // Headline styles
-  { name: "f-56", className: "text-f-56", size: "56px", lineHeight: "64px", fontWeight: "700", description: "Large headline" },
-  { name: "f-36", className: "text-f-36", size: "36px", lineHeight: "44px", fontWeight: "700", description: "Medium headline" },
-  { name: "f-24", className: "text-f-24", size: "24px", lineHeight: "30px", fontWeight: "700", description: "Small headline" },
-  { name: "f-20", className: "text-f-20", size: "20px", lineHeight: "26px", fontWeight: "700", description: "Extra small headline" },
+  { name: "f-56", className: "text-f-56", size: "56px", lineHeight: "64px", fontWeight: "700", description: "Headline 1" },
+  { name: "f-36", className: "text-f-36", size: "36px", lineHeight: "44px", fontWeight: "700", description: "Headline 2" },
+  { name: "f-24", className: "text-f-24", size: "24px", lineHeight: "30px", fontWeight: "700", description: "Headline 3" },
+  { name: "f-20", className: "text-f-20", size: "20px", lineHeight: "26px", fontWeight: "700", description: "Headline 4" },
   
   // Body styles
-  { name: "fm-16", className: "text-fm-16", size: "16px", lineHeight: "24px", fontWeight: "500", description: "Body medium 16px" },
-  { name: "fr-16", className: "text-fr-16", size: "16px", lineHeight: "24px", fontWeight: "400", description: "Body regular 16px" },
-  { name: "fm-14", className: "text-fm-14", size: "14px", lineHeight: "20px", fontWeight: "500", description: "Body medium 14px" },
-  { name: "fr-14", className: "text-fr-14", size: "14px", lineHeight: "20px", fontWeight: "400", description: "Body regular 14px" },
-  { name: "fm-12", className: "text-fm-12", size: "12px", lineHeight: "18px", fontWeight: "500", description: "Body medium 12px" },
-  { name: "fr-12", className: "text-fr-12", size: "12px", lineHeight: "18px", fontWeight: "400", description: "Body regular 12px" },
+  { name: "fm-16", className: "text-fm-16", size: "16px", lineHeight: "24px", fontWeight: "500", description: "Body/1 medium" },
+  { name: "fr-16", className: "text-fr-16", size: "16px", lineHeight: "24px", fontWeight: "400", description: "Body/1 regular" },
+  { name: "fm-14", className: "text-fm-14", size: "14px", lineHeight: "20px", fontWeight: "500", description: "Body/2 medium" },
+  { name: "fr-14", className: "text-fr-14", size: "14px", lineHeight: "20px", fontWeight: "400", description: "Body/2 regular" },
+  { name: "fm-12", className: "text-fm-12", size: "12px", lineHeight: "18px", fontWeight: "500", description: "Body/3 medium" },
+  { name: "fr-12", className: "text-fr-12", size: "12px", lineHeight: "18px", fontWeight: "400", description: "Body/3 regular" },
 ];
 
 // Border radius tokens from tailwind config

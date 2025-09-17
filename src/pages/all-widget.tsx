@@ -7,6 +7,8 @@ import { BookingCard } from "@/components/Cards/bookkingCard";
 import { IconsGrid } from "@/components/Icons/Icons";
 import { DesignTokens } from "@/components/DesignSystem/DesignTokens";
 
+import Tag from "@/components/Tag";
+
 import React from "react";
 
 const AllWidget = () => {
@@ -105,13 +107,69 @@ const AllWidget = () => {
       </div>
 
       {/* Icons Grid */}
-      <div className="mt-20 w-full max-w-6xl px-4">
+      <div className="mt-20 w-full max-w-7xl px-4">
         <IconsGrid size="40" color="#3B82F6" columns={5} />
       </div>
 
       {/* Design Tokens */}
       <div className="mt-20 w-full max-w-7xl px-4">
         <DesignTokens columns={5} />
+      </div>
+
+      {/* Tag Components */}
+      <div className="mt-20 w-full max-w-4xl px-4">
+        <h2 className="text-2xl font-bold mb-6 text-center">Tag Components</h2>
+        <div className="flex flex-col items-center gap-8">
+          {/* Genre Tags */}
+          <div className="flex flex-col gap-4">
+            <h3 className="text-lg font-semibold text-center">Genre Tags</h3>
+            <div className="flex flex-wrap gap-3 justify-center">
+              <Tag name="Action" variant="genre" />
+              <Tag name="Comedy" variant="genre" />
+              <Tag name="Drama" variant="genre" />
+              <Tag name="Horror" variant="genre" />
+              <Tag name="Romance" variant="genre" />
+              <Tag name="Sci-Fi" variant="genre" />
+            </div>
+          </div>
+
+          {/* Language Tags */}
+          <div className="flex flex-col gap-4">
+            <h3 className="text-lg font-semibold text-center">Language Tags</h3>
+            <div className="flex flex-wrap gap-3 justify-center">
+              <Tag name="TH" variant="language" />
+              <Tag name="EN" variant="language" />
+              <Tag name="KR" variant="language" />
+              <Tag name="JP" variant="language" />
+              <Tag name="CH" variant="language" />
+            </div>
+          </div>
+
+          {/* Auto-sizing Tags */}
+          <div className="flex flex-col gap-4">
+            <h3 className="text-lg font-semibold text-center">Auto-sizing Tags</h3>
+            <div className="flex flex-wrap gap-3 justify-center">
+              <Tag name="A" variant="genre" />
+              <Tag name="Short" variant="language" />
+              <Tag name="Medium Length" variant="genre" />
+              <Tag name="Very Long Tag Name" variant="language" />
+              <Tag name="Extremely Long Tag Name That Should Auto Resize" variant="genre" />
+            </div>
+          </div>
+
+          {/* Font Size Examples */}
+          <div className="flex flex-col gap-4">
+            <h3 className="text-lg font-semibold text-center">Font Size Examples</h3>
+            <div className="flex flex-wrap gap-3 justify-center items-center">
+              <Tag name="fr-12" variant="genre" fontSize="fr-12" />
+              <Tag name="fm-12" variant="language" fontSize="fm-12" />
+              <Tag name="fr-14" variant="genre" fontSize="fr-14" />
+              <Tag name="fm-14" variant="language" fontSize="fm-14" />
+              <Tag name="fr-16" variant="genre" fontSize="fr-16" />
+              <Tag name="fm-16" variant="language" fontSize="fm-16" />
+            </div>
+          </div>
+        </div>
       </div>
 
     </div>

@@ -1,16 +1,23 @@
 import StarFill from "../Icons/StarFill";
+import Tag from "../Tag";
 
 interface MovieCardProps {
-        title: string;
-        date: string;
-        rating: number;
-        genre1: string;
-        genre2: string;
-        lang: string;
-    }
+  title: string;
+  date: string;
+  rating: number;
+  genreTag1: string;
+  genreTag2: string;
+  langTag: string;
+}
 
-function MovieCard({title, date, rating, genre1, genre2, lang}: MovieCardProps) {
-
+function MovieCard({
+  title,
+  date,
+  rating,
+  genreTag1,
+  genreTag2,
+  langTag,
+}: MovieCardProps) {
   return (
     <div className="w-[161px] h-fit md:w-[285px] md:h-[526px] flex flex-col cursor-pointer">
       <div className="h-[235px] md:h-[416px] bg-white-wfff rounded-sm">
@@ -26,16 +33,10 @@ function MovieCard({title, date, rating, genre1, genre2, lang}: MovieCardProps) 
         </div>
         <div className="flex flex-col flex-1 justify-between">
           <h4 className="font-bold text-xl">{title}</h4>
-          <div className="flex flex-wrap gap-2">
-            <div className="py-[6px] px-[12px] bg-gray-g63f flex flex-wrap rounded-sm">
-              <p className="fr-14 text-gray-g3b0">{genre1}</p>
-            </div>
-            <div className="py-[6px] px-[12px] bg-gray-g63f rounded-sm">
-              <p className="fr-14 text-gray-g3b0">{genre2}</p>
-            </div>
-            <div className="py-[6px] px-[12px] bg-gray-g63f rounded-sm">
-              <p className="fr-14 text-[#C8CEDD]">{lang}</p>
-            </div>
+          <div className="flex flex-wrap gap-2 mt-4">
+            <Tag name={genreTag1} variant="genre" />
+            <Tag name={genreTag2} variant="genre" />
+            <Tag name={langTag} variant="language" />
           </div>
         </div>
       </div>

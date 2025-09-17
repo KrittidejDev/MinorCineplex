@@ -16,8 +16,114 @@ datasource db {
 
 
 model User {
-  id       Int    @id @default(autoincrement())
-  name     String
-  email    String @unique
-  password String
+  id            Int       @id @default(autoincrement())
+  email         String    @unique
+  password      String
+  name          String?
+  role          Role      @default(USER)
+  bookings      Booking[]
+  coupons       UserCoupon[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Branch {
+  id        Int       @id @default(autoincrement())
+  name      String
+  address   String
+  cinemas   Cinema[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Cinema {
+  id         Int       @id @default(autoincrement())
+  branch     Branch    @relation(fields: [branchId], references: [id])
+  branchId   Int
+  name       String
+  seats      Seat[]
+  showtimes  Showtime[]
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+}
+
+model Seat {
+  id         Int       @id @default(autoincrement())
+  row        String
+  number     Int
+  cinema     Cinema    @relation(fields: [cinemaId], references: [id])
+  cinemaId   Int
+  bookings   BookingSeat[]
+  createdAt  DateTime  @default(now())
+}
+
+model Movie {
+  id            Int       @id @default(autoincrement())
+  title         String
+  description   String?
+  trailerUrl    String?
+  durationMin   Int
+  showtimes     Showtime[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Showtime {
+  id         Int       @id @default(autoincrement())
+  movie      Movie     @relation(fields: [movieId], references: [id])
+  movieId    Int
+  cinema     Cinema    @relation(fields: [cinemaId], references: [id])
+  cinemaId   Int
+  startTime  DateTime
+  bookings   Booking[]
+  createdAt  DateTime  @default(now())
+}
+
+model Booking {
+  id          Int       @id @default(autoincrement())
+  user        User      @relation(fields: [userId], references: [id])
+  userId      Int
+  showtime    Showtime  @relation(fields: [showtimeId], references: [id])
+  showtimeId  Int
+  seats       BookingSeat[]
+  status      BookingStatus @default(PENDING)
+  totalPrice  Float
+  createdAt   DateTime  @default(now())
+}
+
+model BookingSeat {
+  id         Int       @id @default(autoincrement())
+  booking    Booking   @relation(fields: [bookingId], references: [id])
+  bookingId  Int
+  seat       Seat      @relation(fields: [seatId], references: [id])
+  seatId     Int
+}
+
+model Coupon {
+  id          Int       @id @default(autoincrement())
+  code        String    @unique
+  discount    Float     // percentage 0-100
+  validFrom   DateTime
+  validUntil  DateTime
+  userCoupons UserCoupon[]
+}
+
+model UserCoupon {
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  coupon    Coupon   @relation(fields: [couponId], references: [id])
+  couponId  Int
+  used      Boolean  @default(false)
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
 }

@@ -39,8 +39,8 @@ const LogoM: React.FC<LogoMProps> = ({
           y2="46.2758"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#343897" />
-          <stop offset="1" stop-color="#4E7BEE" />
+          <stop stopColor="#343897" />
+          <stop offset="1" stopColor="#4E7BEE" />
         </linearGradient>
       </defs>
     </svg>

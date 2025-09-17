@@ -5,18 +5,18 @@ import CloseRoundLight from '../Icons/CloseRoundLight'
 export const Modal = () => {
   return (
     <div className='flex flex-col items-center '>
-        <div className="bg-[#21263F] rounded-lg shadow-xl max-w-md w-[343px] h-[194px]  relative ">
+        <div className="bg-[#21263F] rounded-lg shadow-xl max-w-md w-[343px] h-[194px]  relative border-1 border-[#565F7E] ">
           {/* Close Button */}
-          <button className="absolute top-5 right-10 text-white hover:text-gray-300 transition-colors cursor-pointer">
+          <button className="absolute top-5 right-10 text-[#FFFFFF] hover:text-[#C8CEDD] transition-colors cursor-pointer">
             <CloseRoundLight />
           </button>
           {/* Modal Content */}
           <div className="p-5 items-center text-center">
-            <h2 className="flex flex-col items-center text-white text-xl font-semibold mb-4">
+            <h2 className="flex flex-col items-center text-[#FFFFFF] text-xl font-semibold mb-4">
               Modal Title
             </h2>
 
-            <p className="text-gray-300 text-sm leading-relaxed mb-5 w-full">
+            <p className="text-[#C8CEDD] text-sm leading-relaxed mb-5 w-full">
               Lorem ipsum dolor sit amet, consectetur adipiscing elit.
             </p>
 

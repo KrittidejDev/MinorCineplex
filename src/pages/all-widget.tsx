@@ -4,6 +4,9 @@ import { ErrorAlert, SuccessAlert } from "@/components/ui/alert";
 import { DefaultCheckbox, DisabledCheckbox } from "@/components/ui/checkbox"
 import { Modal } from "@/components/ui/Modal";
 import { BookingCard } from "@/components/Cards/bookkingCard";
+import { IconsGrid } from "@/components/Icons/Icons";
+import { DesignTokens } from "@/components/DesignSystem/DesignTokens";
+
 import React from "react";
 
 const AllWidget = () => {
@@ -99,6 +102,16 @@ const AllWidget = () => {
           paymentMethod="Credit card"
           isPaid={true}
         />
+      </div>
+
+      {/* Icons Grid */}
+      <div className="mt-20 w-full max-w-6xl px-4">
+        <IconsGrid size="40" color="#3B82F6" columns={5} />
+      </div>
+
+      {/* Design Tokens */}
+      <div className="mt-20 w-full max-w-7xl px-4">
+        <DesignTokens columns={5} />
       </div>
 
     </div>

@@ -140,18 +140,36 @@ body {
 
 /* Base Button Styles */
 .btn-base {
-  width: 123px;
-  height: 48px;
   font-family: var(--font-roboto-condensed);
   font-weight: bold;
   font-size: 16px;
   line-height: 24px;
   border-radius: 4px;
-  padding: 12px 40px;
+  padding: 25px 40px;
   transition: all 0.3s ease;
   cursor: pointer;
   border: none;
 }
+
+/* จอเล็ก (มือถือ) */
+@media (max-width: 640px) {
+  .btn-base {
+    font-size: 14px;
+    line-height: 20px;
+    padding: 16px 24px;
+  }
+}
+
+/* จอกลาง (tablet) */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .btn-base {
+    font-size: 15px;
+    line-height: 22px;
+    padding: 20px 32px;
+  }
+}
+
+/* จอใหญ่ (desktop) ใช้ค่าเดิม */
 
 /* Blue Button States - hsla(223,82%,62%,1) */
 .blue-normal {

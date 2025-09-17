@@ -105,27 +105,29 @@ const BookingCard: React.FC<BookingCardProps> = ({
             <div className="border-t border-gray-600 mb-3"></div>
 
             {/* Ticket and Payment Section */}
-            <div className="flex items-center justify-between gap-2">
+            <div className="flex sm:items-center sm:justify-between gap-2 flex-col sm:flex-row">
                 {/* Left Section - Ticket Info + Payment method under Selected Seat */}
-                <div className="flex items-start gap-2 flex-1">
+                <div className="flex items-start gap-2 w-full">
                     {/* Ticket Count Button */}
                     <button className="bg-gray-g63f text-white px-2 py-1 sm:px-3 sm:py-2 rounded text-xs sm:text-sm font-medium whitespace-nowrap">
                         {ticketCount} Tickets
                     </button>
 
                     {/* Text Details stacked */}
-                    <div className="flex flex-col min-w-0">
-                        <div className="text-xs sm:text-sm text-gray-200 truncate">
-                            Selected Seat {selectedSeats}
+                    <div className="flex flex-col min-w-0 flex-1">
+                        <div className="text-xs sm:text-sm text-gray-200 w-full flex justify-between sm:justify-start">
+                            <span className="opacity-90">Selected Seat</span>
+                            <span className="font-medium sm:ml-14">{selectedSeats}</span>
                         </div>
-                        <div className="text-xs sm:text-sm text-gray-200 truncate">
-                            Payment method {paymentMethod}
+                        <div className="text-xs sm:text-sm text-gray-200 w-full flex justify-between sm:justify-start">
+                            <span className="opacity-90">Payment method</span>
+                            <span className="font-medium sm:ml-5">{paymentMethod}</span>
                         </div>
                     </div>
                 </div>
 
                 {/* Right Section - Paid Status Button only */}
-                <div className="flex items-end">
+                <div className="flex items-end w-full sm:w-auto justify-end">
                     <button
                         className={`px-2 py-1 sm:px-3 sm:py-2 rounded text-xs sm:text-sm font-medium whitespace-nowrap ${isPaid
                             ? 'bg-green-g372 text-white'

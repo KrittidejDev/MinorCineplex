@@ -9,45 +9,45 @@ const AllWidget = () => {
   return (
     <div className="flex flex-col items-center">
       <div className="flex flex-col items-center">
-        <div className="flex flex-row gap-10 justify-center items-center py-10">
+        <div className="flex flex-row gap-50 justify-center items-center py-10">
           {/* Column 1: Blue Buttons */}
           <div className="flex flex-col gap-10">
-            <Button className="btn-base blue-normal">Button</Button>
+            <Button className="btn-base blue-normal">btn-base blue-normal</Button>
 
-            <Button className="btn-base blue-secondary-normal">Button</Button>
+            <Button className="btn-base blue-secondary-normal">btn-base blue-secondary-normal</Button>
 
-            <Button className="btn-base blue-dark-normal">Button</Button>
+            <Button className="btn-base blue-dark-normal">btn-base blue-dark-normal</Button>
 
-            <Button className="btn-base blue-disabled">Button</Button>
+            <Button className="btn-base blue-disabled">btn-base blue-disabled</Button>
           </div>
 
           {/* Column 2: Outline & Gray Buttons */}
           <div className="flex flex-col gap-10">
-            <Button className="btn-base white-outline-normal">Button</Button>
+            <Button className="btn-base white-outline-normal">btn-base white-outline-normal</Button>
 
-            <Button className="btn-base gray-normal">Button</Button>
+            <Button className="btn-base gray-normal">btn-base gray-normal</Button>
 
-            <Button className="btn-base slate-normal">Button</Button>
+            <Button className="btn-base slate-normal">btn-base slate-normal</Button>
 
-            <Button className="btn-base white-outline-disabled">Button</Button>
+            <Button className="btn-base white-outline-disabled">btn-base white-outline-disabled</Button>
           </div>
 
           {/* Column 3: Transparent Link Buttons */}
           <div className="flex flex-col gap-10">
             <Button className="btn-base transparent-underline-normal">
-              Button
+              btn-base transparent-underline-normal
             </Button>
 
             <Button className="btn-base transparent-underline-semi">
-              Button
+              btn-base transparent-underline-semi
             </Button>
 
             <Button className="btn-base transparent-underline-more">
-              Button
+              btn-base transparent-underline-more
             </Button>
 
             <Button className="btn-base transparent-underline-most">
-              Button
+              btn-base transparent-underline-most
             </Button>
           </div>
         </div>

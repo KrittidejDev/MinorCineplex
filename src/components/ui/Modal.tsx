@@ -1,5 +1,6 @@
 import React from 'react'
 import { Button } from './button'
+import CloseRoundLight from '../Icons/CloseRoundLight'
 
 export const Modal = () => {
   return (
@@ -7,7 +8,7 @@ export const Modal = () => {
         <div className="bg-[#21263F] rounded-lg shadow-xl max-w-md w-[343px] h-[194px]  relative ">
           {/* Close Button */}
           <button className="absolute top-5 right-10 text-white hover:text-gray-300 transition-colors cursor-pointer">
-            X
+            <CloseRoundLight />
           </button>
           {/* Modal Content */}
           <div className="p-5 items-center text-center">

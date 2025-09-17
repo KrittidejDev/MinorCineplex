@@ -19,8 +19,8 @@ const AddRoundLight: React.FC<AddRoundLightProps> = ({
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <path d="M12 6L12 18" stroke={color} stroke-linecap="round" />
-      <path d="M18 12L6 12" stroke={color} stroke-linecap="round" />
+      <path d="M12 6L12 18" stroke={color} strokeLinecap="round" />
+      <path d="M18 12L6 12" stroke={color} strokeLinecap="round" />
     </svg>
   );
 };

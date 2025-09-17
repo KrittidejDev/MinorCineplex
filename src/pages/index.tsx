@@ -1,19 +1,6 @@
-import { Geist, Geist_Mono } from "next/font/google";
-import { Button } from "@/components/ui/button";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
-
-import Step from "@/components/Steps/Step";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+import NavAndFooterWithBanner from "@/components/MainLayout/NavAndFooterWithBanner";
 
 export default function Home() {
   const testToast = () => {
@@ -25,14 +12,12 @@ export default function Home() {
   }, []);
 
   return (
-    <div
-      className={`${geistSans.className} ${geistMono.className} font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20`}
-    >
-      <div className="max-w-[1200px]">
+    <NavAndFooterWithBanner>
+      <div className="flex-1 max-w-[1200px]">
         {/* section 1 */}
         {/* section 2 */}
         {/* section 3 */}
       </div>
-    </div>
+    </NavAndFooterWithBanner>
   );
 }

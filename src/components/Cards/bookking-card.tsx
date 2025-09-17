@@ -17,7 +17,7 @@ interface BookingCardProps {
     isPaid: boolean;
 }
 
-const BookingCard: React.FC<BookingCardProps> = ({
+export const BookingCard: React.FC<BookingCardProps> = ({
     movieTitle,
     moviePoster,
     location,
@@ -142,4 +142,4 @@ const BookingCard: React.FC<BookingCardProps> = ({
     );
 };
 
-export default BookingCard;
+

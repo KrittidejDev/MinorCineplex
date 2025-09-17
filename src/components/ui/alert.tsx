@@ -7,7 +7,7 @@ export function ErrorAlert() {
         <h1 className="font-bold">Attention needed</h1>
         <button className="cursor-pointer"><CloseRoundLight /></button>
       </div>
-      <p className="text-sm mt-1">
+      <p className="text-fr-14 mt-1">
         Lorem, ipsum dolor sit amet consectetur adipisicing elit. Reiciendis
         provident inventore aut quod saepe esse.
       </p>
@@ -22,7 +22,7 @@ export function SuccessAlert() {
         <h1 className="font-bold">Attention needed</h1>
         <button className="cursor-pointer"><CloseRoundLight /></button>
       </div>
-      <p className="text-sm mt-1">
+      <p className="text-fr-14 mt-1">
         Lorem, ipsum dolor sit amet consectetur adipisicing elit. Reiciendis
         provident inventore aut quod saepe esse.
       </p>

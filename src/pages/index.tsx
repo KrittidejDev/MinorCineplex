@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { toast } from "react-toastify";
 import NavAndFooterWithBanner from "@/components/MainLayout/NavAndFooterWithBanner";
 import NowShowingComingSoon from "@/components/Widgets/NowShowingComingSoonWidget";
+import CinemaLocation from "@/components/Widgets/CinemaLocation";
 
 export default function Home() {
   const testToast = () => {
@@ -18,7 +19,8 @@ export default function Home() {
         {/* section 1 */}
         <NowShowingComingSoon />
         {/* section 2 */}
-        
+        {/* section 3 */}
+        <CinemaLocation/>
       </div>
     </NavAndFooterWithBanner>
   );

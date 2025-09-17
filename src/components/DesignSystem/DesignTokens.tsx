@@ -29,26 +29,25 @@ interface BorderRadiusToken {
 // Color tokens from tailwind config
 export const colorTokens: ColorToken[] = [
   // Gray colors
-  { name: "gray-gc1b", value: "#070C1B", className: "bg-gray-gc1b", description: "Dark gray background" },
-  { name: "gray-g63f", value: "#21263F", className: "bg-gray-g63f", description: "Medium dark gray" },
-  { name: "gray-gf7e", value: "#565F7E", className: "bg-gray-gf7e", description: "Medium gray" },
-  { name: "gray-g3b0", value: "#8B93B0", className: "bg-gray-g3b0", description: "Light gray" },
-  { name: "gray-gedd", value: "#C8CEDD", className: "bg-gray-gedd", description: "Very light gray" },
+  { name: "gray-gc1b", value: "#070C1B", className: "bg-gray-gc1b", description: "Gray 0" },
+  { name: "gray-g63f", value: "#21263F", className: "bg-gray-g63f", description: "Gray 100" },
+  { name: "gray-gf7e", value: "#565F7E", className: "bg-gray-gf7e", description: "Gray 200" },
+  { name: "gray-g3b0", value: "#8B93B0", className: "bg-gray-g3b0", description: "Gray 300" },
+  { name: "gray-gedd", value: "#C8CEDD", className: "bg-gray-gedd", description: "Gray 400" },
   
   // White colors
-  { name: "white-wfff", value: "#FFFFFF", className: "bg-white-wfff", description: "Pure white" },
+  { name: "white-wfff", value: "#FFFFFF", className: "bg-white-wfff", description: "White" },
   
   // Blue colors
-  { name: "blue-bbee", value: "#4E7BEE", className: "bg-blue-bbee", description: "Primary blue" },
-  { name: "blue-b9a8", value: "#1E29A8", className: "bg-blue-b9a8", description: "Dark blue" },
-  { name: "blue-b580", value: "#0C1580", className: "bg-blue-b580", description: "Darker blue" },
-  { name: "blue-b525", value: "#101525", className: "bg-blue-b525", description: "Darkest blue" },
+  { name: "blue-bbee", value: "#4E7BEE", className: "bg-blue-bbee", description: "Blue 100" },
+  { name: "blue-b9a8", value: "#1E29A8", className: "bg-blue-b9a8", description: "Blue 200" },
+  { name: "blue-b580", value: "#0C1580", className: "bg-blue-b580", description: "Blue 300" },
   
   // Green colors
-  { name: "green-g372", value: "#00A372", className: "bg-green-g372", description: "Success green" },
+  { name: "green-g372", value: "#00A372", className: "bg-green-g372", description: "Green" },
   
   // Red colors
-  { name: "red-r64b", value: "#E5364B", className: "bg-red-r64b", description: "Error red" },
+  { name: "red-r64b", value: "#E5364B", className: "bg-red-r64b", description: "Red" },
 ];
 
 // Font size tokens from tailwind config

@@ -12,6 +12,7 @@ import Tag from "@/components/Tag";
 import React from "react";
 import InputTextFeild from "@/components/Inputs/InputTextFeild";
 import InputTextArea from "@/components/Inputs/InputTextArea";
+import ShowtimeSelection from "@/components/Widgets/ShowtimeSelection";
 
 const AllWidget = () => {
   return (
@@ -207,6 +208,14 @@ const AllWidget = () => {
           />
           <InputTextArea placeholder="Placeholder Text" label="Label" />
         </form>
+      </div>
+
+       {/* Showtime Selection Preview */}
+       <div className="mt-20 w-full max-w-4xl px-4">
+        <h2 className="text-2xl font-bold mb-6 text-center">Showtime Selection</h2>
+        <div className="flex justify-center">
+          <ShowtimeSelection />
+        </div>
       </div>
     </div>
   );

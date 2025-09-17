@@ -3,7 +3,7 @@ import DoneRight from "@/components/Icons/DoneRound";
 import { ErrorAlert, SuccessAlert } from "@/components/ui/alert";
 import { DefaultCheckbox, DisabledCheckbox } from "@/components/ui/checkbox"
 import { Modal } from "@/components/ui/Modal";
-import { BookingCard } from "@/components/Cards/bookking-card";
+import { BookingCard } from "@/components/Cards/bookkingCard";
 import React from "react";
 
 const AllWidget = () => {

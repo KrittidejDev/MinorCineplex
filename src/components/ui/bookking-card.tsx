@@ -34,13 +34,13 @@ const BookingCard: React.FC<BookingCardProps> = ({
     return (
         <div className="bg-gray-gc1b rounded-lg p-3 sm:p-6 text-white max-w-sm sm:max-w-2xl mx-auto">
             {/* Movie Section */}
-            <div className="flex gap-3 mb-4">
+            <div className="flex items-stretch gap-3 mb-4">
                 {/* Movie Poster */}
-                <div className="flex-shrink-0">
+                <div className="flex-shrink-0 self-stretch">
                     <img
                         src={moviePoster}
                         alt={movieTitle}
-                        className="w-16 h-24 sm:w-20 sm:h-28 object-cover rounded"
+                        className="w-16 sm:w-20 h-full min-h-24 sm:min-h-28 object-cover rounded"
                     />
                 </div>
 

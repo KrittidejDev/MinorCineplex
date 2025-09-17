@@ -87,7 +87,7 @@ const AllWidget = () => {
       <div className="mt-20 w-full">
         <BookingCard
           movieTitle="The Dark Knight"
-          moviePoster="https://images.unsplash.com/photo-1531259683007-016a9b2c5f38?w=200&h=300&fit=crop&crop=center"
+          moviePoster="https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcQkUywIUXDjHSQJIaNHYVs08osgBpF5Ot-xmB_omyEZeeRP9Xug"
           location="Minor Cineplex Arkham"
           date="24 Jun 2024"
           time="16:30"

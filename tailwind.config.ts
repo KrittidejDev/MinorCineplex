@@ -1,11 +1,20 @@
 import type { Config } from "tailwindcss";
 
-const config: Config = {
+const config: any = {
   darkMode: "class",
   content: [
     "./src/**/*.{js,ts,jsx,tsx}",
     "./components/**/*.{js,ts,jsx,tsx}",
     "./app/**/*.{js,ts,jsx,tsx}",
+  ],
+  safelist: [
+    // Font size classes for dynamic usage
+    'text-fr-12',
+    'text-fm-12',
+    'text-fr-14',
+    'text-fm-14',
+    'text-fr-16',
+    'text-fm-16',
   ],
   theme: {
     extend: {

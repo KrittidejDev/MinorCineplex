@@ -26,7 +26,6 @@ const config: Config = {
           bbee: "#4E7BEE",
           b9a8: "#1E29A8",
           b580: "#0C1580",
-          b525: "#101525",
         },
 
         green: {

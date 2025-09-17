@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import DoneRight from "@/components/Icons/DoneRound";
 import { ErrorAlert, SuccessAlert } from "@/components/ui/alert";
-import { DefaultCheckbox, DisabledCheckbox } from "@/components/ui/checkbox"
+import { DefaultCheckbox, DisabledCheckbox } from "@/components/ui/checkbox";
 import { Modal } from "@/components/ui/Modal";
 import { BookingCard } from "@/components/Cards/bookkingCard";
 import { IconsGrid } from "@/components/Icons/Icons";
@@ -10,6 +10,8 @@ import { DesignTokens } from "@/components/DesignSystem/DesignTokens";
 import Tag from "@/components/Tag";
 
 import React from "react";
+import InputTextFeild from "@/components/Inputs/InputTextFeild";
+import InputTextArea from "@/components/Inputs/InputTextArea";
 
 const AllWidget = () => {
   return (
@@ -18,24 +20,40 @@ const AllWidget = () => {
         <div className="flex flex-row gap-50 justify-center items-center py-10">
           {/* Column 1: Blue Buttons */}
           <div className="flex flex-col gap-10">
-            <Button className="btn-base blue-normal">btn-base blue-normal</Button>
+            <Button className="btn-base blue-normal">
+              btn-base blue-normal
+            </Button>
 
-            <Button className="btn-base blue-secondary-normal">btn-base blue-secondary-normal</Button>
+            <Button className="btn-base blue-secondary-normal">
+              btn-base blue-secondary-normal
+            </Button>
 
-            <Button className="btn-base blue-dark-normal">btn-base blue-dark-normal</Button>
+            <Button className="btn-base blue-dark-normal">
+              btn-base blue-dark-normal
+            </Button>
 
-            <Button className="btn-base blue-disabled">btn-base blue-disabled</Button>
+            <Button className="btn-base blue-disabled">
+              btn-base blue-disabled
+            </Button>
           </div>
 
           {/* Column 2: Outline & Gray Buttons */}
           <div className="flex flex-col gap-10">
-            <Button className="btn-base white-outline-normal">btn-base white-outline-normal</Button>
+            <Button className="btn-base white-outline-normal">
+              btn-base white-outline-normal
+            </Button>
 
-            <Button className="btn-base gray-normal">btn-base gray-normal</Button>
+            <Button className="btn-base gray-normal">
+              btn-base gray-normal
+            </Button>
 
-            <Button className="btn-base slate-normal">btn-base slate-normal</Button>
+            <Button className="btn-base slate-normal">
+              btn-base slate-normal
+            </Button>
 
-            <Button className="btn-base white-outline-disabled">btn-base white-outline-disabled</Button>
+            <Button className="btn-base white-outline-disabled">
+              btn-base white-outline-disabled
+            </Button>
           </div>
 
           {/* Column 3: Transparent Link Buttons */}
@@ -147,19 +165,26 @@ const AllWidget = () => {
 
           {/* Auto-sizing Tags */}
           <div className="flex flex-col gap-4">
-            <h3 className="text-lg font-semibold text-center">Auto-sizing Tags</h3>
+            <h3 className="text-lg font-semibold text-center">
+              Auto-sizing Tags
+            </h3>
             <div className="flex flex-wrap gap-3 justify-center">
               <Tag name="A" variant="genre" />
               <Tag name="Short" variant="language" />
               <Tag name="Medium Length" variant="genre" />
               <Tag name="Very Long Tag Name" variant="language" />
-              <Tag name="Extremely Long Tag Name That Should Auto Resize" variant="genre" />
+              <Tag
+                name="Extremely Long Tag Name That Should Auto Resize"
+                variant="genre"
+              />
             </div>
           </div>
 
           {/* Font Size Examples */}
           <div className="flex flex-col gap-4">
-            <h3 className="text-lg font-semibold text-center">Font Size Examples</h3>
+            <h3 className="text-lg font-semibold text-center">
+              Font Size Examples
+            </h3>
             <div className="flex flex-wrap gap-3 justify-center items-center">
               <Tag name="fr-12" variant="genre" fontSize="fr-12" />
               <Tag name="fm-12" variant="language" fontSize="fm-12" />
@@ -172,8 +197,19 @@ const AllWidget = () => {
         </div>
       </div>
 
+      {/* Input */}
+      <div className="flex justify- ">
+        <form className="w-[900px] px-5 flex py-10 mt-10">
+          <InputTextFeild
+            label="Label"
+            placeholder="Placeholder Text"
+            text="Help text goes here"
+          />
+          <InputTextArea placeholder="Placeholder Text" label="Label" />
+        </form>
+      </div>
     </div>
-  )
-}
+  );
+};
 
-export default AllWidget
+export default AllWidget;

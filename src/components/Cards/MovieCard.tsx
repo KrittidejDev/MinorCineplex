@@ -12,8 +12,8 @@ interface MovieCardProps {
 function MovieCard({title, date, rating, genre1, genre2, lang}: MovieCardProps) {
 
   return (
-    <div className="w-[285px] h-[526px] flex flex-col cursor-pointer">
-      <div className="h-[416px] bg-white rounded-[4px]">
+    <div className="w-[161px] h-fit md:w-[285px] md:h-[526px] flex flex-col cursor-pointer">
+      <div className="h-[235px] md:h-[416px] bg-white rounded-[4px]">
         <img src="" alt={title} />
       </div>
       <div className="flex flex-col flex-1">
@@ -26,8 +26,8 @@ function MovieCard({title, date, rating, genre1, genre2, lang}: MovieCardProps) 
         </div>
         <div className="flex flex-col flex-1 justify-between">
           <h4 className="font-bold text-xl">{title}</h4>
-          <div className="flex gap-2">
-            <div className="py-[6px] px-[12px] bg-[#21263F] rounded-[4px]">
+          <div className="flex flex-wrap gap-2">
+            <div className="py-[6px] px-[12px] bg-[#21263F] flex flex-wrap rounded-[4px]">
               <p className="text-[14px] text-[#8B93B0]">{genre1}</p>
             </div>
             <div className="py-[6px] px-[12px] bg-[#21263F] rounded-[4px]">

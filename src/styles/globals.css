@@ -172,66 +172,66 @@ body {
 
 /* Blue Button States - hsla(223,82%,62%,1) */
 .blue-normal {
-  background-color: hsla(223, 82%, 62%, 1);
-  color: white;
+  background-color: #4E7BEE;
+  color: #FFFFFF;
 }
 
 .blue-normal:hover {
-  background-color: hsla(223, 82%, 52%, 1);
+  background-color: #1E29A8;
 }
 
 .blue-normal:active {
-  background-color: #0e1c80;
+  background-color: #0C1580;
 }
 
 .blue-disabled {
-  background-color: hsla(223, 82%, 62%, 1);
-  color: white;
+  background-color: #4E7BEE;
+  color: #FFFFFF;
   opacity: 0.5;
   cursor: not-allowed;
 }
 
-/* Blue Secondary States - hsla(223,82%,52%,1) */
+/* Blue Secondary States - #1E29A8 */
 .blue-secondary-normal {
-  background-color: hsla(223, 82%, 52%, 1);
-  color: white;
+  background-color: #1E29A8;
+  color: #FFFFFF;
 }
 
 .blue-secondary-normal:hover {
-  background-color: hsla(235, 70%, 39%, 1);
+  background-color: #4E7BEE;
 }
 
 .blue-secondary-normal:active {
-  background-color: hsla(223, 82%, 52%, 1);
+  background-color: #0C1580;
 }
 
-/* Blue Dark States - #0e1c80 */
+/* Blue Dark States - #0C1580*/
 .blue-dark-normal {
-  background-color: #0e1c80;
-  color: white;
+  background-color: #0C1580;
+  color: #FFFFFF;
 }
 
 .blue-dark-normal:hover {
-  background-color: hsla(235, 70%, 39%, 1);
+  background-color: #0C1580;
 }
 
 .blue-dark-normal:active {
-  background-color: hsla(223, 82%, 52%, 1);
+  background-color: #1E29A8;
 }
 
 /* White Outline States */
 .white-outline-normal {
   background-color: transparent;
-  border: 1px solid white;
-  color: white;
+  border: 1px solid #FFFFFF;
+  color: #FFFFFF;
 }
 
 .white-outline-normal:hover {
-  background-color: hsla(227, 19%, 62%, 1);
+  background-color: #8B93B0;
 }
 
 .white-outline-normal:active {
-  background-color: #64748b;
+  background-color: #565F7E;
   border: none;
 }
 
@@ -250,30 +250,30 @@ body {
 
 /* Gray Button States - hsla(227,19%,62%,1) */
 .gray-normal {
-  background-color: hsla(227, 19%, 62%, 1);
+  background-color: #8B93B0;
   color: white;
 }
 
 .gray-normal:hover {
-  background-color: hsla(235, 70%, 39%, 1);
+  background-color: #0C1580;
 }
 
 .gray-normal:active {
-  background-color: hsla(223, 82%, 52%, 1);
+  background-color: #1E29A8;
 }
 
 /* Slate Button States */
 .slate-normal {
-  background-color: #64748b;
+  background-color: #8B93B0;
   color: white;
 }
 
 .slate-normal:hover {
-  background-color: hsla(235, 70%, 39%, 1);
+  background-color: #0C1580;
 }
 
 .slate-normal:active {
-  background-color: hsla(223, 82%, 52%, 1);
+  background-color: #1E29A8;
 }
 
 /* Transparent Link States */

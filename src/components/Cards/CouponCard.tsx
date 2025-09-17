@@ -7,7 +7,7 @@ interface CouponCardProps {
 const CouponCard = ({ title }: CouponCardProps) => {
   return (
     
-    <div className="w-[161px] h-[337px] lg:w-[285px] lg:h-[477px] flex flex-col cursor-pointer rounded-[8px] bg-[#070C1B]">
+    <div className="w-[161px] md:w-[285px] h-[337px] lg:w-[285px] lg:h-[477px] flex flex-col cursor-pointer rounded-[8px] bg-[#070C1B]">
       <div className="h-[285px] bg-[#FFFFFF] rounded-t-[8px]">
         <img src="" alt={title} />
       </div>

@@ -18,7 +18,7 @@ export default function Home() {
       <div className="flex-1 max-w-[1200px]">
         {/* section 1 */}
         <NowShowingComingSoon />
-        {/* section 2 */}
+        <Coupon/>
         {/* section 3 */}
         <CinemaLocation/>
       </div>

@@ -33,16 +33,6 @@ const BookingCard: React.FC<BookingCardProps> = ({
 }) => {
     return (
         <div className="bg-gray-gc1b rounded-lg p-3 sm:p-6 text-white max-w-sm sm:max-w-2xl mx-auto">
-            {/* Booking Info - Top Right on Desktop, Bottom on Mobile */}
-            <div className="text-right mb-3 sm:block hidden">
-                <div className="text-xs sm:text-sm text-gray-300 mb-1">
-                    Booking No. {bookingNumber}
-                </div>
-                <div className="text-xs sm:text-sm text-gray-300">
-                    Booked date {bookedDate}
-                </div>
-            </div>
-
             {/* Movie Section */}
             <div className="flex gap-3 mb-4">
                 {/* Movie Poster */}
@@ -56,8 +46,20 @@ const BookingCard: React.FC<BookingCardProps> = ({
 
                 {/* Movie Details */}
                 <div className="flex-1 min-w-0">
-                    {/* Movie Title */}
-                    <h2 className="text-lg sm:text-xl font-semibold text-white mb-2 truncate">{movieTitle}</h2>
+                    {/* Movie Title and Booking Info */}
+                    <div className="flex items-start justify-between mb-2">
+                        <h2 className="text-lg sm:text-xl font-semibold text-white truncate flex-1 pr-2">{movieTitle}</h2>
+
+                        {/* Booking Info - Right side on Desktop */}
+                        <div className="text-right sm:block hidden flex-shrink-0">
+                            <div className="text-xs sm:text-sm text-gray-300 mb-1">
+                                Booking No. {bookingNumber}
+                            </div>
+                            <div className="text-xs sm:text-sm text-gray-300">
+                                Booked date {bookedDate}
+                            </div>
+                        </div>
+                    </div>
 
                     {/* Movie Info */}
                     <div className="space-y-1">

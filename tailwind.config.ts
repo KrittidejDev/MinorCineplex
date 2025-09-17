@@ -46,10 +46,11 @@ const config: any = {
         },
       },
       fontFamily: {
-        sans: ["Roboto", "sans-serif"],
-        mono: ["Roboto Mono", "monospace"],
-        headline: ["Roboto", "sans-serif"],
-        body: ["Roboto", "sans-serif"],
+        sans: ["Roboto Condensed", "sans-serif"],
+        mono: ["Roboto Condensed", "sans-serif"],
+        headline: ["Roboto Condensed", "sans-serif"],
+        body: ["Roboto Condensed", "sans-serif"],
+        "roboto-condensed": ["Roboto Condensed", "sans-serif"],
       },
       fontSize: {
         // Headline styles

@@ -106,26 +106,26 @@ const BookingCard: React.FC<BookingCardProps> = ({
 
             {/* Ticket and Payment Section */}
             <div className="flex items-center justify-between gap-2">
-                {/* Left Section - Ticket Info */}
-                <div className="flex items-center gap-2 flex-1">
+                {/* Left Section - Ticket Info + Payment method under Selected Seat */}
+                <div className="flex items-start gap-2 flex-1">
                     {/* Ticket Count Button */}
                     <button className="bg-gray-g63f text-white px-2 py-1 sm:px-3 sm:py-2 rounded text-xs sm:text-sm font-medium whitespace-nowrap">
                         {ticketCount} Tickets
                     </button>
 
-                    {/* Ticket Details */}
-                    <div className="text-xs sm:text-sm text-gray-200 truncate">
-                        Selected Seat {selectedSeats}
+                    {/* Text Details stacked */}
+                    <div className="flex flex-col min-w-0">
+                        <div className="text-xs sm:text-sm text-gray-200 truncate">
+                            Selected Seat {selectedSeats}
+                        </div>
+                        <div className="text-xs sm:text-sm text-gray-200 truncate">
+                            Payment method {paymentMethod}
+                        </div>
                     </div>
                 </div>
 
-                {/* Right Section - Payment Info */}
-                <div className="flex flex-col items-end gap-1">
-                    <div className="text-xs sm:text-sm text-gray-200 text-right">
-                        Payment method {paymentMethod}
-                    </div>
-
-                    {/* Paid Status Button */}
+                {/* Right Section - Paid Status Button only */}
+                <div className="flex items-end">
                     <button
                         className={`px-2 py-1 sm:px-3 sm:py-2 rounded text-xs sm:text-sm font-medium whitespace-nowrap ${isPaid
                             ? 'bg-green-g372 text-white'

@@ -31,6 +31,7 @@ export const BookingCard: React.FC<BookingCardProps> = ({
     paymentMethod,
     isPaid,
 }) => {
+
     return (
         <div className="bg-gray-gc1b rounded-lg p-3 sm:p-6 text-white max-w-sm sm:max-w-2xl mx-auto">
             {/* Movie Section */}

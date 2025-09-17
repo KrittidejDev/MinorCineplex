@@ -5,10 +5,10 @@ function NowShowingComingSoon() {
     <div className="w-dvw flex justify-center py-20 px-4">
       <div className="flex flex-col gap-10">
         <div className="flex gap-4">
-          <button className="font-bold text-2xl py-1 border-b border-[#565F7E] cursor-pointer">
+          <button className="font-bold text-f-24 py-1 border-b border-gray-gf7e cursor-pointer">
             Now showing
           </button>
-          <button className="font-bold text-2xl py-1 text-[#8B93B0] border-b border-transparent cursor-pointer">
+          <button className="font-bold text-f-24 py-1 text-gray-g3b0 border-b border-transparent cursor-pointer">
             Coming soon
           </button>
         </div>

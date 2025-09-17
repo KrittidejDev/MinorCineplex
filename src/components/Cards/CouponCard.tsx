@@ -13,7 +13,7 @@ const CouponCard = ({ title }: CouponCardProps) => {
       </div>
       <div className="flex flex-col flex-1 items-center gap-y-9 p-4">
         <div className="flex flex-col mt-3 gap-3 items-start">
-            <h4 className='headline-4 text-[#FFFFFF]'>{title}</h4>
+            <h4 className='headline-4 text-[#FFFFFF] font-bold text-xl line-clamp-2'>{title}</h4>
             <div className='flex gap-5'>
                 <p className='text-sm text-[#8B93B0]'>Valid until</p>
                 <p className='text-sm text-[#8B93B0]'>31 Dec 2024</p>

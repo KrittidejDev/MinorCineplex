@@ -3,7 +3,7 @@ import { toast } from "react-toastify";
 import NavAndFooterWithBanner from "@/components/MainLayout/NavAndFooterWithBanner";
 import NowShowingComingSoon from "@/components/Widgets/NowShowingComingSoonWidget";
 import CinemaLocation from "@/components/Widgets/CinemaLocation";
-
+import Coupon from "@/components/Widgets/CouponCardWidget";
 export default function Home() {
   const testToast = () => {
     toast.success("Hello Techup");

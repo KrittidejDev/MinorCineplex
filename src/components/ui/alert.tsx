@@ -2,7 +2,7 @@ import CloseRoundLight from "../Icons/CloseRoundLight";
 
 export function ErrorAlert() {
   return (
-    <div className="max-w-[480px] bg-[#E5364B]/60 p-4 rounded-sm">
+    <div className="max-w-[480px] bg-red-r64b/60 p-4 rounded-sm">
       <div className="flex justify-between">
         <h1 className="font-bold">Attention needed</h1>
         <button className="cursor-pointer"><CloseRoundLight /></button>
@@ -17,7 +17,7 @@ export function ErrorAlert() {
 
 export function SuccessAlert() {
   return (
-    <div className="max-w-[480px] bg-[#00A372]/60 p-4 rounded-sm">
+    <div className="max-w-[480px] bg-green-g372/60 p-4 rounded-sm">
       <div className="flex justify-between">
         <h1 className="font-bold">Attention needed</h1>
         <button className="cursor-pointer"><CloseRoundLight /></button>

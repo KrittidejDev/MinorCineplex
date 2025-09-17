@@ -13,28 +13,28 @@ function MovieCard({title, date, rating, genre1, genre2, lang}: MovieCardProps) 
 
   return (
     <div className="w-[161px] h-fit md:w-[285px] md:h-[526px] flex flex-col cursor-pointer">
-      <div className="h-[235px] md:h-[416px] bg-white rounded-[4px]">
+      <div className="h-[235px] md:h-[416px] bg-white-wfff rounded-sm">
         <img src="" alt={title} />
       </div>
       <div className="flex flex-col flex-1">
         <div className="flex justify-between mt-4">
-          <p className="text-sm text-[#8B93B0]">{date}</p>
+          <p className="fr-14 text-gray-g3b0">{date}</p>
           <div className="flex items-center gap-[2px]">
             <StarFill width={16} height={16} color={"#4E7BEE"} />
-            <p className="font-medium text-sm text-[#8B93B0]">{rating}</p>
+            <p className="font-medium fr-14 text-gray-g3b0">{rating}</p>
           </div>
         </div>
         <div className="flex flex-col flex-1 justify-between">
           <h4 className="font-bold text-xl">{title}</h4>
           <div className="flex flex-wrap gap-2">
-            <div className="py-[6px] px-[12px] bg-[#21263F] flex flex-wrap rounded-[4px]">
-              <p className="text-[14px] text-[#8B93B0]">{genre1}</p>
+            <div className="py-[6px] px-[12px] bg-gray-g63f flex flex-wrap rounded-sm">
+              <p className="fr-14 text-gray-g3b0">{genre1}</p>
             </div>
-            <div className="py-[6px] px-[12px] bg-[#21263F] rounded-[4px]">
-              <p className="text-[14px] text-[#8B93B0]">{genre2}</p>
+            <div className="py-[6px] px-[12px] bg-gray-g63f rounded-sm">
+              <p className="fr-14 text-gray-g3b0">{genre2}</p>
             </div>
-            <div className="py-[6px] px-[12px] bg-[#21263F] rounded-[4px]">
-              <p className="text-[14px] text-[#C8CEDD]">{lang}</p>
+            <div className="py-[6px] px-[12px] bg-gray-g63f rounded-sm">
+              <p className="fr-14 text-[#C8CEDD]">{lang}</p>
             </div>
           </div>
         </div>

@@ -3,10 +3,12 @@ import DoneRight from "@/components/Icons/DoneRound";
 import { ErrorAlert, SuccessAlert } from "@/components/ui/alert";
 import { DefaultCheckbox, DisabledCheckbox } from "@/components/ui/checkbox"
 import { Modal } from "@/components/ui/Modal";
-import BookingCard from "@/components/ui/bookking-card";
+import { BookingCard } from "@/components/Cards/bookkingCard";
 import { IconsGrid } from "@/components/Icons/Icons";
 import { DesignTokens } from "@/components/DesignSystem/DesignTokens";
+
 import Tag from "@/components/Tag";
+
 import React from "react";
 
 const AllWidget = () => {

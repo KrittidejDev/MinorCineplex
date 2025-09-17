@@ -7,14 +7,22 @@ import { BookingCard } from "@/components/Cards/bookkingCard";
 import { IconsGrid } from "@/components/Icons/Icons";
 import { DesignTokens } from "@/components/DesignSystem/DesignTokens";
 
-import Tag from "@/components/Tag";
+import Tag from "@/components/Widgets/Tag";
+import Radio from "@/components/Widgets/Radio";
+
+
+import React, { useState } from "react";
 
 import React from "react";
 import InputTextFeild from "@/components/Inputs/InputTextFeild";
 import InputTextArea from "@/components/Inputs/InputTextArea";
 import ShowtimeSelection from "@/components/Widgets/ShowtimeSelection";
 
+
 const AllWidget = () => {
+  // State for radio buttons
+  const [selectedRadio, setSelectedRadio] = useState("option2");
+
   return (
     <div className="flex flex-col items-center">
       <div className="flex flex-col items-center">
@@ -194,6 +202,44 @@ const AllWidget = () => {
               <Tag name="fr-16" variant="genre" fontSize="fr-16" />
               <Tag name="fm-16" variant="language" fontSize="fm-16" />
             </div>
+          </div>
+        </div>
+
+        {/* Radio Button Components */}
+        <div className="w-full max-w-sm mx-auto p-8">
+          <h2 className="text-2xl font-bold text-center mb-8 text-white">Radio Button Components</h2>
+          
+          {/* Radio Button States Demo */}
+          <div className="bg-gray-gc1b border border-gray-g63f p-8 rounded-lg">
+            <h3 className="text-lg font-semibold text-center mb-6 text-white">Radio Button States</h3>
+            
+            {/* Radio States - Column Layout */}
+            <div className="flex justify-center" data-test="radio-container">
+            <div className="flex flex-col items-start space-y-4">
+              <Radio 
+                name="demo" 
+                value="default" 
+                label="Default" 
+                checked={selectedRadio === "default"}
+                onChange={setSelectedRadio}
+              />
+              <Radio 
+                name="demo" 
+                value="selected" 
+                label="Selected" 
+                checked={selectedRadio === "selected"}
+                onChange={setSelectedRadio}
+              />
+              <Radio 
+                name="disabled" 
+                value="disabled1" 
+                label="Disabled Option" 
+                disabled
+              />
+            </div>
+            </div>
+      
+            
           </div>
         </div>
       </div>

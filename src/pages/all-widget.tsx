@@ -17,7 +17,7 @@ import InputTextArea from "@/components/Inputs/InputTextArea";
 import ShowtimeSelection from "@/components/Widgets/ShowtimeSelection";
 import LocationIconBlue from "@/components/Icons/LocationIconBlue";
 import ExpandDownLight from "@/components/Icons/ExpandDownLight";
-import { ShowTime } from "@/components/Widgets/Showtime";
+import ShowTime from "@/components/Widgets/ShowTime";
 
 const AllWidget = () => {
   // State for radio buttons

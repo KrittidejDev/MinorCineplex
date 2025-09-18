@@ -1,7 +1,12 @@
 import React from "react";
+import NavAndFooter from "@/components/MainLayout/NavAndFooter";
 
 const Coupons = () => {
-  return <div>Coupons</div>;
+  return (
+  <NavAndFooter>
+    coupon
+  </NavAndFooter>
+  )
 };
 
 export default Coupons;

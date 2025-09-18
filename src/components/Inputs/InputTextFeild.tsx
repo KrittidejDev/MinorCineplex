@@ -1,8 +1,6 @@
 import React, { ChangeEvent } from "react";
 import { Input } from "../ui/input";
 import cx from "classnames";
-import SearchLight from "../Icons/SearchLight";
-import CloseRoundLight from "../Icons/CloseRoundLight";
 
 type InputTextFieldProps = {
   placeholder?: string;
@@ -35,7 +33,7 @@ const InputTextFeild = ({
           {label} {require && <span className="text-red">*</span>}
         </div>
       )}
-      <div className="relative max-w-[241px]">
+      <div className="relative w-full">
         <Input
           {...props}
           type={type}
@@ -44,22 +42,25 @@ const InputTextFeild = ({
           onChange={onChange}
           disabled={disabled}
           className={cx(
-            `bg-gray-g63f border rounded-sm pl-8 pr-3 py-3 focus:border-gray-g3b0 `,
+            `bg-gray-g63f h-12 border rounded-sm pl-4 pr-3 py-3 focus:border-gray-g3b0 `,
             errors
               ? "border-red-r64b text-red-r64b placeholder-white"
               : "border-gray-gf7e text-white placeholder-gray-400"
           )}
         />
-        {/* Icon */}
-        <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none z-10">
-          <CloseRoundLight width={20} height={20} color="#C8CEDD" />
-        </div>
-        <div className="absolute left-2 top-1/2 -translate-y-1/2 pointer-events-none z-10">
-          <SearchLight width={20} height={20} color="#C8CEDD" />
+        <div className="h-4 mt-1">
+          <span
+            className={`text-fr-12 ${errors ? "text-red-500" : "text-gray-g3b0"}`}
+          >
+            {!errors && (
+              <span className="text-fr-12 text-gray-g3b0">{text}</span>
+            )}
+            {errors && (
+              <span className="text-fr-12 text-red-500 ">{errors}</span>
+            )}
+          </span>
         </div>
       </div>
-      {!errors && <span className="text-fr-12 text-gray-g3b0">{text}</span>}
-      {errors && <span className="text-fr-12 text-red-500 ">{errors}</span>}
     </div>
   );
 };

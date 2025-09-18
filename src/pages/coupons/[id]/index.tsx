@@ -17,7 +17,7 @@ const CouponDetail = () => {
         </div>
 
         {/* Right Side - Content */}
-        <div className="w-full lg:w-2/3 h-auto lg:h-full bg-[#070C1B] rounded-[6px] p-6 sm:p-10 lg:p-13 flex flex-col gap-20">
+        <div className="w-full lg:w-2/3 h-auto lg:h-full bg-[#070C1B] rounded-[6px] p-6 sm:p-10 gap-10 lg:p-13 flex flex-col lg:gap-20">
           
           {/* Title */}
           <div className="w-full">

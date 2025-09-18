@@ -10,7 +10,7 @@ const Coupon = () => {
         <div className="flex justify-between items-center font-bold text-2xl py-1  ">
           <h2 className="headline-2">Special coupons</h2>
           <Link href="/coupons" passHref>
-            <Button className="btn-base-transparent-underline-normal text-sm hover:underline">
+            <Button className="btn-base-transparent-underline-normal text-sm hover:underline cursor-pointer ">
               View all
             </Button>
           </Link>

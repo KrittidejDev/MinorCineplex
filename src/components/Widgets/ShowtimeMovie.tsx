@@ -24,19 +24,72 @@ export type ShowtimeData = {
 };
 
 interface ShowtimeMovieProps {
-    movie: MovieData;
-    showtimes: ShowtimeData;
+    movie?: MovieData;
+    showtimes?: ShowtimeData;
     onTimeSelect?: (time: any, context: { hallId: string }) => void;
     className?: string;
 }
 
 export const ShowtimeMovie: React.FC<ShowtimeMovieProps> = ({
-    movie,
-    showtimes,
-    onTimeSelect,
+    movie: propMovie,
+    showtimes: propShowtimes,
+    onTimeSelect: propOnTimeSelect,
     className,
 }) => {
     const [selectedTime, setSelectedTime] = useState<string | null>(null);
+
+    // Default data
+    const defaultMovie: MovieData = {
+        id: "movie1",
+        title: "The Dark Knight",
+        poster: "https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcQkUywIUXDjHSQJIaNHYVs08osgBpF5Ot-xmB_omyEZeeRP9Xug",
+        genreTags: ["Action", "Crime"],
+        languageTag: "TH",
+        movieDetailLink: "#"
+    };
+
+    const defaultShowtimes: ShowtimeData = {
+        groups: [
+            {
+                hallId: "h1",
+                hallLabel: "Hall 1",
+                times: [
+                    { id: "t11", label: "11:30", disabled: true },
+                    { id: "t12", label: "14:30" },
+                    { id: "t13", label: "16:30" },
+                    { id: "t14", label: "20:30" },
+                    { id: "t15", label: "23:30" },
+                ],
+            },
+            {
+                hallId: "h3",
+                hallLabel: "Hall 3",
+                times: [
+                    { id: "t31", label: "09:00", disabled: true },
+                    { id: "t32", label: "12:00", disabled: true },
+                    { id: "t33", label: "15:00" },
+                    { id: "t34", label: "18:00" },
+                    { id: "t35", label: "21:00" },
+                ],
+            },
+            {
+                hallId: "h6",
+                hallLabel: "Hall 6",
+                times: [
+                    { id: "t61", label: "13:30" },
+                    { id: "t62", label: "18:00" },
+                    { id: "t63", label: "21:00" },
+                ],
+            },
+        ]
+    };
+
+    // Use props if provided, otherwise use defaults
+    const movie = propMovie || defaultMovie;
+    const showtimes = propShowtimes || defaultShowtimes;
+    const onTimeSelect = propOnTimeSelect || ((time, context) => {
+        console.log("Selected time:", time, "Hall:", context.hallId);
+    });
 
     const handleTimeSelect = (time: any, context: { hallId: string }) => {
         setSelectedTime(time.id);

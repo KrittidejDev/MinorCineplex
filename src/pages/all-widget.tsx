@@ -335,58 +335,12 @@ const AllWidget = () => {
         </div>
       </div>
 
+      
       {/* ShowtimeMovie Preview */}
       <div className="mt-20 w-full max-w-6xl px-4">
         <h2 className="text-2xl font-bold mb-6 text-center">Showtime Movie</h2>
         <div className="w-full">
-          <ShowtimeMovie
-            movie={{
-              id: "movie1",
-              title: "The Dark Knight",
-              poster: "https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcQkUywIUXDjHSQJIaNHYVs08osgBpF5Ot-xmB_omyEZeeRP9Xug",
-              genreTags: ["Action", "Crime"],
-              languageTag: "TH",
-              movieDetailLink: "#"
-            }}
-            showtimes={{
-              groups: [
-                {
-                  hallId: "h1",
-                  hallLabel: "Hall 1",
-                  times: [
-                    { id: "t11", label: "11:30", disabled: true },
-                    { id: "t12", label: "14:30" },
-                    { id: "t13", label: "16:30" },
-                    { id: "t14", label: "20:30" },
-                    { id: "t15", label: "23:30" },
-                  ],
-                },
-                {
-                  hallId: "h3",
-                  hallLabel: "Hall 3",
-                  times: [
-                    { id: "t31", label: "09:00", disabled: true },
-                    { id: "t32", label: "12:00", disabled: true },
-                    { id: "t33", label: "15:00" },
-                    { id: "t34", label: "18:00" },
-                    { id: "t35", label: "21:00" },
-                  ],
-                },
-                {
-                  hallId: "h6",
-                  hallLabel: "Hall 6",
-                  times: [
-                    { id: "t61", label: "13:30" },
-                    { id: "t62", label: "18:00" },
-                    { id: "t63", label: "21:00" },
-                  ],
-                },
-              ]
-            }}
-            onTimeSelect={(time, context) => {
-              console.log("Selected time:", time, "Hall:", context.hallId);
-            }}
-          />
+          <ShowtimeMovie />
         </div>
       </div>
     </div>

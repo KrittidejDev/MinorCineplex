@@ -22,10 +22,10 @@ export const Modal = () => {
 
             <div className="flex flex-row items-center justify-center gap-7">
               {/* White Outline Button */}
-              <Button className="btn-base white-outline-normal">button</Button>
+              <Button className="btn-base white-outline-normal">btn-base white-outline-normal</Button>
 
               {/* Blue Button */}
-              <Button className="btn-base blue-normal">button</Button>
+              <Button className="btn-base blue-normal">btn-base blue-normal</Button>
             </div>
           </div>
         </div>

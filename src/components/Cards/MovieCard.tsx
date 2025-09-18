@@ -1,5 +1,5 @@
 import StarFill from "../Icons/StarFill";
-import Tag from "../Tag";
+import Tag from "../Widgets/Tag";
 
 interface MovieCardProps {
   title: string;

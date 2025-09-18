@@ -1,11 +1,8 @@
 import React from 'react'
 import CouponCard from '@/components/Cards/CouponCard'
-import { useRouter } from 'next/router'
+
 const SpecialCoupons = () => {
-  const router = useRouter()
-  const handleClickcoupon = (id: string) => {
-    router.push(`/coupons/${id}`)
-  }
+ 
   return (
     <>
       <div
@@ -29,37 +26,38 @@ const SpecialCoupons = () => {
           <div className="lg:grid-cols-4 gap-5 md:grid-cols-3 md:gap-5 grid grid-cols-2 ">
             <CouponCard
               title={'Minor Cineplex x COKE JOYFUL '}
-              onClick={() => handleClickcoupon('coke-joyful')}
+               
             />
             <CouponCard
               title={'Redeem 999 UOB Rewards '}
-              onClick={() => handleClickcoupon('uob-rewards')}
+              
             />
             <CouponCard
               title={'GSB Credit Cards (All Types) '}
-              onClick={() => handleClickcoupon('gsb')}
+             
             />
             <CouponCard
               title={'UOB Visa Infinite '}
-              onClick={() => handleClickcoupon('uob-visa-infinite')}
+              
             />
             <CouponCard
               title={'Minor Cineplex x COKE JOYFUL '}
-              onClick={() => handleClickcoupon('coke-joyful')}
+               
             />
             <CouponCard
               title={'Redeem 999 UOB Rewards '}
-              onClick={() => handleClickcoupon('uob-rewards')}
+            
             />
             <CouponCard
               title={'GSB Credit Cards (All Types) '}
-              onClick={() => handleClickcoupon('gsb')}
+             
             />
             <CouponCard
               title={'UOB Visa Infinite '}
-              onClick={() => handleClickcoupon('uob-visa-infinite')}
+              
             />
           </div>
+          {/* pagination */}
         </div>
       </div>
     </>

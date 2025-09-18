@@ -13,7 +13,7 @@ function MoviesDetailWidget({title, date, detail}: MovieDetailProps) {
       <div className="w-screen flex justify-center mt-[60px]">
         <div className="w-[1200px] h-[600px] flex">
           <img src="" alt="" className="w-[411px] bg-white-wfff rounded-md" />
-          <div className="w-[669px] p-[60px] bg-gray-gc1b/70 backdrop-blur-xl rounded-md">
+          <div className="flex flex-col flex-1 p-[60px] bg-gray-gc1b/70 backdrop-blur-xl rounded-md">
             <div className="flex flex-col gap-4">
               <h2 className="text-f-36 text-white-wfff">{title}</h2>
               <div className="flex items-center">
@@ -22,7 +22,7 @@ function MoviesDetailWidget({title, date, detail}: MovieDetailProps) {
                   <Tag name="Crime" variant="genre" />
                   <Tag name="TH" variant="language" />
                 </div>
-                <p className="text-fr-16 text-gray-gedd px-5 ml-5 border-l border-gray-gedd">{date}</p>
+                <p className="text-fr-16 text-gray-gedd px-5 ml-5 border-l border-gray-gedd">Release date: {date}</p>
               </div>
             </div>
             <div className="my-12">

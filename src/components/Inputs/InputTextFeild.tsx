@@ -14,6 +14,7 @@ type InputTextFieldProps = {
   text?: string;
   require?: boolean;
   type?: React.HTMLInputTypeAttribute;
+  className?: string;
 };
 
 const InputTextFeild = ({
@@ -47,7 +48,8 @@ const InputTextFeild = ({
             `bg-gray-g63f border rounded-sm pl-8 pr-3 py-3 focus:border-gray-g3b0 `,
             errors
               ? "border-red-r64b text-red-r64b placeholder-white"
-              : "border-gray-gf7e text-white placeholder-gray-400"
+              : "border-gray-gf7e text-white placeholder-gray-400",
+              props.className
           )}
         />
         <div className="h-4 mt-1">

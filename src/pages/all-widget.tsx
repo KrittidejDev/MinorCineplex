@@ -19,8 +19,6 @@ import InputTextArea from "@/components/Inputs/InputTextArea";
 import ShowtimeSelection from "@/components/Widgets/ShowtimeSelection";
 import { 
   IconCircle, 
-  LocationIconBlue, 
-  ExpandDownLight, 
   PinFill, 
   SearchLight, 
   StarFill,
@@ -33,8 +31,6 @@ import {
 } from "@/components/Icons/Icons";
 
 import DateSelection from "@/components/ui/dateselection";
-import LocationIconBlue from "@/components/Icons/LocationIconBlue";
-import ExpandDownLight from "@/components/Icons/ExpandDownLight";
 
 
 import ShowTime from "@/components/Widgets/ShowTime";
@@ -167,62 +163,6 @@ const AllWidget = () => {
         <IconsGrid size="40" color="#3B82F6" columns={5} />
       </div>
 
-
-      {/* Icon Circle Components */}
-      <div className="w-full max-w-4xl mx-auto p-8">
-        <h2 className="text-2xl font-bold text-center mb-8 text-white">Icon Circle Components</h2>
-
-        <div className="bg-gray-gc1b border border-gray-g63f p-8 rounded-lg">
-          <h3 className="text-lg font-semibold text-center mb-6 text-white">Icon Circle Examples</h3>
-
-          {/* Icon Circle Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 justify-items-center">
-            {/* Default Icon Circle */}
-            <div className="flex flex-col items-center gap-3">
-              <IconCircle icon={PinFill} />
-              <span className="text-sm text-gray-gedd text-center">Default</span>
-            </div>
-
-            {/* Custom Size */}
-            <div className="flex flex-col items-center gap-3">
-              <IconCircle icon={SearchLight} size={40} iconSize={20} />
-              <span className="text-sm text-gray-gedd text-center">Small (40px)</span>
-            </div>
-
-            {/* Custom Background */}
-            <div className="flex flex-col items-center gap-3">
-              <IconCircle
-                icon={StarFill}
-                backgroundColor="bg-blue-bbee"
-                iconColor="#FFFFFF"
-              />
-              <span className="text-sm text-gray-gedd text-center">Blue Background</span>
-            </div>
-
-            {/* Custom Colors */}
-            <div className="flex flex-col items-center gap-3">
-              <IconCircle
-                icon={PinFill}
-                backgroundColor="bg-green-g372"
-                iconColor="#FFFFFF"
-                size={60}
-                iconSize={35}
-              />
-              <span className="text-sm text-gray-gedd text-center">Green Large</span>
-            </div>
-          </div>
-
-          {/* Usage Examples */}
-          <div className="mt-8 p-4 bg-gray-g63f rounded-lg">
-            <h4 className="text-md font-medium text-white mb-3">Usage Examples:</h4>
-            <div className="space-y-2 text-sm text-gray-gedd">
-              <div><code className="bg-gray-gc1b px-2 py-1 rounded">{"<IconCircle icon={PinFill} />"}</code></div>
-              <div><code className="bg-gray-gc1b px-2 py-1 rounded">{"<IconCircle icon={SearchLight} size={40} iconSize={20} />"}</code></div>
-              <div><code className="bg-gray-gc1b px-2 py-1 rounded">{"<IconCircle icon={StarFill} backgroundColor=\"bg-blue-bbee\" iconColor=\"#FFFFFF\" />"}</code></div>
-            </div>
-          </div>
-        </div>
-      </div>
 
       {/* Icon Circle Components */}
       <div className="w-full max-w-4xl mx-auto p-8">

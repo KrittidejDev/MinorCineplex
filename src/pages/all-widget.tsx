@@ -338,6 +338,11 @@ const AllWidget = () => {
           <ShowtimeSelection />
         </div>
       </div>
+      {/* ShowtimeMovie Preview */}
+      <div className="mt-20 w-full max-w-6xl px-4">
+        <h2 className="text-2xl font-bold mb-6 text-center">Showtime Movie</h2>
+        <div className="w-full">
+          <ShowtimeMovie />
       {/* Date Selection Preview */}
       <div className="mt-20 w-full max-w-4xl px-4">
         <h2 className="text-2xl font-bold mb-6 text-center">Date Selection</h2>

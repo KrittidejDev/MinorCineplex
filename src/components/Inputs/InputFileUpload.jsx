@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import cx from "classnames";
+import { clsx } from "clsx";
 import AdminProfile from "../Icons/AdminProfile";
 import { useEffect } from "react";
 import Image from "../Icons/Image";
@@ -81,7 +81,7 @@ const InputFileUpload = ({
 
       <label
         htmlFor="file-upload"
-        className={cx(
+        className={clsx(
           "cursor-pointer px-10 py-3 rounded-4xl bg-white font-medium text-brown-31e border border-brown-16b hover:bg-brown-16b hover:text-white transition",
           disabled && "opacity-50 cursor-not-allowed"
         )}

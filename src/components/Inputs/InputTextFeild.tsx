@@ -1,6 +1,8 @@
 import React, { ChangeEvent } from "react";
 import { Input } from "../ui/input";
-import cx from "classnames";
+import { clsx } from "clsx";
+import SearchLight from "../Icons/SearchLight";
+import CloseRoundLight from "../Icons/CloseRoundLight";
 
 type InputTextFieldProps = {
   placeholder?: string;
@@ -41,8 +43,8 @@ const InputTextFeild = ({
           value={value ?? ""}
           onChange={onChange}
           disabled={disabled}
-          className={cx(
-            `bg-gray-g63f h-12 border rounded-sm pl-4 pr-3 py-3 focus:border-gray-g3b0 `,
+          className={clsx(
+            `bg-gray-g63f border rounded-sm pl-8 pr-3 py-3 focus:border-gray-g3b0 `,
             errors
               ? "border-red-r64b text-red-r64b placeholder-white"
               : "border-gray-gf7e text-white placeholder-gray-400"

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import LocationIconBlue from "@/components/Icons/LocationIconBlue";
 import ExpandDownLight from "@/components/Icons/ExpandDownLight";
 
@@ -20,11 +20,15 @@ interface ShowtimeByHall {
     className?: string;
     locationLabel?: string;
     badges?: string[];
+    collapsed?: boolean;
 }
 
-export const ShowTime: React.FC<ShowtimeByHall> = ({ groups, onChange, className, locationLabel, badges }) => {
+export const ShowTime: React.FC<ShowtimeByHall> = ({ groups, onChange, className, locationLabel, badges, collapsed }) => {
     const [selectedByHall, setSelectedByHall] = useState<Record<string, string | null>>({});
-    const [collapsedByHall, setCollapsedByHall] = useState<Record<string, boolean>>({});
+    const [allCollapsedInternal, setAllCollapsedInternal] = useState<boolean>(false);
+    const listRef = useRef<HTMLDivElement>(null);
+
+    const allCollapsed = typeof collapsed === "boolean" ? collapsed : allCollapsedInternal;
 
     const handleSelect = (hallId: string, time: Showtime) => {
         if (time.disabled) return;
@@ -36,9 +40,14 @@ export const ShowTime: React.FC<ShowtimeByHall> = ({ groups, onChange, className
         onChange?.(time, { hallId });
     };
 
-    const toggleHall = (hallId: string) => {
-        setCollapsedByHall((prev) => ({ ...prev, [hallId]: !prev[hallId] }));
-    };
+    // When expanding all, scroll the list into view
+    const prevAllRef = useRef<boolean>(allCollapsed);
+    useEffect(() => {
+        if (prevAllRef.current && !allCollapsed && listRef.current) {
+            listRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+        prevAllRef.current = allCollapsed;
+    }, [allCollapsed]);
 
     return (
         <div className={`flex flex-col gap-8 ${className ?? ""}`}>
@@ -60,7 +69,13 @@ export const ShowTime: React.FC<ShowtimeByHall> = ({ groups, onChange, className
                                     </span>
                                 ))}
                             </div>
-                            <button type="button" aria-label="More options" className="w-8 h-8 rounded-full border border-gray-g63f text-white/80 grid place-items-center hover:brightness-110">
+                            <button
+                                type="button"
+                                aria-label="Toggle showtimes"
+                                className={`w-8 h-8 rounded-full border border-gray-g63f text-white/80 grid place-items-center hover:brightness-110 ${allCollapsed ? "rotate-180" : ""} transition-transform`}
+                                aria-expanded={!allCollapsed}
+                                onClick={() => setAllCollapsedInternal((p) => !p)}
+                            >
                                 <ExpandDownLight width={16} height={16} />
                             </button>
                         </div>
@@ -68,28 +83,19 @@ export const ShowTime: React.FC<ShowtimeByHall> = ({ groups, onChange, className
                     <div className="h-px w-full bg-gray-g63f/60 mt-2" />
                 </div>
             )}
-            {groups.map((group) => (
-                <div key={group.hallId} className="flex flex-col gap-4">
-                    <div className="flex items-center justify-between">
+
+            <div ref={listRef} style={{ overflow: "hidden", transition: "max-height 300ms ease", maxHeight: allCollapsed ? 0 : 2000 }}>
+                {groups.map((group) => (
+                    <div key={group.hallId} className="flex flex-col gap-4 mb-10">
                         <div className="text-white/90 font-semibold">{group.hallLabel}</div>
-                        <button
-                            type="button"
-                            className="w-8 h-8 rounded-md border border-gray-g63f text-white/80 grid place-items-center hover:brightness-110"
-                            aria-expanded={!collapsedByHall[group.hallId]}
-                            aria-controls={`hall-${group.hallId}`}
-                            onClick={() => toggleHall(group.hallId)}
+                        <div
+                            id={`hall-${group.hallId}`}
+                            className="flex flex-wrap gap-3 sm:gap-4 md:gap-6 w-full justify-start"
                         >
-                            <span className={`${collapsedByHall[group.hallId] ? "rotate-180" : ""} transition-transform`}>
-                                <ExpandDownLight width={16} height={16} />
-                            </span>
-                        </button>
-                    </div>
-                    {!collapsedByHall[group.hallId] && (
-                        <div id={`hall-${group.hallId}`} className="flex flex-wrap gap-3 sm:gap-4 md:gap-6">
                             {group.times.map((time) => {
                                 const isSelected = (selectedByHall[group.hallId] ?? null) === time.id;
                                 const base =
-                                    "rounded-[8px] px-4 sm:px-5 md:px-6 py-2 sm:py-2.5 flex items-center justify-center text-fm-16 font-semibold transition-colors";
+                                    "min-w-[96px] sm:min-w-[112px] rounded-[8px] px-4 sm:px-5 md:px-6 py-2 sm:py-2.5 flex items-center justify-center text-fm-16 font-semibold transition-colors";
                                 const stateClass = time.disabled
                                     ? "bg-gray-gc1b text-gray-gf7e/70 border border-gray-g63f cursor-not-allowed"
                                     : isSelected
@@ -109,13 +115,11 @@ export const ShowTime: React.FC<ShowtimeByHall> = ({ groups, onChange, className
                                 );
                             })}
                         </div>
-                    )}
-                </div>
-            ))}
+                    </div>
+                ))}
+            </div>
         </div>
     );
 };
 
 export default ShowTime;
-
-

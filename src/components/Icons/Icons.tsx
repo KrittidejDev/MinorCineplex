@@ -31,6 +31,11 @@ import StarLight from "./StarLight";
 import TimeFill from "./TimeFill";
 import TimeLight from "./TimeLight";
 import UserDuotone from "./UserDuotone";
+import SeatAvailable from "./SeatAvailable";
+import SeatBooked from "./SeatBooked";
+import SeatFriend from "./SeatFriend";
+import SeatReserved from "./SeatReserved";
+import SeatSelected from "./SeatSelected";
 
 // Icon interface
 interface IconProps {
@@ -78,6 +83,11 @@ export const allIcons: IconData[] = [
   { name: "TimeFill", component: TimeFill, label: "TimeFill" },
   { name: "TimeLight", component: TimeLight, label: "TimeLight" },
   { name: "UserDuotone", component: UserDuotone, label: "UserDuotone" },
+  { name: "SeatAvailable", component: SeatAvailable, label: "SeatAvailable" },
+  { name: "SeatBooked", component: SeatBooked, label: "SeatBooked" },
+  { name: "SeatFriend", component: SeatFriend, label: "SeatFriend" },
+  { name: "SeatReserved", component: SeatReserved, label: "SeatReserved" },
+  { name: "SeatSelected", component: SeatSelected, label: "SeatSelected" },
 ];
 
 // Icon display component
@@ -168,4 +178,9 @@ export {
   TimeFill,
   TimeLight,
   UserDuotone,
+  SeatAvailable,
+  SeatBooked,
+  SeatFriend,
+  SeatReserved,
+  SeatSelected,
 };

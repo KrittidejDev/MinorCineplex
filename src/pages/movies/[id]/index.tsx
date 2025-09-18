@@ -1,7 +1,12 @@
 import React from "react";
+import MoviesDetailWidget from "@/components/Widgets/MovieDetailWidget";
 
 const MoviesDetail = () => {
-  return <div>index</div>;
+  return (
+    <>
+    <MoviesDetailWidget />
+    </>
+  )
 };
 
 export default MoviesDetail;

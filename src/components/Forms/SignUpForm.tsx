@@ -1,0 +1,116 @@
+import InputPassword from "../Inputs/InputPassword";
+import InputTextFeild from "../Inputs/InputTextFeild";
+import { useForm, Controller } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { Button } from "../ui/button";
+import * as yup from "yup";
+import Link from "next/link";
+
+type FormValues = {
+  name: string;
+  email: string;
+  password: string;
+};
+
+type SignUpFormProps = {
+  onSubmit?: (values: FormValues) => void;
+};
+
+const SignUpForm = ({ onSubmit }: SignUpFormProps) => {
+  const schema = yup.object().shape({
+    name: yup.string().required("Name is required"),
+    email: yup
+      .string()
+      .required("Email is required")
+      .matches(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, "Invalid email format"),
+    password: yup
+      .string()
+      .required("Password is required")
+      .min(8, "Password must be at least 8 characters"),
+  });
+
+  const {
+    control,
+    watch,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormValues>({
+    resolver: yupResolver(schema),
+  });
+
+  const { name, email, password } = watch();
+  const isEmpty = !name || !email || !password;
+
+  return (
+    <form
+      onSubmit={handleSubmit(onSubmit ?? (() => {}))}
+      className="max-w-[380px] flex flex-col items-center gap-4"
+    >
+      <h2 className="text-f-36 text-center text-white">Register</h2>
+      <div className="w-full">
+        <Controller
+          control={control}
+          render={({ field }) => (
+            <InputTextFeild
+              {...field}
+              label={"Name"}
+              placeholder="Name"
+              errors={errors.name?.message}
+            />
+          )}
+          name="name"
+          defaultValue=""
+        />
+      </div>
+      <div className="w-full">
+        <Controller
+          control={control}
+          render={({ field }) => (
+            <InputTextFeild
+              {...field}
+              label={"Email"}
+              placeholder="Email"
+              errors={errors.email?.message}
+            />
+          )}
+          name="email"
+          defaultValue=""
+        />
+      </div>
+      <div className="w-full">
+        <Controller
+          control={control}
+          render={({ field }) => (
+            <InputPassword
+              {...field}
+              type={"password"}
+              label={"Password"}
+              placeholder="Password"
+              errors={errors.password?.message}
+            />
+          )}
+          name="password"
+          defaultValue=""
+        />
+      </div>
+      <div className="w-full">
+        <Button
+          disabled={isEmpty}
+          className="btn-base blue-normal w-full h-12 flex rounded-b-sm justify-center items-center"
+        >
+          Register
+        </Button>
+      </div>
+      <div className="text-fr-16 text-gray-g3b0 flex gap-2 justify-center">
+        Already have an account?{" "}
+        <Link
+          href="/auth/login"
+          className="text-white text-fm-16 underline cursor-pointer"
+        >
+          Login
+        </Link>
+      </div>
+    </form>
+  );
+};
+export default SignUpForm;

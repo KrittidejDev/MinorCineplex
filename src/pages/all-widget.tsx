@@ -15,6 +15,7 @@ import InputTextFeild from "@/components/Inputs/InputTextFeild";
 import InputTextArea from "@/components/Inputs/InputTextArea";
 import ShowtimeSelection from "@/components/Widgets/ShowtimeSelection";
 
+
 import {
   IconCircle,
   LocationIconBlue,
@@ -28,13 +29,13 @@ import DateSelection from "@/components/ui/dateselection";
 import LocationIconBlue from "@/components/Icons/LocationIconBlue";
 import ExpandDownLight from "@/components/Icons/ExpandDownLight";
 
+
 import ShowTime from "@/components/Widgets/ShowTime";
 import ShowtimeMovie from "@/components/Widgets/ShowtimeMovie";
 
 const AllWidget = () => {
   // State for radio buttons
   const [selectedRadio, setSelectedRadio] = useState("option2");
-  const [showtimeCollapsed, setShowtimeCollapsed] = useState(false);
 
   return (
     <div className="flex flex-col items-center">
@@ -348,10 +349,16 @@ const AllWidget = () => {
 
       {/* Date Selection Preview */}
       <div className="mt-20 w-full max-w-4xl px-4">
+
+        <h2 className="text-2xl font-bold mb-6 text-center">Showtime</h2>
+        <div className="w-full">
+          <ShowTime />
+
         <h2 className="text-2xl font-bold mb-6 text-center">Date Selection</h2>
         <div className="flex justify-center">
           <DateSelection day={"Today"} date={"25 Sep 1996"} />
           <DateSelection day={"Tomorrow"} date={"26 Sep 1996"} />
+
         </div>
       </div>
     </div>

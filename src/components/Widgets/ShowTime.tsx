@@ -15,7 +15,7 @@ export type ShowtimeGroup = {
 };
 
 interface ShowtimeByHall {
-    groups: ShowtimeGroup[];
+    groups?: ShowtimeGroup[];
     onChange?: (time: Showtime | null, context: { hallId: string }) => void;
     className?: string;
     locationLabel?: string;
@@ -23,10 +23,64 @@ interface ShowtimeByHall {
     collapsed?: boolean;
 }
 
-export const ShowTime: React.FC<ShowtimeByHall> = ({ groups, onChange, className, locationLabel, badges, collapsed }) => {
+export const ShowTime: React.FC<ShowtimeByHall> = ({ 
+    groups: propGroups, 
+    onChange: propOnChange, 
+    className, 
+    locationLabel: propLocationLabel, 
+    badges: propBadges, 
+    collapsed: propCollapsed 
+}) => {
     const [selectedByHall, setSelectedByHall] = useState<Record<string, string | null>>({});
     const [allCollapsedInternal, setAllCollapsedInternal] = useState<boolean>(false);
     const listRef = useRef<HTMLDivElement>(null);
+
+    // Default data
+    const defaultGroups: ShowtimeGroup[] = [
+        {
+            hallId: "h1",
+            hallLabel: "Hall 1",
+            times: [
+                { id: "t11", label: "11:30", disabled: true },
+                { id: "t12", label: "14:30" },
+                { id: "t13", label: "16:30" },
+                { id: "t14", label: "20:30" },
+                { id: "t15", label: "23:30" },
+            ],
+        },
+        {
+            hallId: "h3",
+            hallLabel: "Hall 3",
+            times: [
+                { id: "t31", label: "09:00", disabled: true },
+                { id: "t32", label: "12:00", disabled: true },
+                { id: "t33", label: "15:00" },
+                { id: "t34", label: "18:00" },
+                { id: "t35", label: "21:00" },
+            ],
+        },
+        {
+            hallId: "h6",
+            hallLabel: "Hall 4",
+            times: [
+                { id: "t61", label: "13:30" },
+                { id: "t62", label: "18:00" },
+                { id: "t63", label: "21:00" },
+            ],
+        },
+    ];
+
+    const defaultLocationLabel = "Minor Cineplex Arkham";
+    const defaultBadges = ["Hearing assistance", "Wheelchair access"];
+
+    // Use props if provided, otherwise use defaults
+    const groups = propGroups || defaultGroups;
+    const onChange = propOnChange || ((time, context) => {
+        console.log("Selected time:", time, "Hall:", context.hallId);
+    });
+    const locationLabel = propLocationLabel || defaultLocationLabel;
+    const badges = propBadges || defaultBadges;
+    const collapsed = propCollapsed;
 
     const allCollapsed = typeof collapsed === "boolean" ? collapsed : allCollapsedInternal;
 
@@ -54,12 +108,12 @@ export const ShowTime: React.FC<ShowtimeByHall> = ({ groups, onChange, className
             {(locationLabel || (badges && badges.length > 0)) && (
                 <div className="w-full">
                     <div className="flex items-center justify-between py-2">
-                        <div className="flex items-center gap-3 text-white/90">
-                            <LocationIconBlue />
-                            <span className="font-semibold">{locationLabel}</span>
-                        </div>
-                        <div className="flex items-center gap-3">
-                            <div className="hidden md:flex flex-wrap gap-2">
+                        <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-3 text-white/90">
+                            <div className="flex items-center gap-3">
+                                <LocationIconBlue />
+                                <span className="font-semibold">{locationLabel}</span>
+                            </div>
+                            <div className="flex flex-wrap gap-2 md:ml-2">
                                 {(badges ?? []).map((b) => (
                                     <span
                                         key={b}
@@ -69,6 +123,8 @@ export const ShowTime: React.FC<ShowtimeByHall> = ({ groups, onChange, className
                                     </span>
                                 ))}
                             </div>
+                        </div>
+                        <div className="flex items-center gap-3">
                             <button
                                 type="button"
                                 aria-label="Toggle showtimes"

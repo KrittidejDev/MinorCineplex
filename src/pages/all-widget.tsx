@@ -17,7 +17,7 @@ import ShowtimeSelection from "@/components/Widgets/ShowtimeSelection";
 import DateSelection from "@/components/ui/dateselection";import LocationIconBlue from "@/components/Icons/LocationIconBlue";
 import ExpandDownLight from "@/components/Icons/ExpandDownLight";
 import ShowTime from "@/components/Widgets/ShowTime";
-import ShowtimeMovie from "@/components/Widgets/ShowtimeMovie";
+import ShowtimeMovie from "@/components/Widgets/ShowtimeMovie";import DateSelection from "@/components/ui/dateselection";
 
 const AllWidget = () => {
   // State for radio buttons

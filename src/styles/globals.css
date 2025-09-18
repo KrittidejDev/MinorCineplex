@@ -358,3 +358,7 @@ body {
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
+/* .container-modal {
+  @apply flex flex-col border rounded-[6px] bg-[#21263F] p-5
+} */

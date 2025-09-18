@@ -26,7 +26,7 @@ const SpecialCoupons = () => {
           <div className="lg:grid-cols-4 gap-5 md:grid-cols-3 md:gap-5 grid grid-cols-2 ">
             <CouponCard
               title={'Minor Cineplex x COKE JOYFUL '}
-               
+              
             />
             <CouponCard
               title={'Redeem 999 UOB Rewards '}

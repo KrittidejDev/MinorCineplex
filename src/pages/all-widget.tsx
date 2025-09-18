@@ -30,24 +30,7 @@ import LocationIconBlue from "@/components/Icons/LocationIconBlue";
 import ExpandDownLight from "@/components/Icons/ExpandDownLight";
 
 
-
-
-import {
-  IconCircle,
-  LocationIconBlue,
-  ExpandDownLight,
-  PinFill,
-  SearchLight,
-  StarFill
-} from "@/components/Icons/Icons";
-
-import DateSelection from "@/components/ui/dateselection";
-import LocationIconBlue from "@/components/Icons/LocationIconBlue";
-import ExpandDownLight from "@/components/Icons/ExpandDownLight";
-
-
 import ShowTime from "@/components/Widgets/ShowTime";
-import ShowtimeMovie from "@/components/Widgets/ShowtimeMovie";
 import ShowtimeMovie from "@/components/Widgets/ShowtimeMovie";
 
 const AllWidget = () => {
@@ -355,15 +338,10 @@ const AllWidget = () => {
           <h2 className="text-2xl font-bold text-center mb-8 text-white">
             Radio Button Components
           </h2>
-          <h2 className="text-2xl font-bold text-center mb-8 text-white">
-            Radio Button Components
-          </h2>
+
 
           {/* Radio Button States Demo */}
           <div className="bg-gray-gc1b border border-gray-g63f p-8 rounded-lg">
-            <h3 className="text-lg font-semibold text-center mb-6 text-white">
-              Radio Button States
-            </h3>
             <h3 className="text-lg font-semibold text-center mb-6 text-white">
               Radio Button States
             </h3>
@@ -416,9 +394,6 @@ const AllWidget = () => {
         <h2 className="text-2xl font-bold mb-6 text-center">
           Showtime Selection
         </h2>
-        <h2 className="text-2xl font-bold mb-6 text-center">
-          Showtime Selection
-        </h2>
         <div className="flex justify-center">
           <ShowtimeSelection />
         </div>
@@ -433,7 +408,6 @@ const AllWidget = () => {
 
       {/* Showtime Preview */}
       <div className="mt-20 w-full max-w-4xl px-4">
-
         <h2 className="text-2xl font-bold mb-6 text-center">Showtime</h2>
         <div className="w-full">
           <ShowTime />

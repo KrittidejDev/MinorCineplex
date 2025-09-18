@@ -15,13 +15,13 @@ import InputTextFeild from "@/components/Inputs/InputTextFeild";
 import InputTextArea from "@/components/Inputs/InputTextArea";
 import ShowtimeSelection from "@/components/Widgets/ShowtimeSelection";
 
-import { 
-  IconCircle, 
-  LocationIconBlue, 
-  ExpandDownLight, 
-  PinFill, 
-  SearchLight, 
-  StarFill 
+import {
+  IconCircle,
+  LocationIconBlue,
+  ExpandDownLight,
+  PinFill,
+  SearchLight,
+  StarFill
 } from "@/components/Icons/Icons";
 
 import DateSelection from "@/components/ui/dateselection";
@@ -155,10 +155,10 @@ const AllWidget = () => {
       {/* Icon Circle Components */}
       <div className="w-full max-w-4xl mx-auto p-8">
         <h2 className="text-2xl font-bold text-center mb-8 text-white">Icon Circle Components</h2>
-        
+
         <div className="bg-gray-gc1b border border-gray-g63f p-8 rounded-lg">
           <h3 className="text-lg font-semibold text-center mb-6 text-white">Icon Circle Examples</h3>
-          
+
           {/* Icon Circle Grid */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 justify-items-center">
             {/* Default Icon Circle */}
@@ -166,36 +166,36 @@ const AllWidget = () => {
               <IconCircle icon={PinFill} />
               <span className="text-sm text-gray-gedd text-center">Default</span>
             </div>
-            
+
             {/* Custom Size */}
             <div className="flex flex-col items-center gap-3">
               <IconCircle icon={SearchLight} size={40} iconSize={20} />
               <span className="text-sm text-gray-gedd text-center">Small (40px)</span>
             </div>
-            
+
             {/* Custom Background */}
             <div className="flex flex-col items-center gap-3">
-              <IconCircle 
-                icon={StarFill} 
-                backgroundColor="bg-blue-bbee" 
-                iconColor="#FFFFFF" 
+              <IconCircle
+                icon={StarFill}
+                backgroundColor="bg-blue-bbee"
+                iconColor="#FFFFFF"
               />
               <span className="text-sm text-gray-gedd text-center">Blue Background</span>
             </div>
-            
+
             {/* Custom Colors */}
             <div className="flex flex-col items-center gap-3">
-              <IconCircle 
-                icon={PinFill} 
-                backgroundColor="bg-green-g372" 
-                iconColor="#FFFFFF" 
+              <IconCircle
+                icon={PinFill}
+                backgroundColor="bg-green-g372"
+                iconColor="#FFFFFF"
                 size={60}
                 iconSize={35}
               />
               <span className="text-sm text-gray-gedd text-center">Green Large</span>
             </div>
           </div>
-          
+
           {/* Usage Examples */}
           <div className="mt-8 p-4 bg-gray-g63f rounded-lg">
             <h4 className="text-md font-medium text-white mb-3">Usage Examples:</h4>
@@ -207,7 +207,7 @@ const AllWidget = () => {
           </div>
         </div>
       </div>
-      
+
       {/* Design Tokens */}
       <div className="mt-20 w-full max-w-7xl px-4">
         <DesignTokens columns={5} />
@@ -343,6 +343,9 @@ const AllWidget = () => {
         <h2 className="text-2xl font-bold mb-6 text-center">Showtime Movie</h2>
         <div className="w-full">
           <ShowtimeMovie />
+        </div>
+      </div>
+
       {/* Date Selection Preview */}
       <div className="mt-20 w-full max-w-4xl px-4">
         <h2 className="text-2xl font-bold mb-6 text-center">Date Selection</h2>

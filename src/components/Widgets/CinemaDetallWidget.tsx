@@ -6,9 +6,11 @@ import FooterWidget from "./FooterWidget";
 
 const CinemaDetallWidget = () => {
     return (
-        <div className="min-h-screen bg-gray-900">
+        <div className="min-h-screen bg-gray-900 flex flex-col items-center">
             {/* Header with Banner */}
-            <NavbarWithBannerWidget />
+            <div className="w-full">
+                <NavbarWithBannerWidget />
+            </div>
 
             {/* Date Selection Bar */}
             <div className="w-full bg-gray-800 py-4">
@@ -18,7 +20,7 @@ const CinemaDetallWidget = () => {
             </div>
 
             {/* Main Content */}
-            <div className="max-w-7xl mx-auto px-4 py-8">
+            <div className="w-full max-w-7xl px-4 py-8">
                 <div className="space-y-8">
                     {/* Movie 1 - Django Unchained */}
                     <ShowtimeMovie
@@ -172,7 +174,9 @@ const CinemaDetallWidget = () => {
             </div>
 
             {/* Footer */}
-            <FooterWidget />
+            <div className="w-full">
+                <FooterWidget />
+            </div>
         </div>
     );
 };

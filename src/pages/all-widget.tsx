@@ -37,6 +37,7 @@ import DateSelection from "@/components/ui/dateselection";
 import ShowTime from "@/components/Widgets/ShowTime";
 import ShowtimeMovie from "@/components/Widgets/ShowtimeMovie";
 
+
 const AllWidget = () => {
   // State for radio buttons
   const [selectedRadio, setSelectedRadio] = useState("option2");

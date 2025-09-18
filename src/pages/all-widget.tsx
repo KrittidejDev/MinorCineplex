@@ -15,6 +15,7 @@ import React, { useState } from "react";
 import InputTextFeild from "@/components/Inputs/InputTextFeild";
 import InputTextArea from "@/components/Inputs/InputTextArea";
 import ShowtimeSelection from "@/components/Widgets/ShowtimeSelection";
+import { ShowTime } from "@/components/Widgets/Showtime";
 
 
 const AllWidget = () => {
@@ -206,38 +207,38 @@ const AllWidget = () => {
         {/* Radio Button Components */}
         <div className="w-full max-w-sm mx-auto p-8">
           <h2 className="text-2xl font-bold text-center mb-8 text-white">Radio Button Components</h2>
-          
+
           {/* Radio Button States Demo */}
           <div className="bg-gray-gc1b border border-gray-g63f p-8 rounded-lg">
             <h3 className="text-lg font-semibold text-center mb-6 text-white">Radio Button States</h3>
-            
+
             {/* Radio States - Column Layout */}
             <div className="flex justify-center" data-test="radio-container">
-            <div className="flex flex-col items-start space-y-4">
-              <Radio 
-                name="demo" 
-                value="default" 
-                label="Default" 
-                checked={selectedRadio === "default"}
-                onChange={setSelectedRadio}
-              />
-              <Radio 
-                name="demo" 
-                value="selected" 
-                label="Selected" 
-                checked={selectedRadio === "selected"}
-                onChange={setSelectedRadio}
-              />
-              <Radio 
-                name="disabled" 
-                value="disabled1" 
-                label="Disabled Option" 
-                disabled
-              />
+              <div className="flex flex-col items-start space-y-4">
+                <Radio
+                  name="demo"
+                  value="default"
+                  label="Default"
+                  checked={selectedRadio === "default"}
+                  onChange={setSelectedRadio}
+                />
+                <Radio
+                  name="demo"
+                  value="selected"
+                  label="Selected"
+                  checked={selectedRadio === "selected"}
+                  onChange={setSelectedRadio}
+                />
+                <Radio
+                  name="disabled"
+                  value="disabled1"
+                  label="Disabled Option"
+                  disabled
+                />
+              </div>
             </div>
-            </div>
-      
-            
+
+
           </div>
         </div>
       </div>
@@ -254,11 +255,55 @@ const AllWidget = () => {
         </form>
       </div>
 
-       {/* Showtime Selection Preview */}
-       <div className="mt-20 w-full max-w-4xl px-4">
+      {/* Showtime Selection Preview */}
+      <div className="mt-20 w-full max-w-4xl px-4">
         <h2 className="text-2xl font-bold mb-6 text-center">Showtime Selection</h2>
         <div className="flex justify-center">
           <ShowtimeSelection />
+        </div>
+      </div>
+
+      {/* Showtime  Preview */}
+      <div className="mt-20 w-full max-w-4xl px-4">
+        <h2 className="text-2xl font-bold mb-6 text-center">Showtime</h2>
+        <div className="flex justify-center w-full">
+          <ShowTime
+            locationLabel="Minor Cineplex Arkham"
+            badges={["Hearing assistance", "Wheelchair access"]}
+            groups={[
+              {
+                hallId: "h1",
+                hallLabel: "Hall 1",
+                times: [
+                  { id: "t11", label: "11:30", disabled: true },
+                  { id: "t12", label: "14:30" },
+                  { id: "t13", label: "16:30" },
+                  { id: "t14", label: "20:30" },
+                  { id: "t15", label: "23:30" },
+                ],
+              },
+              {
+                hallId: "h3",
+                hallLabel: "Hall 3",
+                times: [
+                  { id: "t31", label: "09:00", disabled: true },
+                  { id: "t32", label: "12:00", disabled: true },
+                  { id: "t33", label: "15:00" },
+                  { id: "t34", label: "18:00" },
+                  { id: "t35", label: "21:00" },
+                ],
+              },
+              {
+                hallId: "h6",
+                hallLabel: "Hall 4",
+                times: [
+                  { id: "t61", label: "13:30" },
+                  { id: "t62", label: "18:00" },
+                  { id: "t63", label: "21:00" },
+                ],
+              },
+            ]}
+          />
         </div>
       </div>
     </div>

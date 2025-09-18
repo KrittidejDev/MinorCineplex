@@ -44,10 +44,10 @@ const SignUpForm = ({ onSubmit }: SignUpFormProps) => {
   return (
     <form
       onSubmit={handleSubmit(onSubmit ?? (() => {}))}
-      className="max-w-[380px] flex flex-col items-center gap-4"
+      className="max-w-[380px] flex flex-col items-center gap-10"
     >
       <h2 className="text-f-36 text-center text-white">Register</h2>
-      <div className="w-full">
+      <div className="w-full flex flex-col gap-4">
         <Controller
           control={control}
           render={({ field }) => (
@@ -61,8 +61,7 @@ const SignUpForm = ({ onSubmit }: SignUpFormProps) => {
           name="name"
           defaultValue=""
         />
-      </div>
-      <div className="w-full">
+
         <Controller
           control={control}
           render={({ field }) => (
@@ -76,23 +75,25 @@ const SignUpForm = ({ onSubmit }: SignUpFormProps) => {
           name="email"
           defaultValue=""
         />
+
+        <div className="w-full">
+          <Controller
+            control={control}
+            render={({ field }) => (
+              <InputPassword
+                {...field}
+                type={"password"}
+                label={"Password"}
+                placeholder="Password"
+                errors={errors.password?.message}
+              />
+            )}
+            name="password"
+            defaultValue=""
+          />
+        </div>
       </div>
-      <div className="w-full">
-        <Controller
-          control={control}
-          render={({ field }) => (
-            <InputPassword
-              {...field}
-              type={"password"}
-              label={"Password"}
-              placeholder="Password"
-              errors={errors.password?.message}
-            />
-          )}
-          name="password"
-          defaultValue=""
-        />
-      </div>
+
       <div className="w-full">
         <Button
           disabled={isEmpty}
@@ -101,14 +102,16 @@ const SignUpForm = ({ onSubmit }: SignUpFormProps) => {
           Register
         </Button>
       </div>
-      <div className="text-fr-16 text-gray-g3b0 flex gap-2 justify-center">
-        Already have an account?{" "}
-        <Link
-          href="/auth/login"
-          className="text-white text-fm-16 underline cursor-pointer"
-        >
-          Login
-        </Link>
+      <div>
+        <div className="text-fr-16 text-gray-g3b0 flex gap-2 justify-center">
+          Already have an account?{" "}
+          <Link
+            href="/auth/login"
+            className="text-white text-fm-16 underline cursor-pointer"
+          >
+            Login
+          </Link>
+        </div>
       </div>
     </form>
   );

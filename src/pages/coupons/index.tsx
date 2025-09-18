@@ -1,12 +1,12 @@
-import React from "react";
-import NavAndFooter from "@/components/MainLayout/NavAndFooter";
-
+import React from 'react'
+import SpecialCoupons from '@/components/Widgets/SpecialCoupons'
+import NavAndFooter from '@/components/MainLayout/NavAndFooter'
 const Coupons = () => {
   return (
-  <NavAndFooter>
-    coupon
-  </NavAndFooter>
+    <NavAndFooter>
+      <SpecialCoupons />
+    </NavAndFooter>
   )
-};
+}
 
-export default Coupons;
+export default Coupons

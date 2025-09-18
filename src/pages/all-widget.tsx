@@ -10,12 +10,28 @@ import { DesignTokens } from "@/components/DesignSystem/DesignTokens";
 import Tag from "@/components/Widgets/Tag";
 import Radio from "@/components/Widgets/Radio";
 
-
 import React, { useState } from "react";
 import InputTextFeild from "@/components/Inputs/InputTextFeild";
 import InputTextArea from "@/components/Inputs/InputTextArea";
 import ShowtimeSelection from "@/components/Widgets/ShowtimeSelection";
+
+
+import {
+  IconCircle,
+  LocationIconBlue,
+  ExpandDownLight,
+  PinFill,
+  SearchLight,
+  StarFill
+} from "@/components/Icons/Icons";
+
+import DateSelection from "@/components/ui/dateselection";
+import LocationIconBlue from "@/components/Icons/LocationIconBlue";
+import ExpandDownLight from "@/components/Icons/ExpandDownLight";
+
+
 import ShowTime from "@/components/Widgets/ShowTime";
+import ShowtimeMovie from "@/components/Widgets/ShowtimeMovie";
 
 const AllWidget = () => {
   // State for radio buttons
@@ -136,6 +152,63 @@ const AllWidget = () => {
         <IconsGrid size="40" color="#3B82F6" columns={5} />
       </div>
 
+
+      {/* Icon Circle Components */}
+      <div className="w-full max-w-4xl mx-auto p-8">
+        <h2 className="text-2xl font-bold text-center mb-8 text-white">Icon Circle Components</h2>
+
+        <div className="bg-gray-gc1b border border-gray-g63f p-8 rounded-lg">
+          <h3 className="text-lg font-semibold text-center mb-6 text-white">Icon Circle Examples</h3>
+
+          {/* Icon Circle Grid */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 justify-items-center">
+            {/* Default Icon Circle */}
+            <div className="flex flex-col items-center gap-3">
+              <IconCircle icon={PinFill} />
+              <span className="text-sm text-gray-gedd text-center">Default</span>
+            </div>
+
+            {/* Custom Size */}
+            <div className="flex flex-col items-center gap-3">
+              <IconCircle icon={SearchLight} size={40} iconSize={20} />
+              <span className="text-sm text-gray-gedd text-center">Small (40px)</span>
+            </div>
+
+            {/* Custom Background */}
+            <div className="flex flex-col items-center gap-3">
+              <IconCircle
+                icon={StarFill}
+                backgroundColor="bg-blue-bbee"
+                iconColor="#FFFFFF"
+              />
+              <span className="text-sm text-gray-gedd text-center">Blue Background</span>
+            </div>
+
+            {/* Custom Colors */}
+            <div className="flex flex-col items-center gap-3">
+              <IconCircle
+                icon={PinFill}
+                backgroundColor="bg-green-g372"
+                iconColor="#FFFFFF"
+                size={60}
+                iconSize={35}
+              />
+              <span className="text-sm text-gray-gedd text-center">Green Large</span>
+            </div>
+          </div>
+
+          {/* Usage Examples */}
+          <div className="mt-8 p-4 bg-gray-g63f rounded-lg">
+            <h4 className="text-md font-medium text-white mb-3">Usage Examples:</h4>
+            <div className="space-y-2 text-sm text-gray-gedd">
+              <div><code className="bg-gray-gc1b px-2 py-1 rounded">{"<IconCircle icon={PinFill} />"}</code></div>
+              <div><code className="bg-gray-gc1b px-2 py-1 rounded">{"<IconCircle icon={SearchLight} size={40} iconSize={20} />"}</code></div>
+              <div><code className="bg-gray-gc1b px-2 py-1 rounded">{"<IconCircle icon={StarFill} backgroundColor=\"bg-blue-bbee\" iconColor=\"#FFFFFF\" />"}</code></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Design Tokens */}
       <div className="mt-20 w-full max-w-7xl px-4">
         <DesignTokens columns={5} />
@@ -205,11 +278,15 @@ const AllWidget = () => {
 
         {/* Radio Button Components */}
         <div className="w-full max-w-sm mx-auto p-8">
-          <h2 className="text-2xl font-bold text-center mb-8 text-white">Radio Button Components</h2>
+          <h2 className="text-2xl font-bold text-center mb-8 text-white">
+            Radio Button Components
+          </h2>
 
           {/* Radio Button States Demo */}
           <div className="bg-gray-gc1b border border-gray-g63f p-8 rounded-lg">
-            <h3 className="text-lg font-semibold text-center mb-6 text-white">Radio Button States</h3>
+            <h3 className="text-lg font-semibold text-center mb-6 text-white">
+              Radio Button States
+            </h3>
 
             {/* Radio States - Column Layout */}
             <div className="flex justify-center" data-test="radio-container">
@@ -236,11 +313,10 @@ const AllWidget = () => {
                 />
               </div>
             </div>
-
-
           </div>
         </div>
       </div>
+
 
       {/* Input */}
       <div className="flex justify- ">
@@ -256,17 +332,33 @@ const AllWidget = () => {
 
       {/* Showtime Selection Preview */}
       <div className="mt-20 w-full max-w-4xl px-4">
-        <h2 className="text-2xl font-bold mb-6 text-center">Showtime Selection</h2>
+        <h2 className="text-2xl font-bold mb-6 text-center">
+          Showtime Selection
+        </h2>
         <div className="flex justify-center">
           <ShowtimeSelection />
         </div>
       </div>
+      {/* ShowtimeMovie Preview */}
+      <div className="mt-20 w-full max-w-6xl px-4">
+        <h2 className="text-2xl font-bold mb-6 text-center">Showtime Movie</h2>
+        <div className="w-full">
+          <ShowtimeMovie />
+        </div>
+      </div>
 
-      {/* Showtime  Preview */}
+      {/* Date Selection Preview */}
       <div className="mt-20 w-full max-w-4xl px-4">
+
         <h2 className="text-2xl font-bold mb-6 text-center">Showtime</h2>
         <div className="w-full">
           <ShowTime />
+
+        <h2 className="text-2xl font-bold mb-6 text-center">Date Selection</h2>
+        <div className="flex justify-center">
+          <DateSelection day={"Today"} date={"25 Sep 1996"} />
+          <DateSelection day={"Tomorrow"} date={"26 Sep 1996"} />
+
         </div>
       </div>
     </div>

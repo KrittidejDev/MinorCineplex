@@ -36,7 +36,7 @@ import DateSelection from "@/components/ui/dateselection";
 
 import ShowTime from "@/components/Widgets/ShowTime";
 import ShowtimeMovie from "@/components/Widgets/ShowtimeMovie";
-
+import CinemaDetallWidget from "@/components/Widgets/CinemaDetallWidget";
 
 const AllWidget = () => {
   // State for radio buttons
@@ -566,6 +566,7 @@ const AllWidget = () => {
           <DateSelection day={"Tomorrow"} date={"26 Sep 1996"} />
         </div>
       </div>
+    
     </div>
   );
 };

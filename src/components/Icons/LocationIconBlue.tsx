@@ -1,3 +1,4 @@
+import React from "react";
 import PinFill from "../Icons/PinFill";
 const LocationIconBlue = () => {
   return (
@@ -7,3 +8,5 @@ const LocationIconBlue = () => {
   );
 };
 export default LocationIconBlue;
+
+

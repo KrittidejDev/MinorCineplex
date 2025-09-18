@@ -1,7 +1,19 @@
-import React, { useState } from "react";
+import React, { useState, ChangeEvent } from "react";
 import { Input } from "../ui/input";
 import { Eye, EyeOff } from "lucide-react"; // 👈 ใช้ icon จาก lucide-react
-import cx from "classnames";
+import { clsx } from "clsx";
+
+type InputTextFieldProps = {
+  placeholder?: string;
+  value?: string;
+  onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
+  errors?: string;
+  disabled?: boolean;
+  label?: string;
+  text?: string;
+  require?: boolean;
+  type?: React.HTMLInputTypeAttribute;
+};
 
 const InputPassword = ({
   placeholder,
@@ -9,11 +21,12 @@ const InputPassword = ({
   onChange,
   errors,
   disabled,
+  text,
   label,
   require,
   type = "text",
   ...props
-}) => {
+}: InputTextFieldProps) => {
   const [showPassword, setShowPassword] = useState(false);
 
   const isPassword = type === "password";
@@ -22,12 +35,12 @@ const InputPassword = ({
   return (
     <div className="flex flex-col flex-1 relative">
       {label && (
-        <div className="text-b1 text-brown-16b! mb-1">
+        <div className="text-gray-gedd text-fr-16">
           {label} {require && <span className="text-red">*</span>}
         </div>
       )}
 
-      <div className="relative">
+      <div className="relative w-full">
         <Input
           {...props}
           type={inputType}
@@ -35,11 +48,11 @@ const InputPassword = ({
           value={value ?? ""}
           onChange={onChange}
           disabled={disabled}
-          className={cx(
-            "border bg-white rounded-md px-3 py-2 w-full pr-10",
+          className={clsx(
+            `bg-gray-g63f border rounded-sm h-12 pl-4 pr-3 py-3 focus:border-gray-g3b0 `,
             errors
-              ? "border-red-500 text-red-600 placeholder-red-400"
-              : "border-gray-300 text-black placeholder-gray-400"
+              ? "border-red-r64b text-red-r64b placeholder-white"
+              : "border-gray-gf7e text-white placeholder-gray-400"
           )}
         />
 
@@ -57,8 +70,14 @@ const InputPassword = ({
           </button>
         )}
       </div>
-
-      {errors && <span className="text-b2 text-red! mt-1">{errors}</span>}
+      <div className="h-4 mt-1">
+        <span
+          className={`text-fr-12 ${errors ? "text-red-500" : "text-gray-g3b0"}`}
+        >
+          {!errors && <span className="text-fr-12 text-gray-g3b0">{text}</span>}
+          {errors && <span className="text-fr-12 text-red-500 ">{errors}</span>}
+        </span>
+      </div>
     </div>
   );
 };

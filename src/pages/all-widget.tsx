@@ -15,10 +15,9 @@ import React, { useState } from "react";
 import InputTextFeild from "@/components/Inputs/InputTextFeild";
 import InputTextArea from "@/components/Inputs/InputTextArea";
 import ShowtimeSelection from "@/components/Widgets/ShowtimeSelection";
-import { ShowTime } from "@/components/Widgets/Showtime";
 import LocationIconBlue from "@/components/Icons/LocationIconBlue";
 import ExpandDownLight from "@/components/Icons/ExpandDownLight";
-
+import { ShowTime } from "@/components/Widgets/Showtime";
 
 const AllWidget = () => {
   // State for radio buttons

@@ -105,7 +105,7 @@ export const ShowTime: React.FC<ShowtimeByHall> = ({
 
     return (
         <div className={`flex flex-col gap-8 ${className ?? ""}`}>
-            {(locationLabel || (badges && badges.length > 0)) && (
+            {(locationLabel && locationLabel !== undefined) && (
                 <div className="w-full">
                     <div className="flex items-center justify-between py-2">
                         <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-3 text-white/90">

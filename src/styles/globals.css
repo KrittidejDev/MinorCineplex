@@ -42,8 +42,9 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: "Roboto Condensed", sans-serif;
+  --font-mono: "Roboto Condensed", sans-serif;
+  --font-roboto-condensed: "Roboto Condensed", sans-serif;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -89,7 +90,7 @@
 body {
   background: #101525;
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Roboto Condensed", sans-serif;
 }
 
 .dark {
@@ -129,6 +130,7 @@ body {
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    font-family: "Roboto Condensed", sans-serif;
   }
   body {
     @apply bg-background text-foreground;
@@ -139,81 +141,99 @@ body {
 
 /* Base Button Styles */
 .btn-base {
-  width: 123px;
-  height: 48px;
   font-family: var(--font-roboto-condensed);
   font-weight: bold;
   font-size: 16px;
   line-height: 24px;
   border-radius: 4px;
-  padding: 12px 40px;
+  padding: 25px 40px;
   transition: all 0.3s ease;
   cursor: pointer;
   border: none;
 }
 
+/* จอเล็ก (มือถือ) */
+@media (max-width: 640px) {
+  .btn-base {
+    font-size: 14px;
+    line-height: 20px;
+    padding: 16px 24px;
+  }
+}
+
+/* จอกลาง (tablet) */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .btn-base {
+    font-size: 15px;
+    line-height: 22px;
+    padding: 20px 32px;
+  }
+}
+
+/* จอใหญ่ (desktop) ใช้ค่าเดิม */
+
 /* Blue Button States - hsla(223,82%,62%,1) */
 .blue-normal {
-  background-color: hsla(223, 82%, 62%, 1);
-  color: white;
+  background-color: #4E7BEE;
+  color: #FFFFFF;
 }
 
 .blue-normal:hover {
-  background-color: hsla(223, 82%, 52%, 1);
+  background-color: #1E29A8;
 }
 
 .blue-normal:active {
-  background-color: #0e1c80;
+  background-color: #0C1580;
 }
 
 .blue-disabled {
-  background-color: hsla(223, 82%, 62%, 1);
-  color: white;
+  background-color: #4E7BEE;
+  color: #FFFFFF;
   opacity: 0.5;
   cursor: not-allowed;
 }
 
-/* Blue Secondary States - hsla(223,82%,52%,1) */
+/* Blue Secondary States - #1E29A8 */
 .blue-secondary-normal {
-  background-color: hsla(223, 82%, 52%, 1);
-  color: white;
+  background-color: #1E29A8;
+  color: #FFFFFF;
 }
 
 .blue-secondary-normal:hover {
-  background-color: hsla(235, 70%, 39%, 1);
+  background-color: #4E7BEE;
 }
 
 .blue-secondary-normal:active {
-  background-color: hsla(223, 82%, 52%, 1);
+  background-color: #0C1580;
 }
 
-/* Blue Dark States - #0e1c80 */
+/* Blue Dark States - #0C1580*/
 .blue-dark-normal {
-  background-color: #0e1c80;
-  color: white;
+  background-color: #0C1580;
+  color: #FFFFFF;
 }
 
 .blue-dark-normal:hover {
-  background-color: hsla(235, 70%, 39%, 1);
+  background-color: #0C1580;
 }
 
 .blue-dark-normal:active {
-  background-color: hsla(223, 82%, 52%, 1);
+  background-color: #1E29A8;
 }
 
 /* White Outline States */
 .white-outline-normal {
   background-color: transparent;
-  border: 1px solid white;
-  color: white;
+  border: 1px solid #FFFFFF;
+  color: #FFFFFF;
 }
 
 .white-outline-normal:hover {
-  background-color: hsla(227, 19%, 62%, 1);
+  background-color: #8B93B0;
 }
 
 .white-outline-normal:active {
-  background-color: #64748b;
+  background-color: #565F7E;
   border: none;
 }
 
@@ -232,30 +252,30 @@ body {
 
 /* Gray Button States - hsla(227,19%,62%,1) */
 .gray-normal {
-  background-color: hsla(227, 19%, 62%, 1);
+  background-color: #8B93B0;
   color: white;
 }
 
 .gray-normal:hover {
-  background-color: hsla(235, 70%, 39%, 1);
+  background-color: #0C1580;
 }
 
 .gray-normal:active {
-  background-color: hsla(223, 82%, 52%, 1);
+  background-color: #1E29A8;
 }
 
 /* Slate Button States */
 .slate-normal {
-  background-color: #64748b;
+  background-color: #8B93B0;
   color: white;
 }
 
 .slate-normal:hover {
-  background-color: hsla(235, 70%, 39%, 1);
+  background-color: #0C1580;
 }
 
 .slate-normal:active {
-  background-color: hsla(223, 82%, 52%, 1);
+  background-color: #1E29A8;
 }
 
 /* Transparent Link States */
@@ -330,4 +350,11 @@ body {
 
 .stp-done {
   @apply flex justify-center items-center w-11 h-11 rounded-full bg-[#1E29A8] text-white;
+}
+
+.clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* จำนวนบรรทัดที่จะแสดง */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }

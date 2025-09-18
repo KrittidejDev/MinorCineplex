@@ -50,8 +50,8 @@ const LogoMFooter: React.FC<LogoMFooterProps> = ({
           y2="55.4845"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#343897" />
-          <stop offset="1" stop-color="#4E7BEE" />
+          <stop stopColor="#343897" />
+          <stop offset="1" stopColor="#4E7BEE" />
         </linearGradient>
       </defs>
     </svg>

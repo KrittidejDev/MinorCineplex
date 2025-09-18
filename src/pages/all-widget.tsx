@@ -1,35 +1,68 @@
 import { Button } from "@/components/ui/button";
 import DoneRight from "@/components/Icons/DoneRound";
 import { ErrorAlert, SuccessAlert } from "@/components/ui/alert";
-import {DefaultCheckbox, DisabledCheckbox } from "@/components/ui/checkbox"
+import { DefaultCheckbox, DisabledCheckbox } from "@/components/ui/checkbox";
 import { Modal } from "@/components/ui/Modal";
+import { BookingCard } from "@/components/Cards/bookkingCard";
+import { IconsGrid } from "@/components/Icons/Icons";
+import { DesignTokens } from "@/components/DesignSystem/DesignTokens";
+
+import Tag from "@/components/Widgets/Tag";
+import Radio from "@/components/Widgets/Radio";
+
+
+import React, { useState } from "react";
+
 import React from "react";
+import InputTextFeild from "@/components/Inputs/InputTextFeild";
+import InputTextArea from "@/components/Inputs/InputTextArea";
+import ShowtimeSelection from "@/components/Widgets/ShowtimeSelection";
+
 
 const AllWidget = () => {
+  // State for radio buttons
+  const [selectedRadio, setSelectedRadio] = useState("option2");
+
   return (
     <div className="flex flex-col items-center">
       <div className="flex flex-col items-center">
         <div className="flex flex-row gap-50 justify-center items-center py-10">
           {/* Column 1: Blue Buttons */}
           <div className="flex flex-col gap-10">
-            <Button className="btn-base blue-normal">btn-base blue-normal</Button>
+            <Button className="btn-base blue-normal">
+              btn-base blue-normal
+            </Button>
 
-            <Button className="btn-base blue-secondary-normal">btn-base blue-secondary-normal</Button>
+            <Button className="btn-base blue-secondary-normal">
+              btn-base blue-secondary-normal
+            </Button>
 
-            <Button className="btn-base blue-dark-normal">btn-base blue-dark-normal</Button>
+            <Button className="btn-base blue-dark-normal">
+              btn-base blue-dark-normal
+            </Button>
 
-            <Button className="btn-base blue-disabled">btn-base blue-disabled</Button>
+            <Button className="btn-base blue-disabled">
+              btn-base blue-disabled
+            </Button>
           </div>
 
           {/* Column 2: Outline & Gray Buttons */}
           <div className="flex flex-col gap-10">
-            <Button className="btn-base white-outline-normal">btn-base white-outline-normal</Button>
+            <Button className="btn-base white-outline-normal">
+              btn-base white-outline-normal
+            </Button>
 
-            <Button className="btn-base gray-normal">btn-base gray-normal</Button>
+            <Button className="btn-base gray-normal">
+              btn-base gray-normal
+            </Button>
 
-            <Button className="btn-base slate-normal">btn-base slate-normal</Button>
+            <Button className="btn-base slate-normal">
+              btn-base slate-normal
+            </Button>
 
-            <Button className="btn-base white-outline-disabled">btn-base white-outline-disabled</Button>
+            <Button className="btn-base white-outline-disabled">
+              btn-base white-outline-disabled
+            </Button>
           </div>
 
           {/* Column 3: Transparent Link Buttons */}
@@ -76,14 +109,162 @@ const AllWidget = () => {
 
       {/* checkbox */}
       <div className="flex flex-col gap-2 mt-20">
-      <DefaultCheckbox label="Option 1" />
-      <DefaultCheckbox label="Option 1" defaultChecked />
-      <DefaultCheckbox label="Option 1" />
-      <DisabledCheckbox/>
-    </div>
+        <DefaultCheckbox label="Option 1" />
+        <DefaultCheckbox label="Option 1" defaultChecked />
+        <DefaultCheckbox label="Option 1" />
+        <DisabledCheckbox />
+      </div>
 
-    </div>
-  )
-}
+      {/* Booking Card */}
+      <div className="mt-20 w-full">
+        <BookingCard
+          movieTitle="The Dark Knight"
+          moviePoster="https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcQkUywIUXDjHSQJIaNHYVs08osgBpF5Ot-xmB_omyEZeeRP9Xug"
+          location="Minor Cineplex Arkham"
+          date="24 Jun 2024"
+          time="16:30"
+          hall="Hall 1"
+          bookingNumber="AK11223"
+          bookedDate="24 Jun 2024"
+          selectedSeats="C9, C10"
+          ticketCount={2}
+          paymentMethod="Credit card"
+          isPaid={true}
+        />
+      </div>
 
-export default AllWidget
+      {/* Icons Grid */}
+      <div className="mt-20 w-full max-w-7xl px-4">
+        <IconsGrid size="40" color="#3B82F6" columns={5} />
+      </div>
+
+      {/* Design Tokens */}
+      <div className="mt-20 w-full max-w-7xl px-4">
+        <DesignTokens columns={5} />
+      </div>
+
+      {/* Tag Components */}
+      <div className="mt-20 w-full max-w-4xl px-4">
+        <h2 className="text-2xl font-bold mb-6 text-center">Tag Components</h2>
+        <div className="flex flex-col items-center gap-8">
+          {/* Genre Tags */}
+          <div className="flex flex-col gap-4">
+            <h3 className="text-lg font-semibold text-center">Genre Tags</h3>
+            <div className="flex flex-wrap gap-3 justify-center">
+              <Tag name="Action" variant="genre" />
+              <Tag name="Comedy" variant="genre" />
+              <Tag name="Drama" variant="genre" />
+              <Tag name="Horror" variant="genre" />
+              <Tag name="Romance" variant="genre" />
+              <Tag name="Sci-Fi" variant="genre" />
+            </div>
+          </div>
+
+          {/* Language Tags */}
+          <div className="flex flex-col gap-4">
+            <h3 className="text-lg font-semibold text-center">Language Tags</h3>
+            <div className="flex flex-wrap gap-3 justify-center">
+              <Tag name="TH" variant="language" />
+              <Tag name="EN" variant="language" />
+              <Tag name="KR" variant="language" />
+              <Tag name="JP" variant="language" />
+              <Tag name="CH" variant="language" />
+            </div>
+          </div>
+
+          {/* Auto-sizing Tags */}
+          <div className="flex flex-col gap-4">
+            <h3 className="text-lg font-semibold text-center">
+              Auto-sizing Tags
+            </h3>
+            <div className="flex flex-wrap gap-3 justify-center">
+              <Tag name="A" variant="genre" />
+              <Tag name="Short" variant="language" />
+              <Tag name="Medium Length" variant="genre" />
+              <Tag name="Very Long Tag Name" variant="language" />
+              <Tag
+                name="Extremely Long Tag Name That Should Auto Resize"
+                variant="genre"
+              />
+            </div>
+          </div>
+
+          {/* Font Size Examples */}
+          <div className="flex flex-col gap-4">
+            <h3 className="text-lg font-semibold text-center">
+              Font Size Examples
+            </h3>
+            <div className="flex flex-wrap gap-3 justify-center items-center">
+              <Tag name="fr-12" variant="genre" fontSize="fr-12" />
+              <Tag name="fm-12" variant="language" fontSize="fm-12" />
+              <Tag name="fr-14" variant="genre" fontSize="fr-14" />
+              <Tag name="fm-14" variant="language" fontSize="fm-14" />
+              <Tag name="fr-16" variant="genre" fontSize="fr-16" />
+              <Tag name="fm-16" variant="language" fontSize="fm-16" />
+            </div>
+          </div>
+        </div>
+
+        {/* Radio Button Components */}
+        <div className="w-full max-w-sm mx-auto p-8">
+          <h2 className="text-2xl font-bold text-center mb-8 text-white">Radio Button Components</h2>
+          
+          {/* Radio Button States Demo */}
+          <div className="bg-gray-gc1b border border-gray-g63f p-8 rounded-lg">
+            <h3 className="text-lg font-semibold text-center mb-6 text-white">Radio Button States</h3>
+            
+            {/* Radio States - Column Layout */}
+            <div className="flex justify-center" data-test="radio-container">
+            <div className="flex flex-col items-start space-y-4">
+              <Radio 
+                name="demo" 
+                value="default" 
+                label="Default" 
+                checked={selectedRadio === "default"}
+                onChange={setSelectedRadio}
+              />
+              <Radio 
+                name="demo" 
+                value="selected" 
+                label="Selected" 
+                checked={selectedRadio === "selected"}
+                onChange={setSelectedRadio}
+              />
+              <Radio 
+                name="disabled" 
+                value="disabled1" 
+                label="Disabled Option" 
+                disabled
+              />
+            </div>
+            </div>
+      
+            
+          </div>
+        </div>
+      </div>
+
+      {/* Input */}
+      <div className="flex justify- ">
+        <form className="w-[900px] px-5 flex py-10 mt-10">
+          <InputTextFeild
+            label="Label"
+            placeholder="Placeholder Text"
+            text="Help text goes here"
+          />
+          <InputTextArea placeholder="Placeholder Text" label="Label" />
+        </form>
+      </div>
+
+       {/* Showtime Selection Preview */}
+       <div className="mt-20 w-full max-w-4xl px-4">
+        <h2 className="text-2xl font-bold mb-6 text-center">Showtime Selection</h2>
+        <div className="flex justify-center">
+          <ShowtimeSelection />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default AllWidget;

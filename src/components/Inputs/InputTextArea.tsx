@@ -1,6 +1,6 @@
 import React, { ChangeEvent } from "react";
 import { Textarea } from "../ui/textarea";
-import cx from "classnames";
+import { clsx } from "clsx";
 
 type InputTextAreaProps = {
   placeholder?: string;
@@ -41,7 +41,7 @@ const InputTextArea = ({
         onChange={onChange}
         disabled={disabled}
         style={{ height }}
-        className={cx(
+        className={clsx(
           `bg-gray-g63f border-gray-gf7e max-w-[343px] h-34 rounded-sm px-3 py-2  `,
           errors
             ? "border-red-r64b text-red-r64b placeholder-white"

@@ -1,4 +1,5 @@
 import SignUpForm from "@/components/Forms/SignUpForm";
+// import RegisterSuccess from "@/components/Widgets/RegisterSuccess";
 import React from "react";
 
 
@@ -11,6 +12,9 @@ const signup = () => {
       <div className="w-[380px]">
         <SignUpForm/>
       </div>
+      {/* <div className="w-[380px]">
+        <RegisterSuccess/>
+      </div> */}
     </div>
   );
 };

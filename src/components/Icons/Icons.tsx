@@ -15,6 +15,7 @@ import ExpandLeftLight from "./ExpandLeftLight";
 import ExpandRightLight from "./ExpandRightLight";
 import ExpandUpLight from "./ExpandUpLight";
 import Hamburger from "./Hamburger";
+import IconCircle from "./IconCircle";
 import LocationIconBlue from "./LocationIconBlue";
 import LogoM from "./LogoM";
 import LogoMFooter from "./LogoMFooter";
@@ -61,6 +62,7 @@ export const allIcons: IconData[] = [
   { name: "ExpandRightLight", component: ExpandRightLight, label: "ExpandRightLight" },
   { name: "ExpandUpLight", component: ExpandUpLight, label: "ExpandUpLight" },
   { name: "Hamburger", component: Hamburger, label: "Hamburger" },
+  { name: "IconCircle", component: () => <IconCircle icon={PinFill} />, label: "IconCircle" },
   { name: "LocationIconBlue", component: LocationIconBlue, label: "LocationIconBlue" },
   { name: "LogoM", component: LogoM, label: "LogoM" },
   { name: "LogoMFooter", component: LogoMFooter, label: "LogoMFooter" },
@@ -133,3 +135,37 @@ export const IconsGrid: React.FC<IconsGridProps> = ({
 };
 
 export default IconsGrid;
+
+// Export all icons for easy importing
+export {
+  AddRoundLight,
+  ArrowDown,
+  CloseRoundLight,
+  CopyLight,
+  CouponLight,
+  DateRangeFill,
+  DateTodayLight,
+  DoneRound,
+  EditLight,
+  ExpandDownLight,
+  ExpandLeftLight,
+  ExpandRightLight,
+  ExpandUpLight,
+  Hamburger,
+  IconCircle,
+  LocationIconBlue,
+  LogoM,
+  LogoMFooter,
+  NotebookLight,
+  OutLight,
+  PinFill,
+  RefreshLight,
+  SearchLight,
+  Shop,
+  SignOutSquareLight,
+  StarFill,
+  StarLight,
+  TimeFill,
+  TimeLight,
+  UserDuotone,
+};

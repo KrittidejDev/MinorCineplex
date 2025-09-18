@@ -1,7 +1,7 @@
 import React, { useState, ChangeEvent } from "react";
 import { Input } from "../ui/input";
 import { Eye, EyeOff } from "lucide-react"; // 👈 ใช้ icon จาก lucide-react
-import cx from "classnames";
+import { clsx } from "clsx";
 
 type InputTextFieldProps = {
   placeholder?: string;
@@ -48,7 +48,7 @@ const InputPassword = ({
           value={value ?? ""}
           onChange={onChange}
           disabled={disabled}
-          className={cx(
+          className={clsx(
             `bg-gray-g63f border rounded-sm h-12 pl-4 pr-3 py-3 focus:border-gray-g3b0 `,
             errors
               ? "border-red-r64b text-red-r64b placeholder-white"

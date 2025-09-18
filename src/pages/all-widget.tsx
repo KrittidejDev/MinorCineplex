@@ -14,7 +14,8 @@ import React, { useState } from "react";
 import InputTextFeild from "@/components/Inputs/InputTextFeild";
 import InputTextArea from "@/components/Inputs/InputTextArea";
 import ShowtimeSelection from "@/components/Widgets/ShowtimeSelection";
-import DateSelection from "@/components/ui/dateselection";import LocationIconBlue from "@/components/Icons/LocationIconBlue";
+import DateSelection from "@/components/ui/dateselection";
+import LocationIconBlue from "@/components/Icons/LocationIconBlue";
 import ExpandDownLight from "@/components/Icons/ExpandDownLight";
 import ShowTime from "@/components/Widgets/ShowTime";
 import ShowtimeMovie from "@/components/Widgets/ShowtimeMovie";
@@ -270,9 +271,7 @@ const AllWidget = () => {
       </div>
       {/* Date Selection Preview */}
       <div className="mt-20 w-full max-w-4xl px-4">
-        <h2 className="text-2xl font-bold mb-6 text-center">
-          Date Selection
-        </h2>
+        <h2 className="text-2xl font-bold mb-6 text-center">Date Selection</h2>
         <div className="flex justify-center">
           <DateSelection day={"Today"} date={"25 Sep 1996"} />
           <DateSelection day={"Tomorrow"} date={"26 Sep 1996"} />

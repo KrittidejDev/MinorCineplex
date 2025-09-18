@@ -10,11 +10,11 @@ import { DesignTokens } from "@/components/DesignSystem/DesignTokens";
 import Tag from "@/components/Widgets/Tag";
 import Radio from "@/components/Widgets/Radio";
 
-
 import React, { useState } from "react";
 import InputTextFeild from "@/components/Inputs/InputTextFeild";
 import InputTextArea from "@/components/Inputs/InputTextArea";
 import ShowtimeSelection from "@/components/Widgets/ShowtimeSelection";
+
 import { 
   IconCircle, 
   LocationIconBlue, 
@@ -23,7 +23,13 @@ import {
   SearchLight, 
   StarFill 
 } from "@/components/Icons/Icons";
+
+import DateSelection from "@/components/ui/dateselection";
+import LocationIconBlue from "@/components/Icons/LocationIconBlue";
+import ExpandDownLight from "@/components/Icons/ExpandDownLight";
+
 import ShowTime from "@/components/Widgets/ShowTime";
+import ShowtimeMovie from "@/components/Widgets/ShowtimeMovie";
 
 const AllWidget = () => {
   // State for radio buttons
@@ -271,11 +277,15 @@ const AllWidget = () => {
 
         {/* Radio Button Components */}
         <div className="w-full max-w-sm mx-auto p-8">
-          <h2 className="text-2xl font-bold text-center mb-8 text-white">Radio Button Components</h2>
+          <h2 className="text-2xl font-bold text-center mb-8 text-white">
+            Radio Button Components
+          </h2>
 
           {/* Radio Button States Demo */}
           <div className="bg-gray-gc1b border border-gray-g63f p-8 rounded-lg">
-            <h3 className="text-lg font-semibold text-center mb-6 text-white">Radio Button States</h3>
+            <h3 className="text-lg font-semibold text-center mb-6 text-white">
+              Radio Button States
+            </h3>
 
             {/* Radio States - Column Layout */}
             <div className="flex justify-center" data-test="radio-container">
@@ -302,8 +312,6 @@ const AllWidget = () => {
                 />
               </div>
             </div>
-
-
           </div>
         </div>
       </div>
@@ -323,78 +331,19 @@ const AllWidget = () => {
 
       {/* Showtime Selection Preview */}
       <div className="mt-20 w-full max-w-4xl px-4">
-        <h2 className="text-2xl font-bold mb-6 text-center">Showtime Selection</h2>
+        <h2 className="text-2xl font-bold mb-6 text-center">
+          Showtime Selection
+        </h2>
         <div className="flex justify-center">
           <ShowtimeSelection />
         </div>
       </div>
-
-      {/* Showtime  Preview */}
+      {/* Date Selection Preview */}
       <div className="mt-20 w-full max-w-4xl px-4">
-        <h2 className="text-2xl font-bold mb-6 text-center">Showtime</h2>
-        <div className="w-full">
-          <div className="flex items-center justify-between py-2">
-            <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-3 text-white/90">
-              <div className="flex items-center gap-3">
-                <LocationIconBlue />
-                <span className="font-semibold">Minor Cineplex Arkham</span>
-              </div>
-              <div className="flex flex-wrap gap-2 md:ml-2">
-                <span className="px-3 py-1 rounded-full bg-gray-gc1b border border-gray-g63f text-white/80 text-sm">Hearing assistance</span>
-                <span className="px-3 py-1 rounded-full bg-gray-gc1b border border-gray-g63f text-white/80 text-sm">Wheelchair access</span>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <button
-                type="button"
-                aria-label="Toggle showtimes"
-                className={`w-8 h-8 rounded-full border border-gray-g63f text-white/80 grid place-items-center hover:brightness-110 ${showtimeCollapsed ? "rotate-180" : ""} transition-transform`}
-                aria-expanded={!showtimeCollapsed}
-                onClick={() => setShowtimeCollapsed((p) => !p)}
-              >
-                <ExpandDownLight width={16} height={16} />
-              </button>
-            </div>
-          </div>
-          <div className="h-px w-full bg-gray-g63f/60 mt-2" />
-          <div className="flex justify-center w-full mt-8">
-            <ShowTime
-              collapsed={showtimeCollapsed}
-              groups={[
-                {
-                  hallId: "h1",
-                  hallLabel: "Hall 1",
-                  times: [
-                    { id: "t11", label: "11:30", disabled: true },
-                    { id: "t12", label: "14:30" },
-                    { id: "t13", label: "16:30" },
-                    { id: "t14", label: "20:30" },
-                    { id: "t15", label: "23:30" },
-                  ],
-                },
-                {
-                  hallId: "h3",
-                  hallLabel: "Hall 3",
-                  times: [
-                    { id: "t31", label: "09:00", disabled: true },
-                    { id: "t32", label: "12:00", disabled: true },
-                    { id: "t33", label: "15:00" },
-                    { id: "t34", label: "18:00" },
-                    { id: "t35", label: "21:00" },
-                  ],
-                },
-                {
-                  hallId: "h6",
-                  hallLabel: "Hall 4",
-                  times: [
-                    { id: "t61", label: "13:30" },
-                    { id: "t62", label: "18:00" },
-                    { id: "t63", label: "21:00" },
-                  ],
-                },
-              ]}
-            />
-          </div>
+        <h2 className="text-2xl font-bold mb-6 text-center">Date Selection</h2>
+        <div className="flex justify-center">
+          <DateSelection day={"Today"} date={"25 Sep 1996"} />
+          <DateSelection day={"Tomorrow"} date={"26 Sep 1996"} />
         </div>
       </div>
     </div>

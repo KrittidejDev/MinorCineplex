@@ -42,42 +42,40 @@ const SignInForm = ({ onSubmit }: SignUpFormProps) => {
 
   return (
     <form
+      autoComplete="off"
       onSubmit={handleSubmit(onSubmit ?? (() => {}))}
       className="max-w-[380px] flex flex-col items-center gap-10"
     >
       <h2 className="text-f-36 text-center text-white">Login</h2>
       <div className="w-full flex flex-col gap-4">
-        <div>
-          <Controller
-            control={control}
-            render={({ field }) => (
-              <InputTextFeild
-                {...field}
-                label={"Email"}
-                placeholder="Email"
-                errors={errors.email?.message}
-              />
-            )}
-            name="email"
-            defaultValue=""
-          />
-        </div>
-        <div className="w-full">
-          <Controller
-            control={control}
-            render={({ field }) => (
-              <InputPassword
-                {...field}
-                type={"password"}
-                label={"Password"}
-                placeholder="Password"
-                errors={errors.password?.message}
-              />
-            )}
-            name="password"
-            defaultValue=""
-          />
-        </div>
+        <Controller
+          control={control}
+          render={({ field }) => (
+            <InputTextFeild
+              {...field}
+              label={"Email"}
+              placeholder="Email"
+              errors={errors.email?.message}
+            />
+          )}
+          name="email"
+          defaultValue=""
+        />
+
+        <Controller
+          control={control}
+          render={({ field }) => (
+            <InputPassword
+              {...field}
+              type={"password"}
+              label={"Password"}
+              placeholder="Password"
+              errors={errors.password?.message}
+            />
+          )}
+          name="password"
+          defaultValue=""
+        />
       </div>
 
       <div className="w-full flex justify-between">
@@ -95,7 +93,7 @@ const SignInForm = ({ onSubmit }: SignUpFormProps) => {
         </Button>
       </div>
       <div className="text-fr-16 text-gray-g3b0 flex gap-2 justify-center">
-        Don't you have any account?{" "}
+        {"Don't you have any account?"}
         <Link
           href="/auth/signup"
           className="text-white text-fm-16 underline cursor-pointer"

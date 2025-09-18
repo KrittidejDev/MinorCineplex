@@ -3,7 +3,7 @@ import DoneRound from "../Icons/DoneRound";
 import { cinemaData } from "@/lib/data/mockData";
 
 
-const Cinema = () => {
+const CinemaLocation = () => {
   return (
     <main className="flex w-screen justify-center">
       <section className="flex w-full max-w-[1440px] flex-col gap-10 justify-center py-10 sm:py-20 px-4 xl:px-30">
@@ -35,4 +35,4 @@ const Cinema = () => {
     </main>
   );
 };
-export default Cinema;
+export default CinemaLocation;

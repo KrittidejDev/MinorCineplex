@@ -54,7 +54,7 @@ const InputFileUpload = ({
           />
         ) : (
           <div
-            className={` flex items-center justify-center object-cover  border shadow-md overflow-hidden ${
+            className={` flex items-center justify-center object-cover border shadow-md overflow-hidden ${
               isArticle
                 ? "w-[480px] h-[260px] rounded-2xl"
                 : "size-[120px] rounded-full"

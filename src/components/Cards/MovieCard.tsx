@@ -1,5 +1,6 @@
 import StarFill from "../Icons/StarFill";
 import Tag from "../Widgets/Tag";
+import Link from "next/link";
 
 interface MovieCardProps {
   title: string;
@@ -20,6 +21,7 @@ function MovieCard({
 }: MovieCardProps) {
   return (
     <div className="w-[161px] h-fit md:w-[285px] md:h-[526px] flex flex-col cursor-pointer">
+      <Link href="/movies/1" passHref>
       <div className="h-[235px] md:h-[416px] bg-white-wfff rounded-sm">
         <img src="" alt={title} />
       </div>
@@ -40,6 +42,7 @@ function MovieCard({
           </div>
         </div>
       </div>
+      </Link>
     </div>
   );
 }

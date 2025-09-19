@@ -7,9 +7,11 @@ import * as yup from "yup";
 import Link from "next/link";
 
 type FormValues = {
-  name: string;
+  userName: string;
+  phoneNumber: string;
   email: string;
   password: string;
+  confirmPassword: string;
 };
 
 type SignUpFormProps = {
@@ -18,12 +20,17 @@ type SignUpFormProps = {
 
 const SignUpForm = ({ onSubmit }: SignUpFormProps) => {
   const schema = yup.object().shape({
-    name: yup.string().required("Name is required"),
+    userName: yup.string().required("Name is required"),
+    phoneNumber: yup.string().required("Phone Number is required"),
     email: yup
       .string()
       .required("Email is required")
       .matches(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, "Invalid email format"),
     password: yup
+      .string()
+      .required("Password is required")
+      .min(8, "Password must be at least 8 characters"),
+    confirmPassword: yup
       .string()
       .required("Password is required")
       .min(8, "Password must be at least 8 characters"),
@@ -38,8 +45,8 @@ const SignUpForm = ({ onSubmit }: SignUpFormProps) => {
     resolver: yupResolver(schema),
   });
 
-  const { name, email, password } = watch();
-  const isEmpty = !name || !email || !password;
+  const { userName, email, password } = watch();
+  const isEmpty = !userName || !email || !password;
 
   return (
     <form
@@ -53,12 +60,26 @@ const SignUpForm = ({ onSubmit }: SignUpFormProps) => {
           render={({ field }) => (
             <InputTextFeild
               {...field}
-              label={"Name"}
-              placeholder="Name"
-              errors={errors.name?.message}
+              label={"Username"}
+              placeholder="Username"
+              errors={errors.userName?.message}
             />
           )}
-          name="name"
+          name="userName"
+          defaultValue=""
+        />
+
+        <Controller
+          control={control}
+          render={({ field }) => (
+            <InputTextFeild
+              {...field}
+              label={"Phone Number"}
+              placeholder="Phone Number"
+              errors={errors.phoneNumber?.message}
+            />
+          )}
+          name="phoneNumber"
           defaultValue=""
         />
 
@@ -76,22 +97,35 @@ const SignUpForm = ({ onSubmit }: SignUpFormProps) => {
           defaultValue=""
         />
 
-        <div className="w-full">
-          <Controller
-            control={control}
-            render={({ field }) => (
-              <InputPassword
-                {...field}
-                type={"password"}
-                label={"Password"}
-                placeholder="Password"
-                errors={errors.password?.message}
-              />
-            )}
-            name="password"
-            defaultValue=""
-          />
-        </div>
+        <Controller
+          control={control}
+          render={({ field }) => (
+            <InputPassword
+              {...field}
+              type={"password"}
+              label={"Password"}
+              placeholder="Password"
+              errors={errors.password?.message}
+            />
+          )}
+          name="password"
+          defaultValue=""
+        />
+        
+        <Controller
+          control={control}
+          render={({ field }) => (
+            <InputPassword
+              {...field}
+              type={"password"}
+              label={"Confirm Password"}
+              placeholder="confirm Password"
+              errors={errors.confirmPassword?.message}
+            />
+          )}
+          name="confirmPassword"
+          defaultValue=""
+        />
       </div>
 
       <div className="w-full">

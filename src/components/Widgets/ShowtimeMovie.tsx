@@ -93,9 +93,9 @@ export const ShowtimeMovie: React.FC<ShowtimeMovieProps> = ({
         <div className={`flex flex-col lg:flex-row gap-4 lg:gap-6 xl:gap-8 ${className ?? ""}`}>
             {/* Movie Info Section */}
             <div className="flex-shrink-0 w-full lg:w-auto">
-                <div className="flex flex-row sm:flex-row lg:flex-col xl:flex-row gap-3 sm:gap-4 lg:gap-4 xl:gap-6">
+                <div className="flex flex-col gap-3 sm:gap-4 lg:gap-4 xl:gap-6">
                     {/* Movie Poster */}
-                    <div className="flex-shrink-0 w-20 sm:w-24 md:w-32 lg:w-40 xl:w-48">
+                    <div className="flex-shrink-0 w-20 sm:w-24 md:w-32 lg:w-40 xl:w-48 mx-auto lg:mx-0">
                         <div className="w-full aspect-[2/3] bg-gray-800 rounded-sm overflow-hidden">
                             <img
                                 src={movie.poster}
@@ -106,14 +106,14 @@ export const ShowtimeMovie: React.FC<ShowtimeMovieProps> = ({
                     </div>
 
                     {/* Movie Details */}
-                    <div className="flex-1 min-w-0">
+                    <div className="flex-1 min-w-0 text-center lg:text-left">
                         {/* Movie Title */}
                         <h2 className="text-white text-xl sm:text-2xl lg:text-3xl font-bold mb-4">
                             {movie.title}
                         </h2>
 
                         {/* Tags */}
-                        <div className="flex flex-wrap gap-2 sm:gap-3 mb-4">
+                        <div className="flex flex-wrap gap-2 sm:gap-3 mb-4 justify-center lg:justify-start">
                             {movie.genreTags.map((tag, index) => (
                                 <Tag key={index} name={tag} variant="genre" />
                             ))}

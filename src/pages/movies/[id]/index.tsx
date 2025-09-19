@@ -12,16 +12,17 @@ const MoviesDetail = () => {
       <NavAndFooter>
         <MoviesDetailWidget
           title={"The Dark Knight"}
+          image={"https://m.media-amazon.com/images/M/MV5BMTMxNTMwODM0NF5BMl5BanBnXkFtZTcwODAyMTk2Mw@@._V1_.jpg"}
           date={"18 Jun 2024"}
           detail={"Lorem, ipsum dolor sit amet consectetur adipisicing elit."}
         />
         <DateSelectionBarWidget />
-        <div className="w-[1200px] flex mx-auto mt-20">
+        <div className="max-w-[1200px] flex px-4 mx-auto mt-10 lg:mt-20">
           <InputSearch />
         </div>
-        <div className="mt-20">
+        <div className="mt-10 lg:mt-20">
           {/* <TimeSelectionWidget /> */}
-          <div className="flex flex-col items-center">
+          <div className="flex flex-col items-center px-4">
             <ShowTime />
             <ShowTime />
             <ShowTime />

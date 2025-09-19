@@ -4,6 +4,7 @@ import Link from "next/link";
 
 interface MovieCardProps {
   title: string;
+  image: string;
   date: string;
   rating: number;
   genreTag1: string;
@@ -13,6 +14,7 @@ interface MovieCardProps {
 
 function MovieCard({
   title,
+  image,
   date,
   rating,
   genreTag1,
@@ -23,7 +25,7 @@ function MovieCard({
     <div className="w-[161px] h-fit md:w-[285px] md:h-[526px] flex flex-col cursor-pointer">
       <Link href="/movies/1" passHref>
       <div className="h-[235px] md:h-[416px] bg-white-wfff rounded-sm">
-        <img src="" alt={title} />
+        <img src={image} alt={title} />
       </div>
       <div className="flex flex-col flex-1">
         <div className="flex justify-between mt-4">

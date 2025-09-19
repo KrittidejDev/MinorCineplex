@@ -14,10 +14,10 @@ function NowShowingComingSoon() {
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
-          <MovieCard title="Django Unchained" date="24 Jun 2024" rating={4.6} genreTag1="Comedy" genreTag2="Drama" langTag="EN" />
-          <MovieCard title="The Dark Knight" date="18 Jun 2024" rating={4.6} genreTag1="Action" genreTag2="Crime" langTag="TH" />
-          <MovieCard title="Interstellar" date="24 Jun 2024" rating={4.6} genreTag1="Sci-fi" genreTag2="Drama" langTag="TH/EN" />
-          <MovieCard title="Dune: Part Two" date="24 Jun 2024" rating={4.6} genreTag1="Action" genreTag2="Drama" langTag="TH/EN" />
+          <MovieCard title="Django Unchained" image="https://m.media-amazon.com/images/M/MV5BMjIyNTQ5NjQ1OV5BMl5BanBnXkFtZTcwODg1MDU4OA@@._V1_FMjpg_UX1000_.jpg" date="24 Jun 2024" rating={4.6} genreTag1="Comedy" genreTag2="Drama" langTag="EN" />
+          <MovieCard title="The Dark Knight" image="https://m.media-amazon.com/images/M/MV5BMTMxNTMwODM0NF5BMl5BanBnXkFtZTcwODAyMTk2Mw@@._V1_.jpg" date="18 Jun 2024" rating={4.6} genreTag1="Action" genreTag2="Crime" langTag="TH" />
+          <MovieCard title="Interstellar" image="https://m.media-amazon.com/images/M/MV5BYzdjMDAxZGItMjI2My00ODA1LTlkNzItOWFjMDU5ZDJlYWY3XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg" date="24 Jun 2024" rating={4.6} genreTag1="Sci-fi" genreTag2="Drama" langTag="TH/EN" />
+          <MovieCard title="Dune: Part Two" image="https://m.media-amazon.com/images/M/MV5BNTc0YmQxMjEtODI5MC00NjFiLTlkMWUtOGQ5NjFmYWUyZGJhXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg" date="24 Jun 2024" rating={4.6} genreTag1="Action" genreTag2="Drama" langTag="TH/EN" />
         </div>
       </div>
     </div>

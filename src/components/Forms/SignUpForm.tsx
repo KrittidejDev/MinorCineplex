@@ -7,7 +7,8 @@ import * as yup from "yup";
 import Link from "next/link";
 
 type FormValues = {
-  name: string;
+  username: string;
+  phoneNumber: string;
   email: string;
   password: string;
 };
@@ -18,7 +19,8 @@ type SignUpFormProps = {
 
 const SignUpForm = ({ onSubmit }: SignUpFormProps) => {
   const schema = yup.object().shape({
-    name: yup.string().required("Name is required"),
+    username: yup.string().required("Name is required"),
+    phoneNumber: yup.string().required("Phone Number is required"),
     email: yup
       .string()
       .required("Email is required")
@@ -38,8 +40,8 @@ const SignUpForm = ({ onSubmit }: SignUpFormProps) => {
     resolver: yupResolver(schema),
   });
 
-  const { name, email, password } = watch();
-  const isEmpty = !name || !email || !password;
+  const { username, email, password } = watch();
+  const isEmpty = !username || !email || !password;
 
   return (
     <form
@@ -53,12 +55,26 @@ const SignUpForm = ({ onSubmit }: SignUpFormProps) => {
           render={({ field }) => (
             <InputTextFeild
               {...field}
-              label={"Name"}
-              placeholder="Name"
-              errors={errors.name?.message}
+              label={"Username"}
+              placeholder="Username"
+              errors={errors.username?.message}
             />
           )}
-          name="name"
+          name="username"
+          defaultValue=""
+        />
+
+        <Controller
+          control={control}
+          render={({ field }) => (
+            <InputTextFeild
+              {...field}
+              label={"Phone Number"}
+              placeholder="Phone Number"
+              errors={errors.phoneNumber?.message}
+            />
+          )}
+          name="phoneNumber"
           defaultValue=""
         />
 

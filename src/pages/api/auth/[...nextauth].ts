@@ -1,40 +1,77 @@
-import NextAuth, { NextAuthOptions, User } from "next-auth";
+import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { compare } from "bcryptjs";
-import { PrismaClient } from "@/generated/prisma";
+import { prisma } from "@/lib/prisma";
+import bcrypt from "bcryptjs";
 
-const prisma = new PrismaClient();
+interface MyUser {
+  id: string;
+  role: string;
+  username?: string;
+  email?: string | null;
+}
 
 export default NextAuth({
+  session: {
+    strategy: "jwt",
+  },
+  secret: process.env.NEXTAUTH_SECRET,
   providers: [
     CredentialsProvider({
-      name: "credentials",
+      name: "Credentials",
       credentials: {
-        email: { label: "Email", type: "text" },
+        identifier: { label: "Email / Username / Phone", type: "text" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(
-        credentials: Record<"email" | "password", string> | undefined
-      ): Promise<User | null> {
-        if (!credentials?.email || !credentials?.password) return null;
+      async authorize(credentials) {
+        if (!credentials?.identifier || !credentials.password) return null;
 
-        const user = await prisma.user.findUnique({
-          where: { email: credentials.email },
+        const user = await prisma.user.findFirst({
+          where: {
+            OR: [
+              { email: credentials.identifier },
+              { username: credentials.identifier },
+              { phone: credentials.identifier },
+            ],
+          },
         });
+
         if (!user) return null;
 
-        const isValid = await compare(credentials.password, user.password);
+        const isValid = await bcrypt.compare(
+          credentials.password,
+          user.password
+        );
         if (!isValid) return null;
 
-        // return object ต้องไม่เป็น undefined
         return {
-          id: user.id.toString(), // NextAuth แนะนำให้ id เป็น string
-          name: user.name,
+          id: user.id,
           email: user.email,
-        };
+          username: user.username,
+          role: user.role,
+        } as MyUser;
       },
     }),
   ],
-  session: { strategy: "jwt" },
-  secret: process.env.NEXTAUTH_SECRET,
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        const u = user as MyUser;
+        token.id = u.id;
+        token.role = u.role;
+        token.username = u.username;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      session.user = session.user ?? {};
+      session.user.id = token.id as string;
+      session.user.role = token.role as string;
+      session.user.username = token.username as string;
+      session.user.email = session.user.email ?? null;
+      return session;
+    },
+  },
+  pages: {
+    signIn: "/auth/login",
+  },
 });

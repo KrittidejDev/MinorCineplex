@@ -30,7 +30,7 @@ const InputTextArea = ({
     <div className="flex flex-col flex-1 gap-1 relative">
       {label && (
         <div className="text-gray-gedd text-fr-16">
-          {label} {require && <span className="text-red">*</span>}
+          {label} {require && <span className="text-red-r64b">*</span>}
         </div>
       )}
       <Textarea
@@ -48,7 +48,7 @@ const InputTextArea = ({
             : "border-gray-gf7e text-white placeholder-gray-g3b0"
         )}
       />
-      {errors && <span className="text-fr-12 text-red-500 ">{errors}</span>}
+      {errors && <span className="text-fr-12 text-red-r64b ">{errors}</span>}
     </div>
   );
 };

@@ -34,7 +34,7 @@ const InputSearch = ({
 }: InputSearchProps) => {
   const [_value, _setValue] = useState(value);
 
-  const _handleChange = (e) => {
+  const _handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     _setValue(e.target.value);
   };
 
@@ -83,7 +83,9 @@ const InputSearch = ({
           className={`text-fr-12 ${errors ? "text-red-r64b" : "text-gray-g3b0"}`}
         >
           {!errors && <span className="text-fr-12 text-gray-g3b0">{text}</span>}
-          {errors && <span className="text-fr-12 text-red-r64b ">{errors}</span>}
+          {errors && (
+            <span className="text-fr-12 text-red-r64b ">{errors}</span>
+          )}
         </span>
       </div>
     </div>

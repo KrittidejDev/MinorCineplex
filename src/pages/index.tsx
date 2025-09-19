@@ -5,22 +5,14 @@ import NowShowingComingSoon from "@/components/Widgets/NowShowingComingSoonWidge
 import CinemaLocation from "@/components/Widgets/CinemaLocation";
 import Coupon from "@/components/Widgets/CouponCardWidget";
 export default function Home() {
-  const testToast = () => {
-    toast.success("Hello Techup");
-  };
-
-  useEffect(() => {
-    testToast();
-  }, []);
-
   return (
     <NavAndFooterWithBanner>
       <div className="flex-1 max-w-[1200px]">
         {/* section 1 */}
         <NowShowingComingSoon />
-        <Coupon/>
+        <Coupon />
         {/* section 3 */}
-        <CinemaLocation/>
+        <CinemaLocation />
       </div>
     </NavAndFooterWithBanner>
   );

@@ -53,7 +53,7 @@ const InputTextFeild = ({
         />
         <div className="h-4 mt-1">
           <span
-            className={`text-fr-12 ${errors ? "text-red-500" : "text-gray-g3b0"}`}
+            className={`text-fr-12 ${errors ? "text-red-r64b" : "text-gray-g3b0"}`}
           >
             {!errors && (
               <span className="text-fr-12 text-gray-g3b0">{text}</span>

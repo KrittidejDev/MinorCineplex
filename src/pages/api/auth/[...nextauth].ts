@@ -44,7 +44,7 @@ export default NextAuth({
         if (!isValid) return null;
 
         return {
-          id: user.id,
+          id: user.id.toString(),
           email: user.email,
           username: user.username,
           role: user.role,

@@ -216,7 +216,7 @@ const BookingCouponWidget = () => {
 
                         {/* Coupon Expired Alert Banner - Overlapping Next Button */}
                         {showCouponExpiredAlert && (
-                            <div className="absolute -bottom-17 -left-8 -right-8 bg-red-r64b/80 p-4 rounded z-10">
+                            <div className="absolute -bottom-15 -left-8 -right-8 bg-red-r64b/70 p-4 rounded z-10">
                                 <div className="relative">
                                     <div className="flex-1 pr-8">
                                         <h3 className="text-white font-bold text-lg mb-1">Coupon Expired</h3>
@@ -233,29 +233,29 @@ const BookingCouponWidget = () => {
                                 </div>
                             </div>
                         )}
+
+                        {/* Payment Fail Alert Banner - Overlapping Next Button */}
+                        {showPaymentFailAlert && (
+                            <div className="absolute -bottom-15 -left-8 -right-8 bg-red-r64b/70 p-4 rounded z-10">
+                                <div className="relative">
+                                    <div className="flex-1 pr-8">
+                                        <h3 className="text-white font-bold text-lg mb-1">Payment fail</h3>
+                                        <p className="text-white text-sm">
+                                            Please try again.
+                                        </p>
+                                    </div>
+                                    <button
+                                        onClick={() => setShowPaymentFailAlert(false)}
+                                        className="absolute top-0 right-0 text-white hover:text-gray-200"
+                                    >
+                                        <CloseRoundLight width="20" height="20" color="#FFFFFF" />
+                                    </button>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
-
-            {/* Payment Fail Alert Banner - Fixed at bottom */}
-            {showPaymentFailAlert && (
-                <div className="fixed bottom-0 left-0 right-0 bg-red-r64b p-4 z-50">
-                    <div className="flex items-center justify-between">
-                        <div className="flex-1 pr-8">
-                            <h3 className="text-white font-bold text-lg mb-1">Payment fail</h3>
-                            <p className="text-white text-sm">
-                                Please try again.
-                            </p>
-                        </div>
-                        <button
-                            onClick={() => setShowPaymentFailAlert(false)}
-                            className="text-white hover:text-gray-200"
-                        >
-                            <CloseRoundLight width="20" height="20" color="#FFFFFF" />
-                        </button>
-                    </div>
-                </div>
-            )}
         </div>
     );
 };

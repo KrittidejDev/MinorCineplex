@@ -3,7 +3,9 @@ import { BASE_PATH_API } from "./apiConfig";
 
 const apiPath = BASE_PATH_API;
 
-// 1️⃣ สร้าง type สำหรับ Auth
+// ----------- Types ----------------
+
+// Auth
 export interface LoginParams {
   email: string;
   password: string;
@@ -23,41 +25,47 @@ export interface ResetPasswordParams {
   newPassword: string;
 }
 
-// 2️⃣ Category
+// Category
 export interface CategoryParams {
   name: string;
   description?: string;
 }
 
-// 3️⃣ Article
+// Article
 export interface ArticleParams {
   title: string;
   content: string;
   categoryId: string;
 }
 
-// 4️⃣ File Upload
+// File
 export interface FileUploadParams {
   file: File | Blob;
 }
 
+// ----------- User Service ----------------
 export const userService = {
   // Auth
   POST_LOGIN: (params: LoginParams) =>
-    apiService.post(`${apiPath}/auth/login`, params),
-  POST_LOGOUT: () => apiService.post(`${apiPath}/login/logout`),
+    apiService.post<{ token: string }, LoginParams>(
+      `${apiPath}/auth/login`,
+      params
+    ),
+  POST_LOGOUT: () => apiService.post<void>(`${apiPath}/auth/logout`),
   POST_SIGNUP: (params: SignupParams) =>
-    apiService.post(`${apiPath}/auth/register`, params),
+    apiService.post<{ id: string }, SignupParams>(
+      `${apiPath}/auth/register`,
+      params
+    ),
   GET_MY_PROFILE: () => apiService.get(`${apiPath}/auth/me`),
   PUT_UPDATE_PROFILE: (id: string, params: UpdateProfileParams) =>
     apiService.put(`${apiPath}/users/${id}`, params),
   RESET_PASSWORD: (id: string, params: ResetPasswordParams) =>
     apiService.patch(`${apiPath}/users/${id}/password`, params),
-  GET_ADMIN_PUBLIC: () => apiService.get(`${apiPath}/users/public`),
 
   // Category
-  GET_CATEGORY: (queryString?: string) =>
-    apiService.get(`${apiPath}/categories${queryString ?? ""}`),
+  GET_CATEGORY: (query?: string) =>
+    apiService.get(`${apiPath}/categories${query ?? ""}`),
   GET_CATEGORY_BY_ID: (id: string) =>
     apiService.get(`${apiPath}/categories/${id}`),
   POST_CREATE_CATEGORY: (params: CategoryParams) =>
@@ -68,8 +76,8 @@ export const userService = {
     apiService.delete(`${apiPath}/categories/${id}`),
 
   // Article
-  GET_ARTICLE: (queryString?: string) =>
-    apiService.get(`${apiPath}/blogs${queryString ?? ""}`),
+  GET_ARTICLE: (query?: string) =>
+    apiService.get(`${apiPath}/blogs${query ?? ""}`),
   GET_ARTICLE_BY_ID: (id: string) => apiService.get(`${apiPath}/blogs/${id}`),
   POST_CREATE_ARTICLE: (params: ArticleParams) =>
     apiService.post(`${apiPath}/blogs`, params),
@@ -81,8 +89,11 @@ export const userService = {
   GET_NOTIFICATION: () => apiService.get(`${apiPath}/notification`),
 
   // File
-  POST_FILE_UPLOAD: (params: FileUploadParams) =>
-    apiService.post_formdata(`${apiPath}/files/upload`, params),
+  POST_FILE_UPLOAD: (params: FileUploadParams) => {
+    const formData = new FormData();
+    formData.append("file", params.file);
+    return apiService.post_formdata(`${apiPath}/files/upload`, formData);
+  },
   DELETE_FILE: (fileId: string) =>
     apiService.delete(`${apiPath}/files/delete/${fileId}`),
 };

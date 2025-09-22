@@ -1,42 +1,53 @@
-import React from "react";
-import Link from "next/link";
-import { useRouter } from "next/router";
+import React from 'react'
+import Link from 'next/link'
+import { useRouter } from 'next/router'
+import UserDuotone from '../Icons/UserDuotone'
+import NotebookLight from '../Icons/NotebookLight'
+import CouponLight from '../Icons/CouponLight'
+import RefreshLight from '../Icons/RefreshLight'
 
 const ProfileBar = () => {
-  const router = useRouter();
-  const pathname = router.pathname; // path ปัจจุบัน เช่น "/profiles/profile"
+  const router = useRouter()
+  const pathname = router.pathname
 
   const navigationItems = [
-    { label: "Booking history", href: "/profiles/bookingHistory" },
-    { label: "My coupons", href: "/profiles/myCoupon" },
-    { label: "Profile", href: "/profiles/profile" },
-    { label: "Reset password", href: "/profiles/resetPassword" },
-    { label: "Log out", href: "/" },
-  ];
+    {
+      icon: <NotebookLight />,
+      label: 'Booking history',
+      href: '/profiles/bookingHistory',
+    },
+    { icon: <CouponLight />, label: 'My coupons', href: '/profiles/myCoupon' },
+    { icon: <UserDuotone />, label: 'Profile', href: '/profiles/profile' },
+    {
+      icon: <RefreshLight />,
+      label: 'Reset password',
+      href: '/profiles/resetPassword',
+    },
+  ]
 
   return (
-    <div className="w-64 h-screen bg-gray-100 p-4 border-r border-gray-300">
-      <nav className="space-y-2">
+    <div className="flex   bg-[#070C1B] p-3 rounded-[8px]">
+      <nav className="flex flex-col space-y-2 ">
         {navigationItems.map((item) => {
-          const isActive = pathname === item.href;
-
+          const isActive = pathname === item.href
           return (
             <Link
               key={item.label}
               href={item.href}
-              className={`block w-full px-4 py-2 rounded-lg transition-colors cursor-pointer ${
+              className={`flex flex-row justify-start items-start w-full px-16 py-4 rounded-[6px] transition-colors cursor-pointer gap-2 ${
                 isActive
-                  ? "bg-blue-500 text-white"
-                  : "text-gray-700 hover:bg-blue-100 hover:text-gray-900"
+                  ? 'bg-slate-700 text-white'
+                  : 'text-slate-300 hover:bg-[#21263F] hover:text-white'
               }`}
             >
-              {item.label}
+              {item.icon}
+              <span>{item.label}</span>
             </Link>
-          );
+          )
         })}
       </nav>
     </div>
-  );
-};
+  )
+}
 
-export default ProfileBar;
+export default ProfileBar

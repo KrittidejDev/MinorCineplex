@@ -5,7 +5,7 @@ const index = () => {
   return (
     <div className="bg-blue-b flex flex-col min-h-[100dvh]">
       <NavBarWidget/>
-      <div>
+      <div className='flex flex-row items-center justify-center pt-10'>
         <div><ProfileBar/></div>
         <div></div>
       </div>

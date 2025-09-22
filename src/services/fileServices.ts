@@ -1,19 +1,23 @@
-import cloudinary from "@/lib/cloudinary";
+import {
+  v2 as cloudinary,
+  UploadApiResponse,
+  UploadApiErrorResponse,
+} from "cloudinary";
 
-export interface UploadResult {
-  public_id: string;
-  url: string;
-  [key: string]: any;
-}
+export type UploadResult = UploadApiResponse;
 
 export const uploadFile = (buffer: Buffer): Promise<UploadResult> => {
   return new Promise((resolve, reject) => {
     const stream = cloudinary.uploader.upload_stream(
       { resource_type: "auto" },
-      (error, result) => {
-        if (error || !result)
+      (
+        error: UploadApiErrorResponse | undefined,
+        result: UploadApiResponse | undefined
+      ) => {
+        if (error || !result) {
           return reject(error || new Error("Upload failed"));
-        resolve(result as UploadResult);
+        }
+        resolve(result);
       }
     );
     stream.end(buffer);
@@ -21,6 +25,5 @@ export const uploadFile = (buffer: Buffer): Promise<UploadResult> => {
 };
 
 export const deleteFile = async (public_id: string) => {
-  const result = await cloudinary.uploader.destroy(public_id);
-  return result;
+  return cloudinary.uploader.destroy(public_id);
 };

@@ -47,7 +47,7 @@ const ProfileBar = () => {
                 flex-shrink-0
                 ${
                   isActive
-                    ? 'bg-slate-700 text-white'
+                    ? 'bg-[#21263F] text-white'
                     : 'text-slate-300 hover:bg-[#21263F] hover:text-white'
                 }`}
             >

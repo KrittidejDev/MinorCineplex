@@ -1,6 +1,7 @@
 import React from 'react'
 import { Button } from '../ui/button'
 import { useRouter } from 'next/router'
+import Image from 'next/image'
 interface CouponCardProps {
   title: string
 }
@@ -17,7 +18,16 @@ const CouponCard = ({ title }: CouponCardProps) => {
         className="h-[285px] bg-[#FFFFFF] rounded-t-[8px] cursor-pointer "
         onClick={() => handleClickcoupon(1)}
       >
-        <img src="" alt={title} />
+        <div className="relative w-20 h-20">
+          {' '}
+          {/* container ขนาดตามต้องการ */}
+          <Image
+            src="/images/coupon.png"
+            alt={title}
+            fill
+            className="object-contain" // หรือ object-cover ขึ้นอยู่กับสไตล์
+          />
+        </div>
       </div>
       <div className="flex flex-col flex-1 items-center gap-y-9 p-4">
         <div className="flex flex-col mt-3 gap-3 items-start">

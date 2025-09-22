@@ -26,16 +26,25 @@ const ProfileBar = () => {
   ]
 
   return (
-    <div className="flex flex-col bg-[#070C1B] p-2 md:p-4 rounded-[8px] w-full md:w-auto ">
-      <nav className="flex flex-row md:flex-col w-full md:w-auto gap-1 md:gap-2">
+    <div className="flex flex-col bg-[#070C1B] p-2 md:p-4 rounded-[8px] w-full md:w-auto">
+      <nav
+        className="
+          flex flex-row md:flex-col 
+          overflow-x-auto md:overflow-visible 
+          whitespace-nowrap md:whitespace-normal
+          w-full md:w-auto gap-2
+          scrollbar-hide
+        "
+      >
         {navigationItems.map((item) => {
           const isActive = pathname === item.href
           return (
             <Link
               key={item.label}
               href={item.href}
-              className={`flex items-center md:justify-start justify-center 
-                px-3 md:px-6 py-2 md:py-3 rounded-[6px] transition-colors cursor-pointer gap-2 
+              className={`flex items-center justify-center md:justify-start
+                px-4 md:px-6 py-2 md:py-3 rounded-[6px] transition-colors cursor-pointer gap-2
+                flex-shrink-0
                 ${
                   isActive
                     ? 'bg-slate-700 text-white'
@@ -43,8 +52,7 @@ const ProfileBar = () => {
                 }`}
             >
               {item.icon}
-              {/* label ซ่อนบนจอเล็ก */}
-              <span className="hidden md:inline">{item.label}</span>
+              <span className="text-sm md:text-base">{item.label}</span>
             </Link>
           )
         })}

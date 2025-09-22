@@ -1,6 +1,6 @@
 import React, { useState, useRef, ChangeEvent } from 'react'
-import { User, Camera } from 'lucide-react'
 import UserDuotone from '../Icons/UserDuotone'
+import Image from 'next/image'
 
 const ImageUploadButton: React.FC = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
@@ -37,11 +37,14 @@ const ImageUploadButton: React.FC = () => {
           />
 
           {selectedImage ? (
-            <img
-              src={selectedImage}
-              alt="Profile"
-              className="w-full h-full object-cover"
-            />
+            <div className="relative w-full h-full">
+              <Image
+                src={selectedImage}
+                alt="Profile"
+                fill
+                className="object-cover rounded" // ใส่ rounded ถ้าต้องการ
+              />
+            </div>
           ) : (
             <div className="w-full h-full flex items-center justify-center bg-[#565F7E]">
               <UserDuotone width={50} height={50} color="#8B93B0" />

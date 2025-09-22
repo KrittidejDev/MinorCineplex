@@ -5,7 +5,6 @@ import ArrowDown from '../Icons/ArrowDown'
 // import ResetPasswordIcon from "../Icons/ResetPasswordIcon";
 // import SignOutIcon from "../Icons/SignOutIcon";
 // import AdminBook from "../Icons/AdminBook";
-import Coupons from '../../pages/coupons/index'
 import Link from 'next/link'
 
 interface AvatarDisplayProps {

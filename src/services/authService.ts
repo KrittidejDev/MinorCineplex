@@ -2,7 +2,14 @@ import bcrypt from "bcrypt";
 import { signupSchema } from "../lib/validate/authRegister";
 import * as userRepo from "../repositories/authRepository";
 
-export const registerUser = async (body: any) => {
+interface RegisterUserInput {
+  username: string;
+  email: string;
+  phone: string;
+  password: string;
+}
+
+export const registerUser = async (body: RegisterUserInput) => {
   await signupSchema.validate(body, { abortEarly: false });
 
   const { username, phone, email, password } = body;

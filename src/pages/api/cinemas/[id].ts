@@ -7,13 +7,13 @@ export default async function handler(
 ) {
     const {id} = req.query
   try {
-    const cinema = await getCinemaById(id);
+    const cinema = await getCinemaById(Number(id));
     res.status(200).json({ cinema });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error(error);
-    if (error.status) {
-      return res.status(error.status).json({ error: error.message });
+    if (error instanceof Error) {
+      return res.status(500).json({ error: error.message });
     }
-    res.status(500).json({ error: "Server Error" });
   }
+  return res.status(500).json({ error: "Server Error" });
 }

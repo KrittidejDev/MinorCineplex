@@ -5,8 +5,7 @@ export const getCoupons = async () => {
   return coupons;
 };
 
-export const getCouponById = async (id) => {
+export const getCouponById = async (id: number) => {
   const coupons = await couponRepo.getById(id);
   return coupons;
 };
-

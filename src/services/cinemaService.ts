@@ -5,7 +5,7 @@ export const getCinemas = async () => {
   return cinema;
 };
 
-export const getCinemaById = async (id) => {
+export const getCinemaById = async (id: number) => {
   const cinema = await cinemaRepo.getByID(id);
   return cinema;
 };

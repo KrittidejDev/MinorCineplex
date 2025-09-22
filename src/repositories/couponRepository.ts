@@ -6,8 +6,6 @@ export const getMany = () => {
   return prisma.coupon.findMany();
 };
 
-
-export const getById = (id) => {
-  return prisma.coupon.findUnique({where: {id: Number(id)}});
+export const getById = (id: number) => {
+  return prisma.coupon.findUnique({ where: { id } });
 };
-

@@ -5,7 +5,7 @@ export const getMovies = async () => {
   return movies;
 };
 
-export const getMovieById = async (id) => {
+export const getMovieById = async (id: number) => {
   const movies = await movieRepo.getById(id);
   return movies;
 };

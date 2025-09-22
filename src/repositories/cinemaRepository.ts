@@ -6,10 +6,6 @@ export const getMany = () => {
   return prisma.cinema.findMany();
 };
 
-export const getByID = (id) => {
-  return prisma.cinema.findUnique({where: {
-    id: Number(id),
-  }});
+export const getByID = (id: number) => {
+  return prisma.cinema.findUnique({ where: { id } });
 };
-
-

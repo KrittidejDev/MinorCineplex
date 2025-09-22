@@ -7,7 +7,7 @@ import * as yup from "yup";
 import Link from "next/link";
 
 type FormValues = {
-  userName: string;
+  username: string;
   phoneNumber: string;
   email: string;
   password: string;
@@ -20,7 +20,7 @@ type SignUpFormProps = {
 
 const SignUpForm = ({ onSubmit }: SignUpFormProps) => {
   const schema = yup.object().shape({
-    userName: yup.string().required("Name is required"),
+    username: yup.string().required("Name is required"),
     phoneNumber: yup.string().required("Phone Number is required"),
     email: yup
       .string()
@@ -32,8 +32,8 @@ const SignUpForm = ({ onSubmit }: SignUpFormProps) => {
       .min(8, "Password must be at least 8 characters"),
     confirmPassword: yup
       .string()
-      .required("Password is required")
-      .min(8, "Password must be at least 8 characters"),
+      .required("Confirm Password is required")
+      .oneOf([yup.ref("password")], "Passwords must match")
   });
 
   const {
@@ -45,8 +45,8 @@ const SignUpForm = ({ onSubmit }: SignUpFormProps) => {
     resolver: yupResolver(schema),
   });
 
-  const { userName, email, password } = watch();
-  const isEmpty = !userName || !email || !password;
+  const { username, email, password } = watch();
+  const isEmpty = !username || !email || !password;
 
   return (
     <form
@@ -62,10 +62,10 @@ const SignUpForm = ({ onSubmit }: SignUpFormProps) => {
               {...field}
               label={"Username"}
               placeholder="Username"
-              errors={errors.userName?.message}
+              errors={errors.username?.message}
             />
           )}
-          name="userName"
+          name="username"
           defaultValue=""
         />
 
@@ -111,7 +111,7 @@ const SignUpForm = ({ onSubmit }: SignUpFormProps) => {
           name="password"
           defaultValue=""
         />
-        
+
         <Controller
           control={control}
           render={({ field }) => (

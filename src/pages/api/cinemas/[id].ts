@@ -1,26 +1,19 @@
+import { getCinemaById } from "@/services/cinemaService";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { registerUser } from "../../../services/authService";
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  if (req.method !== "POST") return res.status(405).end();
-
+    const {id} = req.query
   try {
-    const user = await registerUser(req.body);
-    res.status(201).json({ message: "Register successfully", user });
+    const cinema = await getCinemaById(id);
+    res.status(200).json({ cinema });
   } catch (error: any) {
     console.error(error);
-
     if (error.status) {
       return res.status(error.status).json({ error: error.message });
     }
-
-    if (error.name === "ValidationError") {
-      return res.status(400).json({ error: error.errors });
-    }
-
     res.status(500).json({ error: "Server Error" });
   }
 }

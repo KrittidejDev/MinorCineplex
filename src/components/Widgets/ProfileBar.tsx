@@ -26,7 +26,7 @@ const ProfileBar = () => {
   ]
 
   return (
-    <div className="flex   bg-[#070C1B] p-3 rounded-[8px]">
+    <div className="flex   bg-[#070C1B] p-4 rounded-[8px]">
       <nav className="flex flex-col space-y-2 ">
         {navigationItems.map((item) => {
           const isActive = pathname === item.href

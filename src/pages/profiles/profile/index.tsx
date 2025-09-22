@@ -15,8 +15,8 @@ const Index = () => {
           className="
             flex flex-col md:flex-row 
             items-start justify-start 
-            pt-6 md:pt-10 lg:pt-20 
-            px-4 sm:px-6 md:px-10 lg:px-20 xl:px-32
+            pt-10 md:pt-20 
+            px-5 md:px-10 lg:px-100 
             h-full gap-6 md:gap-10
           "
         >
@@ -26,7 +26,7 @@ const Index = () => {
           </div>
 
           {/* Content */}
-          <div className="flex flex-col items-start justify-start gap-y-8 w-full md:w-3/4 lg:w-4/5">
+          <div className="flex flex-col items-start justify-start gap-y-11 w-full md:w-3/4 lg:w-4/5 px-0 md:px-0 lg:px-22">
             <div className="text-f-20 sm:text-f-24 md:text-f-28 lg:text-f-36">
               Profile
             </div>

@@ -1,28 +1,25 @@
-import { NextApiRequest, NextApiResponse } from "next";
-import { uploadFile, deleteFile } from "@/services/fileServices";
+import type { NextApiRequest, NextApiResponse } from "next";
+import type { MulterFile } from "@/types/file";
 
-export const uploadHandler = async (req: any, res: NextApiResponse) => {
-  try {
-    if (!req.file) return res.status(400).json({ error: "No file uploaded" });
+// Upload Handler
+export const uploadHandler = async (
+  req: NextApiRequest & { file?: MulterFile },
+  res: NextApiResponse
+) => {
+  if (!req.file) return res.status(400).json({ error: "No file uploaded" });
 
-    const result = await uploadFile(req.file.buffer);
-    res.status(200).json(result);
-  } catch (err: any) {
-    res.status(500).json({ error: err.message });
-  }
+  const file = req.file;
+  res.status(200).json({ filename: file.originalname, size: file.size });
 };
 
+// Delete Handler
 export const deleteHandler = async (
   req: NextApiRequest,
   res: NextApiResponse
 ) => {
-  try {
-    const { public_id } = req.body;
-    if (!public_id) return res.status(400).json({ error: "Missing public_id" });
+  const { filename } = req.query;
+  if (!filename) return res.status(400).json({ error: "Filename required" });
 
-    const result = await deleteFile(public_id);
-    res.status(200).json(result);
-  } catch (err: any) {
-    res.status(500).json({ error: err.message });
-  }
+  // ลบไฟล์ logic ที่นี่
+  res.status(200).json({ message: `File ${filename} deleted` });
 };

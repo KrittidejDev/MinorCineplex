@@ -1,25 +1,30 @@
 import { createRouter } from "next-connect";
 import type { NextApiRequest, NextApiResponse } from "next";
-import multer from "multer";
+import multer, { FileFilterCallback } from "multer";
 import { uploadHandler, deleteHandler } from "@/controllers/fileController";
+import type { Request, Response } from "express";
 
+// สร้าง storage ของ multer
 const upload = multer({ storage: multer.memoryStorage() });
 
-const router = createRouter<NextApiRequest, NextApiResponse>();
-
-// Adapt Express-style Multer middleware to Next.js API handler signature
+// Adapter แบบ type-safe
 const multerAdapter = (
   req: NextApiRequest,
   res: NextApiResponse,
   next: (err?: unknown) => void
-) => upload.single("file")(req as any, res as any, next as any);
-// Upload single file
-router.post(multerAdapter as any, uploadHandler);
+) => {
+  // ใช้ generic ของ Multer กับ Express.Request / Response
+  const handler = upload.single("file");
+  handler(req as unknown as Request, res as unknown as Response, next);
+};
 
-// Delete file
+const router = createRouter<NextApiRequest, NextApiResponse>();
+
+router.post(multerAdapter, uploadHandler);
 router.delete(deleteHandler);
 
 export const config = { api: { bodyParser: false } };
+
 export default router.handler({
   onError(err: unknown, req: NextApiRequest, res: NextApiResponse) {
     if (err instanceof Error) {

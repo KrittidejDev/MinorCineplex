@@ -1,6 +1,5 @@
 // pages/index.tsx
 import { useEffect, useState } from "react";
-import axios from "axios";
 
 type MovieItem = {
   movie_id: string;

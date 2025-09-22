@@ -1,23 +1,29 @@
-import axios, { AxiosRequestConfig } from "axios";
+import axios, {
+  AxiosRequestConfig,
+  AxiosResponse,
+  AxiosError,
+  AxiosProgressEvent,
+} from "axios";
 import { BASE_API } from "./apiConfig";
 import { toast } from "react-toastify";
 
-// --- ตัวแปร logout function ที่ inject จาก AuthContext
 let logoutFn: null | (() => void) = null;
 
-// ฟังก์ชันนี้ให้ AuthProvider inject logout เข้ามา
+// ตั้งฟังก์ชัน logout handler
 export const setLogoutHandler = (fn: () => void) => {
   logoutFn = fn;
 };
 
+// Config ปกติ (JSON)
 const getConfig = (token: string | null): AxiosRequestConfig => ({
   baseURL: BASE_API,
   headers: {
     "Content-Type": "application/json",
-    Authorization: `Bearer ${token}`,
+    Authorization: `Bearer ${token ?? ""}`,
   },
 });
 
+// Config สำหรับ FormData + Upload progress
 const getConfigFormData = (
   token: string | null,
   callback?: (percent: number) => void
@@ -25,114 +31,110 @@ const getConfigFormData = (
   baseURL: BASE_API,
   headers: {
     "Content-Type": "multipart/form-data",
-    Authorization: `Bearer ${token}`,
-    token: token ?? "",
+    Authorization: `Bearer ${token ?? ""}`,
   },
-  onUploadProgress: function (progressEvent: any) {
-    let percentCompleted = Math.round(
-      (progressEvent.loaded * 100) / progressEvent.total
-    );
-    callback && callback(percentCompleted);
+  onUploadProgress: (progressEvent: AxiosProgressEvent) => {
+    if (progressEvent.total) {
+      const percentCompleted = Math.round(
+        (progressEvent.loaded * 100) / progressEvent.total
+      );
+      callback?.(percentCompleted);
+    }
   },
 });
 
-const axiosSuccess = (result: any) => result.data;
+// Response success
+const axiosSuccess = <T>(res: AxiosResponse<T>) => res.data;
 
-const axiosError = (error: any) => {
-  console.error("axios error =>", error);
+// Response error handler
+const axiosError = (error: AxiosError) => {
+  console.error("API Error:", error);
 
-  if (error?.response?.status === 403) {
-    toast.error("เซสชันของคุณหมดอายุแล้ว กรุณาเข้าสู่ระบบใหม่");
-
-    if (logoutFn) {
-      logoutFn(); // ✅ logout จาก context
-    } else {
-      window.location.href = "/login";
-    }
-    return error.response;
-  }
-
-  if (error?.code === "ERR_NETWORK") {
+  if (error.response?.status === 403) {
+    toast.error("เซสชันหมดอายุ กรุณาเข้าสู่ระบบใหม่");
+    if (logoutFn) logoutFn();
+    else window.location.href = "/login";
+  } else if (error.code === "ERR_NETWORK") {
     toast.error("มีปัญหาการเชื่อมต่อ กรุณาลองใหม่อีกครั้ง");
-    return error.response;
   }
 
   return error.response;
 };
 
-const axiosService = async (
-  type: string,
+export type RequestType =
+  | "get"
+  | "getDownload"
+  | "post"
+  | "put"
+  | "patch"
+  | "delete"
+  | "post_formdata"
+  | "put_formdata";
+
+export const axiosService = async <TResponse, TParams = unknown>(
+  type: RequestType,
   url: string,
-  params?: any,
+  params?: TParams,
   callback?: (percent: number) => void
-) => {
+): Promise<TResponse | Blob | false | AxiosResponse | void> => {
   const token = localStorage.getItem("token");
   const config = getConfig(token);
   const configFormData = getConfigFormData(token, callback);
 
-  switch (type) {
-    case "get":
-      if (params) config.params = params;
-      return axios.get(url, config).then(axiosSuccess).catch(axiosError);
-    case "getDownload":
-      if (params) config.params = params;
-      return axios
-        .get(url, { ...config, responseType: "blob" })
-        .then(axiosSuccess)
-        .catch(axiosError);
-    case "post":
-      return axios
-        .post(url, params, config)
-        .then(axiosSuccess)
-        .catch(axiosError);
-    case "put":
-      return axios
-        .put(url, params, config)
-        .then(axiosSuccess)
-        .catch(axiosError);
-    case "patch":
-      return axios
-        .patch(url, params, config)
-        .then(axiosSuccess)
-        .catch(axiosError);
-    case "delete":
-      return axios
-        .delete(url, { ...config, data: params })
-        .then(axiosSuccess)
-        .catch(axiosError);
-    case "post_formdata":
-      return axios
-        .post(url, params, configFormData)
-        .then(axiosSuccess)
-        .catch(axiosError);
-    case "put_formdata":
-      return axios
-        .put(url, params, configFormData)
-        .then(axiosSuccess)
-        .catch(axiosError);
-    default:
-      return false;
+  try {
+    switch (type) {
+      case "get":
+        if (params) config.params = params as Record<string, unknown>;
+        return (await axios.get<TResponse>(url, config)).data;
+      case "getDownload":
+        if (params) config.params = params as Record<string, unknown>;
+        return (await axios.get<Blob>(url, { ...config, responseType: "blob" }))
+          .data;
+      case "post":
+        return (await axios.post<TResponse>(url, params, config)).data;
+      case "put":
+        return (await axios.put<TResponse>(url, params, config)).data;
+      case "patch":
+        return (await axios.patch<TResponse>(url, params, config)).data;
+      case "delete":
+        return (await axios.delete<TResponse>(url, { ...config, data: params }))
+          .data;
+      case "post_formdata":
+        return (await axios.post<TResponse>(url, params, configFormData)).data;
+      case "put_formdata":
+        return (await axios.put<TResponse>(url, params, configFormData)).data;
+      default:
+        return false;
+    }
+  } catch (err) {
+    return axiosError(err as AxiosError);
   }
 };
 
+// Service wrapper
 const apiService = {
-  get: (url: string, params?: any) => axiosService("get", url, params),
-  getDownload: (url: string, params?: any) =>
-    axiosService("getDownload", url, params),
-  post: (url: string, params?: any) => axiosService("post", url, params),
-  put: (url: string, params?: any) => axiosService("put", url, params),
-  delete: (url: string, params?: any) => axiosService("delete", url, params),
-  post_formdata: (
+  get: <T>(url: string, params?: Record<string, unknown>) =>
+    axiosService<T>("get", url, params),
+  getDownload: (url: string, params?: Record<string, unknown>) =>
+    axiosService<Blob>("getDownload", url, params),
+  post: <T, P = unknown>(url: string, params?: P) =>
+    axiosService<T, P>("post", url, params),
+  put: <T, P = unknown>(url: string, params?: P) =>
+    axiosService<T, P>("put", url, params),
+  patch: <T, P = unknown>(url: string, params?: P) =>
+    axiosService<T, P>("patch", url, params),
+  delete: <T, P = unknown>(url: string, params?: P) =>
+    axiosService<T, P>("delete", url, params),
+  post_formdata: <T>(
     url: string,
-    params: any,
+    params: FormData,
     callback?: (percent: number) => void
-  ) => axiosService("post_formdata", url, params, callback),
-  put_formdata: (
+  ) => axiosService<T>("post_formdata", url, params, callback),
+  put_formdata: <T>(
     url: string,
-    params: any,
+    params: FormData,
     callback?: (percent: number) => void
-  ) => axiosService("put_formdata", url, params, callback),
-  patch: (url: string, params?: any) => axiosService("patch", url, params),
+  ) => axiosService<T>("put_formdata", url, params, callback),
 };
 
 export default apiService;

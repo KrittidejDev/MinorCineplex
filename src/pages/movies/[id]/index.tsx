@@ -20,11 +20,13 @@ const MoviesDetail = () => {
           detail={"Lorem, ipsum dolor sit amet consectetur adipisicing elit."}
         />
         <DateSelectionBarWidget />
-        <div className="max-w-[1200px] mx-auto flex gap-5 items-center justify-between px-4 mt-10 lg:mt-20">
-          <div className="w-full">
-          <InputSearch />
+        <div className="max-w-[1200px] mx-auto flex flex-col lg:flex-row gap-5 items-center justify-center px-4 mt-10 lg:mt-20">
+          <div className="w-full lg:w-[895px]">
+            <InputSearch />
           </div>
-          <CitySelection />
+          <div className="w-full lg:w-[285px]">
+            <CitySelection />
+          </div>
         </div>
 
         <div className="mt-10 lg:mt-20">

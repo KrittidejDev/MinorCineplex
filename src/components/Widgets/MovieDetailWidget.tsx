@@ -14,7 +14,7 @@ function MoviesDetailWidget({ title, image, date, detail }: MovieDetailProps) {
     <>
       <div className="w-screen flex justify-start lg:justify-center lg:mt-[60px]">
         <div className="w-full lg:w-[1200px] lg:h-[600px] flex flex-col lg:flex-row">
-          <div className="relative w-full h-64 lg:w-[411px] lg:h-[600px]">
+          <div className="relative w-full h-[547px] lg:w-[411px] lg:h-[600px]">
             <Image
               src={image}
               alt={title}

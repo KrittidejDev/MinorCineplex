@@ -38,6 +38,8 @@ import ShowTime from "@/components/Widgets/ShowTime";
 import ShowtimeMovie from "@/components/Widgets/ShowtimeMovie";
 import CinemaDetallWidget from "@/components/Widgets/CinemaDetallWidget";
 
+import { BookingStatusPaid, BookingStatusPayAtCinema, BookingStatusCompleted, BookingStatusCanceled } from "@/components/ui/bookingstatus";
+
 const AllWidget = () => {
   // State for radio buttons
   const [selectedRadio, setSelectedRadio] = useState("option2");
@@ -566,7 +568,17 @@ const AllWidget = () => {
           <DateSelection day={"Tomorrow"} date={"26 Sep 1996"} />
         </div>
       </div>
-    
+
+      {/* Booking Status */}
+      <div className="mt-20">
+        <h2 className="text-2xl font-bold mb-6 text-center">Booking Status</h2>
+        <div className="flex gap-5">
+          <BookingStatusPaid />
+          <BookingStatusPayAtCinema/>
+          <BookingStatusCompleted />
+          <BookingStatusCanceled />
+        </div>
+        </div>
     </div>
   );
 };

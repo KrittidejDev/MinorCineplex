@@ -139,7 +139,7 @@ const CinemaDetallWidget = () => {
                         { id: 't22', label: '14:30' },
                         { id: 't23', label: '16:30' },
                         { id: 't24', label: '20:30' },
-                        { id: 't24', label: '23:30' },
+                        { id: 't25', label: '23:30' },
                       ],
                     },
                     {

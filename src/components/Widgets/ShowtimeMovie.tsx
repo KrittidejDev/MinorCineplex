@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Tag from '@/components/Widgets/Tag'
 import ShowtimeSelection from '@/components/Widgets/ShowtimeSelection'
 import Image from 'next/image'
@@ -28,7 +28,7 @@ type ShowtimeTime = ShowtimeData['groups'][number]['times'][number]
 interface ShowtimeMovieProps {
   movie?: MovieData
   showtimes?: ShowtimeData
-  onTimeSelect?: (time: ShowtimeTime, context: { hallId: string }) => void
+  onTimeSelect?: (time: ShowtimeTime | null, context: { hallId: string }) => void
   className?: string
 }
 
@@ -85,11 +85,18 @@ export const ShowtimeMovie: React.FC<ShowtimeMovieProps> = ({
   onTimeSelect,
   className,
 }) => {
+  const [selectedTime, setSelectedTime] = useState<string | null>(null)
+
   const handleTimeSelect = (
-    time: ShowtimeTime,
+    time: ShowtimeTime | null,
     context: { hallId: string }
   ) => {
-    onTimeSelect?.(time, context)
+    if (time) {
+      setSelectedTime(time.id)
+      onTimeSelect?.(time, context)
+    } else {
+      setSelectedTime(null)
+    }
   }
 
   return (
@@ -155,7 +162,7 @@ export const ShowtimeMovie: React.FC<ShowtimeMovieProps> = ({
               </div>
               <ShowtimeSelection
                 times={group.times}
-                onChange={(time: ShowtimeTime) =>
+                onChange={(time: ShowtimeTime | null) =>
                   handleTimeSelect(time, { hallId: group.hallId })
                 }
                 className="flex flex-wrap gap-1.5 sm:gap-2 md:gap-3 lg:gap-4"

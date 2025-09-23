@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 type Showtime = {
     id: string;
@@ -24,6 +24,11 @@ export const ShowtimeSelection: React.FC<ShowtimeSelection> = ({
     className,
 }) => {
     const [selectedId, setSelectedId] = useState<string | null>(null);
+
+    // Reset selection when times change (different hall/movie)
+    useEffect(() => {
+        setSelectedId(null);
+    }, [times]);
 
     const handleSelect = (time: Showtime) => {
         if (time.disabled) return;

@@ -55,7 +55,6 @@ const AllWidget = () => {
 
   // State for tabs
   const [activeTab, setActiveTab] = useState(0);
-  const [showtimeCollapsed, setShowtimeCollapsed] = useState(false);
 
   return (
     <div className="flex flex-col items-center">

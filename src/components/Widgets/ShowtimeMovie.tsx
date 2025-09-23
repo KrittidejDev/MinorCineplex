@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Tag from '@/components/Widgets/Tag'
 import ShowtimeSelection from '@/components/Widgets/ShowtimeSelection'
 import Image from 'next/image'
@@ -28,7 +28,7 @@ type ShowtimeTime = ShowtimeData['groups'][number]['times'][number]
 interface ShowtimeMovieProps {
   movie?: MovieData
   showtimes?: ShowtimeData
-  onTimeSelect?: (time: ShowtimeTime, context: { hallId: string }) => void
+  onTimeSelect?: (time: ShowtimeTime | null, context: { hallId: string }) => void
   className?: string
 }
 
@@ -85,11 +85,18 @@ export const ShowtimeMovie: React.FC<ShowtimeMovieProps> = ({
   onTimeSelect,
   className,
 }) => {
+  const [selectedTime, setSelectedTime] = useState<string | null>(null)
+
   const handleTimeSelect = (
-    time: ShowtimeTime,
+    time: ShowtimeTime | null,
     context: { hallId: string }
   ) => {
-    onTimeSelect?.(time, context)
+    if (time) {
+      setSelectedTime(time.id)
+      onTimeSelect?.(time, context)
+    } else {
+      setSelectedTime(null)
+    }
   }
 
   return (
@@ -101,7 +108,7 @@ export const ShowtimeMovie: React.FC<ShowtimeMovieProps> = ({
       <div className="flex-shrink-0 w-full lg:w-auto">
         <div className="flex flex-col gap-3 sm:gap-4 lg:gap-4 xl:gap-6">
           {/* Movie Poster */}
-          <div className="flex-shrink-0 w-20 sm:w-24 md:w-32 lg:w-40 xl:w-48 mx-auto lg:mx-0">
+          <div className="flex-shrink-0 w-20 sm:w-24 md:w-32 lg:w-40 xl:w-48">
             <div className="w-full aspect-[2/3] bg-gray-800 rounded-sm overflow-hidden">
               <div className="relative w-full h-full sm:h-80 md:h-96">
                 <Image
@@ -115,14 +122,14 @@ export const ShowtimeMovie: React.FC<ShowtimeMovieProps> = ({
           </div>
 
           {/* Movie Details */}
-          <div className="flex-1 min-w-0 text-center lg:text-left">
+          <div className="flex-1 min-w-0 text-left">
             {/* Movie Title */}
             <h2 className="text-white text-xl sm:text-2xl lg:text-3xl font-bold mb-4">
               {movie.title}
             </h2>
 
             {/* Tags */}
-            <div className="flex flex-wrap gap-2 sm:gap-3 mb-4 justify-center lg:justify-start">
+            <div className="flex flex-wrap gap-2 sm:gap-3 mb-4 justify-start">
               {movie.genreTags.map((tag, index) => (
                 <Tag key={index} name={tag} variant="genre" />
               ))}
@@ -155,7 +162,7 @@ export const ShowtimeMovie: React.FC<ShowtimeMovieProps> = ({
               </div>
               <ShowtimeSelection
                 times={group.times}
-                onChange={(time: ShowtimeTime) =>
+                onChange={(time: ShowtimeTime | null) =>
                   handleTimeSelect(time, { hallId: group.hallId })
                 }
                 className="flex flex-wrap gap-1.5 sm:gap-2 md:gap-3 lg:gap-4"

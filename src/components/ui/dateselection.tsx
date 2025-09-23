@@ -1,12 +1,12 @@
 interface DateSelectionProps {
-  day: string;
-  date: string;
-  isActive?: boolean;
-  onSelect?: () => void;
-  className?: string;
+    day: string;
+    date: string;
+    isActive?: boolean;
+    onSelect?: () => void;
+    className?: string;
 }
 
-function DateSelection({day, date, isActive=false, onSelect, className=""}: DateSelectionProps) {
+function DateSelection({ day, date, isActive = false, onSelect, className = "" }: DateSelectionProps) {
     return (
         <>
             <button onClick={onSelect} className={`w-fit h-fit hover:bg-gray-g63f flex flex-col py-2 px-[27.5px] lg:px-16 pl-4 items-center rounded-sm group ${className}

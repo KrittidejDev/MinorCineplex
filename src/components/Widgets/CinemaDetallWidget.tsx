@@ -64,7 +64,7 @@ const CinemaDetallWidget = () => {
             </div>
           </div>
           {/* Date Selection Bar */}
-          <div className="w-full py-4 mb-8">
+          <div className="w-full py-6 mb-8">
             <div className="flex justify-center">
               <DateSelectionBarWidget />
             </div>

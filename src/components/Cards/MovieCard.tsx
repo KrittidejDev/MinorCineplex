@@ -32,6 +32,7 @@ function MovieCard({
               src={image}
               alt={title}
               fill
+              sizes="(max-width: 768px) 161px, 285px"
               className="rounded-sm object-cover "
             />
           </div>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import Tag from '@/components/Widgets/Tag'
 import ShowtimeSelection from '@/components/Widgets/ShowtimeSelection'
 import Image from 'next/image'
@@ -85,21 +85,17 @@ export const ShowtimeMovie: React.FC<ShowtimeMovieProps> = ({
   onTimeSelect,
   className,
 }) => {
-  const [selectedTime, setSelectedTime] = useState<string | null>(null)
-
   const handleTimeSelect = (
     time: ShowtimeTime,
     context: { hallId: string }
   ) => {
-    setSelectedTime(time.id)
     onTimeSelect?.(time, context)
   }
 
   return (
     <div
-      className={`flex flex-col lg:flex-row gap-4 lg:gap-6 xl:gap-8 ${
-        className ?? ''
-      }`}
+      className={`flex flex-col lg:flex-row gap-4 lg:gap-6 xl:gap-8 ${className ?? ''
+        }`}
     >
       {/* Movie Info Section */}
       <div className="flex-shrink-0 w-full lg:w-auto">

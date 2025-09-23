@@ -1,12 +1,9 @@
 import React, { useState } from 'react'
 import { Button } from '../ui/button'
-import InputTextFeild from '../Inputs/InputTextFeild'
 import NavBarWidget from './NavBarWidget'
 import DoneRound from '../Icons/DoneRound'
 import Image from 'next/image'
-import CouponCard from '../Cards/CouponCard'
 import {
-    DoneRound as DoneRoundIcon,
     PinFill,
     DateTodayLight,
     TimeFill,
@@ -20,7 +17,7 @@ const BookingCouponWidget = () => {
     const [showPaymentFailAlert, setShowPaymentFailAlert] = useState(false)
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<'credit' | 'qr'>('credit')
     const [showCouponModal, setShowCouponModal] = useState(false)
-    const [selectedCoupon, setSelectedCoupon] = useState<any>(null)
+    const [selectedCoupon, setSelectedCoupon] = useState<string | null>(null)
 
     // Coupon data from CouponCardWidget
     const coupons = [
@@ -551,10 +548,11 @@ const BookingCouponWidget = () => {
                                         {/* Left Container - Image */}
                                         <div className="flex-1 relative">
                                             <div className="w-full h-full bg-gradient-to-br from-purple-900 to-blue-900">
-                                                <img
+                                                <Image
                                                     src={coupon.image}
                                                     alt={coupon.title}
-                                                    className="w-full h-full object-cover"
+                                                    fill
+                                                    className="object-cover"
                                                 />
                                             </div>
                                         </div>

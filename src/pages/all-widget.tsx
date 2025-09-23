@@ -35,6 +35,7 @@ import DateSelection from "@/components/ui/dateselection";
 import ShowTime from "@/components/Widgets/ShowTime";
 import ShowtimeMovie from "@/components/Widgets/ShowtimeMovie";
 import CinemaDetallWidget from "@/components/Widgets/CinemaDetallWidget";
+import ReviewCard from "@/components/Cards/ReviewCard";
 
 import {
   BookingStatusPaid,
@@ -714,6 +715,14 @@ const AllWidget = () => {
         <h2 className="text-2xl font-bold mb-6 text-center">Summary Box</h2>
         <div className="flex gap-5">
           <SummaryBoxCard />
+        </div>
+      </div>
+
+      {/* Review */}
+      <div className="mt-20">
+        <h2 className="text-2xl font-bold mb-6 text-center">Review</h2>
+        <div className="flex gap-5">
+          <ReviewCard />
         </div>
       </div>
     </div>

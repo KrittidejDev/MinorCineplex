@@ -7,7 +7,7 @@ function DateSelectionBarWidget() {
 
   return (
     <div className="w-screen h-fit bg-gray-gc1b flex justify-center items-center lg:mt-12">
-      <div className="flex items-center gap-2 py-4 overflow-x-auto justify-start lg:justify-center flex-nowrap">
+      <div className="flex items-center gap-2 py-4 overflow-x-auto hide-scrollbar justify-start lg:justify-center flex-nowrap">
         <DateSelection
           className="flex-shrink-0"
           day="Today"

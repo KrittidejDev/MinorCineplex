@@ -49,7 +49,7 @@ const InputSearch = ({
   }, [_value, delay, handleSearch]);
 
   return (
-    <div className="flex flex-col flex-1 gap-1 relative">
+    <div className="flex flex-col gap-1 relative">
       {label && (
         <div className="text-gray-gedd text-fr-16">
           {label} {require && <span className="text-red">*</span>}
@@ -78,7 +78,7 @@ const InputSearch = ({
           <SearchLight width={20} height={20} color="#C8CEDD" />
         </div>
       </div>
-      <div className="h-4 mt-1">
+      {/* <div className="h-4 mt-1">
         <span
           className={`text-fr-12 ${errors ? "text-red-r64b" : "text-gray-g3b0"}`}
         >
@@ -87,7 +87,7 @@ const InputSearch = ({
             <span className="text-fr-12 text-red-r64b ">{errors}</span>
           )}
         </span>
-      </div>
+      </div> */}
     </div>
   );
 };

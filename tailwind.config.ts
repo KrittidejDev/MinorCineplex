@@ -64,8 +64,8 @@ const config: any = {
         "fr-16": ["1rem", { lineHeight: "1.5rem", fontWeight: "400" }], // 16px/24px Regular
         "fm-14": ["0.875rem", { lineHeight: "1.25rem", fontWeight: "500" }], // 14px/20px Medium
         "fr-14": ["0.875rem", { lineHeight: "1.25rem", fontWeight: "400" }], // 14px/20px Regular
-        "fm-12": ["0.75rem",{ lineHeight: "1.125rem", fontWeight: "500" },], // 12px/18px Medium
-        "fr-12": ["0.75rem",{ lineHeight: "1.125rem", fontWeight: "400" },], // 12px/18px Regular
+        "fm-12": ["0.75rem", { lineHeight: "1.125rem", fontWeight: "500" },], // 12px/18px Medium
+        "fr-12": ["0.75rem", { lineHeight: "1.125rem", fontWeight: "400" },], // 12px/18px Regular
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -74,14 +74,14 @@ const config: any = {
       },
     },
   },
-  plugins: [function ({ addUtilities }) {
+  plugins: [function ({ addUtilities }: { addUtilities: any }) {
     addUtilities({
       '.hide-scrollbar': {
         '-ms-overflow-style': 'none',
-        'scrollbar-width': 'none',    
+        'scrollbar-width': 'none',
       },
       '.hide-scrollbar::-webkit-scrollbar': {
-        display: 'none',             
+        display: 'none',
       },
     });
   },],

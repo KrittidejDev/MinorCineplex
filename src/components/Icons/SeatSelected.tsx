@@ -4,12 +4,14 @@ interface SeatSelectedProps {
   width?: string | number;
   height?: string | number;
   color?: string;
+  onClick?: () => void;
 }
 
 const SeatSelected: React.FC<SeatSelectedProps> = ({
   width = "43",
   height = "43",
   color = "#4E7BEE",
+  onClick
 }) => {
   return (
     <svg
@@ -18,6 +20,7 @@ const SeatSelected: React.FC<SeatSelectedProps> = ({
       viewBox="0 0 43 43"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      onClick={onClick}
     >
       <rect x="1" y="1" width="38" height="38" rx="5" fill={color}/>
       <rect x="1" y="1" width="38" height="38" rx="5" stroke="white" strokeWidth="2"/>

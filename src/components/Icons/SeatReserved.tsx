@@ -4,12 +4,14 @@ interface SeatReservedProps {
   width?: string | number;
   height?: string | number;
   color?: string;
+  onClick?: () => void;
 }
 
 const SeatReserved: React.FC<SeatReservedProps> = ({
   width = "40",
   height = "40",
   color = "#4E7BEE",
+  onClick,
 }) => {
   return (
     <svg
@@ -18,6 +20,7 @@ const SeatReserved: React.FC<SeatReservedProps> = ({
       viewBox="0 0 40 40"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      onClick={onClick}
     >
       <rect width="40" height="40" rx="6" fill={color} fillOpacity="0.4"/>
       <rect x="0.75" y="0.75" width="38.5" height="38.5" rx="5.25" stroke={color} strokeOpacity="0.4" strokeWidth="1.5"/>

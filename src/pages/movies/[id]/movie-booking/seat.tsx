@@ -43,23 +43,31 @@ const SelectSeat = () => {
   );
 
   return (
-    <>
+    <div className="w-full bg-gray-gc1b">
       <NavBarWidget />
-      <div className="w-full h-26 flex justify-center items-center bg-gray-gc1b">
+      <div className="p-4 flex justify-center items-center">
         <Stepper />
       </div>
-      <div className="mx-auto flex justify-between items-start bg-[#101525] w-full max-w-[1440px] px-30 py-20">
-        <div className="flex flex-col gap-15 w-[793px]">
-          <ScreenBar />
-          <SeatGrid
-            groupedSeats={groupedSeats}
-            onSelectSeat={handleSelectSeat}
-          />
-          <SeatInfo />
+      <div
+        className="w-full flex justify-center bg-[#101525] px-1 py-10 md:py-20">
+        <div className="w-full max-w-[1440px] md:px-4 lg:gap-10 xl:gap-24 flex flex-col items-center lg:flex-row justify-center lg:items-start">
+          <div className="flex flex-col w-full max-w-[793px] px-4 py-10 items-center gap-15">
+            <ScreenBar />
+            <SeatGrid
+              groupedSeats={groupedSeats}
+              onSelectSeat={handleSelectSeat}
+            />
+            <SeatInfo />
+          </div>
+          <div className="w-full max-w-[475px] lg:max-w-[305px] flex justify-center px-1 lg:py-10">
+            <SummaryBoxCard
+              totalSelected={totalSelected}
+              totalPrice={totalPrice}
+            />
+          </div>
         </div>
-        <SummaryBoxCard totalSelected={totalSelected} totalPrice={totalPrice} />
       </div>
-    </>
+    </div>
   );
 };
 

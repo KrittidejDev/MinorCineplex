@@ -7,19 +7,19 @@ import Shop from "../Icons/Shop";
 import BookingInfo from "./BookingInfo";
 
 export interface BillInfo {
-  totalSelected: {
+  totalSelected?: {
     id: string;
     row: string;
     status: string;
     price: number;
   }[];
-  totalPrice: number;
+  totalPrice?: number;
 }
 
 function SummaryBoxCard({ totalSelected, totalPrice }: BillInfo) {
   return (
     <>
-      <div className="w-full max-w-[305px] bg-gray-gc1b rounded-lg">
+      <div className="w-full md:min-w-[305px] bg-gray-gc1b rounded-lg">
         <div className="p-4">
           <p className="text-sm text-gray-g3b0 pb-3">
             Time remaining:{" "}
@@ -37,7 +37,7 @@ function SummaryBoxCard({ totalSelected, totalPrice }: BillInfo) {
               <h4 className="font-bold text-xl text-white-wfff">
                 The Dark Knight
               </h4>
-              <div className="flex gap-2">
+              <div className="hidden sm:flex flex-warp gap-2">
                 <Tag name="Action" variant="genre" />
                 <Tag name="Crime" variant="genre" />
                 <Tag name="TH" variant="language" />
@@ -64,9 +64,13 @@ function SummaryBoxCard({ totalSelected, totalPrice }: BillInfo) {
             </div>
           </div>
         </div>
-        {totalSelected?.length > 0 && (
-          <BookingInfo totalSelected={totalSelected} totalPrice={totalPrice} />
-        )}
+        {!totalSelected ||
+          (totalSelected?.length > 0 && (
+            <BookingInfo
+              totalSelected={totalSelected}
+              totalPrice={totalPrice}
+            />
+          ))}
       </div>
     </>
   );

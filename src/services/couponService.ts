@@ -9,3 +9,11 @@ export const getCouponById = async (id: number) => {
   const coupons = await couponRepo.getById(id);
   return coupons;
 };
+
+export const createCoupon = async (data: {
+  code: string;
+  discount: number;
+  expiresAt: Date;
+}) => {
+  return await couponRepo.create(data);
+};

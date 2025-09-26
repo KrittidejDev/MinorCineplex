@@ -18,7 +18,7 @@ const index = () => {
           "
         >
           {/* ProfileBar */}
-          <div className="w-full md:w-1/4 lg:w-1/5">
+          <div className="w-full md:w-1/4 ">
             <ProfileBar />
           </div>
 

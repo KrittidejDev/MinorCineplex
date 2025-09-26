@@ -9,3 +9,11 @@ export const getMany = () => {
 export const getById = (id: number) => {
   return prisma.coupon.findUnique({ where: { id } });
 };
+
+export const create = (data: {
+  code: string;
+  discount: number;
+  expiresAt: Date;
+}) => {
+  return prisma.coupon.create({ data });
+};

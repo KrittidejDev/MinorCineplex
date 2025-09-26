@@ -1,4 +1,4 @@
-import { getCoupons } from "@/services/couponService";
+import { getCoupons, createCoupon } from "@/services/couponService";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(

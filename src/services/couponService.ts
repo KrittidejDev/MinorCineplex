@@ -10,10 +10,12 @@ export const getCouponById = async (id: number) => {
   return coupons;
 };
 
-export const createCoupon = async (data: {
-  code: string;
-  discount: number;
-  expiresAt: Date;
-}) => {
-  return await couponRepo.create(data);
-};
+export const createCoupons = async (data: { code: string; discount: number; expiresAt: Date }) => {
+    return couponRepo.create({
+      code: data.code,
+      discount: data.discount,
+      expiresAt: data.expiresAt,
+      discountType: "percentage", // default
+      status: "active",           // default
+    });
+  }

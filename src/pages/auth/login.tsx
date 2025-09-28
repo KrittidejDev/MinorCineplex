@@ -1,40 +1,48 @@
-import React from "react";
+import React, { useState } from "react";
 import SignInForm from "@/components/Forms/SignInForm";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { AxiosError } from "axios";
+import { ErrorAlert } from "@/components/ui/alert";
 
 const Login = () => {
   const router = useRouter();
+  const { data: session, status } = useSession();
+  const [isAlert, setIsAlert] = useState(false);
+
   const handleLogin = async (value: { email: string; password: string }) => {
-    console.log(value.email, value.password);
     try {
       const result = await signIn("credentials", {
         redirect: false,
         identifier: value.email,
         password: value.password,
       });
-      console.log(result);
       if (result?.ok) {
-        console.log("Credentials is Valid");
+        console.log(session, status);
         router.push("/auth/login");
       } else {
-        console.log("Invalid credentials");
+        setIsAlert(true);
       }
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
-        console.error(
-          "Register failed:",
-          error.response?.data || error.message
-        );
+        console.log("Register failed:", error);
       }
     }
   };
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center px-4">
+    <div className="min-h-screen w-full flex items-center justify-center px-4 relative">
       <div className="w-[380px]">
         <SignInForm onSubmit={handleLogin} />
+      </div>
+      <div className="absolute right-5 bottom-5">
+        {isAlert && (
+          <ErrorAlert
+            onClick={()=>setIsAlert(false)}
+            header="Invalid credentials"
+            text="Please try another email or phone number"
+          />
+        )}
       </div>
     </div>
   );

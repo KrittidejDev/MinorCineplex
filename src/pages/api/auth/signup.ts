@@ -8,10 +8,13 @@ export default async function handler(
   try {
     const user = await registerUser(req.body);
     res.status(201).json({ message: "Register successfully", user });
-  } catch (error: unknown) {
-    console.error(error);
-    if (error instanceof Error) {
-      return res.status(500).json({ error: error.message });
+  } catch (err: any) {
+    console.error("Register failed:", err);
+
+    if (err.status) {
+      return res
+        .status(err.status)
+        .json({ status: err.status, message: err.message });
     }
   }
   return res.status(500).json({ error: "Server Error" });

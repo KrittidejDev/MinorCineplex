@@ -1,4 +1,4 @@
-import SignUpForm from "@/components/Forms/SignUpForm";
+import SignUpForm, { FormValues } from "@/components/Forms/SignUpForm";
 import axios, { AxiosError } from "axios";
 import RegisterSuccess from "@/components/Widgets/RegisterSuccess";
 import React, { useState } from "react";
@@ -6,13 +6,7 @@ import React, { useState } from "react";
 const Signup = () => {
   const [success, setSuccess] = useState<boolean>(false);
 
-  const handleRegister = async (values: {
-    username: string;
-    phoneNumber: string;
-    email: string;
-    password: string;
-    confirmPassword: string;
-  }) => {
+  const handleRegister = async (values: FormValues, setError: any) => {
     try {
       const response = await axios.post(
         "http://localhost:3000/api/auth/signup",
@@ -27,10 +21,14 @@ const Signup = () => {
       setSuccess(true);
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
-        console.error(
-          "Register failed:",
-          error.response?.data || error.message
-        );
+        const message = error.response?.data?.message || error.message;
+        console.log(error);
+        if (message.includes("Email")) {
+          setError("email", { type: "server", message });
+        }
+        if (message.includes("Phone")) {
+          setError("phoneNumber", { type: "server", message });
+        }
       }
     }
   };

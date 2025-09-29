@@ -17,25 +17,25 @@ const CinemaDetallWidget = () => {
         {/* Section 1: Cinema Header Info */}
         <section className="w-full max-w-[1200px] mt-5 px-4 sm:px-0">
           <div className="w-full bg-gray-gc1b rounded-lg overflow-hidden">
-            <div className="flex flex-col lg:flex-row">
+            <div className="flex flex-row sm:flex-col lg:flex-row">
               {/* Cinema Image */}
-              <div className="w-full lg:w-1/3">
-                <div className="w-full h-100 lg:h-110 bg-gray-700">
-                  <div className="relative w-full h-64 sm:h-80 md:h-96">
+              <div className="w-2/3 sm:w-full lg:w-1/3 p-4 sm:p-6 lg:p-0">
+                <div className="w-full h-full sm:h-96 lg:h-110 bg-gray-700">
+                  <div className="relative w-full h-full">
                     <Image
-                      src="https://images.unsplash.com/photo-1489599808417-8a3b4b5b5b5b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
+                      src="https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcQkUywIUXDjHSQJIaNHYVs08osgBpF5Ot-xmB_omyEZeeRP9Xug"
                       alt="Cinema Interior"
                       fill
-                      className="object-cover rounded"
+                      className="object-fill rounded"
                     />
                   </div>
                 </div>
               </div>
 
               {/* Cinema Details */}
-              <div className="w-full lg:w-2/3 p-8 flex flex-col justify-start pt-8">
+              <div className="w-2/3 sm:w-full lg:w-2/3 p-4 sm:p-8 flex flex-col justify-start pt-4 sm:pt-8 sm:mt-6">
                 {/* Cinema Title */}
-                <h1 className="text-white text-3xl sm:text-4xl lg:text-5xl font-bold mb-6">
+                <h1 className="text-white text-2xl sm:text-3xl lg:text-4xl font-bold mb-6">
                   Minor Cineplex Arkham
                 </h1>
 
@@ -49,8 +49,8 @@ const CinemaDetallWidget = () => {
                   </span>
                 </div>
 
-                {/* Description */}
-                <div className="space-y-4">
+                {/* Description - Desktop only */}
+                <div className="hidden lg:block space-y-4 mt-4">
                   <p className="text-gray-300 text-sm leading-relaxed">
                     Minor Cineplex cinemas often offer features like comfortable
                     seating, concession stands with snacks and drinks, and
@@ -62,6 +62,22 @@ const CinemaDetallWidget = () => {
                     and independent or international movies.
                   </p>
                 </div>
+              </div>
+            </div>
+
+            {/* Description Section - Mobile and Tablet only */}
+            <div className="lg:hidden px-4 sm:px-8 pb-8">
+              <div className="space-y-4">
+                <p className="text-gray-300 text-sm leading-relaxed">
+                  Minor Cineplex cinemas often offer features like comfortable
+                  seating, concession stands with snacks and drinks, and
+                  advanced sound systems. Also have a hearing assistance and
+                  wheelchair assess.
+                </p>
+                <p className="text-gray-300 text-sm leading-relaxed">
+                  Typically show a mix of Hollywood blockbusters, Thai films,
+                  and independent or international movies.
+                </p>
               </div>
             </div>
           </div>

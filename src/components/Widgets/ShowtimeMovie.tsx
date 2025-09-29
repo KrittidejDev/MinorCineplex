@@ -106,23 +106,23 @@ export const ShowtimeMovie: React.FC<ShowtimeMovieProps> = ({
     >
       {/* Movie Info Section */}
       <div className="flex-shrink-0 w-full lg:w-auto">
-        <div className="flex flex-col gap-3 sm:gap-4 lg:gap-4 xl:gap-6">
+        <div className="flex flex-row sm:flex-row lg:flex-col gap-3 sm:gap-4 lg:gap-4 xl:gap-6">
           {/* Movie Poster */}
-          <div className="flex-shrink-0 w-20 sm:w-24 md:w-32 lg:w-40 xl:w-48">
+          <div className="flex-shrink-0 w-20 sm:w-24 md:w-32 lg:w-40 xl:w-48 order-1 sm:order-1 lg:order-1">
             <div className="w-full aspect-[2/3] bg-gray-800 rounded-sm overflow-hidden">
               <div className="relative w-full h-full sm:h-80 md:h-96">
                 <Image
                   src={movie.poster}
                   alt={movie.title}
                   fill
-                  className="object-cover object-center rounded "
+                  className="object-cover object-center rounded"
                 />
               </div>
             </div>
           </div>
 
           {/* Movie Details */}
-          <div className="flex-1 min-w-0 text-left">
+          <div className="flex-1 min-w-0 text-left order-2 sm:order-2 lg:order-2">
             {/* Movie Title */}
             <h2 className="text-white text-xl sm:text-2xl lg:text-3xl font-bold mb-4">
               {movie.title}

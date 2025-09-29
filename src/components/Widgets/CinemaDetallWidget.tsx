@@ -5,7 +5,21 @@ import NavBarWidget from './NavBarWidget'
 import FooterWidget from './FooterWidget'
 import Image from 'next/image'
 
-const CinemaDetallWidget = () => {
+interface CinemaDetallWidgetProps {
+  image?: string
+  movie1Poster?: string
+  movie2Poster?: string
+  movie3Poster?: string
+  movie4Poster?: string
+}
+
+const CinemaDetallWidget = ({
+  image = "/images/banner.png",
+  movie1Poster = "https://m.media-amazon.com/images/M/MV5BMjIyNTQ5NjQ1OV5BMl5BanBnXkFtZTcwODg1MDU4OA@@._V1_FMjpg_UX1000_.jpg",
+  movie2Poster = "https://m.media-amazon.com/images/M/MV5BMTMxNTMwODM0NF5BMl5BanBnXkFtZTcwODAyMTk2Mw@@._V1_.jpg",
+  movie3Poster = "https://m.media-amazon.com/images/M/MV5BYzdjMDAxZGItMjI2My00ODA1LTlkNzItOWFjMDU5ZDJlYWY3XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
+  movie4Poster = "https://m.media-amazon.com/images/M/MV5BNTc0YmQxMjEtODI5MC00NjFiLTlkMWUtOGQ5NjFmYWUyZGJhXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg"
+}: CinemaDetallWidgetProps) => {
   return (
     <div className="min-h-screen bg-gray-900 flex flex-col">
       {/* Navbar */}
@@ -15,42 +29,60 @@ const CinemaDetallWidget = () => {
       <div className="flex-1 flex flex-col items-center pt-[20px]">
 
         {/* Section 1: Cinema Header Info */}
-        <section className="w-full max-w-[1200px] mt-5 px-4 sm:px-0">
-          <div className="w-full bg-gray-gc1b rounded-lg overflow-hidden">
-            <div className="flex flex-row sm:flex-col lg:flex-row">
-              {/* Cinema Image */}
-              <div className="w-2/3 sm:w-full lg:w-1/3 p-4 sm:p-6 lg:p-0">
-                <div className="w-full h-full sm:h-96 lg:h-110 bg-gray-700">
-                  <div className="relative w-full h-full">
-                    <Image
-                      src="https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcQkUywIUXDjHSQJIaNHYVs08osgBpF5Ot-xmB_omyEZeeRP9Xug"
-                      alt="Cinema Interior"
-                      fill
-                      className="object-fill rounded"
-                    />
+        <section className="w-screen flex justify-start lg:justify-center lg:mt-[60px]">
+          <div className="w-full lg:w-[1200px] lg:h-[600px] flex flex-col lg:flex-row">
+            <div className="w-full bg-gray-gc1b rounded-lg overflow-hidden">
+              <div className="flex flex-row sm:flex-col lg:flex-row">
+                {/* Cinema Image */}
+                <div className="w-1/2 sm:w-full lg:w-1/3 p-4 sm:p-6 lg:p-0">
+                  <div className="w-full h-full sm:h-96 lg:h-[600px] bg-gray-700">
+                    <div className="relative w-full h-full">
+                      <Image
+                        src={image}
+                        alt="Cinema Interior"
+                        fill
+                        className="object-cover rounded"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Cinema Details */}
+                <div className="w-1/2 sm:w-full lg:w-1/2 p-4 sm:p-8 flex flex-col justify-start pt-4 sm:pt-8 sm:mt-6">
+                  {/* Cinema Title */}
+                  <h1 className="text-white text-2xl sm:text-3xl lg:text-4xl font-bold mb-6">
+                    Minor Cineplex Arkham
+                  </h1>
+
+                  {/* Feature Tags */}
+                  <div className="flex flex-wrap gap-3 mb-6">
+                    <span className="px-4 py-2 rounded-full bg-gray-600 text-white text-sm font-medium">
+                      Hearing assistance
+                    </span>
+                    <span className="px-4 py-2 rounded-full bg-gray-600 text-white text-sm font-medium">
+                      Wheelchair access
+                    </span>
+                  </div>
+
+                  {/* Description - Desktop only */}
+                  <div className="hidden lg:block space-y-4 mt-4">
+                    <p className="text-gray-300 text-sm leading-relaxed">
+                      Minor Cineplex cinemas often offer features like comfortable
+                      seating, concession stands with snacks and drinks, and
+                      advanced sound systems. Also have a hearing assistance and
+                      wheelchair assess.
+                    </p>
+                    <p className="text-gray-300 text-sm leading-relaxed">
+                      Typically show a mix of Hollywood blockbusters, Thai films,
+                      and independent or international movies.
+                    </p>
                   </div>
                 </div>
               </div>
 
-              {/* Cinema Details */}
-              <div className="w-2/3 sm:w-full lg:w-2/3 p-4 sm:p-8 flex flex-col justify-start pt-4 sm:pt-8 sm:mt-6">
-                {/* Cinema Title */}
-                <h1 className="text-white text-2xl sm:text-3xl lg:text-4xl font-bold mb-6">
-                  Minor Cineplex Arkham
-                </h1>
-
-                {/* Feature Tags */}
-                <div className="flex flex-wrap gap-3 mb-6">
-                  <span className="px-4 py-2 rounded-full bg-gray-600 text-white text-sm font-medium">
-                    Hearing assistance
-                  </span>
-                  <span className="px-4 py-2 rounded-full bg-gray-600 text-white text-sm font-medium">
-                    Wheelchair access
-                  </span>
-                </div>
-
-                {/* Description - Desktop only */}
-                <div className="hidden lg:block space-y-4 mt-4">
+              {/* Description Section - Mobile and Tablet only */}
+              <div className="lg:hidden px-4 sm:px-8 pb-8">
+                <div className="space-y-4">
                   <p className="text-gray-300 text-sm leading-relaxed">
                     Minor Cineplex cinemas often offer features like comfortable
                     seating, concession stands with snacks and drinks, and
@@ -62,22 +94,6 @@ const CinemaDetallWidget = () => {
                     and independent or international movies.
                   </p>
                 </div>
-              </div>
-            </div>
-
-            {/* Description Section - Mobile and Tablet only */}
-            <div className="lg:hidden px-4 sm:px-8 pb-8">
-              <div className="space-y-4">
-                <p className="text-gray-300 text-sm leading-relaxed">
-                  Minor Cineplex cinemas often offer features like comfortable
-                  seating, concession stands with snacks and drinks, and
-                  advanced sound systems. Also have a hearing assistance and
-                  wheelchair assess.
-                </p>
-                <p className="text-gray-300 text-sm leading-relaxed">
-                  Typically show a mix of Hollywood blockbusters, Thai films,
-                  and independent or international movies.
-                </p>
               </div>
             </div>
           </div>
@@ -97,8 +113,7 @@ const CinemaDetallWidget = () => {
                 movie={{
                   id: 'movie1',
                   title: 'Django Unchained',
-                  poster:
-                    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQkUywIUXDjHSQJIaNHYVs08osgBpF5Ot-xmB_omyEZeeRP9Xug',
+                  poster: movie1Poster,
                   genreTags: ['Comedy', 'Drama'],
                   languageTag: 'EN',
                   movieDetailLink: '#',
@@ -144,8 +159,7 @@ const CinemaDetallWidget = () => {
                 movie={{
                   id: 'movie2',
                   title: 'The Dark Knight',
-                  poster:
-                    'https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcQkUywIUXDjHSQJIaNHYVs08osgBpF5Ot-xmB_omyEZeeRP9Xug',
+                  poster: movie2Poster,
                   genreTags: ['Action', 'Crime'],
                   languageTag: 'TH',
                   movieDetailLink: '#',
@@ -183,8 +197,7 @@ const CinemaDetallWidget = () => {
                 movie={{
                   id: 'movie3',
                   title: 'Interstella',
-                  poster:
-                    'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQkUywIUXDjHSQJIaNHYVs08osgBpF5Ot-xmB_omyEZeeRP9Xug',
+                  poster: movie3Poster,
                   genreTags: ['Sci-fi'],
                   languageTag: 'TH/EN',
                   movieDetailLink: '#',
@@ -221,8 +234,7 @@ const CinemaDetallWidget = () => {
                 movie={{
                   id: 'movie4',
                   title: 'Dune: Part Two',
-                  poster:
-                    'https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcQkUywIUXDjHSQJIaNHYVs08osgBpF5Ot-xmB_omyEZeeRP9Xug',
+                  poster: movie4Poster,
                   genreTags: ['Action', 'Sci-fi'],
                   languageTag: 'TH',
                   movieDetailLink: '#',

@@ -1,8 +1,8 @@
 import CloseRoundLight from "../Icons/CloseRoundLight";
 
 type messageAlertProps = {
-  header: string;
-  text: string;
+  header?: string;
+  text?: string;
   onClick?: () => void;
 };
 

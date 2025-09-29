@@ -1,4 +1,5 @@
 import SignUpForm, { FormValues } from "@/components/Forms/SignUpForm";
+import { UseFormSetError } from "react-hook-form";
 import axios, { AxiosError } from "axios";
 import RegisterSuccess from "@/components/Widgets/RegisterSuccess";
 import React, { useState } from "react";
@@ -6,7 +7,10 @@ import React, { useState } from "react";
 const Signup = () => {
   const [success, setSuccess] = useState<boolean>(false);
 
-  const handleRegister = async (values: FormValues, setError: any) => {
+  const handleRegister = async (
+    values: FormValues,
+    setError: UseFormSetError<FormValues>
+  ) => {
     try {
       const response = await axios.post(
         "http://localhost:3000/api/auth/signup",

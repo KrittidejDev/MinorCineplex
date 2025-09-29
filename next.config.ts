@@ -32,6 +32,10 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "encrypted-tbn2.gstatic.com",
       },
+      {
+        protocol: "https",
+        hostname: "scontent.fbkk35-1.fna.fbcdn.net",
+      },
     ],
   },
 };

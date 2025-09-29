@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import Image from 'next/image'
 
 const CouponDetail = () => {
+  
   return (
     <NavAndFooter>
       <div className="flex flex-col lg:flex-row items-center w-full min-h-screen px-4 sm:px-8 lg:px-40 py-6 lg:py-30 gap-5">

@@ -45,6 +45,8 @@ import {
 } from "@/components/ui/bookingstatus";
 import SummaryBoxCard from "@/components/Cards/SummaryBoxCard";
 
+import AdminSidebar from "@/components/ui/adminsidebar";
+
 const AllWidget = () => {
   // State for radio buttons
   const [selectedRadio, setSelectedRadio] = useState("option2");
@@ -722,6 +724,14 @@ const AllWidget = () => {
         <h2 className="text-2xl font-bold mb-6 text-center">Review</h2>
         <div className="flex gap-5">
           <ReviewCard />
+        </div>
+      </div>
+
+      {/* Admin Sidebar */}
+      <div className="mt-20">
+        <h2 className="text-2xl font-bold mb-6 text-center">Admin Sidebar</h2>
+        <div className="flex gap-5">
+          <AdminSidebar />
         </div>
       </div>
     </div>

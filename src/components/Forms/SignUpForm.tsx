@@ -1,12 +1,13 @@
 import InputPassword from "../Inputs/InputPassword";
 import InputTextFeild from "../Inputs/InputTextFeild";
+import { UseFormSetError } from "react-hook-form";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Button } from "../ui/button";
 import * as yup from "yup";
 import Link from "next/link";
 
-type FormValues = {
+export type FormValues = {
   username: string;
   phoneNumber: string;
   email: string;
@@ -15,7 +16,10 @@ type FormValues = {
 };
 
 type SignUpFormProps = {
-  onSubmit?: (values: FormValues) => void;
+  onSubmit?: (
+    values: FormValues,
+    setError: UseFormSetError<FormValues>
+  ) => void;
 };
 
 const SignUpForm = ({ onSubmit }: SignUpFormProps) => {
@@ -33,7 +37,7 @@ const SignUpForm = ({ onSubmit }: SignUpFormProps) => {
     confirmPassword: yup
       .string()
       .required("Confirm Password is required")
-      .oneOf([yup.ref("password")], "Passwords must match")
+      .oneOf([yup.ref("password")], "Passwords must match"),
   });
 
   const {
@@ -41,6 +45,7 @@ const SignUpForm = ({ onSubmit }: SignUpFormProps) => {
     watch,
     handleSubmit,
     formState: { errors },
+    setError,
   } = useForm<FormValues>({
     resolver: yupResolver(schema),
   });
@@ -50,7 +55,7 @@ const SignUpForm = ({ onSubmit }: SignUpFormProps) => {
 
   return (
     <form
-      onSubmit={handleSubmit(onSubmit ?? (() => {}))}
+      onSubmit={handleSubmit((values) => onSubmit?.(values, setError))}
       className="max-w-[380px] flex flex-col items-center gap-10"
     >
       <h2 className="text-f-36 text-center text-white">Register</h2>
@@ -74,12 +79,12 @@ const SignUpForm = ({ onSubmit }: SignUpFormProps) => {
           render={({ field }) => (
             <InputTextFeild
               {...field}
-              label={"Phone Number"}
-              placeholder="Phone Number"
-              errors={errors.phoneNumber?.message}
+              label={"Email"}
+              placeholder="Email"
+              errors={errors.email?.message}
             />
           )}
-          name="phoneNumber"
+          name="email"
           defaultValue=""
         />
 
@@ -88,12 +93,12 @@ const SignUpForm = ({ onSubmit }: SignUpFormProps) => {
           render={({ field }) => (
             <InputTextFeild
               {...field}
-              label={"Email"}
-              placeholder="Email"
-              errors={errors.email?.message}
+              label={"Phone Number"}
+              placeholder="Phone Number"
+              errors={errors.phoneNumber?.message}
             />
           )}
-          name="email"
+          name="phoneNumber"
           defaultValue=""
         />
 

@@ -46,6 +46,7 @@ import {
 import SummaryBoxCard from "@/components/Cards/SummaryBoxCard";
 
 import AdminSidebar from "@/components/ui/adminsidebar";
+import FilterSearch from "@/components/Widgets/FilterSearch";
 
 const AllWidget = () => {
   // State for radio buttons
@@ -664,6 +665,18 @@ const AllWidget = () => {
           />
           <InputTextArea placeholder="Placeholder Text" label="Label" />
         </form>
+      </div>
+
+      {/* Filter Search */}
+      <div className="mt-20 w-full max-w-6xl px-4">
+        <h2 className="text-2xl font-bold mb-6 text-center">Filter Search</h2>
+        <div className="flex justify-center">
+          <FilterSearch
+            onSearch={(filters) => {
+              console.log("Search filters:", filters);
+            }}
+          />
+        </div>
       </div>
 
       {/* Showtime Selection Preview */}

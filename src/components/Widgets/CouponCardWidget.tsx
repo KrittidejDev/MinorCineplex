@@ -22,7 +22,7 @@ interface APICoupon {
   updatedAt: string
 }
 
-// Type ของ coupon สำหรับ CouponCard
+// Type ของ สำหรับ CouponCard
 interface CouponCardData {
   id: number
   code: string
@@ -81,7 +81,7 @@ const CouponWidget = () => {
               coupon={{
                 code: coupon.code,
                 discount: coupon.discount,
-                expiresAt: coupon.expiresAt, 
+                expiresAt: coupon.expiresAt,
               }}
             />
           ))}

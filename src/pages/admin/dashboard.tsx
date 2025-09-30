@@ -16,7 +16,7 @@ export default function Dashboard() {
     //   <p>Email: {session.user.email}</p>
     //   <button onClick={() => signOut()}>Logout</button>
     // </div>
-     <div>
+     <div >
       <AdminSidebar />
       {/* <h1>Dashboard</h1>
       <p>ID: </p>

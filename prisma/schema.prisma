@@ -9,20 +9,23 @@ datasource db {
 }
 
 model cinema {
-  id             String   @id @default(uuid())
-  name           String   @unique
-  address        String
-  phone          String?
-  description    String?
-  group_location String?
-  lat            Float?
-  lng            Float?
-  icon_url       String?
-  opening_hours  String?
-  transportation String?
-  created_at     DateTime @default(now())
-  updated_at     DateTime @updatedAt
-  halls          hall[]
+  id               String   @id @default(uuid())
+  name             String   @unique
+  name_en          String?
+  address          String
+  phone            String?
+  description      String?
+  description_en   String?
+  group_location   String?
+  group_location_en String?
+  lat              Float?
+  lng              Float?
+  icon_url         String?
+  opening_hours    String?
+  transportation   String?
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+  halls            hall[]
 }
 
 model hall {
@@ -53,25 +56,29 @@ model seat {
 }
 
 model movie {
-  id           String           @id @default(uuid())
-  title        String           @unique
-  duration_min Int
-  description  String?
-  poster_url   String?
-  trailer_url  String?
-  genre        String?
-  rating       String?
-  created_at   DateTime         @default(now())
-  updated_at   DateTime         @updatedAt
-  release_date DateTime?
-  actors       movie_actor[]
-  directors    movie_director[]
-  showtimes    showtime[]
+  id             String           @id @default(uuid())
+  title          String           @unique
+  title_en       String?
+  duration_min   Int
+  description    String?
+  description_en String?
+  poster_url     String?
+  trailer_url    String?
+  genre          String?
+  genre_en       String?
+  rating         String?
+  created_at     DateTime         @default(now())
+  updated_at     DateTime         @updatedAt
+  release_date   DateTime?
+  actors         movie_actor[]
+  directors      movie_director[]
+  showtimes      showtime[]
 }
 
 model actor {
   id         String        @id @default(uuid())
   name       String        @unique
+  name_en    String?
   image_url  String?
   created_at DateTime      @default(now())
   updated_at DateTime      @updatedAt
@@ -79,11 +86,12 @@ model actor {
 }
 
 model director {
-  id         String           @id @default(uuid())
-  name       String           @unique
+  id         String        @id @default(uuid())
+  name       String        @unique
+  name_en    String?
   image_url  String?
-  created_at DateTime         @default(now())
-  updated_at DateTime         @updatedAt
+  created_at DateTime      @default(now())
+  updated_at DateTime      @updatedAt
   movies     movie_director[]
 }
 

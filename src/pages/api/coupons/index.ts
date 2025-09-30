@@ -12,26 +12,48 @@ export default async function handler(
     }
 
     if (req.method === "POST") {
-      const { title_en, title_th, discription_en, discription_th, code, discount, expiresAt, start_date } = req.body;
-
-      const newCoupon = await createCoupons({
+      const {
         title_en,
-        title_th, 
+        title_th,
         discription_en,
         discription_th,
         code,
-        start_date ,
-        discount_value: Number(discount),
-        end_date: new Date(expiresAt),
+        discount_value,
+        start_date,
+        end_date,
+        image,
+      } = req.body;
+
+      // ตรวจสอบว่ามีค่าจำเป็น
+      if (!code || !discount_value || !start_date || !end_date) {
+        return res.status(400).json({ error: "Missing required fields" });
+      }
+
+      const newCoupon = await createCoupons({
+        code,
+        title_en,
+        title_th,
+        discription_en,
+        discription_th,
+        discount_value: Number(discount_value),
+        start_date: new Date(start_date),
+        end_date: new Date(end_date),
+        image,
       });
 
       return res.status(201).json({ coupon: newCoupon });
     }
 
-    // ไม่สนใจ method อื่น ๆ
     return res.status(405).end();
-  } catch (err) {
+  } catch (err: unknown) {
     console.error(err);
-    return res.status(500).json({ error: "Server Error" });
+    
+    let message = "Server Error";
+    if (err instanceof Error) {
+      message = err.message;
+    }
+  
+    return res.status(500).json({ error: message });
   }
+  
 }

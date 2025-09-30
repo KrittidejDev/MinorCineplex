@@ -3,9 +3,6 @@ import { CreateCouponInput } from "@/types/coupon";
 
 const prisma = new PrismaClient();
 
-// Input type สำหรับการสร้าง coupon (เฉพาะ required + optional ที่สำคัญ)
-
-
 export const getMany = () => {
   return prisma.coupon.findMany();
 };
@@ -15,6 +12,14 @@ export const getById = (id: number) => {
 };
 
 export const create = async (data: CreateCouponInput) => {
+  // ตรวจสอบวันที่
+  if (!data.start_date || isNaN(data.start_date.getTime())) {
+    throw new Error("Invalid start_date format, must be a valid Date");
+  }
+  if (!data.end_date || isNaN(data.end_date.getTime())) {
+    throw new Error("Invalid end_date format, must be a valid Date");
+  }
+
   return prisma.coupon.create({
     data: {
       code: data.code,
@@ -22,13 +27,25 @@ export const create = async (data: CreateCouponInput) => {
       title_th: data.title_th ?? "",
       discription_en: data.discription_en ?? "",
       discription_th: data.discription_th ?? "",
-      discount_type: "PERCENTAGE",   // default
+      discount_type: "PERCENTAGE", // default
       discount_value: data.discount_value,
       used_count: 0,
-      start_date: new Date(),
+      start_date: data.start_date,
       end_date: data.end_date,
-      status: "ACTIVE",              // default
-      image: null,                   // default
+      status: "ACTIVE",
+      image: data.image ?? null,
+    },
+  });
+};
+
+export const update = async (
+  id: number,
+  data: Partial<CreateCouponInput>
+) => {
+  return prisma.coupon.update({
+    where: { id },
+    data: {
+      image: data.image
     },
   });
 };

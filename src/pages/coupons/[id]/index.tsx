@@ -1,18 +1,78 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import { useRouter } from 'next/router'
 import NavAndFooter from '@/components/MainLayout/NavAndFooter'
 import { Button } from '@/components/ui/button'
 import Image from 'next/image'
+import { APICoupon } from '@/types/coupon'
 
 const CouponDetail = () => {
-  
+  const router = useRouter()
+  const { id } = router.query
+  const [coupon, setCoupon] = useState<APICoupon | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (!id) return
+
+    // แปลง id ให้เป็น number
+    const couponId = Array.isArray(id)
+      ? parseInt(id[0])
+      : parseInt(id as string)
+    if (isNaN(couponId)) {
+      setError('Invalid coupon id')
+      setLoading(false)
+      return
+    }
+
+    const fetchCoupon = async () => {
+      try {
+        const res = await fetch(`/api/coupons/${couponId}`)
+        if (!res.ok) throw new Error('Coupon not found')
+        const data = await res.json()
+        setCoupon(data.coupon)
+      } catch (err: unknown) {
+        if (err instanceof Error) setError(err.message)
+        else setError('Unknown error')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchCoupon()
+  }, [id])
+
+  if (loading)
+    return (
+      <NavAndFooter>
+        <p>Loading...</p>
+      </NavAndFooter>
+    )
+  if (error)
+    return (
+      <NavAndFooter>
+        <p>{error}</p>
+      </NavAndFooter>
+    )
+  if (!coupon)
+    return (
+      <NavAndFooter>
+        <p>Coupon not found</p>
+      </NavAndFooter>
+    )
   return (
     <NavAndFooter>
-      <div className="flex flex-col lg:flex-row items-center w-full min-h-screen px-4 sm:px-8 lg:px-40 py-6 lg:py-30 gap-5">
+      <div className="flex flex-col lg:flex-row items-center lg:items-start w-full min-h-screen px-4 sm:px-8 lg:px-130 py-6 lg:py-30 gap-5">
         {/* Left Side - Image */}
-        <div className="w-full lg:w-1/3 h-auto lg:h-full flex justify-center">
-          <div className="relative w-40 sm:w-64 lg:w-full h-40 sm:h-64 lg:h-80">
-            <Image src="/file.svg" alt="mock" fill className="object-contain" />
-          </div>
+        <div className="flex justify-center lg:justify-start w-full lg:w-[387px]">
+          <Image
+            src={coupon.image || '/default-image.svg'}
+            alt={coupon.title_en}
+            width={387}
+            height={387} // square
+            className="rounded-t-[8px] w-full h-auto"
+            priority
+          />
         </div>
 
         {/* Right Side - Content */}

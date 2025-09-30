@@ -1,122 +1,106 @@
 import MovieCard from "../Cards/MovieCard";
-import { useState } from "react";
-
+import { useState, useEffect } from "react";
+import axios from "axios";
+import { getMovies } from "@/services/movieService";
 
 function NowShowingComingSoon() {
   const [activeTab, setActiveTab] = useState("nowShowing");
+  const [movies, setMovies] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const nowShowingMovies = [
-    {
-      title: "Django Unchained",
-      image:
-        "https://m.media-amazon.com/images/M/MV5BMjIyNTQ5NjQ1OV5BMl5BanBnXkFtZTcwODg1MDU4OA@@._V1_FMjpg_UX1000_.jpg",
-      date: "24 Jun 2024",
-      rating: 4.6,
-      genreTag1: "Comedy",
-      genreTag2: "Drama",
-      langTag: "EN",
-    },
-    {
-      title: "The Dark Knight",
-      image:
-        "https://m.media-amazon.com/images/M/MV5BMTMxNTMwODM0NF5BMl5BanBnXkFtZTcwODAyMTk2Mw@@._V1_.jpg",
-      date: "18 Jun 2024",
-      rating: 4.6,
-      genreTag1: "Action",
-      genreTag2: "Crime",
-      langTag: "TH",
-    },
-    {
-      title: "Interstellar",
-      image:
-        "https://m.media-amazon.com/images/M/MV5BYzdjMDAxZGItMjI2My00ODA1LTlkNzItOWFjMDU5ZDJlYWY3XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
-      date: "10 Jul 2024",
-      rating: 4.8,
-      genreTag1: "Sci-fi",
-      genreTag2: "Drama",
-      langTag: "TH/EN",
-    },
-    {
-      title: "Dune: Part Two",
-      image:
-        "https://m.media-amazon.com/images/M/MV5BNTc0YmQxMjEtODI5MC00NjFiLTlkMWUtOGQ5NjFmYWUyZGJhXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
-      date: "20 Jul 2024",
-      rating: 4.9,
-      genreTag1: "Action",
-      genreTag2: "Drama",
-      langTag: "TH/EN",
-    },
-  ];
+  interface APIMovie {
+    id: string;
+    title: string;
+    duration_min: number;
+    description?: string | null;
+    poster_url?: string | null;
+    trailer_url?: string | null;
+    genre?: string | null;
+    rating?: string | null;
+    created_at: Date;
+    updated_at: Date;
+    release_date?: Date | null;
+  }
 
-  const comingSoonMovies = [
-    {
-      title: "Pirates of the Caribbean: Dead men tell no tales",
-      image:
-        "https://m.media-amazon.com/images/M/MV5BMTYyMTcxNzc5M15BMl5BanBnXkFtZTgwOTg2ODE2MTI@._V1_FMjpg_UX1000_.jpg",
-      date: "24 Jun 2024",
-      rating: 4.6,
-      genreTag1: "Comedy",
-      genreTag2: "Drama",
-      langTag: "EN",
-    },
-    {
-      title: "Sherlock Holmes: A Game of Shadows",
-      image:
-        "https://m.media-amazon.com/images/M/MV5BMTQwMzQ5Njk1MF5BMl5BanBnXkFtZTcwNjIxNzIxNw@@._V1_.jpg",
-      date: "18 Jun 2024",
-      rating: 4.6,
-      genreTag1: "Action",
-      genreTag2: "Crime",
-      langTag: "TH",
-    },
-    {
-      title: "Ocean's Eleven",
-      image:
-        "https://m.media-amazon.com/images/M/MV5BMmNhZDkxYTgtMDM3ZC00NTQ3LWFjZTUtNzc1Y2QyNWZjNDRmXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
-      date: "10 Jul 2024",
-      rating: 4.8,
-      genreTag1: "Sci-fi",
-      genreTag2: "Drama",
-      langTag: "TH/EN",
-    },
-    {
-      title: "300",
-      image:
-        "https://m.media-amazon.com/images/M/MV5BMjc4OTc0ODgwNV5BMl5BanBnXkFtZTcwNjM1ODE0MQ@@._V1_FMjpg_UX1000_.jpg",
-      date: "20 Jul 2024",
-      rating: 4.9,
-      genreTag1: "Action",
-      genreTag2: "Drama",
-      langTag: "TH/EN",
-    },
-  ];
+  interface MovieCardData {
+    id: string;
+    title: string;
+    poster_url?: string | null;
+    release_date?: Date | null;
+    rating?: string | null;
+    genre?: string | null;
+  }
 
-  const moviesToDisplay = activeTab === "nowShowing" ? nowShowingMovies : comingSoonMovies
+  useEffect(() => {
+    const fetchMovies = async () => {
+      try {
+        const res = await axios.get<{ movie: APIMovie[] }>("/api/movies");
+        console.log("Full response:", res);
+        console.log("Movies data:", res.data.movie);
+        const Movies: MovieCardData[] = res.data.movie.map((movie) => ({
+          id: movie.id,
+          title: movie.title,
+          poster_url: movie.poster_url,
+          release_date: movie.release_date
+            ? new Date(movie.release_date)
+            : null,
+          rating: movie.rating,
+          genre: movie.genre,
+        }));
+        setMovies(Movies);
+      } catch (err) {
+        console.error(err);
+        setError("ไม่สามารถโหลดหนังได้");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMovies();
+  }, []);
+
+  const nowShowingMovies = movies.filter(
+    (m) => m.release_date && new Date(m.release_date) <= new Date())
+    .slice(0, 4);
+  const comingSoonMovies = movies.filter(
+    (m) => m.release_date && new Date(m.release_date) > new Date()
+  );
+
+  const moviesToDisplay =
+    activeTab === "nowShowing" ? nowShowingMovies : comingSoonMovies;
 
   return (
     <div className="w-screen flex justify-center py-20 px-4">
       <div className="flex flex-col gap-10">
         <div className="flex gap-4">
-          <button onClick={() => setActiveTab("nowShowing")} className={`font-bold text-f-24 py-1 cursor-pointer ${activeTab === "nowShowing" ? "text-white-wfff border-b border-gray-gf7e" : "text-gray-g3b0 border-b border-transparent"}`}>
+          <button
+            onClick={() => setActiveTab("nowShowing")}
+            className={`font-bold text-f-24 py-1 cursor-pointer ${activeTab === "nowShowing" ? "text-white-wfff border-b border-gray-gf7e" : "text-gray-g3b0 border-b border-transparent"}`}
+          >
             Now showing
           </button>
-          <button onClick={() => setActiveTab("comingSoon")} className={`font-bold text-f-24 py-1 cursor-pointer ${activeTab === "comingSoon" ? "text-white-wfff border-b border-gray-gf7e" : "text-gray-g3b0 border-b border-transparent"}`}>
+          <button
+            onClick={() => setActiveTab("comingSoon")}
+            className={`font-bold text-f-24 py-1 cursor-pointer ${activeTab === "comingSoon" ? "text-white-wfff border-b border-gray-gf7e" : "text-gray-g3b0 border-b border-transparent"}`}
+          >
             Coming soon
           </button>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
-          {moviesToDisplay.map((movie, index) => (
+          {moviesToDisplay.map((movie) => (
             <MovieCard
-            key={index}
-            title={movie.title}
-            image={movie.image}
-            date={movie.date}
-            rating={movie.rating}
-            genreTag1={movie.genreTag1}
-              genreTag2={movie.genreTag2}
-              langTag={movie.langTag}
-           />
+              key={movie.id}
+              id={movie.id}
+              title={movie.title}
+              poster_url={movie.poster_url}
+              release_date={
+                movie.release_date ? new Date(movie.release_date) : undefined
+              }
+              rating={movie.rating}
+              genre={movie.genre}
+            />
           ))}
         </div>
       </div>

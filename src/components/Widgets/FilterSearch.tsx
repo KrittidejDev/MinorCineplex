@@ -130,7 +130,7 @@ const FilterSearch: React.FC<FilterSearchProps> = ({ onSearch, className = "" })
                         value={filters.movie}
                         onValueChange={(value) => handleInputChange('movie', value)}
                     >
-                        <SelectTrigger className="bg-gray-g63f border-gray-gf7e text-white rounded-sm h-12 focus:border-gray-g3b0 focus:ring-0 w-full relative">
+                        <SelectTrigger className="bg-gray-g63f border-gray-gf7e text-white rounded-sm h-12 focus:border-gray-g3b0 focus:ring-0 w-full relative cursor-pointer">
                             <SelectValue placeholder="Movie" />
                             <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
                                 <ExpandDownLight width="16" height="16" color="#8B93B0" />
@@ -141,7 +141,7 @@ const FilterSearch: React.FC<FilterSearchProps> = ({ onSearch, className = "" })
                                 <SelectItem
                                     key={option.value}
                                     value={option.value}
-                                    className="text-white hover:bg-gray-gf7e focus:bg-gray-gf7e"
+                                    className="text-white hover:bg-gray-gf7e focus:bg-gray-gf7e cursor-pointer"
                                 >
                                     {option.label}
                                 </SelectItem>
@@ -156,7 +156,7 @@ const FilterSearch: React.FC<FilterSearchProps> = ({ onSearch, className = "" })
                         value={filters.language}
                         onValueChange={(value) => handleInputChange('language', value)}
                     >
-                        <SelectTrigger className="bg-gray-g63f border-gray-gf7e text-white rounded-sm h-12 focus:border-gray-g3b0 focus:ring-0 w-full relative">
+                        <SelectTrigger className="bg-gray-g63f border-gray-gf7e text-white rounded-sm h-12 focus:border-gray-g3b0 focus:ring-0 w-full relative cursor-pointer">
                             <SelectValue placeholder="Language" />
                             <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
                                 <ExpandDownLight width="16" height="16" color="#8B93B0" />
@@ -167,7 +167,7 @@ const FilterSearch: React.FC<FilterSearchProps> = ({ onSearch, className = "" })
                                 <SelectItem
                                     key={option.value}
                                     value={option.value}
-                                    className="text-white hover:bg-gray-gf7e focus:bg-gray-gf7e"
+                                    className="text-white hover:bg-gray-gf7e focus:bg-gray-gf7e cursor-pointer"
                                 >
                                     {option.label}
                                 </SelectItem>
@@ -182,7 +182,7 @@ const FilterSearch: React.FC<FilterSearchProps> = ({ onSearch, className = "" })
                         value={filters.genre}
                         onValueChange={(value) => handleInputChange('genre', value)}
                     >
-                        <SelectTrigger className="bg-gray-g63f border-gray-gf7e text-white rounded-sm h-12 focus:border-gray-g3b0 focus:ring-0 w-full relative">
+                        <SelectTrigger className="bg-gray-g63f border-gray-gf7e text-white rounded-sm h-12 focus:border-gray-g3b0 focus:ring-0 w-full relative cursor-pointer">
                             <SelectValue placeholder="Genre" />
                             <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
                                 <ExpandDownLight width="16" height="16" color="#8B93B0" />
@@ -193,7 +193,7 @@ const FilterSearch: React.FC<FilterSearchProps> = ({ onSearch, className = "" })
                                 <SelectItem
                                     key={option.value}
                                     value={option.value}
-                                    className="text-white hover:bg-gray-gf7e focus:bg-gray-gf7e"
+                                    className="text-white hover:bg-gray-gf7e focus:bg-gray-gf7e cursor-pointer"
                                 >
                                     {option.label}
                                 </SelectItem>
@@ -208,7 +208,7 @@ const FilterSearch: React.FC<FilterSearchProps> = ({ onSearch, className = "" })
                         value={filters.city}
                         onValueChange={(value) => handleInputChange('city', value)}
                     >
-                        <SelectTrigger className="bg-gray-g63f border-gray-gf7e text-white rounded-sm h-12 focus:border-gray-g3b0 focus:ring-0 w-full relative">
+                        <SelectTrigger className="bg-gray-g63f border-gray-gf7e text-white rounded-sm h-12 focus:border-gray-g3b0 focus:ring-0 w-full relative cursor-pointer">
                             <SelectValue placeholder="City" />
                             <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
                                 <ExpandDownLight width="16" height="16" color="#8B93B0" />
@@ -219,7 +219,7 @@ const FilterSearch: React.FC<FilterSearchProps> = ({ onSearch, className = "" })
                                 <SelectItem
                                     key={option.value}
                                     value={option.value}
-                                    className="text-white hover:bg-gray-gf7e focus:bg-gray-gf7e"
+                                    className="text-white hover:bg-gray-gf7e focus:bg-gray-gf7e cursor-pointer"
                                 >
                                     {option.label}
                                 </SelectItem>
@@ -269,7 +269,7 @@ const FilterSearch: React.FC<FilterSearchProps> = ({ onSearch, className = "" })
                 <div className="w-full lg:w-auto">
                     <button
                         onClick={handleSearch}
-                        className="bg-blue-bbee hover:bg-blue-b9a8 text-white rounded-sm h-12 px-6 flex items-center justify-center gap-2 transition-colors duration-200 w-full lg:w-auto"
+                        className="bg-blue-bbee hover:bg-blue-b9a8 text-white rounded-sm h-12 px-6 flex items-center justify-center gap-2 transition-colors duration-200 w-full lg:w-auto cursor-pointer"
                     >
                         <SearchLight width="30" height="30" color="#FFFFFF" />
                         <span className="text-fm-16"></span>

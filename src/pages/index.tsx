@@ -7,6 +7,8 @@ import LocationPermissionModal from "@/components/Modals/LocationPermissionModal
 import { useLocationPermission } from "@/lib/hooks/useLocationPermission";
 import { useNearbyCinemas } from "@/lib/hooks/useNearbyCinemas";
 import dynamic from "next/dynamic";
+import FilterSearch from "@/components/Widgets/FilterSearch";
+import { Filter } from "lucide-react";
 
 const CurtainIntro = dynamic(() => import("@/components/Widgets/CurtainIntro"), { ssr: false });
 
@@ -59,7 +61,12 @@ export default function Home() {
         />
       )}
       <div className="flex-1 max-w-[1200px]">
+        <div className="absolute top-83 w-screen flex justify-center">
+        <FilterSearch />
+        </div>
+        <div className="mt-20">
         <NowShowingComingSoon />
+        </div>
         <Coupon />
         <CinemaLocation data={dataCinemas} filterCinema={handleFilter} />
       </div>

@@ -61,7 +61,7 @@ export default function Home() {
         />
       )}
       <div className="flex-1 max-w-[1200px]">
-        <div className="absolute top-83 w-screen flex justify-center">
+        <div className="lg:absolute top-81.5 w-screen flex justify-center">
         <FilterSearch />
         </div>
         <div className="mt-20">

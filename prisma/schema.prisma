@@ -219,3 +219,20 @@ model coupon {
   createdAt DateTime @default(now()) 
   updatedAt DateTime @updatedAt 
 }
+
+model coupon { 
+  id Int @id @default(autoincrement()) 
+  code String @unique 
+  discountType String // "PERCENTAGE" | "FIXED" 
+  discountValue Float 
+  minAmount Float? 
+  maxDiscount Float? 
+  usageLimit Int? 
+  usedCount Int @default(0) 
+  startDate DateTime 
+  endDate DateTime 
+  status String // "ACTIVE" | "EXPIRED" | "DISABLED" 
+  image  String?
+  createdAt DateTime @default(now()) 
+  updatedAt DateTime @updatedAt 
+}

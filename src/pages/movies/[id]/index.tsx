@@ -1,3 +1,4 @@
+import { useRouter } from "next/router";
 import React from "react";
 import MoviesDetailWidget from "@/components/Widgets/MovieDetailWidget";
 import DateSelectionBarWidget from "@/components/Widgets/DateSelectionBarWidget";
@@ -8,16 +9,17 @@ import NavAndFooter from "@/components/MainLayout/NavAndFooter";
 import CitySelection from "@/components/ui/cityselection";
 
 const MoviesDetail = () => {
+  const router = useRouter();
+  const { id } = router.query;
+
+  if (!id) return <p>Loading...</p>;
+
+  const movieId = Array.isArray(id) ? id[0] : id;
+
   return (
     <>
       <NavAndFooter>
-        <MoviesDetailWidget
-          title={"The Dark Knight"}
-          image={
-            "https://m.media-amazon.com/images/M/MV5BMTMxNTMwODM0NF5BMl5BanBnXkFtZTcwODAyMTk2Mw@@._V1_.jpg"
-          }
-          date={"18 Jun 2024"}
-          detail={"Lorem, ipsum dolor sit amet consectetur adipisicing elit."}
+        <MoviesDetailWidget id={movieId}
         />
         <DateSelectionBarWidget />
         <div className="max-w-[1200px] mx-auto flex flex-col lg:flex-row gap-5 items-center justify-center px-4 mt-10 lg:mt-20">

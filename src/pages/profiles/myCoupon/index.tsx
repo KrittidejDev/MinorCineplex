@@ -5,7 +5,7 @@ import CouponCard from '@/components/Cards/CouponCard'
 import { CouponCardData, APICoupon } from '@/types/coupon'
 import axios from 'axios'
 
-const index = () => {
+const ProfileMycoupons = () => {
   const [coupons, setCoupons] = useState<CouponCardData[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -77,4 +77,4 @@ const index = () => {
   )
 }
 
-export default index
+export default ProfileMycoupons

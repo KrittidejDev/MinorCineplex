@@ -36,8 +36,6 @@ function NowShowingComingSoon() {
     const fetchMovies = async () => {
       try {
         const res = await axios.get<{ movie: APIMovie[] }>("/api/movies");
-        console.log("Full response:", res);
-        console.log("Movies data:", res.data.movie);
         const Movies: MovieCardData[] = res.data.movie.map((movie) => ({
           id: movie.id,
           title: movie.title,
@@ -62,7 +60,7 @@ function NowShowingComingSoon() {
 
   const nowShowingMovies = movies.filter(
     (m) => m.release_date && new Date(m.release_date) <= new Date())
-    .slice(0, 4);
+    .slice(0, 4);;
   const comingSoonMovies = movies.filter(
     (m) => m.release_date && new Date(m.release_date) > new Date()
   );

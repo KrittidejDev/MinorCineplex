@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import StarFill from "../Icons/StarFill";
 import Tag from "../Widgets/Tag";
 import Link from "next/link";

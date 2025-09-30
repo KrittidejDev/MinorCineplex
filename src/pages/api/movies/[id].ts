@@ -6,8 +6,13 @@ export default async function handler(
   res: NextApiResponse
 ) {
   const { id } = req.query;
+
+  if (!id || Array.isArray(id)) {
+    return res.status(400).json({ error: "Invalid movie ID" });
+  }
+  
   try {
-    const movie = await getMovieById(Number(id));
+    const movie = await getMovieById(id);
     res.status(200).json({ movie });
   } catch (error: unknown) {
     console.error(error);

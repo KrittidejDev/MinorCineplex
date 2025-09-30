@@ -1,8 +1,47 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import NavBarWidget from '@/components/Widgets/NavBarWidget'
 import ProfileBar from '@/components/Widgets/ProfileBar'
 import CouponCard from '@/components/Cards/CouponCard'
+import { CouponCardData, APICoupon } from '@/types/coupon'
+import axios from 'axios'
+
 const index = () => {
+  const [coupons, setCoupons] = useState<CouponCardData[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    const fetchCoupons = async () => {
+      try {
+        setLoading(true)
+        const res = await axios.get<{ coupons: APICoupon[] }>('/api/coupons')
+        const apiCoupons: APICoupon[] = res.data.coupons
+
+        // แปลง APICoupon → CouponCardData
+        const cardData: CouponCardData[] = apiCoupons.map((c: APICoupon) => ({
+          id: c.id,
+          code: c.code,
+          title_en: c.title_en,
+          title_th: c.title_th,
+          discount: c.discount_value,
+          expiresAt: c.end_date ?? null,
+          image: c.image,
+        }))
+
+        setCoupons(cardData)
+      } catch (err) {
+        console.error(err)
+        setError('ไม่สามารถโหลดคูปองได้')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchCoupons()
+  }, [])
+
+  if (loading) return <p className="text-center py-10">Loading...</p>
+  if (error) return <p className="text-center py-10">{error}</p>
   return (
     <div className="bg-blue-b flex flex-col min-h-[100dvh]">
       <NavBarWidget />
@@ -22,17 +61,14 @@ const index = () => {
           </div>
 
           {/* Content - Full Width Container */}
-          <div className="flex flex-col items-start justify-start gap-y-5 w-full md:w-3/4 lg:w-4/5 px-0 md:px-0 lg:px-22">
+          <div className="flex flex-col items-start justify-start gap-y-5 w-full md:w-3/4 lg:w-4/5 px-0 md:px-0 lg:px-60">
             <div className="text-f-24 md:text-f-28 lg:text-f-36 px-0 md:px-0 lg:px-0">
               My coupons
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-2  gap-y-10 w-full px-0 md:px-0 lg:px-0">
-            <CouponCard title={'Minor Cineplex x COKE JOYFUL '}/>
-            <CouponCard title={'Minor Cineplex x COKE JOYFUL '}/>
-             <CouponCard title={'Minor Cineplex x COKE JOYFUL '}/>
-             <CouponCard title={'Minor Cineplex x COKE JOYFUL '}/>
-             <CouponCard title={'Minor Cineplex x COKE JOYFUL '}/>
-             <CouponCard title={'Minor Cineplex x COKE JOYFUL '}/>
+            <div className="grid grid-cols-2 lg:grid-cols-2  gap-y-10 w-full px-0 md:px-0 lg:px-0">
+            {coupons.map((coupon) => (
+                <CouponCard key={coupon.id} coupon={coupon} />
+              ))}
             </div>
           </div>
         </div>

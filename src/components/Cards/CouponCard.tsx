@@ -5,31 +5,36 @@ import Image from 'next/image'
 import { CouponCardData } from '@/types/coupon'
 
 interface CouponCardProps {
-  coupon: Pick<CouponCardData, 'code' | 'discount' | 'expiresAt' | 'title_en'>
+  coupon: Pick<
+    CouponCardData,
+    'id' | 'code' | 'discount' | 'expiresAt' | 'title_en' | 'image'
+  >
 }
 
 const CouponCard = ({ coupon }: CouponCardProps) => {
   const router = useRouter()
 
   const handleClickCoupon = () => {
-    router.push(`/coupons/${coupon.title_en}`)
+    router.push(`/coupons/${coupon.id}`)
   }
 
   return (
     <div className="w-[161px] md:w-[285px] h-[337px] lg:w-[285px] lg:h-[477px] flex flex-col rounded-[8px] bg-[#070C1B]">
       <div
-        className="h-[285px] bg-[#FFFFFF] rounded-t-[8px] cursor-pointer"
+        className="h-[285px] w-full  rounded-t-[8px] overflow-hidden cursor-pointer"
         onClick={handleClickCoupon}
       >
-        <div className="relative w-20 h-20 mx-auto mt-4">
+        <div className="relative w-full h-full">
           <Image
-            src="/images/coupon.png" // อนาคตเปลี่ยนเป็น coupon.image ได้
+            src={coupon.image ?? '/default-image.svg'}
             alt={coupon.title_en}
-            fill
-            className="object-contain"
+            width={285} // width ของ container บน desktop
+            height={285} // height เท่ากับ width → square
+            className="rounded-t-[8px]"
           />
         </div>
       </div>
+
       <div className="flex flex-col flex-1 items-center gap-y-9 p-4">
         <div className="flex flex-col mt-3 gap-3 items-start">
           <h4

@@ -1,4 +1,4 @@
-import * as couponRepo from "../repositories/couponRepository";
+import * as couponRepo from "@/repositories/couponRepository";
 import { CreateCouponInput } from "@/types/coupon";
 
 export const getCoupons = async () => {
@@ -10,14 +10,20 @@ export const getCouponById = async (id: number) => {
 };
 
 export const createCoupons = async (data: CreateCouponInput) => {
+  // แปลง start_date / end_date เป็น Date object หากเป็น string
+  const startDate = data.start_date instanceof Date ? data.start_date : new Date(data.start_date);
+  const endDate = data.end_date instanceof Date ? data.end_date : new Date(data.end_date);
+
   return couponRepo.create({
-    code: data.code,
-    title_en: data.title_en ?? "",
-    title_th: data.title_th ?? "",
-    discription_en: data.discription_en ?? "",
-    discription_th: data.discription_th ?? "",
-    discount_value: data.discount_value,
-    start_date: new Date(),
-    end_date: data.end_date,
+    ...data,
+    start_date: startDate,
+    end_date: endDate,
   });
+};
+
+export const updateCouponById = async (
+  id: number,
+  data: Partial<CreateCouponInput>
+) => {
+  return couponRepo.update(id, data);
 };

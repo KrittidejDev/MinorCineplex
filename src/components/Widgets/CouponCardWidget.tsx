@@ -3,13 +3,10 @@ import React, { useEffect, useState } from 'react'
 import { Button } from '../ui/button'
 import Link from 'next/link'
 import axios from 'axios'
-import { CouponCardData, APICoupon } from '@/types/coupon'
-
-// Type ของ coupon จาก API
-
+import { APICoupon } from '@/types/coupon'
 
 const CouponWidget = () => {
-  const [coupons, setCoupons] = useState<CouponCardData[]>([])
+  const [coupons, setCoupons] = useState<APICoupon[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -18,17 +15,8 @@ const CouponWidget = () => {
       try {
         setLoading(true)
         const res = await axios.get<{ coupons: APICoupon[] }>('/api/coupons')
-        const firstFour: CouponCardData[] = res.data.coupons
-          .slice(0, 4)
-          .map((c) => ({
-            id: c.id,
-            code: c.code,
-            title_en: c.title_en,
-            title_th: c.title_th,
-            discount: c.discountValue,
-            expiresAt: c.endDate || undefined,
-          }))
-        setCoupons(firstFour)
+        // ใช้แค่ 4 ตัวแรก
+        setCoupons(res.data.coupons.slice(0, 4))
       } catch (err) {
         console.error(err)
         setError('ไม่สามารถโหลดคูปองได้')
@@ -46,6 +34,7 @@ const CouponWidget = () => {
   return (
     <div className="w-dvw flex justify-center items-center py-20 px-4">
       <div className="flex flex-col gap-10 max-w-[1200px]">
+        {/* Header */}
         <div className="flex justify-between items-center font-bold text-2xl py-1">
           <h2 className="headline-2">Special coupons</h2>
           <Link href="/coupons" passHref>
@@ -54,15 +43,19 @@ const CouponWidget = () => {
             </Button>
           </Link>
         </div>
-        <div className="lg:flex gap-5 md:grid-cols-3 md:gap-5 grid grid-cols-2">
+
+        {/* Grid / Flex */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:flex gap-5 justify-center">
           {coupons.map((coupon) => (
             <CouponCard
               key={coupon.id}
               coupon={{
+                id: coupon.id,
                 code: coupon.code,
                 title_en: coupon.title_en,
-                discount: coupon.discount,
-                expiresAt: coupon.expiresAt,
+                discount: coupon.discount_value,
+                expiresAt: coupon.end_date ? new Date(coupon.end_date).toISOString() : null,
+                image: coupon.image,
               }}
             />
           ))}

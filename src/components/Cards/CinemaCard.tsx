@@ -15,7 +15,7 @@ const CinemaCard = ({ filter, cinema }: CinemaCardProps) => {
     i18n.language === "en" ? cinema?.distance_text : cinema?.distance_text_th;
 
   return (
-    <Link href="/cinemas" className="block">
+    <Link href={`/cinemas/${cinema.id}`} className="block">
       <div className="w-full max-w-[590px] border border-gray-g63f p-4 rounded-sm hover:border-gray-gf7e transition-colors cursor-pointer">
         <div className="flex gap-4 items-center">
           <LocationIconBlue />

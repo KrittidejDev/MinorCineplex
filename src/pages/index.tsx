@@ -13,10 +13,9 @@ const CurtainIntro = dynamic(() => import("@/components/Widgets/CurtainIntro"), 
 export default function Home() {
   const [filter, setFilter] = useState<string>("1");
   const [dataCinemas, setDataCinemas] = useState<any[]>([]);
-  const [showCurtain, setShowCurtain] = useState(true);
+  const [showCurtain, setShowCurtain] = useState(false);
   const {
     location,
-    permissionDenied,
     showModal,
     openModal,
     closeModal,
@@ -25,10 +24,17 @@ export default function Home() {
     neverAllow,
   } = useLocationPermission();
 
-  const { cinemas, loading, error, refetch } = useNearbyCinemas(
-    location,
-    filter
-  );
+  const { cinemas, loading, refetch } = useNearbyCinemas(location, filter);
+
+  useEffect(() => {
+    const lastShown = localStorage.getItem("curtain_last_shown");
+    const now = Date.now();
+    const fiveMinutes = 1000 * 60 * 5;
+    if (!lastShown || now - parseInt(lastShown, 5) > fiveMinutes) {
+      setShowCurtain(true);
+      localStorage.setItem("curtain_last_shown", now.toString());
+    }
+  }, []);
 
   useEffect(() => {
     setDataCinemas(cinemas);
@@ -42,8 +48,6 @@ export default function Home() {
     }
     refetch(value);
   };
-
-  console.log("cinema", cinemas);
 
   return (
     <NavAndFooterWithBanner>

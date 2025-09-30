@@ -1,0 +1,203 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model cinema {
+  id               String   @id @default(uuid())
+  name             String   @unique
+  name_en          String?
+  address          String
+  phone            String?
+  description      String?
+  description_en   String?
+  group_location   String?
+  group_location_en String?
+  lat              Float?
+  lng              Float?
+  icon_url         String?
+  opening_hours    String?
+  transportation   String?
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+  halls            hall[]
+}
+
+model hall {
+  id         String     @id @default(uuid())
+  name       String
+  seat_count Int?       @default(50)
+  cinema_id  String
+  created_at DateTime   @default(now())
+  updated_at DateTime   @updatedAt
+  cinema     cinema     @relation(fields: [cinema_id], references: [id])
+  seats      seat[]
+  showtimes  showtime[]
+
+  @@unique([name, cinema_id])
+}
+
+model seat {
+  id             String          @id @default(uuid())
+  seat_number    String
+  row            String
+  col            String
+  hall_id        String
+  booking_seats  booking_seat[]
+  hall           hall            @relation(fields: [hall_id], references: [id])
+  showtime_seats showtime_seat[]
+
+  @@unique([seat_number, hall_id])
+}
+
+model movie {
+  id             String           @id @default(uuid())
+  title          String           @unique
+  title_en       String?
+  duration_min   Int
+  description    String?
+  description_en String?
+  poster_url     String?
+  trailer_url    String?
+  genre          String?
+  genre_en       String?
+  rating         String?
+  created_at     DateTime         @default(now())
+  updated_at     DateTime         @updatedAt
+  release_date   DateTime?
+  actors         movie_actor[]
+  directors      movie_director[]
+  showtimes      showtime[]
+}
+
+model actor {
+  id         String        @id @default(uuid())
+  name       String        @unique
+  name_en    String?
+  image_url  String?
+  created_at DateTime      @default(now())
+  updated_at DateTime      @updatedAt
+  movies     movie_actor[]
+}
+
+model director {
+  id         String        @id @default(uuid())
+  name       String        @unique
+  name_en    String?
+  image_url  String?
+  created_at DateTime      @default(now())
+  updated_at DateTime      @updatedAt
+  movies     movie_director[]
+}
+
+model movie_actor {
+  id       String @id @default(uuid())
+  movie_id String
+  actor_id String
+  actor    actor  @relation(fields: [actor_id], references: [id])
+  movie    movie  @relation(fields: [movie_id], references: [id])
+
+  @@unique([movie_id, actor_id])
+}
+
+model movie_director {
+  id          String   @id @default(uuid())
+  movie_id    String
+  director_id String
+  director    director @relation(fields: [director_id], references: [id])
+  movie       movie    @relation(fields: [movie_id], references: [id])
+
+  @@unique([movie_id, director_id])
+}
+
+model time_slot {
+  id         String     @id @default(uuid())
+  name       String     @unique
+  start_time DateTime
+  end_time   DateTime
+  created_at DateTime   @default(now())
+  updated_at DateTime   @updatedAt
+  showtimes  showtime[]
+}
+
+model showtime {
+  id           String          @id @default(uuid())
+  movie_id     String
+  hall_id      String
+  time_slot_id String
+  date         DateTime
+  price        Float           @default(200)
+  created_at   DateTime        @default(now())
+  updated_at   DateTime        @updatedAt
+  bookings     booking[]
+  hall         hall            @relation(fields: [hall_id], references: [id])
+  movie        movie           @relation(fields: [movie_id], references: [id])
+  time_slot    time_slot       @relation(fields: [time_slot_id], references: [id])
+  seats        showtime_seat[]
+
+  @@unique([movie_id, hall_id, time_slot_id, date])
+}
+
+model showtime_seat {
+  id          String   @id @default(uuid())
+  showtime_id String
+  seat_id     String
+  status      String   @default("AVAILABLE")
+  price       Float
+  seat        seat     @relation(fields: [seat_id], references: [id])
+  showtime    showtime @relation(fields: [showtime_id], references: [id])
+
+  @@unique([showtime_id, seat_id])
+}
+
+model user {
+  id         String    @id @default(uuid())
+  username   String    @unique
+  email      String    @unique
+  phone      String    @unique
+  password   String
+  role       user_role @default(CUSTOMER)
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  bookings   booking[]
+}
+
+model booking {
+  id          String         @id @default(uuid())
+  user_id     String
+  showtime_id String
+  status      booking_status @default(RESERVED)
+  total_price Float
+  created_at  DateTime       @default(now())
+  updated_at  DateTime       @updatedAt
+  showtime    showtime       @relation(fields: [showtime_id], references: [id])
+  user        user           @relation(fields: [user_id], references: [id])
+  seats       booking_seat[]
+}
+
+model booking_seat {
+  id         String  @id @default(uuid())
+  booking_id String
+  seat_id    String
+  price      Float
+  booking    booking @relation(fields: [booking_id], references: [id])
+  seat       seat    @relation(fields: [seat_id], references: [id])
+
+  @@unique([booking_id, seat_id])
+}
+
+enum booking_status {
+  PAID
+  RESERVED
+  CANCELLED
+}
+
+enum user_role {
+  ADMIN
+  CUSTOMER
+}

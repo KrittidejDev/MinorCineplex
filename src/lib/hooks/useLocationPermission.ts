@@ -11,6 +11,7 @@ export interface UseLocationPermissionReturn {
   permissionDenied: boolean;
   error: string | null;
   showModal: boolean;
+  openModal: () => void;
   allowSession: () => Promise<void>;
   allowOnce: () => Promise<void>;
   neverAllow: () => void;
@@ -113,6 +114,8 @@ export const useLocationPermission = (): UseLocationPermissionReturn => {
     }
   }, []);
 
+  const openModal = () => setShowModal(true);
+
   const allowSession = async () => {
     sessionStorage.setItem(STORAGE_KEYS.PERMISSION, "allow");
     setShowModal(false);
@@ -145,6 +148,7 @@ export const useLocationPermission = (): UseLocationPermissionReturn => {
     permissionDenied,
     error,
     showModal,
+    openModal,
     allowSession,
     allowOnce,
     neverAllow,

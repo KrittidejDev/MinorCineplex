@@ -96,4 +96,8 @@ export const userService = {
   },
   DELETE_FILE: (fileId: string) =>
     apiService.delete(`${apiPath}/files/delete/${fileId}`),
+
+  // Cinema
+  GET_CINEMAS: (query?: string) =>
+    apiService.get(`${apiPath}/cinemas${query ?? ""}`),
 };

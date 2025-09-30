@@ -11,6 +11,7 @@ export interface UseLocationPermissionReturn {
   permissionDenied: boolean;
   error: string | null;
   showModal: boolean;
+  openModal: () => void;
   allowSession: () => Promise<void>;
   allowOnce: () => Promise<void>;
   neverAllow: () => void;
@@ -29,6 +30,20 @@ export const useLocationPermission = (): UseLocationPermissionReturn => {
   const [error, setError] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
 
+  // Fallback: IP-based location
+  const fallbackLocation = async () => {
+    try {
+      const res = await fetch("https://ipapi.co/json/");
+      const data = await res.json();
+      setLocation({ lat: data.latitude, lng: data.longitude });
+      setLoading(false);
+    } catch (err) {
+      setError("Cannot get location from IP fallback");
+      setLoading(false);
+    }
+  };
+
+  // Get current geolocation
   const getLocation = (): Promise<void> => {
     return new Promise<void>((resolve, reject) => {
       if (!navigator.geolocation) {
@@ -42,40 +57,55 @@ export const useLocationPermission = (): UseLocationPermissionReturn => {
 
       navigator.geolocation.getCurrentPosition(
         (pos) => {
-          setLocation({
-            lat: pos.coords.latitude,
-            lng: pos.coords.longitude,
-          });
+          setLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude });
           setLoading(false);
           resolve();
         },
-        (err) => {
+        async (err) => {
           console.error("Geolocation error:", err);
           setLoading(false);
 
-          if (err.code === 1) {
-            setPermissionDenied(true);
-            setError("User denied geolocation");
-          } else if (err.code === 2) {
-            setError("Position unavailable");
-          } else if (err.code === 3) {
-            setError("Geolocation timeout");
-          } else {
-            setError(err.message);
+          // ลบค่า permission เก่า
+          localStorage.removeItem(STORAGE_KEYS.PERMISSION);
+          localStorage.removeItem(STORAGE_KEYS.NEVER_TIMESTAMP);
+          sessionStorage.removeItem(STORAGE_KEYS.PERMISSION);
+
+          switch (err.code) {
+            case 1:
+              setPermissionDenied(true);
+              setError("User denied geolocation");
+              break;
+            case 2:
+              setError(
+                "Position unavailable. Using approximate location from IP."
+              );
+              await fallbackLocation();
+              break;
+            case 3:
+              setError(
+                "Geolocation timeout. Using approximate location from IP."
+              );
+              await fallbackLocation();
+              break;
+            default:
+              setError(err.message || "Unknown geolocation error");
+              await fallbackLocation();
           }
 
           reject(err);
         },
-        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+        { enableHighAccuracy: false, timeout: 20000, maximumAge: 0 }
       );
     });
   };
 
+  // Check permission on mount
   useEffect(() => {
     const storedPermission = localStorage.getItem(STORAGE_KEYS.PERMISSION);
     const sessionPermission = sessionStorage.getItem(STORAGE_KEYS.PERMISSION);
     const neverTimestamp = localStorage.getItem(STORAGE_KEYS.NEVER_TIMESTAMP);
 
+    // Handle "never" permission
     if (storedPermission === "never" && neverTimestamp) {
       const lastNever = parseInt(neverTimestamp, 10);
       const now = Date.now();
@@ -90,11 +120,13 @@ export const useLocationPermission = (): UseLocationPermissionReturn => {
       }
     }
 
+    // Already allowed
     if (storedPermission === "allow" || sessionPermission === "allow") {
       getLocation().catch(() => {});
       return;
     }
 
+    // Check Permissions API
     if (navigator.permissions) {
       navigator.permissions.query({ name: "geolocation" }).then((result) => {
         if (result.state === "granted") {
@@ -113,6 +145,8 @@ export const useLocationPermission = (): UseLocationPermissionReturn => {
     }
   }, []);
 
+  const openModal = () => setShowModal(true);
+
   const allowSession = async () => {
     sessionStorage.setItem(STORAGE_KEYS.PERMISSION, "allow");
     setShowModal(false);
@@ -122,6 +156,7 @@ export const useLocationPermission = (): UseLocationPermissionReturn => {
   };
 
   const allowOnce = async () => {
+    sessionStorage.setItem(STORAGE_KEYS.PERMISSION, "allow");
     setShowModal(false);
     try {
       await getLocation();
@@ -135,9 +170,7 @@ export const useLocationPermission = (): UseLocationPermissionReturn => {
     setPermissionDenied(true);
   };
 
-  const closeModal = () => {
-    setShowModal(false);
-  };
+  const closeModal = () => setShowModal(false);
 
   return {
     location,
@@ -145,6 +178,7 @@ export const useLocationPermission = (): UseLocationPermissionReturn => {
     permissionDenied,
     error,
     showModal,
+    openModal,
     allowSession,
     allowOnce,
     neverAllow,

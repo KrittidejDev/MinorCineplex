@@ -3,32 +3,10 @@ import React, { useEffect, useState } from 'react'
 import { Button } from '../ui/button'
 import Link from 'next/link'
 import axios from 'axios'
+import { CouponCardData, APICoupon } from '@/types/coupon'
 
 // Type ของ coupon จาก API
-interface APICoupon {
-  id: number
-  code: string
-  discountType: string
-  discountValue: number
-  minAmount: number | null
-  maxDiscount: number | null
-  usageLimit: number | null
-  usedCount: number
-  startDate: string
-  endDate?: string | null // อาจไม่มี
-  status: string
-  categoryId: number | null
-  createdAt: string
-  updatedAt: string
-}
 
-// Type ของ สำหรับ CouponCard
-interface CouponCardData {
-  id: number
-  code: string
-  discount: number
-  expiresAt?: string
-}
 
 const CouponWidget = () => {
   const [coupons, setCoupons] = useState<CouponCardData[]>([])
@@ -45,8 +23,10 @@ const CouponWidget = () => {
           .map((c) => ({
             id: c.id,
             code: c.code,
+            title_en: c.title_en,
+            title_th: c.title_th,
             discount: c.discountValue,
-            expiresAt: c.endDate || undefined, // ถ้าไม่มี endDate ให้ undefined
+            expiresAt: c.endDate || undefined,
           }))
         setCoupons(firstFour)
       } catch (err) {
@@ -80,6 +60,7 @@ const CouponWidget = () => {
               key={coupon.id}
               coupon={{
                 code: coupon.code,
+                title_en: coupon.title_en,
                 discount: coupon.discount,
                 expiresAt: coupon.expiresAt,
               }}

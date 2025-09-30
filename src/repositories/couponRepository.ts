@@ -1,18 +1,10 @@
 import { PrismaClient } from "@/generated/prisma";
+import { CreateCouponInput } from "@/types/coupon";
 
 const prisma = new PrismaClient();
 
-export type CreateCouponInput = {
-  code: string;
-  discount: number;
-  expiresAt: Date;
-  discountType?: 'percentage' | 'fixed'; // default: percentage
-  minAmount?: number;
-  maxDiscount?: number;
-  usageLimit?: number;
-  status?: 'active' | 'inactive';       // default: active
-  categoryId?: number;
-};
+// Input type สำหรับการสร้าง coupon (เฉพาะ required + optional ที่สำคัญ)
+
 
 export const getMany = () => {
   return prisma.coupon.findMany();
@@ -22,22 +14,21 @@ export const getById = (id: number) => {
   return prisma.coupon.findUnique({ where: { id } });
 };
 
-
-
 export const create = async (data: CreateCouponInput) => {
-    return prisma.coupon.create({
-      data: {
-        code: data.code,
-        discountType: data.discountType ?? "percentage",
-        discountValue: data.discount,
-        minAmount: data.minAmount ?? null,
-        maxDiscount: data.maxDiscount ?? null,
-        usageLimit: data.usageLimit ?? null,
-        usedCount: 0,
-        startDate: new Date(),
-        endDate: data.expiresAt,
-        status: data.status ?? "active",
-        categoryId: data.categoryId ?? null,
-      },
-    });
-  }
+  return prisma.coupon.create({
+    data: {
+      code: data.code,
+      title_en: data.title_en ?? "",
+      title_th: data.title_th ?? "",
+      discription_en: data.discription_en ?? "",
+      discription_th: data.discription_th ?? "",
+      discount_type: "PERCENTAGE",   // default
+      discount_value: data.discount_value,
+      used_count: 0,
+      start_date: new Date(),
+      end_date: data.end_date,
+      status: "ACTIVE",              // default
+      image: null,                   // default
+    },
+  });
+};

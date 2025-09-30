@@ -1,21 +1,23 @@
 import * as couponRepo from "../repositories/couponRepository";
+import { CreateCouponInput } from "@/types/coupon";
 
 export const getCoupons = async () => {
-  const coupons = await couponRepo.getMany();
-  return coupons;
+  return couponRepo.getMany();
 };
 
 export const getCouponById = async (id: number) => {
-  const coupons = await couponRepo.getById(id);
-  return coupons;
+  return couponRepo.getById(id);
 };
 
-export const createCoupons = async (data: { code: string; discount: number; expiresAt: Date }) => {
-    return couponRepo.create({
-      code: data.code,
-      discount: data.discount,
-      expiresAt: data.expiresAt,
-      discountType: "percentage", // default
-      status: "active",           // default
-    });
-  }
+export const createCoupons = async (data: CreateCouponInput) => {
+  return couponRepo.create({
+    code: data.code,
+    title_en: data.title_en ?? "",
+    title_th: data.title_th ?? "",
+    discription_en: data.discription_en ?? "",
+    discription_th: data.discription_th ?? "",
+    discount_value: data.discount_value,
+    start_date: new Date(),
+    end_date: data.end_date,
+  });
+};

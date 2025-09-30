@@ -29,7 +29,7 @@ const Index = () => {
             <div className="flex flex-col  gap-y-5 w-full px-0 md:px-0 lg:px-0">
               
               <div className="w-full">
-              <div className="text-f-24 md:text-f-28 lg:text-f-36 px-0 md:px-0 lg:px-0">Booking history</div>
+              <div className="text-f-24 md:text-f-28 lg:text-f-36 px-0 md:px-0 lg:px-42 ">Booking history</div>
                 <BookingCard
                   movieTitle="The Dark Knight"
                   moviePoster="https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcQkUywIUXDjHSQJIaNHYVs08osgBpF5Ot-xmB_omyEZeeRP9Xug"

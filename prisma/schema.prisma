@@ -82,7 +82,6 @@ model actor {
   image_url  String?
   created_at DateTime      @default(now())
   updated_at DateTime      @updatedAt
-  name_en    String?
   movies     movie_actor[]
 }
 
@@ -203,36 +202,24 @@ enum user_role {
   CUSTOMER
 }
 
-model coupon { 
-  id Int @id @default(autoincrement()) 
-  code String @unique 
-  discountType String // "PERCENTAGE" | "FIXED" 
-  discountValue Float 
-  minAmount Float? 
-  maxDiscount Float? 
-  usageLimit Int? 
-  usedCount Int @default(0) 
-  startDate DateTime 
-  endDate DateTime 
-  status String // "ACTIVE" | "EXPIRED" | "DISABLED" 
-  image  String?
-  createdAt DateTime @default(now()) 
-  updatedAt DateTime @updatedAt 
-}
 
 model coupon { 
-  id Int @id @default(autoincrement()) 
-  code String @unique 
-  discountType String // "PERCENTAGE" | "FIXED" 
-  discountValue Float 
-  minAmount Float? 
-  maxDiscount Float? 
-  usageLimit Int? 
-  usedCount Int @default(0) 
-  startDate DateTime 
-  endDate DateTime 
-  status String // "ACTIVE" | "EXPIRED" | "DISABLED" 
-  image  String?
-  createdAt DateTime @default(now()) 
-  updatedAt DateTime @updatedAt 
+  id              Int @id @default(autoincrement()) 
+  code            String   @unique 
+  title_en        String
+  title_th        String
+  discription_en  String
+  discription_th  String
+  discount_type   String // "PERCENTAGE" | "FIXED" 
+  discount_value  Float 
+  minAmount       Float? 
+  maxDiscount     Float? 
+  usageLimit      Int? 
+  usedCount       Int @default(0) 
+  startDate       DateTime 
+  endDate         DateTime 
+  status          String // "ACTIVE" | "EXPIRED" | "DISABLED" 
+  image           String?
+  createdAt       DateTime @default(now()) 
+  updatedAt       DateTime @updatedAt 
 }

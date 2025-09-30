@@ -12,12 +12,17 @@ export default async function handler(
     }
 
     if (req.method === "POST") {
-      const { code, discount, expiresAt } = req.body;
+      const { title_en, title_th, discription_en, discription_th, code, discount, expiresAt, start_date } = req.body;
 
       const newCoupon = await createCoupons({
+        title_en,
+        title_th, 
+        discription_en,
+        discription_th,
         code,
-        discount: Number(discount),
-        expiresAt: new Date(expiresAt),
+        start_date ,
+        discount_value: Number(discount),
+        end_date: new Date(expiresAt),
       });
 
       return res.status(201).json({ coupon: newCoupon });

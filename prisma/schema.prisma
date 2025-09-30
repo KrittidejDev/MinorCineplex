@@ -212,14 +212,14 @@ model coupon {
   discription_th  String
   discount_type   String // "PERCENTAGE" | "FIXED" 
   discount_value  Float 
-  minAmount       Float? 
-  maxDiscount     Float? 
-  usageLimit      Int? 
-  usedCount       Int @default(0) 
-  startDate       DateTime 
-  endDate         DateTime 
+  min_amount      Float? 
+  max_discount    Float? 
+  usage_limit     Int? 
+  used_count      Int @default(0) 
+  start_date      DateTime 
+  end_date        DateTime 
   status          String // "ACTIVE" | "EXPIRED" | "DISABLED" 
   image           String?
-  createdAt       DateTime @default(now()) 
-  updatedAt       DateTime @updatedAt 
+  created_at      DateTime @default(now()) 
+  updated_at      DateTime @updatedAt 
 }

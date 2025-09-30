@@ -2,21 +2,17 @@ import React from 'react'
 import { Button } from '../ui/button'
 import { useRouter } from 'next/router'
 import Image from 'next/image'
-interface Coupon {
-  code: string
-  discount: number
-  expiresAt?: string // ISO string
-}
+import { CouponCardData } from '@/types/coupon'
 
 interface CouponCardProps {
-  coupon: Coupon
+  coupon: Pick<CouponCardData, 'code' | 'discount' | 'expiresAt' | 'title_en'>
 }
 
 const CouponCard = ({ coupon }: CouponCardProps) => {
   const router = useRouter()
 
   const handleClickCoupon = () => {
-    router.push(`/coupons/${coupon.code}`) // ใช้ code เป็น identifier
+    router.push(`/coupons/${coupon.title_en}`)
   }
 
   return (
@@ -27,8 +23,8 @@ const CouponCard = ({ coupon }: CouponCardProps) => {
       >
         <div className="relative w-20 h-20 mx-auto mt-4">
           <Image
-            src="/images/coupon.png" // ต่อไปอาจเปลี่ยนเป็น coupon.image
-            alt={coupon.code}
+            src="/images/coupon.png" // อนาคตเปลี่ยนเป็น coupon.image ได้
+            alt={coupon.title_en}
             fill
             className="object-contain"
           />
@@ -40,7 +36,7 @@ const CouponCard = ({ coupon }: CouponCardProps) => {
             className="headline-4 text-[#FFFFFF] font-bold text-xl line-clamp-2 hover:underline cursor-pointer"
             onClick={handleClickCoupon}
           >
-            {coupon.code}
+            {coupon.title_en}
           </h4>
           <div className="flex gap-5">
             <p className="text-sm text-[#8B93B0]">Valid until</p>

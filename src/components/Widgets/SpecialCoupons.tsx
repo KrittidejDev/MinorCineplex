@@ -3,21 +3,8 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import CouponCard from '@/components/Cards/CouponCard'
+import {  APICoupon } from '@/types/coupon'
 
-interface Coupon {
-  id: number
-  code: string
-  discountType: string
-  discountValue: number
-  minAmount?: number | null
-  maxDiscount?: number | null
-  usageLimit?: number | null
-  usedCount: number
-  startDate: string
-  endDate: string
-  status: string
-  category?: string | null
-}
 
 const categoryKeywords: { [key: string]: string[] } = {
   'UOB': ['UOB'],
@@ -31,7 +18,7 @@ const categoryKeywords: { [key: string]: string[] } = {
 const categories = ['All coupons', ...Object.keys(categoryKeywords)]
 
 const SpecialCoupons = () => {
-  const [coupons, setCoupons] = useState<Coupon[]>([])
+  const [coupons, setCoupons] = useState<APICoupon []>([])
   const [selectedCategory, setSelectedCategory] = useState('All coupons')
   const [loading, setLoading] = useState(true)
 
@@ -90,6 +77,7 @@ const SpecialCoupons = () => {
                 <CouponCard
                   key={coupon.id}
                   coupon={{
+                    title_en: coupon.title_en,
                     code: coupon.code,
                     discount: coupon.discountValue,
                     expiresAt: coupon.endDate,

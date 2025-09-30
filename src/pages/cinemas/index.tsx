@@ -1,7 +1,7 @@
 import CinemaDetallWidget from "@/components/Widgets/CinemaDetallWidget";
 
 const CinemasPage = () => {
-    return <CinemaDetallWidget />;
+  return <div>cinema</div>;
 };
 
 export default CinemasPage;

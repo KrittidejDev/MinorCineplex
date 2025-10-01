@@ -4,7 +4,7 @@ import Image from "next/image";
 import { dateFormat } from "@/lib/dateFormat";
 
 interface MoviesDetailWidgetProps {
-  movie: Movie;
+  movie?: Movie;
 }
 
 interface Movie {
@@ -20,10 +20,6 @@ interface Movie {
 }
 
 function MoviesDetailWidget({ movie }: MoviesDetailWidgetProps) {
-  // const genres = movie?.genre
-  //   ? movie.genre.split(",").map((g) => g.trim())
-  //   : [];
-
   return (
     <>
       <div className="w-screen flex justify-start lg:justify-center lg:mt-[60px]">
@@ -45,14 +41,31 @@ function MoviesDetailWidget({ movie }: MoviesDetailWidgetProps) {
                 {movie?.title ?? ""}
               </h2>
               <div className="w-fit flex flex-col lg:flex-row lg:items-center">
-                <div className="flex gap-2 border-r border-gray-gedd pr-2 lg:pr-5">
-                  {movie?.genre?.split(",").map((g) => (
-                    <Tag key={g} name={g} variant="genre" />
-                  ))}
+                <div className="flex gap-2">
+                  <div className="border-r border-gray-gedd pr-2 lg:pr-5">
+                    {movie?.genre
+                      ? movie.genre
+                          .split(",")
+                          .map((g) => (
+                            <Tag
+                              key={g.trim()}
+                              name={g.trim()}
+                              variant="genre"
+                            />
+                          ))
+                      : null}
+                  </div>
                 </div>
-                <p className="text-fr-16 text-gray-gedd mt-2 lg:mt-0 lg:pl-5">
-                  Release date: {dateFormat(movie?.release_date ?? "")}
-                </p>
+                <div className="pl-2 lg:pl-5 mt-2 lg:mt-0">
+                  <p>
+                    Release date:{" "}
+                    {movie?.release_date
+                      ? new Date(
+                          String(movie.release_date)
+                        ).toLocaleDateString()
+                      : "N/A"}
+                  </p>
+                </div>
               </div>
             </div>
             <div className="mt-6 mb-10 lg:my-12">

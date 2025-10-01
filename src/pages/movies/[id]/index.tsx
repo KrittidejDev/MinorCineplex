@@ -41,23 +41,19 @@ type Hall = {
 type Cinema = {
   id: string;
   name: string;
+  name_en: string;
   halls: Hall[];
 };
 
 const MoviesDetail = () => {
-  const router = useRouter();
-  const { id } = router.query;
 
-  if (!id) return <p>Loading...</p>;
-
-  const movieId = Array.isArray(id) ? id[0] : id;
 
   const [data, setData] = useState<Cinema[]>([]);
 
   const getCinemasByMovies = async () => {
     try {
-      const { data } = await axios.get(
-        `http://localhost:3000/api/cinemas?movie_id=fad87a68-f2ed-4fd9-aa61-99ccd76bd9b5`
+      const {data} = await axios.get(
+        `http://localhost:3000/api/cinemas?movie_id=02ab9972-6a80-498c-bafb-960a4fd9dae5`
       );
       setData(data.cinema);
     } catch (error: unknown) {
@@ -77,10 +73,7 @@ const MoviesDetail = () => {
     <>
       <NavAndFooter>
         <MoviesDetailWidget
-          title={data[0]?.halls[0]?.showtimes[0]?.movie?.title || "Movie Title"}
-          image={data[0]?.halls[0]?.showtimes[0]?.movie?.poster_url || ""}
-          date={data[0]?.halls[0]?.showtimes[0]?.movie?.release_date || ""}
-          detail={data[0]?.halls[0]?.showtimes[0]?.movie?.description || ""}
+          movie={data[0]?.halls[0]?.showtimes[0]?.movie}
         />
         <DateSelectionBarWidget />
         <div className="max-w-[1200px] mx-auto flex flex-col lg:flex-row gap-5 items-center justify-center px-4 mt-10">
@@ -112,7 +105,7 @@ const MoviesDetail = () => {
                 >
                   <ShowTime
                     groups={groups}
-                    cinemaName={cinema.name}
+                    cinemaName={cinema.name_en}
                     badges={["Hearing assistance", "Wheelchair access"]}
                   />
                 </div>

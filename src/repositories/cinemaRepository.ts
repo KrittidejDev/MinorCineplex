@@ -18,6 +18,7 @@ export const getByMovies = (movie_id: string) => {
     select: {
       id: true,
       name: true,
+      name_en: true,
       halls: {
         where: {
           showtimes: {
@@ -45,6 +46,7 @@ export const getByMovies = (movie_id: string) => {
                   release_date: true,
                   description: true,
                   duration_min: true,
+                  genre: true,
                 },
               },
               time_slot: {

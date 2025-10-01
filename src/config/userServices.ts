@@ -76,14 +76,14 @@ export const userService = {
     apiService.delete(`${apiPath}/categories/${id}`),
 
   // Article
-  GET_ARTICLE: (query?: string) =>
-    apiService.get(`${apiPath}/blogs${query ?? ""}`),
-  GET_ARTICLE_BY_ID: (id: string) => apiService.get(`${apiPath}/blogs/${id}`),
-  POST_CREATE_ARTICLE: (params: ArticleParams) =>
-    apiService.post(`${apiPath}/blogs`, params),
-  PUT_EDIT_ARTICLE: (id: string, params: ArticleParams) =>
-    apiService.put(`${apiPath}/blogs/${id}`, params),
-  DELETE_ARTICLE: (id: string) => apiService.delete(`${apiPath}/blogs/${id}`),
+  // GET_ARTICLE: (query?: string) =>
+  //   apiService.get(`${apiPath}/blogs${query ?? ""}`),
+  // GET_ARTICLE_BY_ID: (id: string) => apiService.get(`${apiPath}/blogs/${id}`),
+  // POST_CREATE_ARTICLE: (params: ArticleParams) =>
+  //   apiService.post(`${apiPath}/blogs`, params),
+  // PUT_EDIT_ARTICLE: (id: string, params: ArticleParams) =>
+  //   apiService.put(`${apiPath}/blogs/${id}`, params),
+  // DELETE_ARTICLE: (id: string) => apiService.delete(`${apiPath}/blogs/${id}`),
 
   // Notification
   GET_NOTIFICATION: () => apiService.get(`${apiPath}/notification`),
@@ -100,4 +100,6 @@ export const userService = {
   // Cinema
   GET_CINEMAS: (query?: string) =>
     apiService.get(`${apiPath}/cinemas${query ?? ""}`),
+  GET_CINEMA_BY_ID: (id: string, query?: string) =>
+    apiService.get(`${apiPath}/cinemas/detail/${id}${query ?? ""}`),
 };

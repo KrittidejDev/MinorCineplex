@@ -1,6 +1,5 @@
 import { CinemaDetail, HallDetail } from "@/types/cinema";
 import * as cinemaRepo from "../repositories/cinemaRepository";
-import { addDays, startOfDay, endOfDay } from "date-fns";
 
 export const getCinemas = async () => {
   const cinema = await cinemaRepo.getAll();
@@ -19,44 +18,55 @@ export const getCinemaById = async (id: string) => {
 
 export const getCinemasDetail = async (
   id: string,
-  date?: string // เพิ่ม param วันที่เลือก
+  date?: string
 ): Promise<CinemaDetail | null> => {
   const targetDate = date ? new Date(date) : new Date();
+  const dateStr = targetDate.toISOString().split("T")[0];
 
-  const dayStart = startOfDay(targetDate);
-  const dayEnd = endOfDay(targetDate);
-
-  const cinemaDetail = await cinemaRepo.getByIDDetail(id);
-
+  const cinemaDetail = await cinemaRepo.cinemaRepo.getByIDDetail(id);
   if (!cinemaDetail) return null;
 
   const hallsWithShowtimes: HallDetail[] = cinemaDetail.halls.map((hall) => ({
     ...hall,
     seat_count: hall.seat_count ?? undefined,
-    showtimes: hall.showtimes
+    showtimes: (hall.showtimes ?? [])
+      .filter((s) => s.date.toISOString().split("T")[0] === dateStr)
       .map((s) => ({
-        ...s,
+        id: s.id,
+        date: s.date.toISOString().split("T")[0],
+        price: s.price ?? 0,
         movie: {
-          ...s.movie,
+          id: s.movie.id,
+          title: s.movie.title,
+          duration_min: s.movie.duration_min,
           poster_url: s.movie.poster_url ?? undefined,
           description: s.movie.description ?? undefined,
-          description_en: s.movie.description_en ?? undefined,
-          title_en: s.movie.title_en ?? undefined,
-          genre_en: s.movie.genre_en ?? undefined,
         },
-        time_slot: s.time_slot ?? undefined,
-        seats: s.seats ?? undefined,
-      }))
-      .filter((s) => s.date >= dayStart && s.date <= dayEnd), // กรองตามวันที่
+        time_slot: s.time_slot
+          ? {
+              id: s.time_slot.id,
+              name: s.time_slot.name,
+              start_time: s.time_slot.start_time,
+              end_time: s.time_slot.end_time,
+            }
+          : { id: "", name: "", start_time: "", end_time: "" },
+        seats: (s.seats ?? []).map((seat) => ({
+          id: seat.id,
+          status: seat.status,
+          price: seat.price ?? 0,
+          seat_id: seat.seat_id,
+          showtime_id: seat.showtime_id,
+        })),
+      })),
   }));
 
   return {
     ...cinemaDetail,
     showtimesByDay: [
       {
-        date: dayStart.toISOString().split("T")[0],
+        date: dateStr,
         halls: hallsWithShowtimes,
       },
     ],
-  } as CinemaDetail;
+  } as unknown as CinemaDetail;
 };

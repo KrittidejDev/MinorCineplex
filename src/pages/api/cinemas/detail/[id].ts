@@ -18,7 +18,7 @@ export default async function handler(
       return res.status(404).json({ error: "Cinema not found" });
     }
 
-    return res.status(200).json({ cinemaDetail });
+    return res.status(200).json({ data: cinemaDetail, status: 200 });
   } catch (error: unknown) {
     console.error("Error fetching cinema detail:", error);
 

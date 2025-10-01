@@ -26,10 +26,9 @@ export const getCinemasDetail = async (
   const cinemaDetail = await cinemaRepo.cinemaRepo.getByIDDetail(id);
   if (!cinemaDetail) return null;
 
-  const hallsWithShowtimes: HallDetail[] = cinemaDetail.halls.map((hall) => ({
-    ...hall,
-    seat_count: hall.seat_count ?? undefined,
-    showtimes: (hall.showtimes ?? [])
+  // ดึง showtimes ทั้งหมดของโรงที่ match วันที่
+  const showtimes = cinemaDetail.halls.flatMap((hall) =>
+    (hall.showtimes ?? [])
       .filter((s) => s.date.toISOString().split("T")[0] === dateStr)
       .map((s) => ({
         id: s.id,
@@ -41,6 +40,13 @@ export const getCinemasDetail = async (
           duration_min: s.movie.duration_min,
           poster_url: s.movie.poster_url ?? undefined,
           description: s.movie.description ?? undefined,
+          genre: s.movie.genre ?? undefined,
+          rating: s.movie.rating ?? undefined,
+        },
+        hall: {
+          id: hall.id,
+          name: hall.name,
+          seat_count: hall.seat_count ?? undefined,
         },
         time_slot: s.time_slot
           ? {
@@ -49,7 +55,12 @@ export const getCinemasDetail = async (
               start_time: s.time_slot.start_time,
               end_time: s.time_slot.end_time,
             }
-          : { id: "", name: "", start_time: "", end_time: "" },
+          : {
+              id: "",
+              name: "",
+              start_time: "",
+              end_time: "",
+            },
         seats: (s.seats ?? []).map((seat) => ({
           id: seat.id,
           status: seat.status,
@@ -57,16 +68,44 @@ export const getCinemasDetail = async (
           seat_id: seat.seat_id,
           showtime_id: seat.showtime_id,
         })),
-      })),
-  }));
+      }))
+  );
+
+  // Group by movie
+  const movies = Object.values(
+    showtimes.reduce(
+      (acc, s) => {
+        if (!acc[s.movie.id]) {
+          acc[s.movie.id] = {
+            ...s.movie,
+            halls: [],
+          };
+        }
+
+        let hall = acc[s.movie.id].halls.find((h: any) => h.id === s.hall.id);
+        if (!hall) {
+          hall = {
+            ...s.hall,
+            timeslots: [],
+          };
+          acc[s.movie.id].halls.push(hall);
+        }
+
+        hall.timeslots.push({
+          ...s.time_slot,
+          price: s.price,
+          date: s.date,
+          seats: s.seats,
+        });
+
+        return acc;
+      },
+      {} as Record<string, any>
+    )
+  );
 
   return {
     ...cinemaDetail,
-    showtimesByDay: [
-      {
-        date: dateStr,
-        halls: hallsWithShowtimes,
-      },
-    ],
+    movies,
   } as unknown as CinemaDetail;
 };

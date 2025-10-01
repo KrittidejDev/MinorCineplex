@@ -42,6 +42,7 @@ const SelectSeat = () => {
     0
   );
 
+
   return (
     <div className="w-full bg-gray-gc1b">
       <NavBarWidget />

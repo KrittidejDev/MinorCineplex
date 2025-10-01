@@ -3,7 +3,12 @@ import * as cinemaRepo from "../repositories/cinemaRepository";
 import { addDays, startOfDay, endOfDay } from "date-fns";
 
 export const getCinemas = async () => {
-  const cinema = await cinemaRepo.getMany();
+  const cinema = await cinemaRepo.getAll();
+  return cinema;
+};
+
+export const getCinemasByMovies = async (movie_id: string) => {
+  const cinema = await cinemaRepo.getByMovies(movie_id);
   return cinema;
 };
 

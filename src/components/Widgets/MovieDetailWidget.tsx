@@ -1,7 +1,6 @@
 import Tag from "../Widgets/Tag";
 import { Button } from "../ui/button";
 import Image from "next/image";
-import { dateFormat } from "@/lib/dateFormat";
 
 interface MoviesDetailWidgetProps {
   movie?: Movie;

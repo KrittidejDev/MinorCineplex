@@ -1,4 +1,4 @@
-import { getUserById } from "@/services/userService";
+import { getCinemasDetail } from "@/services/cinemaService";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
@@ -7,14 +7,13 @@ export default async function handler(
 ) {
   const { id } = req.query;
 
-  if (typeof id !== "string") {
-    return res.status(400).json({ error: "Invalid user id", status: 400 });
+  if (!id || Array.isArray(id)) {
+    return res.status(400).json({ error: "Invalid cinema ID" });
   }
 
   try {
-    const data = await getUserById(id);
-    res.status(200).json({ docs: data, status: 200 });
-    return;
+    const cinemaDetail = await getCinemasDetail(id);
+    res.status(200).json({ cinemaDetail });
   } catch (error: unknown) {
     console.error(error);
     if (error instanceof Error) {

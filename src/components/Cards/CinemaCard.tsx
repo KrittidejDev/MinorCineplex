@@ -18,7 +18,9 @@ const CinemaCard = ({ filter, cinema }: CinemaCardProps) => {
     <Link href={`/cinemas/${cinema.id}`} className="block">
       <div className="w-full max-w-[590px] border border-gray-g63f p-4 rounded-sm hover:border-gray-gf7e transition-colors cursor-pointer">
         <div className="flex gap-4 items-center">
-          <LocationIconBlue />
+          <div className="size-[52px]">
+            <LocationIconBlue />
+          </div>
           <div className="flex flex-col gap-1">
             <h3 className="text-white text-2xl font-bold line-clamp-1">
               {cinema.name}

@@ -15,6 +15,8 @@ model cinema {
   phone             String?
   description       String?
   group_location    String?
+  province          String? 
+  province_en       String? 
   lat               Float?
   lng               Float?
   icon_url          String?
@@ -118,8 +120,8 @@ model movie_director {
 model time_slot {
   id         String     @id @default(uuid())
   name       String     @unique
-  start_time DateTime
-  end_time   DateTime
+  start_time String
+  end_time   String
   created_at DateTime   @default(now())
   updated_at DateTime   @updatedAt
   showtimes  showtime[]
@@ -148,7 +150,7 @@ model showtime_seat {
   showtime_id String
   seat_id     String
   status      String   @default("AVAILABLE")
-  price       Float
+  price       Float? 
   seat        seat     @relation(fields: [seat_id], references: [id])
   showtime    showtime @relation(fields: [showtime_id], references: [id])
 

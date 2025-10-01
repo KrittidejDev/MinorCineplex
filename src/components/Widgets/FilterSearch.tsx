@@ -150,67 +150,6 @@ const FilterSearch: React.FC<FilterSearchProps> = ({ onSearch, className = "" })
                     </Select>
                 </div>
 
-
-                {/* Language Dropdown */}
-                <div className="w-full lg:w-48">
-                    <Select
-                        value={filters.language}
-                        onValueChange={(value) => handleInputChange('language', value)}
-                    >
-                        <SelectTrigger className="bg-gray-g63f border-gray-gf7e text-white rounded-sm h-12 focus:border-gray-g3b0 focus:ring-0 w-full relative cursor-pointer">
-                            <SelectValue placeholder="Language" />
-                            <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                                <ExpandDownLight width="16" height="16" color="#8B93B0" />
-                            </div>
-                        </SelectTrigger>
-                        <SelectContent className="bg-gray-g63f border-gray-gf7e">
-                            {languageOptions.map((option) => (
-                                <SelectItem
-                                    key={option.value}
-                                    value={option.value}
-                                    className="text-white hover:bg-gray-gf7e focus:bg-gray-gf7e cursor-pointer"
-                                >
-                                    {option.label}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                </div>
-
-                {/* Genre Dropdown */}
-                <div className="w-full lg:w-48">
-                    <Select
-                        value={filters.genre}
-                        onValueChange={(value) => handleInputChange('genre', value)}
-                    >
-                        <SelectTrigger className="bg-gray-g63f border-gray-gf7e text-white rounded-sm h-12 focus:border-gray-g3b0 focus:ring-0 w-full relative cursor-pointer">
-                            <SelectValue placeholder="Genre" />
-                            <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                                <ExpandDownLight width="16" height="16" color="#8B93B0" />
-                            </div>
-                        </SelectTrigger>
-                        <SelectContent className="bg-gray-g63f border-gray-gf7e">
-                            {genreOptions.map((option) => (
-                                <SelectItem
-                                    key={option.value}
-                                    value={option.value}
-                                    className="text-white hover:bg-gray-gf7e focus:bg-gray-gf7e cursor-pointer"
-                                >
-                                    {option.label}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                </div>
-
-                {/* City Dropdown */}
-                <div className="w-full lg:w-48">
-                    <Select
-                        value={filters.city}
-                        onValueChange={(value) => handleInputChange('city', value)}
-                    >
-                        <SelectTrigger className="bg-gray-g63f border-gray-gf7e text-white rounded-sm h-12 focus:border-gray-g3b0 focus:ring-0 w-full relative cursor-pointer">
-                            <SelectValue placeholder="City" />
                 {/* Language and Genre Row */}
                 <div className="flex gap-2 lg:contents">
                     <div className="w-39 lg:w-48">
@@ -322,56 +261,6 @@ const FilterSearch: React.FC<FilterSearchProps> = ({ onSearch, className = "" })
                             <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
                                 <DateTodayLight width="16" height="16" color="#8B93B0" />
                             </div>
-
-                        </SelectTrigger>
-                        <SelectContent className="bg-gray-g63f border-gray-gf7e">
-                            {cityOptions.map((option) => (
-                                <SelectItem
-                                    key={option.value}
-                                    value={option.value}
-                                    className="text-white hover:bg-gray-gf7e focus:bg-gray-gf7e cursor-pointer"
-                                >
-                                    {option.label}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                </div>
-
-                {/* Release Date Input */}
-                <div className="w-full lg:w-48">
-                    <div className="relative">
-                        <Input
-                            type="text"
-                            placeholder="Release Date"
-                            value={filters.releaseDate}
-                            onChange={(e) => handleInputChange('releaseDate', e.target.value)}
-                            onKeyPress={handleKeyPress}
-                            className="bg-gray-g63f border-gray-gf7e text-white placeholder-gray-g3b0 rounded-sm h-12 pl-4 pr-12 focus:border-gray-g3b0 focus:ring-0 w-full cursor-pointer"
-                            onClick={() => {
-                                const dateInput = document.querySelector('input[type="date"]') as HTMLInputElement;
-                                if (dateInput) {
-                                    dateInput.focus();
-                                    dateInput.click();
-                                }
-                            }}
-                        />
-                        {/* Overlay the date input on top of the text input */}
-                        <input
-                            type="date"
-                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                            onChange={(e) => {
-                                if (e.target.value) {
-                                    // Format date to DD/MM/YYYY
-                                    const date = new Date(e.target.value);
-                                    const formattedDate = date.toLocaleDateString('en-GB');
-                                    handleInputChange('releaseDate', formattedDate);
-                                }
-                            }}
-                        />
-                        <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                            <DateTodayLight width="16" height="16" color="#8B93B0" />
-
                         </div>
                     </div>
                 </div>
@@ -380,10 +269,7 @@ const FilterSearch: React.FC<FilterSearchProps> = ({ onSearch, className = "" })
                 <div className="w-full flex justify-center lg:w-auto">
                     <button
                         onClick={handleSearch}
-
-                        className="bg-blue-bbee hover:bg-blue-b9a8 text-white rounded-sm h-12 px-6 flex items-center justify-center gap-2 transition-colors duration-200 w-full lg:w-auto cursor-pointer"
                         className="bg-blue-bbee hover:bg-blue-b9a8 text-white rounded-sm h-9 px-5 flex items-center justify-center transition-colors duration-200 w-15 lg:w-auto cursor-pointer"
-
                     >
                         <SearchLight width="30" height="30" color="#FFFFFF" />
                     </button>

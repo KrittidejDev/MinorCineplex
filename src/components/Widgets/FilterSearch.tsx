@@ -123,7 +123,7 @@ const FilterSearch: React.FC<FilterSearchProps> = ({ onSearch, className = "" })
 
     return (
         <div className={`bg-gray-g63f rounded-lg p-4 ${className}`}>
-            <div className="flex flex-col lg:flex-row gap-4 items-center">
+            <div className="flex flex-col lg:flex-row gap-4 items-center max-w-xs mx-auto lg:max-w-none lg:mx-0">
                 {/* Movie Dropdown */}
                 <div className="w-full lg:w-48">
                     <Select
@@ -152,7 +152,7 @@ const FilterSearch: React.FC<FilterSearchProps> = ({ onSearch, className = "" })
 
                 {/* Language and Genre Row */}
                 <div className="flex gap-2 lg:contents">
-                    <div className="w-43 lg:w-48">
+                    <div className="w-39 lg:w-48">
                         <Select
                             value={filters.language}
                             onValueChange={(value) => handleInputChange('language', value)}
@@ -176,7 +176,7 @@ const FilterSearch: React.FC<FilterSearchProps> = ({ onSearch, className = "" })
                             </SelectContent>
                         </Select>
                     </div>
-                    <div className="w-43 lg:w-48">
+                    <div className="w-39 lg:w-48">
                         <Select
                             value={filters.genre}
                             onValueChange={(value) => handleInputChange('genre', value)}
@@ -204,7 +204,7 @@ const FilterSearch: React.FC<FilterSearchProps> = ({ onSearch, className = "" })
 
                 {/* City and Release Date Row */}
                 <div className="flex gap-2 lg:contents">
-                    <div className="w-43 lg:w-48">
+                    <div className="w-39 lg:w-48">
                         <Select
                             value={filters.city}
                             onValueChange={(value) => handleInputChange('city', value)}
@@ -228,7 +228,7 @@ const FilterSearch: React.FC<FilterSearchProps> = ({ onSearch, className = "" })
                             </SelectContent>
                         </Select>
                     </div>
-                    <div className="w-43 lg:w-48">
+                    <div className="w-39 lg:w-48">
                         <div className="relative">
                             <Input
                                 type="text"

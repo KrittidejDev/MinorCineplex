@@ -51,7 +51,7 @@ const ImageUploadButton: React.FC = () => {
             </div>
           )}
         </div>
-        <div className="hover:underline cursor-pointer" onClick={handleClick}>
+        <div className="hover:underline cursor-pointer text-white" onClick={handleClick}>
           Upload
         </div>
       </div>

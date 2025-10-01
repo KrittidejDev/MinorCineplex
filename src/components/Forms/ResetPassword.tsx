@@ -10,9 +10,10 @@ type FormValues = {
 
 type SignUpFormProps = {
   onSubmit?: (values: FormValues) => void;
+  align?: "center" | "left";
 };
 
-const ResetPassword = ({ onSubmit }: SignUpFormProps) => {
+const ResetPassword = ({ onSubmit,align }: SignUpFormProps) => {
   const schema = yup.object().shape({
     newPassword: yup
       .string()
@@ -21,7 +22,8 @@ const ResetPassword = ({ onSubmit }: SignUpFormProps) => {
     confirmPassword: yup
       .string()
       .required("Confirm password is required")
-      .min(8, "Password must be at least 8 characters"),
+      .min(8, "Password must be at least 8 characters")
+      .oneOf([yup.ref("newPassword")], "Passwords must match"),
   });
 
   const {
@@ -39,7 +41,7 @@ const ResetPassword = ({ onSubmit }: SignUpFormProps) => {
   return (
     <form
       onSubmit={handleSubmit(onSubmit ?? (() => {}))}
-      className="max-w-[380px] flex flex-col items-center gap-10"
+      className={`w-full flex flex-col ${align === "center" ? "items-center justify-center gap-10" : "items-start justify-start gap-6" }`}
     >
       <h2 className="text-f-36 text-center text-white">Reset Password</h2>
       <div className="w-full flex flex-col gap-4">
@@ -76,10 +78,10 @@ const ResetPassword = ({ onSubmit }: SignUpFormProps) => {
           />
         </div>
       </div>
-      <div className="w-full">
+      <div className="w-full flex">
         <Button
           disabled={isEmpty}
-          className="btn-base blue-normal w-full h-12 flex rounded-b-sm justify-center items-center"
+          className={`${align === "center" ? "btn-base blue-normal" : "btn-base white-outline-normal"} w-full max-w-[182px] h-12 flex rounded-b-sm justify-center items-center`}
         >
           Reset Password
         </Button>

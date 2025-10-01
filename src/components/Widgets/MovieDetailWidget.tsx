@@ -64,7 +64,7 @@ useEffect(() => {
   return (
     <>
       <div className="w-screen flex justify-start lg:justify-center lg:mt-[60px]">
-        <div className="w-full lg:w-[1200px] lg:h-[600px] flex flex-col lg:flex-row">
+        <div className="w-full lg:w-[1200px] lg:h-[600px] flex flex-col lg:flex-row px-1 md:px4">
           <div className="relative w-full h-[547px] lg:w-[411px] lg:h-[600px]">
             <Image
               src={movie.poster_url}

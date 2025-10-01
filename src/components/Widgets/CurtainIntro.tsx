@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import LogoM from "../Icons/LogoM";
+import LogoMSplit from "../Icons/LogoMSplit";
 
 type CurtainIntroProps = {
   durationMs?: number;
@@ -25,15 +25,20 @@ const CurtainIntro: React.FC<CurtainIntroProps> = ({ durationMs = 2000, onComple
     <div className={`mc-curtain-intro ${className ?? ""}`}>
       <div className="curtain left">
         <div className="folds" />
+            {showLogo && (
+              <div className="logo-part logo-left">
+                <LogoMSplit width={168} height={192} side="left" />
+              </div>
+            )}
       </div>
       <div className="curtain right">
         <div className="folds" />
+        {showLogo && (
+          <div className="logo-part logo-right">
+            <LogoMSplit width={168} height={192} side="right" />
+          </div>
+        )}
       </div>
-      {showLogo && (
-        <div className="logo-wrap">
-          <LogoM width={192} height={221} />
-        </div>
-      )}
 
       <style jsx>{`
         .mc-curtain-intro {
@@ -119,29 +124,38 @@ const CurtainIntro: React.FC<CurtainIntroProps> = ({ durationMs = 2000, onComple
           animation: folds-wave 1800ms ease-in-out infinite alternate;
         }
 
-        .logo-wrap {
-          position: relative;
+        .logo-part {
+          position: absolute;
+          top: 50%;
+          transform: translateY(-50%);
           z-index: 2;
           display: flex;
           align-items: center;
           justify-content: center;
-          width: min(34vw, 264px);
-          height: min(34vw, 264px);
-          border-radius: 0;
-          background: transparent;
-          /* wrapper stays static; animation runs on the svg */
-          animation: none;
+          width: auto;
+          height: auto;
+          pointer-events: none;
+        }
+
+        .logo-left {
+          right: 0;
+          transform: translateY(-50%) translateX(50%);
+        }
+
+        .logo-right {
+          left: 0;
+          transform: translateY(-50%) translateX(-50%);
         }
 
         /* Animate SVG inside without altering layout box */
-        .logo-wrap :global(svg) {
+        .logo-part :global(svg) {
           transform-origin: center;
           opacity: 0.98;
           /* Keep it GPU-friendly: transform + opacity only (no filters during animation) */
           will-change: transform, opacity;
           backface-visibility: hidden;
           transform: translateZ(0);
-          animation: logo-zoom-fade ${durationMs}ms ease-out forwards;
+          animation: logo-fade ${durationMs}ms ease-out forwards;
         }
 
         @keyframes curtain-open {
@@ -199,9 +213,12 @@ const CurtainIntro: React.FC<CurtainIntroProps> = ({ durationMs = 2000, onComple
           100% { background-position: -20px 0; transform: translateX(-0.2%) skewY(-0.3deg); }
         }
 
-        @keyframes logo-zoom-fade {
-          0% { opacity: 1; transform: scale(1.22); }
-          100% { opacity: 0; transform: scale(0.82); }
+
+        @keyframes logo-fade {
+          0% { opacity: 1; transform: scale(1.1); }
+          70% { opacity: 1; transform: scale(1.0); }
+          90% { opacity: 0.8; transform: scale(0.95); }
+          100% { opacity: 0; transform: scale(0.9); }
         }
       `}</style>
     </div>

@@ -26,11 +26,11 @@ const ProfileBar = () => {
   ]
 
   return (
-    <div className="flex flex-col bg-[#070C1B] p-2 md:p-4 rounded-[8px] w-full md:w-auto">
+    <div className="flex flex-col bg-[#070C1B] p-2 md:p-4 rounded-[8px] w-full">
       <nav
         className="
           flex flex-row md:flex-col 
-          overflow-x-auto md:overflow-visible 
+          overflow-auto md:overflow-visible 
           whitespace-nowrap md:whitespace-normal
           w-full md:w-auto gap-2
           scrollbar-hide

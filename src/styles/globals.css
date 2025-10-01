@@ -359,6 +359,10 @@ body {
   overflow: hidden;
 }
 
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
 /* .container-modal {
   @apply flex flex-col border rounded-[6px] bg-[#21263F] p-5
 } */

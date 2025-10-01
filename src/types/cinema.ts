@@ -57,9 +57,13 @@ export interface HallDetail {
 export interface CinemaDetail {
   id: string;
   name: string;
+  name_en?: string;
   address: string;
   phone?: string;
   description?: string;
+  description_en?: string;
+  opening_hours?: string;
+  transportation?: string;
   icon_url?: string;
   halls: HallDetail[];
   showtimesByDay: {

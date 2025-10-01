@@ -50,7 +50,8 @@ function DateSelectionBarWidget({ onSelectDate }: DateSelectionBarWidgetProps) {
         )}
         <div
           ref={carouselRef}
-          className="flex gap-2 overflow-x-auto scroll-smooth flex-nowrap w-full"
+          className="flex gap-2 overflow-x-auto scroll-smooth flex-nowrap w-full 
+  [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
         >
           {next7Days.map((date, index) => (
             <div key={index} className="flex-shrink-0 ">

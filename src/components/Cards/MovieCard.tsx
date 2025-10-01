@@ -55,7 +55,7 @@ function MovieCard({
             </div>
           </div>
           <div className="flex flex-col flex-1 justify-between">
-            <h4 className="font-bold text-xl">{title}</h4>
+            <h4 className="font-bold text-xl line-clamp-2 min-h-[56px]">{title}</h4>
             <div className="flex flex-wrap gap-2 mt-4">
               {genres.map((g) => (
                 <Tag key={g} name={g} variant="genre" />

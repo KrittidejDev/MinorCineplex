@@ -63,11 +63,11 @@ export default function Home() {
         />
       )}
       <div className="flex-1 max-w-[1200px]">
-        <div className="lg:absolute top-81.5 w-screen flex justify-center">
-        <FilterSearch />
+        <div className="lg:absolute top-90.5 left-0 right-0 w-full flex justify-center z-10">
+          <FilterSearch />
         </div>
         <div className="mt-20">
-        <NowShowingComingSoon />
+          <NowShowingComingSoon />
         </div>
         <Coupon />
         <CinemaLocation data={dataCinemas} filterCinema={handleFilter} />

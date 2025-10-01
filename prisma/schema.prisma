@@ -9,23 +9,23 @@ datasource db {
 }
 
 model cinema {
-  id               String   @id @default(uuid())
-  name             String   @unique
-  name_en          String?
-  address          String
-  phone            String?
-  description      String?
-  description_en   String?
-  group_location   String?
+  id                String   @id @default(uuid())
+  name              String   @unique
+  address           String
+  phone             String?
+  description       String?
+  group_location    String?
+  lat               Float?
+  lng               Float?
+  icon_url          String?
+  opening_hours     String?
+  transportation    String?
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+  name_en           String?
+  description_en    String?
   group_location_en String?
-  lat              Float?
-  lng              Float?
-  icon_url         String?
-  opening_hours    String?
-  transportation   String?
-  created_at       DateTime @default(now())
-  updated_at       DateTime @updatedAt
-  halls            hall[]
+  halls             hall[]
 }
 
 model hall {
@@ -58,18 +58,18 @@ model seat {
 model movie {
   id             String           @id @default(uuid())
   title          String           @unique
-  title_en       String?
   duration_min   Int
   description    String?
-  description_en String?
   poster_url     String?
   trailer_url    String?
   genre          String?
-  genre_en       String?
   rating         String?
   created_at     DateTime         @default(now())
   updated_at     DateTime         @updatedAt
   release_date   DateTime?
+  title_en       String?
+  description_en String?
+  genre_en       String?
   actors         movie_actor[]
   directors      movie_director[]
   showtimes      showtime[]
@@ -78,20 +78,20 @@ model movie {
 model actor {
   id         String        @id @default(uuid())
   name       String        @unique
-  name_en    String?
   image_url  String?
   created_at DateTime      @default(now())
   updated_at DateTime      @updatedAt
+  name_en    String?
   movies     movie_actor[]
 }
 
 model director {
-  id         String        @id @default(uuid())
-  name       String        @unique
-  name_en    String?
+  id         String           @id @default(uuid())
+  name       String           @unique
   image_url  String?
-  created_at DateTime      @default(now())
-  updated_at DateTime      @updatedAt
+  created_at DateTime         @default(now())
+  updated_at DateTime         @updatedAt
+  name_en    String?
   movies     movie_director[]
 }
 
@@ -191,6 +191,27 @@ model booking_seat {
   @@unique([booking_id, seat_id])
 }
 
+model coupon {
+  id             Int      @id @default(autoincrement())
+  code           String   @unique
+  title_en       String
+  title_th       String
+  discription_en String
+  discription_th String
+  discount_type  String
+  discount_value Float
+  status         String
+  image          String?
+  created_at     DateTime @default(now())
+  end_date       DateTime
+  max_discount   Float?
+  min_amount     Float?
+  start_date     DateTime
+  updated_at     DateTime @updatedAt
+  usage_limit    Int?
+  used_count     Int      @default(0)
+}
+
 enum booking_status {
   PAID
   RESERVED
@@ -200,26 +221,4 @@ enum booking_status {
 enum user_role {
   ADMIN
   CUSTOMER
-}
-
-
-model coupon { 
-  id              Int @id @default(autoincrement()) 
-  code            String   @unique 
-  title_en        String
-  title_th        String
-  discription_en  String
-  discription_th  String
-  discount_type   String // "PERCENTAGE" | "FIXED" 
-  discount_value  Float 
-  min_amount      Float? 
-  max_discount    Float? 
-  usage_limit     Int? 
-  used_count      Int @default(0) 
-  start_date      DateTime 
-  end_date        DateTime 
-  status          String // "ACTIVE" | "EXPIRED" | "DISABLED" 
-  image           String?
-  created_at      DateTime @default(now()) 
-  updated_at      DateTime @updatedAt 
 }

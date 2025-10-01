@@ -17,9 +17,10 @@ const Login = () => {
         identifier: value.email,
         password: value.password,
       });
+      console.log("signin res", result);
       if (result?.ok) {
-        console.log(session, status);
-        router.push("/auth/login");
+        console.log("session", session, status);
+        router.push("/");
       } else {
         setIsAlert(true);
       }
@@ -38,7 +39,7 @@ const Login = () => {
       <div className="absolute right-5 bottom-5">
         {isAlert && (
           <ErrorAlert
-            onClick={()=>setIsAlert(false)}
+            onClick={() => setIsAlert(false)}
             header="Invalid credentials"
             text="Please try another email or phone number"
           />

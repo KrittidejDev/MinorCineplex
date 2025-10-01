@@ -57,7 +57,7 @@ export const userService = {
       `${apiPath}/auth/register`,
       params
     ),
-  GET_MY_PROFILE: () => apiService.get(`${apiPath}/auth/me`),
+  GET_MY_PROFILE: (id: string) => apiService.get(`${apiPath}/users/${id}`),
   PUT_UPDATE_PROFILE: (id: string, params: UpdateProfileParams) =>
     apiService.put(`${apiPath}/users/${id}`, params),
   RESET_PASSWORD: (id: string, params: ResetPasswordParams) =>

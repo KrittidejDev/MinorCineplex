@@ -22,7 +22,8 @@
     "**/*.ts",
     "**/*.tsx",
     "prisma/seed.js",
-    "prisma/seed.js"
+    "prisma/seed.js",
+    "prisma/seedShowtime.js"
   ],
   "exclude": ["node_modules"]
 }

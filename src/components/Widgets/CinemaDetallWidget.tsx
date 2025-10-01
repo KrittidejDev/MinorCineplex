@@ -1,10 +1,12 @@
-import React from "react";
+import React, { useEffect } from "react";
 import ShowtimeMovie from "./ShowtimeMovie";
 import DateSelectionBarWidget from "./DateSelectionBarWidget";
 import NavBarWidget from "./NavBarWidget";
 import FooterWidget from "./FooterWidget";
 import Image from "next/image";
 import NavAndFooter from "../MainLayout/NavAndFooter";
+import { useParams } from "next/navigation";
+import { userService } from "@/config/userServices";
 
 interface CinemaDetallWidgetProps {
   image?: string;
@@ -21,6 +23,20 @@ const CinemaDetallWidget = ({
   movie3Poster = "https://m.media-amazon.com/images/M/MV5BYzdjMDAxZGItMjI2My00ODA1LTlkNzItOWFjMDU5ZDJlYWY3XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
   movie4Poster = "https://m.media-amazon.com/images/M/MV5BNTc0YmQxMjEtODI5MC00NjFiLTlkMWUtOGQ5NjFmYWUyZGJhXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
 }: CinemaDetallWidgetProps) => {
+  const params = useParams();
+  const id = params?.id;
+
+  const fetchCinema = async () => {
+    const res = await userService.GET_CINEMA_BY_ID(id as string);
+    console.log(res);
+  };
+
+  useEffect(() => {
+    if (id) {
+      fetchCinema();
+    }
+  }, [id]);
+
   return (
     <NavAndFooter>
       <Image

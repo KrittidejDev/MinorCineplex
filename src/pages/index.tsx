@@ -63,7 +63,7 @@ export default function Home() {
         />
       )}
       <div className="flex-1 max-w-[1200px]">
-        <div className="flex justify-center mb-6 mt-5">
+        <div className="lg:absolute top-90.5 left-0 right-0 w-full flex justify-center z-10">
           <FilterSearch />
         </div>
         <div className="mt-20">

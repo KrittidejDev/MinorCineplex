@@ -10,7 +10,14 @@ import dynamic from "next/dynamic";
 import FilterSearch from "@/components/Widgets/FilterSearch";
 import { Filter } from "lucide-react";
 
+
 const CurtainIntro = dynamic(() => import("@/components/Widgets/CurtainIntro"), { ssr: false });
+
+
+const CurtainIntro = dynamic(
+  () => import("@/components/Widgets/CurtainIntro"),
+  { ssr: false }
+);
 
 export default function Home() {
   const [filter, setFilter] = useState<string>("1");
@@ -27,6 +34,22 @@ export default function Home() {
   } = useLocationPermission();
 
   const { cinemas, loading, refetch } = useNearbyCinemas(location, filter);
+
+
+  useEffect(() => {
+    const lastShown = localStorage.getItem("curtain_last_shown");
+    const now = Date.now();
+    const fiveMinutes = 1000 * 60 * 5;
+    if (!lastShown || now - parseInt(lastShown, 5) > fiveMinutes) {
+      setShowCurtain(true);
+      localStorage.setItem("curtain_last_shown", now.toString());
+    }
+  }, []);
+
+  useEffect(() => {
+    setDataCinemas(cinemas);
+  }, [cinemas]);
+
 
   useEffect(() => {
     const lastShown = localStorage.getItem("curtain_last_shown");
@@ -61,11 +84,18 @@ export default function Home() {
         />
       )}
       <div className="flex-1 max-w-[1200px]">
+
         <div className="lg:absolute top-81.5 w-screen flex justify-center">
         <FilterSearch />
         </div>
         <div className="mt-20">
         <NowShowingComingSoon />
+        <div className="lg:absolute top-90.5 left-0 right-0 w-full flex justify-center z-10">
+          <FilterSearch />
+        </div>
+        <div className="mt-20">
+          <NowShowingComingSoon />
+
         </div>
         <Coupon />
         <CinemaLocation data={dataCinemas} filterCinema={handleFilter} />

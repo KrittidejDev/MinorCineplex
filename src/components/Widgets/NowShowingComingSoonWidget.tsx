@@ -1,36 +1,13 @@
 import MovieCard from "../Cards/MovieCard";
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { getMovies } from "@/services/movieService";
+import { APIMovie, MovieCardData } from "@/types/movie";
 
 function NowShowingComingSoon() {
   const [activeTab, setActiveTab] = useState("nowShowing");
-  const [movies, setMovies] = useState<any[]>([]);
+  const [movies, setMovies] = useState<MovieCardData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  interface APIMovie {
-    id: string;
-    title: string;
-    duration_min: number;
-    description?: string | null;
-    poster_url?: string | null;
-    trailer_url?: string | null;
-    genre?: string | null;
-    rating?: string | null;
-    created_at: Date;
-    updated_at: Date;
-    release_date?: Date | null;
-  }
-
-  interface MovieCardData {
-    id: string;
-    title: string;
-    poster_url?: string | null;
-    release_date?: Date | null;
-    rating?: string | null;
-    genre?: string | null;
-  }
 
   useEffect(() => {
     const fetchMovies = async () => {
@@ -58,12 +35,13 @@ function NowShowingComingSoon() {
     fetchMovies();
   }, []);
 
-  const nowShowingMovies = movies.filter(
-    (m) => m.release_date && new Date(m.release_date) <= new Date())
-    .slice(0, 4);;
-  const comingSoonMovies = movies.filter(
-    (m) => m.release_date && new Date(m.release_date) > new Date()
-  );
+  const today = new Date();
+  const nowShowingMovies = movies
+    .filter((m) => m.release_date && m.release_date <= today)
+    .slice(0, 4);
+  const comingSoonMovies = movies
+    .filter((m) => m.release_date && m.release_date > today)
+    .slice(0, 4);
 
   const moviesToDisplay =
     activeTab === "nowShowing" ? nowShowingMovies : comingSoonMovies;

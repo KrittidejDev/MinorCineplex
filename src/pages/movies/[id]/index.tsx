@@ -8,15 +8,7 @@ import NavAndFooter from "@/components/MainLayout/NavAndFooter";
 import CitySelection from "@/components/ui/cityselection";
 import axios from "axios";
 import timeFormat from "@/lib/timeFormat";
-
-type Movie = {
-  id: string;
-  title: string;
-  poster_url: string;
-  release_date: string;
-  description: string;
-  duration_min: number;
-};
+import { APIMovie } from "@/types/movie";
 
 type TimeSlot = {
   id: string;
@@ -28,7 +20,7 @@ type Showtime = {
   id: string;
   date: string;
   price: number;
-  movie: Movie;
+  movie: APIMovie;
   time_slot: TimeSlot;
 };
 
@@ -46,16 +38,18 @@ type Cinema = {
 };
 
 const MoviesDetail = () => {
-
+  const router = useRouter();
+  const { id: movie_id } = router.query;
 
   const [data, setData] = useState<Cinema[]>([]);
 
-  const getCinemasByMovies = async () => {
+  const getCinemasByMovies = async (movieId: string, date?: Date) => {
     try {
-      const {data} = await axios.get(
-        `http://localhost:3000/api/cinemas?movie_id=02ab9972-6a80-498c-bafb-960a4fd9dae5`
+      const dateQuery = date ? `&date=${date.toISOString().split("T")[0]}` : "";
+      const res = await axios.get(
+        `/api/cinemas?movie_id=${movieId}${dateQuery}`
       );
-      setData(data.cinema);
+      setData(res.data.cinema);
     } catch (error: unknown) {
       if (error instanceof Error) {
         console.log("Error:", error.message);
@@ -64,18 +58,43 @@ const MoviesDetail = () => {
   };
 
   useEffect(() => {
-    getCinemasByMovies();
-  }, []);
+    if (movie_id && typeof movie_id === "string") {
+      getCinemasByMovies(movie_id, selectedDate);
+    }
+  }, [movie_id]);
 
   const cinemas = data;
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
   return (
     <>
       <NavAndFooter>
-        <MoviesDetailWidget
-          movie={data[0]?.halls[0]?.showtimes[0]?.movie}
+        <div className="mb-12">
+          <MoviesDetailWidget
+            movie={
+              data[0]?.halls[0]?.showtimes[0]?.movie
+                ? {
+                    ...data[0].halls[0].showtimes[0].movie,
+                    release_date: data[0].halls[0].showtimes[0].movie
+                      .release_date
+                      ? new Date(
+                          data[0].halls[0].showtimes[0].movie.release_date
+                        ).toISOString()
+                      : null,
+                  }
+                : undefined
+            }
+          />
+        </div>
+        <DateSelectionBarWidget
+          onSelectDate={(date: Date) => {
+            setSelectedDate(date);
+            if (movie_id && typeof movie_id === "string") {
+              getCinemasByMovies(movie_id, date);
+            }
+          }}
         />
-        <DateSelectionBarWidget />
+
         <div className="max-w-[1200px] mx-auto flex flex-col lg:flex-row gap-5 items-center justify-center px-4 mt-10">
           <div className="w-full lg:w-[895px]">
             <InputSearch />

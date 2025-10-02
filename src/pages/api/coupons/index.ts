@@ -22,6 +22,7 @@ export default async function handler(
         start_date,
         end_date,
         image,
+        is_collected,
       } = req.body;
 
       // ตรวจสอบว่ามีค่าจำเป็น
@@ -39,6 +40,7 @@ export default async function handler(
         start_date: new Date(start_date),
         end_date: new Date(end_date),
         image,
+        is_collected,
       });
 
       return res.status(201).json({ coupon: newCoupon });

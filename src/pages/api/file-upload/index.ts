@@ -1,6 +1,6 @@
 import { createRouter } from "next-connect";
 import type { NextApiRequest, NextApiResponse } from "next";
-import multer, { FileFilterCallback } from "multer";
+import multer from "multer";
 import { uploadHandler, deleteHandler } from "@/controllers/fileController";
 import type { Request, Response } from "express";
 import { NextHandler } from "next-connect";

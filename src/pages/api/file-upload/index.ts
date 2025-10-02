@@ -3,6 +3,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import multer, { FileFilterCallback } from "multer";
 import { uploadHandler, deleteHandler } from "@/controllers/fileController";
 import type { Request, Response } from "express";
+import { NextHandler } from "next-connect";
 
 // สร้าง storage ของ multer
 const upload = multer({ storage: multer.memoryStorage() });
@@ -11,11 +12,9 @@ const upload = multer({ storage: multer.memoryStorage() });
 const multerAdapter = (
   req: NextApiRequest,
   res: NextApiResponse,
-  next: (err?: unknown) => void
+  next: NextHandler
 ) => {
-  // ใช้ generic ของ Multer กับ Express.Request / Response
-  const handler = upload.single("file");
-  handler(req as unknown as Request, res as unknown as Response, next);
+  upload.single("file")(req as unknown as Request, res as unknown as Response, next);
 };
 
 const router = createRouter<NextApiRequest, NextApiResponse>();

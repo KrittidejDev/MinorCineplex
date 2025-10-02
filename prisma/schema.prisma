@@ -162,14 +162,12 @@ model user {
   username   String    @unique
   email      String    @unique
   phone      String    @unique
-  avatar_id  String?
   avatar_url String?
   password   String
   role       user_role @default(CUSTOMER)
   created_at DateTime  @default(now())
   updated_at DateTime  @updatedAt
   avatar_id  String?
-  avatar_url String?
   bookings   booking[]
 }
 

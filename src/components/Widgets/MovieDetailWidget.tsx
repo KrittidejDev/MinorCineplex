@@ -41,7 +41,7 @@ function MoviesDetailWidget({ movie }: MoviesDetailWidgetProps) {
               </h2>
               <div className="w-fit flex flex-col lg:flex-row lg:items-center">
                 <div className="flex gap-2">
-                  <div className="border-r border-gray-gedd pr-2 lg:pr-5">
+                  <div className="flex gap-2 border-r border-gray-gedd pr-2 lg:pr-5">
                     {movie?.genre
                       ? movie.genre
                           .split(",")

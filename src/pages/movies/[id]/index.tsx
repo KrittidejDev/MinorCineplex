@@ -112,7 +112,7 @@ const MoviesDetail = () => {
                 hallLabel: hall.name,
                 times: hall.showtimes.map((showtime) => ({
                   id: showtime.id,
-                  label: timeFormat(showtime.time_slot.start_time),
+                  label: showtime.time_slot.start_time,
                   disabled: false,
                 })),
               }));

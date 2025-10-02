@@ -41,7 +41,7 @@ function MoviesDetailWidget({ movie }: MoviesDetailWidgetProps) {
               </h2>
               <div className="w-fit flex flex-col lg:flex-row lg:items-center">
                 <div className="flex gap-2">
-                  <div className="border-r border-gray-gedd pr-2 lg:pr-5">
+                  <div className="flex gap-2 border-r border-gray-gedd pr-2 lg:pr-5">
                     {movie?.genre
                       ? movie.genre
                           .split(",")
@@ -70,9 +70,10 @@ function MoviesDetailWidget({ movie }: MoviesDetailWidgetProps) {
             <div className="mt-6 mb-10 lg:my-12">
               <Button className="btn-base blue-normal">Movie detail</Button>
             </div>
-            <p className="text-fr-16 text-gray-gedd">
-              {movie?.description ?? ""}
-            </p>
+            <p
+              className="text-fr-16 text-gray-gedd"
+              dangerouslySetInnerHTML={{ __html: movie?.description ?? "" }}
+            />
           </div>
         </div>
       </div>

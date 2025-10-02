@@ -19,3 +19,11 @@ export const createUser = (data: {
 }) => {
   return prisma.user.create({ data });
 };
+
+export const findUserById = (id: string) => {
+  return prisma.user.findUnique({ where: { id } });
+};
+
+export const updateUser = (id: string, data: { password: string }) => {
+  return prisma.user.update({ where: { id }, data });
+};

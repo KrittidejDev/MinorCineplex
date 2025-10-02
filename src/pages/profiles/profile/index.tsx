@@ -1,22 +1,30 @@
-import React from "react";
+import React, { useState } from "react";
 import NavBarWidget from "@/components/Widgets/NavBarWidget";
 import ProfileBar from "@/components/Widgets/ProfileBar";
-import InputTextFeild from "@/components/Inputs/InputTextFeild";
-import ImageUploadButton from "@/components/Inputs/InputPictureProfile";
-import { Button } from "@/components/ui/button";
 import { useSession } from "next-auth/react";
+import ProfileForm, { ProfileFormValues } from "@/components/Forms/ProfileForm";
 
 type User = {
-  id: string;
-  name: string;
+  username: string;
   email: string;
-  role: string;
-  username?: string;
 };
 
-const Index = () => {
+const ProfilePage = () => {
   const { data: session } = useSession();
   const user = session?.user as User;
+
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [publicId, setPublicId] = useState<string | null>(null);
+
+  const handleImageUploaded = (url: string, pid: string) => {
+    setAvatarUrl(url);
+    setPublicId(pid);
+  };
+
+  const handleSave = async (data: ProfileFormValues) => {
+
+    console.log(data);
+  };
 
   return (
     <div className="bg-blue-b flex flex-col">
@@ -33,39 +41,17 @@ const Index = () => {
 
         {/* Content */}
         <div className="flex flex-col px-4 gap-6 md:gap-12 justify-start items-start w-full max-w-[380px] md:min-w-[450px] md:max-w-[711px]">
-          <div className="text-f-36 text-white">
-            Profile
-          </div>
+          <div className="text-f-36 text-white">Profile</div>
 
           <div className="text-[#8B93B0] text-sm sm:text-base">
             Keep your personal details private. Information you add here is
             visible to anyone who can view your profile
           </div>
-
-          <div>
-            <ImageUploadButton />
-          </div>
-
-          <div className="flex flex-col gap-y-5 w-full max-w-[380px]">
-            <InputTextFeild
-              label="Name"
-              placeholder="Name"
-              value={user?.username}
-            />
-            <InputTextFeild
-              label="Email"
-              placeholder="Email"
-              disabled
-              value={user?.email}
-            />
-            <Button className="btn-base white-outline-normal max-w-[111px] max-h-[48px]">
-              Save
-            </Button>
-          </div>
+          <ProfileForm user={user} onImageUpload={handleImageUploaded} onSave={handleSave} />
         </div>
       </div>
     </div>
   );
 };
 
-export default Index;
+export default ProfilePage;

@@ -41,14 +41,14 @@ export function SuccessAlert({ header, text, onClick }: messageAlertProps) {
       <div className="flex gap-3 justify-between">
         <div className="flex flex-col gap-1">
           {header ? (
-            <p>{header}</p>
+            <p className="text-fm-16 font-bold text-white">{header}</p>
           ) : (
-            <h1 className="text-fm-16 font-bold">Attention needed</h1>
+            <h1 className="text-fm-16 font-bold text-white">Attention needed</h1>
           )}
           {text ? (
-            <p>{text}</p>
+            <p className="text-fr-14 mt-1 text-white">{text}</p>
           ) : (
-            <p className="text-fr-14 mt-1">
+            <p className="text-fr-14 mt-1 text-white">
               Lorem, ipsum dolor sit amet consectetur adipisicing elit.
               Reiciendis provident inventore aut quod saepe esse.
             </p>

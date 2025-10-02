@@ -1,21 +1,10 @@
 import Tag from "../Widgets/Tag";
 import { Button } from "../ui/button";
 import Image from "next/image";
+import { APIMovie } from "@/types/movie";
 
 interface MoviesDetailWidgetProps {
-  movie?: Movie;
-}
-
-interface Movie {
-  id: string;
-  title: string;
-  duration_min: number;
-  description?: string | null;
-  poster_url?: string | null;
-  trailer_url?: string | null;
-  genre?: string | null;
-  rating?: string | null;
-  release_date?: string | null;
+  movie?: APIMovie;
 }
 
 function MoviesDetailWidget({ movie }: MoviesDetailWidgetProps) {

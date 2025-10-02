@@ -3,17 +3,17 @@ import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Button } from "../ui/button";
 import * as yup from "yup";
-type FormValues = {
+export type FormValues = {
   newPassword: string;
   confirmPassword: string;
 };
 
-type SignUpFormProps = {
-  onSubmit?: (values: FormValues) => void;
+type ResetPasswordProps = {
+  onSubmit?: (values: FormValues, reset: () => void) => void;
   align?: "center" | "left";
 };
 
-const ResetPassword = ({ onSubmit,align }: SignUpFormProps) => {
+const ResetPassword = ({ onSubmit, align }: ResetPasswordProps) => {
   const schema = yup.object().shape({
     newPassword: yup
       .string()
@@ -30,6 +30,7 @@ const ResetPassword = ({ onSubmit,align }: SignUpFormProps) => {
     control,
     watch,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<FormValues>({
     resolver: yupResolver(schema),
@@ -40,8 +41,10 @@ const ResetPassword = ({ onSubmit,align }: SignUpFormProps) => {
 
   return (
     <form
-      onSubmit={handleSubmit(onSubmit ?? (() => {}))}
-      className={`w-full flex flex-col ${align === "center" ? "items-center justify-center gap-10" : "items-start justify-start gap-6" }`}
+      onSubmit={handleSubmit((values) => {
+        onSubmit?.(values, () => reset());
+      })}
+      className={`w-full flex flex-col ${align === "center" ? "items-center justify-center gap-10" : "items-start justify-start gap-6"}`}
     >
       <h2 className="text-f-36 text-center text-white">Reset Password</h2>
       <div className="w-full flex flex-col gap-4">

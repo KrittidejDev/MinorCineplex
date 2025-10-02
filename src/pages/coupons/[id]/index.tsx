@@ -66,12 +66,13 @@ const CouponDetail = () => {
         {/* Left Side - Image */}
         <div className="flex justify-center lg:justify-start w-full lg:w-[387px]">
           <Image
-            src={coupon.image || '/default-image.svg'}
+            src={coupon.image || ''}
             alt={coupon.title_en}
             width={387}
             height={387} // square
             className="rounded-t-[8px] w-full h-auto"
             priority
+            
           />
         </div>
 

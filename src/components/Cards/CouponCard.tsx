@@ -26,7 +26,7 @@ const CouponCard = ({ coupon }: CouponCardProps) => {
       >
         <div className="relative w-full h-full">
           <Image
-            src={coupon.image ?? '/default-image.svg'}
+            src={coupon.image || ''}
             alt={coupon.title_en}
             width={285} // width ของ container บน desktop
             height={285} // height เท่ากับ width → square

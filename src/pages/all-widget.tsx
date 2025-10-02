@@ -685,14 +685,47 @@ const AllWidget = () => {
           Showtime Selection
         </h2>
         <div className="flex justify-center">
-          <ShowtimeSelection />
+          <ShowTime
+            cinemaName="Example Cinema"
+            badges={["Hearing assistance", "Wheelchair access"]}
+            groups={[
+              {
+                hallId: "hall1",
+                hallLabel: "Hall 1",
+                times: [
+                  { id: "time1", label: "10:00" },
+                  { id: "time2", label: "12:00" },
+                  { id: "time3", label: "14:30", disabled: true },
+                ],
+              },
+              {
+                hallId: "hall2",
+                hallLabel: "Hall 2",
+                times: [
+                  { id: "time4", label: "11:00" },
+                  { id: "time5", label: "13:30" },
+                ],
+              },
+            ]}
+            collapsed={false}
+            onChange={(time, context) => {
+              console.log("Selected time:", time, "in hall:", context.hallId);
+            }}
+          />
         </div>
       </div>
       {/* ShowtimeMovie Preview */}
       <div className="mt-20 w-full max-w-6xl px-4">
         <h2 className="text-2xl font-bold mb-6 text-center">Showtime Movie</h2>
         <div className="w-full">
-          <ShowtimeMovie />
+          <ShowtimeMovie
+            data={{
+              id: "movie1",
+              title: "Example Movie",
+              genre: "Action, Adventure",
+              poster_url: "/images/poster.png",
+            }}
+          />
         </div>
       </div>
 

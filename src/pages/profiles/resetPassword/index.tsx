@@ -28,10 +28,12 @@ const ResetPasswordUser = () => {
   };
 
   return (
-    <div className="bg-blue-b flex flex-col min-h-[100dvh]">
-      <NavBarWidget />
-      <div className="flex-1 top-21 transition-all duration-500 ease-in-out py-10 md:pl-20 md:py-15 xl:pl-56">
-        <div className="w-full max-w-[1129px] flex flex-col md:flex-row h-full gap-4 md:gap-12">
+    <>
+    <NavBarWidget />
+    <div className="bg-blue-b flex flex-col min-h-[100dvh] lg:px-50">
+      
+      <div className="flex-1 top-21 transition-all duration-500 ease-in-out py-10 md:pl-20 md:py-15 xl:pl-56 ">
+        <div className="w-full max-w-[1129px] flex flex-col md:flex-row h-full gap-4 md:gap-12 ">
           {/* ProfileBar */}
           <div className="w-full md:min-w-[240px] md:max-w-[257px]">
             <ProfileBar />
@@ -52,6 +54,7 @@ const ResetPasswordUser = () => {
         )}
       </div>
     </div>
+    </>
   );
 };
 

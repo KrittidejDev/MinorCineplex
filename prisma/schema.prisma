@@ -168,6 +168,8 @@ model user {
   role       user_role @default(CUSTOMER)
   created_at DateTime  @default(now())
   updated_at DateTime  @updatedAt
+  avatar_id  String?
+  avatar_url String?
   bookings   booking[]
 }
 
@@ -214,6 +216,7 @@ model coupon {
   updated_at     DateTime @updatedAt
   usage_limit    Int?
   used_count     Int      @default(0)
+  is_collected   Boolean  @default(false)
 }
 
 enum booking_status {

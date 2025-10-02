@@ -9,7 +9,14 @@ export type UploadResult = UploadApiResponse;
 export const uploadFile = (buffer: Buffer): Promise<UploadResult> => {
   return new Promise((resolve, reject) => {
     const stream = cloudinary.uploader.upload_stream(
-      { resource_type: "auto" },
+      {
+        resource_type: "image",
+        format: "png", 
+        
+        flags: "attachment:false",
+        
+        access_mode: "public",
+      },
       (
         error: UploadApiErrorResponse | undefined,
         result: UploadApiResponse | undefined

@@ -26,15 +26,15 @@ interface ShowtimeMovieProps {
 }
 
 export const ShowtimeMovie: React.FC<ShowtimeMovieProps> = ({ data }) => {
-  const genres = data.genre?.split(",").map((g) => g.trim());
+  const genres = data?.genre?.split(",").map((g) => g.trim());
 
   return (
     <div className="bg-gray-gc1b rounded-lg shadow-lg flex h-[488px]">
       <div className="w-1/5 box-border flex flex-col gap-y-6 p-6">
         <HoverCard3D>
           <Image
-            src={data.poster_url || ""}
-            alt={data.title}
+            src={data?.poster_url || ""}
+            alt={data?.title}
             className="h-[254px] w-full max-w-[174px] object-cover overflow-hidden rounded-lg"
             width={274}
             height={400}
@@ -42,7 +42,7 @@ export const ShowtimeMovie: React.FC<ShowtimeMovieProps> = ({ data }) => {
         </HoverCard3D>
         <div className="w-[174px] box-border">
           <div className="text-f-20 line-clamp-2 h-[52px] mb-2">
-            {data.title}
+            {data?.title}
           </div>
           <div className="flex flex-wrap gap-2 mb-2">
             {genres?.map((genre, i) => (
@@ -50,7 +50,7 @@ export const ShowtimeMovie: React.FC<ShowtimeMovieProps> = ({ data }) => {
             ))}
           </div>
           <Link
-            href={`/movies/${data.id}/detail`}
+            href={`/movies/${data?.id}/detail`}
             className="transparent-underline-normal"
           >
             Movie detail
@@ -59,13 +59,13 @@ export const ShowtimeMovie: React.FC<ShowtimeMovieProps> = ({ data }) => {
       </div>
       <div className="flex flex-1 p-10">
         <div className="flex flex-col flex-1 h-full overflow-y-auto gap-y-15">
-          {data.halls?.map((hall) => (
-            <div key={hall.id}>
-              <div className="text-f-24 mb-4">{hall.name}</div>
+          {data?.halls?.map((hall) => (
+            <div key={hall?.id}>
+              <div className="text-f-24 mb-4">{hall?.name}</div>
               <ShowtimeSelection
-                timeslot={hall.timeslots}
-                movieId={data.id}
-                hallId={hall.id}
+                timeslot={hall?.timeslots}
+                movieId={data?.id}
+                hallId={hall?.id}
               />
             </div>
           ))}

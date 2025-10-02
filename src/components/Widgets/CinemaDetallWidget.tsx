@@ -132,11 +132,9 @@ const CinemaDetallWidget: React.FC = () => {
             )}
           </div>
         </div>
-
         <section className="w-full z-10">
           <DateSelectionBarWidget onSelectDate={handleSelectDate} />
         </section>
-
         <section className="w-full max-w-[1200px] px-4 sm:px-0">
           <div className="space-y-6 py-10 md:py-20">
             {cinemaData?.movies?.map((movie: ShowtimeMovieData) => (

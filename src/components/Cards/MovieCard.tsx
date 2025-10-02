@@ -23,7 +23,7 @@ function MovieCard({
   const genres = genre ? genre.split(",").map((g) => g.trim()) : [];
 
   return (
-    <div className="w-[161px] h-fit md:w-[285px] md:h-[526px] flex flex-col cursor-pointer">
+    <div className="w-[161px] h-fit md:w-[285px] md:h-[526px] md:mb-12 lg:mb-17 flex flex-col cursor-pointer">
       <Link href={`/movies/${id}`} passHref>
         <div className="h-[235px] md:h-[416px] rounded-sm ">
           <div className="relative h-[235px] md:h-[416px]">

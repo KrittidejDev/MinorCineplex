@@ -2,6 +2,8 @@ import MovieCard from "../Cards/MovieCard";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { APIMovie, MovieCardData } from "@/types/movie";
+import Link from "next/link";
+import { Button } from "../ui/button";
 
 function NowShowingComingSoon() {
   const [activeTab, setActiveTab] = useState("nowShowing");
@@ -49,7 +51,8 @@ function NowShowingComingSoon() {
   return (
     <div className="w-screen flex justify-center py-20 px-4">
       <div className="flex flex-col gap-10">
-        <div className="flex gap-4">
+        <div className="flex justify-between">
+          <div className="flex gap-4">
           <button
             onClick={() => setActiveTab("nowShowing")}
             className={`font-bold text-f-24 py-1 cursor-pointer ${activeTab === "nowShowing" ? "text-white-wfff border-b border-gray-gf7e" : "text-gray-g3b0 border-b border-transparent"}`}
@@ -62,6 +65,12 @@ function NowShowingComingSoon() {
           >
             Coming soon
           </button>
+          </div>
+          <Link href="/movies" passHref>
+            <Button className="btn-base-transparent-underline-normal text-sm hover:underline cursor-pointer">
+              View all
+            </Button>
+          </Link>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">

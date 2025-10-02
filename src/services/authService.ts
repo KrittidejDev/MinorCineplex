@@ -9,6 +9,11 @@ interface RegisterUserInput {
   password: string;
 }
 
+interface ResetPasswordInput {
+  id: string;
+  newPassword: string;
+}
+
 export const registerUser = async (body: RegisterUserInput) => {
   await signupSchema.validate(body, { abortEarly: false });
 
@@ -34,3 +39,14 @@ export const registerUser = async (body: RegisterUserInput) => {
 
   return user;
 };
+
+export const resetPassword = async (body: ResetPasswordInput) => {
+  const { id, newPassword } = body;
+  const user = await userRepo.findUserById(id);
+  if (!user) {
+    throw { status: 400, message: "User not found" };
+  }
+  const hashed = await bcrypt.hash(newPassword, 10);
+  await userRepo.updateUser(id, { password: hashed });
+  return user;
+}

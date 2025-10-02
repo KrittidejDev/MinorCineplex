@@ -7,7 +7,6 @@ import ShowTime from "@/components/Widgets/ShowTime";
 import NavAndFooter from "@/components/MainLayout/NavAndFooter";
 import CitySelection from "@/components/ui/cityselection";
 import axios from "axios";
-import timeFormat from "@/lib/timeFormat";
 import { APIMovie } from "@/types/movie";
 
 type TimeSlot = {
@@ -40,8 +39,8 @@ type Cinema = {
 const MoviesDetail = () => {
   const router = useRouter();
   const { id: movie_id } = router.query;
-
   const [data, setData] = useState<Cinema[]>([]);
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
   const getCinemasByMovies = async (movieId: string, date?: Date) => {
     try {
@@ -61,79 +60,79 @@ const MoviesDetail = () => {
     if (movie_id && typeof movie_id === "string") {
       getCinemasByMovies(movie_id, selectedDate);
     }
-  }, [movie_id]);
-
-  const cinemas = data;
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  }, [movie_id, selectedDate]);
 
   return (
-    <>
-      <NavAndFooter>
-        <div className="mb-12">
-          <MoviesDetailWidget
-            movie={
-              data[0]?.halls[0]?.showtimes[0]?.movie
-                ? {
-                    ...data[0].halls[0].showtimes[0].movie,
-                    release_date: data[0].halls[0].showtimes[0].movie
-                      .release_date
-                      ? new Date(
-                          data[0].halls[0].showtimes[0].movie.release_date
-                        ).toISOString()
-                      : null,
-                  }
-                : undefined
-            }
-          />
-        </div>
-        <DateSelectionBarWidget
-          onSelectDate={(date: Date) => {
-            setSelectedDate(date);
-            if (movie_id && typeof movie_id === "string") {
-              getCinemasByMovies(movie_id, date);
-            }
-          }}
+    <NavAndFooter>
+      <div className="mb-12">
+        <MoviesDetailWidget
+          movie={
+            data[0]?.halls[0]?.showtimes[0]?.movie
+              ? {
+                  ...data[0].halls[0].showtimes[0].movie,
+                  release_date: data[0].halls[0].showtimes[0].movie.release_date
+                    ? new Date(
+                        data[0].halls[0].showtimes[0].movie.release_date
+                      )
+                    : null,
+                }
+              : undefined
+          }
         />
+      </div>
 
-        <div className="max-w-[1200px] mx-auto flex flex-col lg:flex-row gap-5 items-center justify-center px-4 mt-10">
-          <div className="w-full lg:w-[895px]">
-            <InputSearch />
-          </div>
-          <div className="w-full lg:w-[285px]">
-            <CitySelection />
-          </div>
+      <DateSelectionBarWidget
+        onSelectDate={(date: Date) => setSelectedDate(date)}
+      />
+
+      <div className="max-w-[1200px] mx-auto flex flex-col lg:flex-row gap-5 items-center justify-center px-4 mt-10">
+        <div className="w-full lg:w-[895px]">
+          <InputSearch />
         </div>
+        <div className="w-full lg:w-[285px]">
+          <CitySelection />
+        </div>
+      </div>
 
-        <div className="w-full max-w-[1200px] mx-auto my-10">
-          <div className="flex flex-col items-center gap-6 md:px-4">
-            {cinemas.map((cinema: Cinema) => {
-              const groups = cinema.halls.map((hall) => ({
+      <div className="w-full max-w-[1200px] mx-auto my-10">
+        <div className="flex flex-col items-center gap-6 md:px-4">
+          {data.map((cinema: Cinema) => {
+            const groups = cinema.halls
+              .map((hall) => ({
                 hallId: hall.id,
                 hallLabel: hall.name,
-                times: hall.showtimes.map((showtime) => ({
-                  id: showtime.id,
-                  label: showtime.time_slot.start_time,
-                  disabled: false,
-                })),
-              }));
+                times: hall.showtimes
+                  .filter(
+                    (showtime) =>
+                      new Date(showtime.date).toDateString() ===
+                      selectedDate.toDateString()
+                  )
+                  .map((showtime) => ({
+                    id: showtime.id,
+                    label: showtime.time_slot.start_time,
+                    disabled: false,
+                  })),
+              }))
+              .filter((group) => group.times.length > 0);
 
-              return (
-                <div
-                  key={cinema.id}
-                  className="w-full md:rounded-md bg-gray-gc1b p-4"
-                >
-                  <ShowTime
-                    groups={groups}
-                    cinemaName={cinema.name_en}
-                    badges={["Hearing assistance", "Wheelchair access"]}
-                  />
-                </div>
-              );
-            })}
-          </div>
+            if (groups.length === 0) return null;
+
+            return (
+              <div
+                key={cinema.id}
+                className="w-full md:rounded-md bg-gray-gc1b p-4"
+              >
+                <ShowTime
+                  groups={groups}
+                  cinemaName={cinema.name_en}
+                  badges={["Hearing assistance", "Wheelchair access"]}
+                />
+              </div>
+            );
+          })}
         </div>
-      </NavAndFooter>
-    </>
+      </div>
+    </NavAndFooter>
   );
 };
 

@@ -53,6 +53,23 @@ export interface HallDetail {
   showtimes: ShowtimeDetail[];
 }
 
+export interface ShowtimeMovieData {
+  id: string;
+  title: string;
+  poster_url?: string;
+  genre?: string;
+  description?: string;
+  halls?: {
+    id: string;
+    name: string;
+    timeslots: {
+      id: string;
+      start_time: string;
+      end_time: string;
+    }[];
+  }[];
+}
+
 // Interface สำหรับ cinema
 export interface CinemaDetail {
   id: string;
@@ -66,6 +83,7 @@ export interface CinemaDetail {
   transportation?: string;
   icon_url?: string;
   halls: HallDetail[];
+  movies?: ShowtimeMovieData[];
   showtimesByDay: {
     date: string; // YYYY-MM-DD
     halls: HallDetail[];

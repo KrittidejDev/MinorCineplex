@@ -3,6 +3,7 @@ import { Button } from '../ui/button'
 import { useRouter } from 'next/router'
 import Image from 'next/image'
 import { CouponCardData } from '@/types/coupon'
+import { HoverCard3D } from "../Displays/HoverCard3D";
 
 interface CouponCardProps {
   coupon: Pick<
@@ -19,6 +20,7 @@ const CouponCard = ({ coupon }: CouponCardProps) => {
   }
 
   return (
+    <HoverCard3D>
     <div className="w-[161px] md:w-[285px] h-[337px] lg:w-[285px] lg:h-[477px] flex flex-col rounded-[8px] bg-[#070C1B]">
       <div
         className="h-[285px] w-full  rounded-t-[8px] overflow-hidden cursor-pointer"
@@ -63,6 +65,7 @@ const CouponCard = ({ coupon }: CouponCardProps) => {
         </div>
       </div>
     </div>
+    </HoverCard3D>
   )
 }
 

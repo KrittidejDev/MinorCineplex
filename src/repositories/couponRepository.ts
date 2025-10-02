@@ -45,7 +45,8 @@ export const update = async (
   return prisma.coupon.update({
     where: { id },
     data: {
-      image: data.image
+      image: data.image,
+      is_collected: data.is_collected,
     },
   });
 };

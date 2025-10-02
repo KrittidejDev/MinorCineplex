@@ -7,6 +7,7 @@ export interface CouponCardData {
     discount: number
     expiresAt?: string | null
     image?: string | null 
+    is_collected?: boolean;
   }
   
 export interface APICoupon { //GET coupon
@@ -29,6 +30,7 @@ export interface APICoupon { //GET coupon
     category_id: number | null
     created_at: string
     updated_at: string
+    is_collected?: boolean;
   }
 
   export interface CreateCouponInput {
@@ -38,9 +40,11 @@ export interface APICoupon { //GET coupon
     discription_en?: string;
     discription_th?: string;
     discount_value: number;
-    start_date: Date; // Date object
-    end_date: Date;   // Date object
-    image?: string;
+    start_date: Date;
+    end_date: Date;
+    image?: string | null;  // <- ปรับให้รองรับ null
+    is_collected?: boolean;
   }
+  
   
   

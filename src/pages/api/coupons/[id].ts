@@ -33,6 +33,7 @@ export default async function handler(
         start_date,
         end_date,
         image,
+        is_collected,
       } = req.body;
 
       const updatedCoupon = await updateCouponById(couponId, {
@@ -45,6 +46,7 @@ export default async function handler(
         start_date: new Date(start_date),
         end_date: new Date(end_date),
         image,
+        is_collected,
       });
 
       return res.status(200).json({ coupon: updatedCoupon });

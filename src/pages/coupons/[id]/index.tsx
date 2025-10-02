@@ -72,6 +72,7 @@ const CouponDetail = () => {
             height={387} // square
             className="rounded-t-[8px] w-full h-auto"
             priority
+            unoptimized
           />
         </div>
 

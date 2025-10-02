@@ -92,8 +92,9 @@ export const userService = {
   POST_FILE_UPLOAD: (params: FileUploadParams) => {
     const formData = new FormData();
     formData.append("file", params.file);
-    return apiService.post_formdata(`${apiPath}/files/upload`, formData);
+    return apiService.post_formdata(`${apiPath}/file-upload`, formData);
   },
+  
   DELETE_FILE: (fileId: string) =>
     apiService.delete(`${apiPath}/files/delete/${fileId}`),
 

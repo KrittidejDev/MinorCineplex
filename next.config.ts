@@ -3,7 +3,7 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ["cdn.majorcineplex.com"],
+    domains: ["cdn.majorcineplex.com", "res.cloudinary.com"], // เพิ่ม Cloudinary ที่นี่
     remotePatterns: [
       {
         protocol: "https",
@@ -38,9 +38,9 @@ const nextConfig: NextConfig = {
         hostname: "scontent.fbkk35-1.fna.fbcdn.net",
       },
       {
-    protocol: "https",
-    hostname: "cdn.majorcineplex.com",
-  },
+        protocol: "https",
+        hostname: "cdn.majorcineplex.com",
+      }
     ],
   },
 };

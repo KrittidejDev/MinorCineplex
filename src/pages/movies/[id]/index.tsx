@@ -1,5 +1,7 @@
-import { useRouter } from "next/router";
+"use client";
+
 import React, { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
 import MoviesDetailWidget from "@/components/Widgets/MovieDetailWidget";
 import DateSelectionBarWidget from "@/components/Widgets/DateSelectionBarWidget";
 import InputSearch from "@/components/Inputs/InputSearch";
@@ -36,13 +38,16 @@ type Cinema = {
   halls: Hall[];
 };
 
-const MoviesDetail = () => {
+const MoviesDetail: React.FC = () => {
+  const params = useParams();
   const router = useRouter();
-  const { id: movie_id } = router.query;
+  const movie_id = params?.id as string | undefined; // รับ id จาก dynamic route
+
   const [data, setData] = useState<Cinema[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
   const getCinemasByMovies = async (movieId: string, date?: Date) => {
+    if (!movieId) return;
     try {
       const dateQuery = date ? `&date=${date.toISOString().split("T")[0]}` : "";
       const res = await axios.get(
@@ -50,17 +55,19 @@ const MoviesDetail = () => {
       );
       setData(res.data.cinema);
     } catch (error: unknown) {
-      if (error instanceof Error) {
-        console.log("Error:", error.message);
-      }
+      if (error instanceof Error) console.log("Error:", error.message);
     }
   };
 
   useEffect(() => {
-    if (movie_id && typeof movie_id === "string") {
-      getCinemasByMovies(movie_id, selectedDate);
-    }
+    if (movie_id) getCinemasByMovies(movie_id, selectedDate);
   }, [movie_id, selectedDate]);
+
+  const handleSelectShowtime = (showtimeId: string) => {
+    router.push(
+      `/movies/${movie_id}/movie-booking/seat?showtime=${showtimeId}`
+    );
+  };
 
   return (
     <NavAndFooter>
@@ -71,9 +78,7 @@ const MoviesDetail = () => {
               ? {
                   ...data[0].halls[0].showtimes[0].movie,
                   release_date: data[0].halls[0].showtimes[0].movie.release_date
-                    ? new Date(
-                        data[0].halls[0].showtimes[0].movie.release_date
-                      )
+                    ? new Date(data[0].halls[0].showtimes[0].movie.release_date)
                     : null,
                 }
               : undefined
@@ -81,9 +86,7 @@ const MoviesDetail = () => {
         />
       </div>
 
-      <DateSelectionBarWidget
-        onSelectDate={(date: Date) => setSelectedDate(date)}
-      />
+      <DateSelectionBarWidget onSelectDate={(date) => setSelectedDate(date)} />
 
       <div className="max-w-[1200px] mx-auto flex flex-col lg:flex-row gap-5 items-center justify-center px-4 mt-10">
         <div className="w-full lg:w-[895px]">
@@ -126,6 +129,9 @@ const MoviesDetail = () => {
                   groups={groups}
                   cinemaName={cinema.name_en}
                   badges={["Hearing assistance", "Wheelchair access"]}
+                  onChange={(time) => {
+                    if (time) handleSelectShowtime(time.id);
+                  }}
                 />
               </div>
             );

@@ -1,15 +1,17 @@
-
-
-import AdminSidebar from "@/components/ui/adminsidebar"; 
+import AdminSidebar from "@/components/ui/adminsidebar";
+import AdminCinemaWidgets from "@/components/Widgets/AdminCinemaWidgets";
 
 export default function Dashboard() {
- 
+
 
   return (
 
-     <div>
+    <div className="flex">
       <AdminSidebar />
-    
+      <div className="flex-1 max-w-[1200px] bg-white-wfff">
+        <AdminCinemaWidgets />
+      </div>
     </div>
+
   );
 }

@@ -11,10 +11,7 @@ export const uploadFile = (buffer: Buffer): Promise<UploadResult> => {
     const stream = cloudinary.uploader.upload_stream(
       {
         resource_type: "image",
-        format: "png", 
-        
         flags: "attachment:false",
-        
         access_mode: "public",
       },
       (

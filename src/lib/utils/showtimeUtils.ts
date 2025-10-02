@@ -29,16 +29,25 @@ export function RUNDER_TIMESLOT(
   }
 
   if (current >= start && current <= start + 30 * 60 * 1000) {
-    return { disabled: false, className: "blue-normal", label: "ใกล้เริ่ม" };
+    return {
+      disabled: false,
+      className:
+        "blue-normal animate-pulse hover:bg-blue-bbee! cursor-pointer  ",
+      label: "ใกล้เริ่ม",
+    };
   }
 
   if (current > start && current < end) {
     return {
-      disabled: false,
-      className: "blue-normal hover:bg-blue-bbee! animate-pulse",
+      disabled: true,
+      className: "blue-normal cursor-not-allowed ",
       label: "กำลังฉาย",
     };
   }
 
-  return { disabled: false, className: "blue-dark-normal", label: "รอรอบ" };
+  return {
+    disabled: false,
+    className: "blue-dark-normal  cursor-pointer ",
+    label: "รอรอบ",
+  };
 }

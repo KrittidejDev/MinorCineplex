@@ -1,17 +1,18 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import MovieCard from "../Cards/MovieCard";
 import { APIMovie } from "@/types/movie";
 import TrailerPlayer from "../Displays/TrailerPlayer";
 import { ActorProfile, DirectorProfile } from "../ui/actordirectorlist";
+import InputSearch from "../Inputs/InputSearch";
+import CitySelection from "../ui/cityselection";
 
 interface MoviesDetailWidgetProps {
   movie: APIMovie;
 }
 
 const MovieInfoWidget: React.FC<MoviesDetailWidgetProps> = ({ movie }) => {
-  
   const [activeTab, setActiveTab] = useState("ข้อมูลภาพยนต์");
   if (!movie) return <p>ไม่พบข้อมูลหนัง</p>;
 
@@ -63,7 +64,23 @@ const MovieInfoWidget: React.FC<MoviesDetailWidgetProps> = ({ movie }) => {
           <div>
             <h3 className="font-bold text-f-24">เรื่องย่อ</h3>
             <div className="mt-5">
-              <p className="font-bold">{movie.description}</p>
+              <p
+                className="font-bold"
+                dangerouslySetInnerHTML={{ __html: movie?.description ?? "" }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {activeTab === "รอบฉาย" && (
+        <div>
+          <div className="max-w-[1200px] mx-auto flex flex-col lg:flex-row gap-5 items-center justify-center px-4 mt-10">
+            <div className="w-full lg:w-[895px]">
+              <InputSearch />
+            </div>
+            <div className="w-full lg:w-[285px]">
+              <CitySelection />
             </div>
           </div>
         </div>

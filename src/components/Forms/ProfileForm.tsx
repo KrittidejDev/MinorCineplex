@@ -1,55 +1,71 @@
 import InputTextFeild from "@/components/Inputs/InputTextFeild";
 import ImageUploadButton from "@/components/Inputs/InputPictureProfile";
 import { Button } from "@/components/ui/button";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
+import { useEffect } from "react";
 
 export type ProfileFormValues = {
   username: string;
   email: string;
+  avatar_url: string | null;
+
 };
 
 interface ProfileFormProps {
-  user: ProfileFormValues;
-  avatarUrl?: string | null;
-  onImageUpload: (url: string, publicId: string) => void;
+  userData: ProfileFormValues;
+  isLoading: boolean;
+  onFileSelect: (file: File) => void;
   onSave: (data: ProfileFormValues) => void;
 }
-
 const ProfileForm = ({
-  user,
-  avatarUrl,
-  onImageUpload,
+  userData,
+  isLoading,
+  onFileSelect,
   onSave,
 }: ProfileFormProps) => {
-  const { register, handleSubmit } = useForm<ProfileFormValues>();
+  const { control, handleSubmit,setValue } = useForm<ProfileFormValues>();
 
-  const onSubmit = (data: ProfileFormValues) => {
-    onSave(data);
-  };
+  useEffect(() => {
+    setValue("username", userData?.username);
+    setValue("email", userData?.email);
+  }, [userData,setValue]);
   return (
     <form
-      onSubmit={handleSubmit(onSubmit)}
+      onSubmit={handleSubmit(onSave)}
       className="flex flex-col px-4 gap-6 md:gap-12 justify-start items-start w-full"
     >
       <div>
-        <ImageUploadButton />
+        <ImageUploadButton
+          onFileSelect={onFileSelect}
+          avatar_url={userData?.avatar_url ?? null}
+        />
       </div>
       <div className="flex flex-col gap-y-5 w-full max-w-[380px]">
-        <InputTextFeild
-          {...register("username")}
-          label="Username"
-          placeholder="Username"
-          value={user?.username ?? ""}
+        <Controller
+          control={control}
+          render={({ field }) => (
+            <InputTextFeild
+              {...field}
+              label={"Username"}
+              placeholder="Username"
+            />
+          )}
+          name="username"
         />
-        <InputTextFeild
-          {...register("email")}
-          label="Email"
-          placeholder="Email"
-          disabled
-          value={user?.email ?? ""}
+        <Controller
+          control={control}
+          render={({ field }) => (
+            <InputTextFeild
+              {...field}
+              label="Email"
+              placeholder="Email"
+              disabled
+            />
+          )}
+          name="email"
         />
-        <Button className="btn-base white-outline-normal max-w-[111px] max-h-[48px]">
-          Save
+        <Button className="btn-base white-outline-normal w-28 h-12 rounded-sm">
+          {isLoading ? "Uploading..." : "Save"}
         </Button>
       </div>
     </form>

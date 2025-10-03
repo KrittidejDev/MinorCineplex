@@ -17,8 +17,8 @@ export interface SignupParams {
 }
 export interface UpdateProfileParams {
   username?: string;
-  email?: string;
-  avatar?: string;
+  avatar_url?: string;
+  avatar_id?: string;
 }
 export interface ResetPasswordParams {
   oldPassword: string;
@@ -96,7 +96,7 @@ export const userService = {
   },
   
   DELETE_FILE: (fileId: string) =>
-    apiService.delete(`${apiPath}/files/delete/${fileId}`),
+    apiService.delete(`${apiPath}/file-upload?fileId=${fileId}`),
 
   // Cinema
   GET_CINEMAS: (query?: string) =>

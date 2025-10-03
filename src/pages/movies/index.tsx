@@ -1,7 +1,7 @@
 import NavAndFooter from "@/components/MainLayout/NavAndFooter";
 import AllMoviesWidget from "@/components/Widgets/AllMoviesWidget";
 
-function Movies() {
+function AllMovies() {
   return (
     <NavAndFooter>
       <AllMoviesWidget />
@@ -9,4 +9,4 @@ function Movies() {
   );
 }
 
-export default Movies;
+export default AllMovies;

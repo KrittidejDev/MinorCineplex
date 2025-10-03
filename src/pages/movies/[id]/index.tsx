@@ -41,18 +41,28 @@ type Cinema = {
 const MoviesDetail: React.FC = () => {
   const params = useParams();
   const router = useRouter();
-  const movie_id = params?.id as string | undefined; // รับ id จาก dynamic route
+  const movie_id = params?.id as string | undefined;
 
   const [data, setData] = useState<Cinema[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
   const getCinemasByMovies = async (movieId: string, date?: Date) => {
     if (!movieId) return;
+    console.log(
+      "Fetching cinemas for movie_id:",
+      movie_id,
+      "with date:",
+      selectedDate
+    );
     try {
       const dateQuery = date ? `&date=${date.toISOString().split("T")[0]}` : "";
       const res = await axios.get(
         `/api/cinemas?movie_id=${movieId}${dateQuery}`
       );
+
+      console.log("Raw API response:", res);
+      console.log("res.data.cinema:", res.data.cinema);
+
       setData(res.data.cinema);
     } catch (error: unknown) {
       if (error instanceof Error) console.log("Error:", error.message);
@@ -69,16 +79,31 @@ const MoviesDetail: React.FC = () => {
     );
   };
 
+  const [movie, setMovie] = useState<APIMovie | null>(null);
+
+  const getMovieById = async (movieId: string) => {
+    try {
+      const res = await axios.get(`/api/movies/${movieId}`);
+      setMovie(res.data.movie);
+    } catch (error) {
+      console.error("Error fetching movie:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (movie_id) getMovieById(movie_id);
+  }, [movie_id]);
+
   return (
     <NavAndFooter>
       <div className="mb-12">
         <MoviesDetailWidget
           movie={
-            data[0]?.halls[0]?.showtimes[0]?.movie
+            movie
               ? {
-                  ...data[0].halls[0].showtimes[0].movie,
-                  release_date: data[0].halls[0].showtimes[0].movie.release_date
-                    ? new Date(data[0].halls[0].showtimes[0].movie.release_date)
+                  ...movie,
+                  release_date: movie.release_date
+                    ? new Date(movie.release_date)
                     : null,
                 }
               : undefined

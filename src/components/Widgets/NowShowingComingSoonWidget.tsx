@@ -4,6 +4,7 @@ import axios from "axios";
 import { APIMovie, MovieCardData } from "@/types/movie";
 import Link from "next/link";
 import { Button } from "../ui/button";
+import { useRouter } from "next/router";
 
 function NowShowingComingSoon() {
   const [activeTab, setActiveTab] = useState("nowShowing");
@@ -48,23 +49,25 @@ function NowShowingComingSoon() {
   const moviesToDisplay =
     activeTab === "nowShowing" ? nowShowingMovies : comingSoonMovies;
 
+  const router = useRouter();
+
   return (
     <div className="w-screen flex justify-center py-20 px-4">
       <div className="flex flex-col gap-10">
         <div className="flex justify-between">
           <div className="flex gap-4">
-          <button
-            onClick={() => setActiveTab("nowShowing")}
-            className={`font-bold text-f-24 py-1 cursor-pointer ${activeTab === "nowShowing" ? "text-white-wfff border-b border-gray-gf7e" : "text-gray-g3b0 border-b border-transparent"}`}
-          >
-            Now showing
-          </button>
-          <button
-            onClick={() => setActiveTab("comingSoon")}
-            className={`font-bold text-f-24 py-1 cursor-pointer ${activeTab === "comingSoon" ? "text-white-wfff border-b border-gray-gf7e" : "text-gray-g3b0 border-b border-transparent"}`}
-          >
-            Coming soon
-          </button>
+            <button
+              onClick={() => setActiveTab("nowShowing")}
+              className={`font-bold text-f-24 py-1 cursor-pointer ${activeTab === "nowShowing" ? "text-white-wfff border-b border-gray-gf7e" : "text-gray-g3b0 border-b border-transparent"}`}
+            >
+              Now showing
+            </button>
+            <button
+              onClick={() => setActiveTab("comingSoon")}
+              className={`font-bold text-f-24 py-1 cursor-pointer ${activeTab === "comingSoon" ? "text-white-wfff border-b border-gray-gf7e" : "text-gray-g3b0 border-b border-transparent"}`}
+            >
+              Coming soon
+            </button>
           </div>
           <Link href="/movies" passHref>
             <Button className="btn-base-transparent-underline-normal text-sm hover:underline cursor-pointer">
@@ -75,17 +78,23 @@ function NowShowingComingSoon() {
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
           {moviesToDisplay.map((movie) => (
-            <MovieCard
+            <div
               key={movie.id}
-              id={movie.id}
-              title={movie.title}
-              poster_url={movie.poster_url}
-              release_date={
-                movie.release_date ? new Date(movie.release_date) : undefined
-              }
-              rating={movie.rating}
-              genre={movie.genre}
-            />
+              className="cursor-pointer"
+              onClick={() => router.push(`/movies/${movie.id}`)}
+            >
+              <MovieCard
+                key={movie.id}
+                id={movie.id}
+                title={movie.title}
+                poster_url={movie.poster_url}
+                release_date={
+                  movie.release_date ? new Date(movie.release_date) : undefined
+                }
+                rating={movie.rating}
+                genre={movie.genre}
+              />
+            </div>
           ))}
         </div>
       </div>

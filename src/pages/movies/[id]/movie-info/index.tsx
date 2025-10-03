@@ -6,10 +6,18 @@ import { useLocationPermission } from "@/lib/hooks/useLocationPermission";
 import LocationPermissionModal from "@/components/Modals/LocationPermissionModal";
 import { useNearbyCinemas } from "@/lib/hooks/useNearbyCinemas";
 import { useState, useEffect } from "react";
+import { useParams } from "next/navigation";
+import axios from "axios";
+import { APIMovie } from "@/types/movie";
 
 function MovieInfo() {
+  const params = useParams();
+  const movieId = params?.id;
+  const [movie, setMovie] = useState<APIMovie | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<string>("1");
   const [dataCinemas, setDataCinemas] = useState<any[]>([]);
+  const [movieloading, setMovieLoading] = useState(true);
   const {
     location,
     showModal,
@@ -19,7 +27,26 @@ function MovieInfo() {
     allowOnce,
     neverAllow,
   } = useLocationPermission();
+  
   const { cinemas, loading, refetch } = useNearbyCinemas(location, filter);
+
+  useEffect(() => {
+    if (!movieId) return;
+
+    const fetchMovie = async () => {
+      try {
+        const res = await axios.get(`/api/movies/${movieId}`);
+        setMovie(res.data.movie);
+      } catch (err) {
+        console.error(err);
+        setError("ไม่สามารถโหลดข้อมูลหนังได้");
+      } finally {
+        setMovieLoading(false);
+      }
+    };
+
+    fetchMovie();
+  }, [movieId]);
 
   useEffect(() => {
       setDataCinemas(cinemas);
@@ -34,13 +61,17 @@ function MovieInfo() {
     refetch(value);
   };
 
+   if (loading) return <p>Loading...</p>;
+  if (error) return <p>{error}</p>;
+  if (!movie) return <p>ไม่พบข้อมูลหนัง</p>;
+
   return (
     <>
       <NavAndFooterWithBanner>
         <div className=" max-w-[1200px] mx-auto">
           <FilterSearch />
           <div className="mt-10">
-            <MovieInfoWidget />
+            <MovieInfoWidget movie={movie} />
           </div>
         </div>
 

@@ -1,6 +1,5 @@
 import StarFill from "../Icons/StarFill";
 import Tag from "../Widgets/Tag";
-import Link from "next/link";
 import Image from "next/image";
 import { HoverCard3D } from "../Displays/HoverCard3D";
 
@@ -24,8 +23,7 @@ function MovieCard({
   const genres = genre ? genre.split(",").map((g) => g.trim()) : [];
 
   return (
-    <div className="w-[161px] h-fit md:w-[285px] md:h-[526px] md:mb-12 lg:mb-17 flex flex-col cursor-pointer">
-      <Link href={`/movies/${id}`} passHref>
+    <div className="w-[161px] h-fit md:w-[285px] md:h-[526px] md:mb-12 lg:mb-17 flex flex-col">
         <div className="h-[235px] md:h-[416px] rounded-sm ">
           <HoverCard3D>
           <div className="relative h-[235px] md:h-[416px]">
@@ -66,7 +64,6 @@ function MovieCard({
             </div>
           </div>
         </div>
-      </Link>
     </div>
   );
 }

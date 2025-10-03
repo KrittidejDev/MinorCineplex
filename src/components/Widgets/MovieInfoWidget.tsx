@@ -1,44 +1,18 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
-import axios from "axios";
 import MovieCard from "../Cards/MovieCard";
 import { APIMovie } from "@/types/movie";
 import TrailerPlayer from "../Displays/TrailerPlayer";
 import { ActorProfile, DirectorProfile } from "../ui/actordirectorlist";
 
-const MovieInfoWidget: React.FC = () => {
-  const params = useParams();
-  const movieId = params?.id as string | undefined;
+interface MoviesDetailWidgetProps {
+  movie: APIMovie;
+}
 
-  const [movie, setMovie] = useState<APIMovie | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+const MovieInfoWidget: React.FC<MoviesDetailWidgetProps> = ({ movie }) => {
+  
   const [activeTab, setActiveTab] = useState("ข้อมูลภาพยนต์");
-
-  const fetchMovie = async (id: string) => {
-    try {
-      setLoading(true);
-      const res = await axios.get(`/api/movies/${id}`);
-      console.log("Movie API response:", res.data);
-      setMovie(res.data.movie);
-    } catch (err) {
-      console.error(err);
-      setError("ไม่สามารถโหลดข้อมูลหนังได้");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (movieId) {
-      fetchMovie(movieId);
-    }
-  }, [movieId]);
-
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>{error}</p>;
   if (!movie) return <p>ไม่พบข้อมูลหนัง</p>;
 
   return (

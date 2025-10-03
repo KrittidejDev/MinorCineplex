@@ -109,3 +109,4 @@ export const userService = {
   GET_CINEMA_BY_ID: (id: string, query?: string) =>
     apiService.get(`${apiPath}/cinemas/detail/${id}${query ?? ""}`),
 };
+

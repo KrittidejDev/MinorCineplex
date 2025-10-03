@@ -11,7 +11,6 @@ interface MoviesDetailWidgetProps {
 }
 
 const MovieInfoWidget: React.FC<MoviesDetailWidgetProps> = ({ movie }) => {
-  
   const [activeTab, setActiveTab] = useState("ข้อมูลภาพยนต์");
   if (!movie) return <p>ไม่พบข้อมูลหนัง</p>;
 
@@ -63,7 +62,10 @@ const MovieInfoWidget: React.FC<MoviesDetailWidgetProps> = ({ movie }) => {
           <div>
             <h3 className="font-bold text-f-24">เรื่องย่อ</h3>
             <div className="mt-5">
-              <p className="font-bold">{movie.description}</p>
+              <p
+                className="font-bold"
+                dangerouslySetInnerHTML={{ __html: movie?.description ?? "" }}
+              />
             </div>
           </div>
         </div>

@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { getCouponById, updateCouponById, collectCouponByUser } from "@/services/couponService";
+import { getCouponById, updateCouponById } from "@/services/couponService";
 
 export default async function handler(
   req: NextApiRequest,
@@ -13,7 +13,6 @@ export default async function handler(
 
   try {
     const couponId = Number(id);
-    const userId = req.headers["x-user-id"] as string; 
 
     if (req.method === "GET") {
       const coupon = await getCouponById(couponId);
@@ -24,16 +23,31 @@ export default async function handler(
     }
 
     if (req.method === "PUT") {
-      const updatedCoupon = await updateCouponById(couponId, req.body);
+      const {
+        code,
+        title_en,
+        title_th,
+        discription_en,
+        discription_th,
+        discount_value,
+        start_date,
+        end_date,
+        image,
+      } = req.body;
+
+      const updatedCoupon = await updateCouponById(couponId, {
+        code,
+        title_en,
+        title_th,
+        discription_en,
+        discription_th,
+        discount_value,
+        start_date: new Date(start_date),
+        end_date: new Date(end_date),
+        image,
+      });
+
       return res.status(200).json({ coupon: updatedCoupon });
-    }
-
-    if (req.method === "POST") {
-      // 🔹 ผู้ใช้กดรับคูปอง
-      if (!userId) return res.status(401).json({ error: "Unauthorized" });
-
-      const collected = await collectCouponByUser(userId, couponId);
-      return res.status(200).json({ collected });
     }
 
     return res.status(405).json({ error: "Method not allowed" });

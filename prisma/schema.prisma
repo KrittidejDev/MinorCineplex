@@ -158,16 +158,25 @@ model showtime_seat {
 }
 
 model user {
-  id         String    @id @default(uuid())
-  username   String    @unique
-  email      String    @unique
-  phone      String    @unique
+  id         String       @id @default(uuid())
+  username   String       @unique
+  email      String       @unique
+  phone      String       @unique
+  id         String       @id @default(uuid())
+  username   String       @unique
+  email      String       @unique
+  phone      String       @unique
   password   String
-  role       user_role @default(CUSTOMER)
-  created_at DateTime  @default(now())
-  updated_at DateTime  @updatedAt
+  role       user_role    @default(CUSTOMER)
+  created_at DateTime     @default(now())
+  updated_at DateTime     @updatedAt
+  role       user_role    @default(CUSTOMER)
+  created_at DateTime     @default(now())
+  updated_at DateTime     @updatedAt
   avatar_id  String?
   avatar_url String?
+  UserCoupon UserCoupon[]
+  UserCoupon UserCoupon[]
   bookings   booking[]
   coupons    UserCoupon[] //  relation
 }
@@ -197,8 +206,10 @@ model booking_seat {
 }
 
 model coupon {
-  id             Int      @id @default(autoincrement())
-  code           String   @unique
+  id             Int          @id @default(autoincrement())
+  code           String       @unique
+  id             Int          @id @default(autoincrement())
+  code           String       @unique
   title_en       String
   title_th       String
   discription_en String
@@ -207,12 +218,14 @@ model coupon {
   discount_value Float
   status         String
   image          String?
-  created_at     DateTime @default(now())
+  created_at     DateTime     @default(now())
+  created_at     DateTime     @default(now())
   end_date       DateTime
   max_discount   Float?
   min_amount     Float?
   start_date     DateTime
-  updated_at     DateTime @updatedAt
+  updated_at     DateTime     @updatedAt
+  updated_at     DateTime     @updatedAt
   usage_limit    Int?
   used_count     Int      @default(0)
   users          UserCoupon[] //  relation

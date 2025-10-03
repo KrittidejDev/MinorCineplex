@@ -2,6 +2,7 @@ import Tag from "../Widgets/Tag";
 import { Button } from "../ui/button";
 import Image from "next/image";
 import { APIMovie } from "@/types/movie";
+import Link from "next/link";
 
 interface MoviesDetailWidgetProps {
   movie?: APIMovie;
@@ -56,9 +57,11 @@ function MoviesDetailWidget({ movie }: MoviesDetailWidgetProps) {
                 </div>
               </div>
             </div>
+            <Link href={`/movies/${movie?.id}/movie-info`}>
             <div className="mt-6 mb-10 lg:my-12">
               <Button className="btn-base blue-normal">Movie detail</Button>
             </div>
+            </Link>
             <p
               className="text-fr-16 text-gray-gedd"
               dangerouslySetInnerHTML={{ __html: movie?.description ?? "" }}

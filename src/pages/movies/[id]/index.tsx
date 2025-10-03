@@ -11,6 +11,7 @@ import CitySelection from "@/components/ui/cityselection";
 import axios from "axios";
 import { APIMovie } from "@/types/movie";
 
+
 type TimeSlot = {
   id: string;
   start_time: string;

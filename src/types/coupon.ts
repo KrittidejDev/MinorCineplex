@@ -44,6 +44,7 @@ export interface APICoupon { //GET coupon
     end_date: Date;
     image?: string | null;  // <- ปรับให้รองรับ null
     is_collected?: boolean;
+    status?: string;
   }
   
   

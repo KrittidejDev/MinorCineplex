@@ -38,6 +38,7 @@ export const create = async (data: CreateCouponInput) => {
   });
 };
 
+// 🔹 update coupon properties (ไม่ยุ่งกับ is_collected แล้ว)
 export const update = async (
   id: number,
   data: Partial<CreateCouponInput>
@@ -45,8 +46,17 @@ export const update = async (
   return prisma.coupon.update({
     where: { id },
     data: {
+      code: data.code,
+      title_en: data.title_en,
+      title_th: data.title_th,
+      discription_en: data.discription_en,
+      discription_th: data.discription_th,
+      discount_value: data.discount_value,
+      start_date: data.start_date,
+      end_date: data.end_date,
       image: data.image,
-      is_collected: data.is_collected,
+      status: data.status,
     },
   });
 };
+

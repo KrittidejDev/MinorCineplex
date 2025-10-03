@@ -12,7 +12,8 @@ export default async function handler(
 ) {
   try {
     const user = await registerUser(req.body);
-    res.status(201).json({ message: "Register successfully", user });
+    const { password, ...userData } = user;
+    res.status(201).json({ message: "Register successfully", userData });
   } catch (err: unknown) {
     const error = err as ServiceError;
     if (error.status) {

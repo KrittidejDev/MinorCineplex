@@ -69,9 +69,11 @@ function MovieInfo() {
     <>
       <NavAndFooterWithBanner>
         <div className="max-w-[1200px] mx-auto">
-          <div className="w-screen flex justify-center relative mx-auto -mt-10">
+
+          <div className="flex justify-center relative -mt-10">
             <FilterSearch />
           </div>
+
           <div className="mt-10">
             <MovieInfoWidget movie={movie} />
           </div>

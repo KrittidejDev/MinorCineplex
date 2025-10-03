@@ -15,6 +15,7 @@ export default function AdminCinemaWidgets() {
             <div className="mx-[70px]">
                 <TableCard />
             </div>
+            
         </div>
     )
 

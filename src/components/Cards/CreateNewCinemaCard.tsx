@@ -1,11 +1,11 @@
-import ModalEmpty from "../Modals/ModalEmpty"
+import { Modal } from "../ui/Modal"
 
 function CreateNewCinemaCard() {
     return (
-        <ModalEmpty isShowModal={true} onClose={() => { }}>
+        <Modal>
             <div>
                 <h1>Create New Cinema</h1>
             </div>
-        </ModalEmpty>
+        </Modal>
     )
 }

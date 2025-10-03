@@ -19,7 +19,7 @@ export interface BillInfo {
 function SummaryBoxCard({ totalSelected, totalPrice }: BillInfo) {
   return (
     <>
-      <div className="w-full md:min-w-[305px] bg-gray-gc1b rounded-lg">
+      <div className="w-full max-w-full lg:max-w-[305px] h-fit bg-gray-gc1b rounded-lg">
         <div className="p-4">
           <p className="text-sm text-gray-g3b0 pb-3">
             Time remaining:{" "}

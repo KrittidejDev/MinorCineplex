@@ -31,7 +31,6 @@ export default function Home() {
 
   const { cinemas, loading, refetch } = useNearbyCinemas(location, filter);
 
-
   useEffect(() => {
     const lastShown = localStorage.getItem("curtain_last_shown");
     const now = Date.now();
@@ -74,7 +73,6 @@ export default function Home() {
         <Coupon />
         <CinemaLocation data={dataCinemas} filterCinema={handleFilter} />
       </div>
-
       <LocationPermissionModal
         isOpen={showModal}
         onAllowSession={allowSession}

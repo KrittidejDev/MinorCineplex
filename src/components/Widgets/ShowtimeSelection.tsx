@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 
 export interface Showtime {
   id: string;
+  showtime_id?: string;
   start_time: string;
   end_time: string;
   label?: string;
@@ -26,15 +27,16 @@ export const ShowtimeSelection: React.FC<ShowtimeSelectionProps> = ({
   const router = useRouter();
   const [now, setNow] = useState<Date>(new Date());
 
-  // update ทุก 1 วินาที
   useEffect(() => {
     const interval = setInterval(() => setNow(new Date()), 1000);
     return () => clearInterval(interval);
   }, []);
 
+  console.log("timeslottttttt", timeslot);
+
   const handleSelect = (ts: Showtime) => {
     router.push({
-      pathname: "/booking",
+      pathname: `/booking/${ts?.showtime_id}`,
       query: {
         movieId,
         hallId,

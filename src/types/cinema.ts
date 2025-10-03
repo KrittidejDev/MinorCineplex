@@ -89,3 +89,35 @@ export interface CinemaDetail {
     halls: HallDetail[];
   }[];
 }
+
+export interface Seat {
+  id: string;
+  status: string;
+  price: number;
+  seat: {
+    id: string;
+    seat_number: string;
+    row: string;
+    col: string;
+  };
+}
+
+export interface BookingInfo {
+  id: string;
+  date: string;
+  price: number;
+  hall: {
+    id: string;
+    name: string;
+    cinema: {
+      id: string;
+      name: string;
+    };
+  };
+  movie: {
+    id: string;
+    title: string;
+    poster_url?: string;
+  };
+  seats: Seat[];
+}

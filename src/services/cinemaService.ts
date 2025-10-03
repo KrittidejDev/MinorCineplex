@@ -92,6 +92,7 @@ export const getCinemasDetail = async (
         }
 
         hall.timeslots.push({
+          showtime_id: s.id,
           ...s.time_slot,
           price: s.price,
           date: s.date,

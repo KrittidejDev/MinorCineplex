@@ -64,16 +64,16 @@ export const userService = {
     apiService.patch(`${apiPath}/users/${id}/password`, params),
 
   // Category
-  GET_CATEGORY: (query?: string) =>
-    apiService.get(`${apiPath}/categories${query ?? ""}`),
-  GET_CATEGORY_BY_ID: (id: string) =>
-    apiService.get(`${apiPath}/categories/${id}`),
-  POST_CREATE_CATEGORY: (params: CategoryParams) =>
-    apiService.post(`${apiPath}/categories`, params),
-  PUT_EDIT_CATEGORY: (id: string, params: CategoryParams) =>
-    apiService.put(`${apiPath}/categories/${id}`, params),
-  DELETE_CATEGORY: (id: string) =>
-    apiService.delete(`${apiPath}/categories/${id}`),
+  // GET_CATEGORY: (query?: string) =>
+  //   apiService.get(`${apiPath}/categories${query ?? ""}`),
+  // GET_CATEGORY_BY_ID: (id: string) =>
+  //   apiService.get(`${apiPath}/categories/${id}`),
+  // POST_CREATE_CATEGORY: (params: CategoryParams) =>
+  //   apiService.post(`${apiPath}/categories`, params),
+  // PUT_EDIT_CATEGORY: (id: string, params: CategoryParams) =>
+  //   apiService.put(`${apiPath}/categories/${id}`, params),
+  // DELETE_CATEGORY: (id: string) =>
+  //   apiService.delete(`${apiPath}/categories/${id}`),
 
   // Article
   // GET_ARTICLE: (query?: string) =>
@@ -86,7 +86,12 @@ export const userService = {
   // DELETE_ARTICLE: (id: string) => apiService.delete(`${apiPath}/blogs/${id}`),
 
   // Notification
-  GET_NOTIFICATION: () => apiService.get(`${apiPath}/notification`),
+  // GET_NOTIFICATION: () => apiService.get(`${apiPath}/notification`),
+
+  // booking
+
+  GET_SHOWTIME_BOOKING: (id: string, query?: string) =>
+    apiService.get(`${apiPath}/showtimes/${id}/booking${query ?? ""}`),
 
   // File
   POST_FILE_UPLOAD: (params: FileUploadParams) => {
@@ -94,7 +99,7 @@ export const userService = {
     formData.append("file", params.file);
     return apiService.post_formdata(`${apiPath}/file-upload`, formData);
   },
-  
+
   DELETE_FILE: (fileId: string) =>
     apiService.delete(`${apiPath}/files/delete/${fileId}`),
 

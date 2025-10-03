@@ -31,8 +31,7 @@ export function RUNDER_TIMESLOT(
   if (current >= start && current <= start + 30 * 60 * 1000) {
     return {
       disabled: false,
-      className:
-        "blue-normal animate-pulse hover:bg-blue-bbee! cursor-pointer  ",
+      className: "blue-normal animate-pulse  cursor-pointer  ",
       label: "ใกล้เริ่ม",
     };
   }
@@ -40,7 +39,8 @@ export function RUNDER_TIMESLOT(
   if (current > start && current < end) {
     return {
       disabled: true,
-      className: "blue-normal cursor-not-allowed ",
+      className:
+        "blue-normal cursor-not-allowed hover:bg-blue-bbee! animate-pulse",
       label: "กำลังฉาย",
     };
   }

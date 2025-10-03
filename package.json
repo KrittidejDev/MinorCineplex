@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "eslint",
     "seed": "node prisma/seed.js",
-    "seed:showtime": "node prisma/seedShowtime.js"
+    "seed:showtime": "node prisma/seedShowtime.js",
+    "seed:showtime7": "node prisma/seedShowtime.js --showtimes-7days",
+    "seed:showtime14": "node prisma/seedShowtime.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

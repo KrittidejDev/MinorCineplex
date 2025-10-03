@@ -28,6 +28,8 @@ interface ShowtimeMovieProps {
 export const ShowtimeMovie: React.FC<ShowtimeMovieProps> = ({ data }) => {
   const genres = data?.genre?.split(",").map((g) => g.trim());
 
+  console.log("booking data", data);
+
   return (
     <div className="bg-gray-gc1b rounded-lg shadow-lg flex h-[488px]">
       <div className="w-1/5 box-border flex flex-col gap-y-6 p-6">

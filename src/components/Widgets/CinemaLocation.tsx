@@ -49,14 +49,14 @@ const CinemaLocation = ({ filterCinema, data }: CinemaLocationProps) => {
           <h1 className="text-white text-4xl">All Cinemas</h1>
           <div className="flex gap-3 justify-between items-center p-1 h-12 rounded-sm bg-gray-g63f">
             <button
-              className={`${filter === "1" ? filterActiveStyle : filterBtnStyle}`}
+              className={`${filter === "1" ? filterActiveStyle : filterBtnStyle} cursor-pointer`}
               onClick={() => _handleClickFilter("1")}
             >
               {filter === "1" && <DoneRound height="30" width="30" />}
               <p className="text-gray-gedd line-clamp-1">Browse by City</p>
             </button>
             <button
-              className={`${filter === "2" ? filterActiveStyle : filterBtnStyle}`}
+              className={`${filter === "2" ? filterActiveStyle : filterBtnStyle} cursor-pointer`}
               onClick={() => _handleClickFilter("2")}
             >
               {filter === "2" && <DoneRound height="30" width="30" />}

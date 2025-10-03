@@ -1,5 +1,6 @@
 import * as couponRepo from "@/repositories/couponRepository";
 import { CreateCouponInput } from "@/types/coupon";
+import * as userCouponRepo from "@/repositories/userCouponRepository";
 
 export const getCoupons = async () => {
   return couponRepo.getMany();
@@ -26,4 +27,9 @@ export const updateCouponById = async (
   data: Partial<CreateCouponInput>
 ) => {
   return couponRepo.update(id, data);
+};
+
+// 🔹 ผู้ใช้กดรับคูปอง
+export const collectCouponByUser = async (userId: string, couponId: number) => {
+  return userCouponRepo.collectCoupon(userId, couponId);
 };

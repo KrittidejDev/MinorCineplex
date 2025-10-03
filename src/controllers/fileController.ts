@@ -1,6 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { uploadFile } from "@/services/fileServices";
 import type { MulterFile } from "@/types/file";
+import { deleteFile } from "@/services/fileServices";
+import { Car } from "lucide-react";
 
 // Upload Handler
 export const uploadHandler = async (
@@ -31,9 +33,15 @@ export const deleteHandler = async (
   req: NextApiRequest,
   res: NextApiResponse
 ) => {
-  const { filename } = req.query;
-  if (!filename) return res.status(400).json({ error: "Filename required" });
+  const { fileId } = req.query;
+  if (!fileId) return res.status(400).json({ error: "File ID required" });
+  try{
+    await deleteFile(fileId as string);
+    res.status(200).json({ message: `File deleted` });
+  }catch(error){
+    if (error instanceof Error) res.status(500).json({ error: error.message });
+    else res.status(500).json({ error: "Unknown error" });
+  }
 
-  // ลบไฟล์ logic ที่นี่
-  res.status(200).json({ message: `File ${filename} deleted` });
+
 };

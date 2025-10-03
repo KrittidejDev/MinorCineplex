@@ -1,29 +1,89 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import NavBarWidget from "@/components/Widgets/NavBarWidget";
 import ProfileBar from "@/components/Widgets/ProfileBar";
 import { useSession } from "next-auth/react";
 import ProfileForm, { ProfileFormValues } from "@/components/Forms/ProfileForm";
+import { UpdateProfileParams, userService } from "@/config/userServices";
 
-type User = {
+interface User {
   username: string;
   email: string;
-};
+  id: string;
+  avatar_id: string | null;
+  avatar_url: string | null;
+}
+
+interface FileUploadResponse {
+  url: string;
+  public_id: string;
+  originalname: string;
+  size: number;
+}
 
 const ProfilePage = () => {
   const { data: session } = useSession();
+  const id = session?.user?.id;
   const user = session?.user as User;
+  const [userData, setUserData] = useState<User | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
-  const [publicId, setPublicId] = useState<string | null>(null);
-
-  const handleImageUploaded = (url: string, pid: string) => {
-    setAvatarUrl(url);
-    setPublicId(pid);
+  const fetchMe = async () => {
+    if (!id) return;
+    try {
+      const res = await userService.GET_MY_PROFILE(id);
+      setUserData(res.docs);
+    } catch (err) {
+      console.error("Fetch profile error:", err);
+    }
   };
 
-  const handleSave = async (data: ProfileFormValues) => {
+  console.log(userData);
 
-    console.log(data);
+  useEffect(() => {
+    if (id) {
+      fetchMe();
+    }
+  }, [id]);
+
+  const handleSaveProfile = async (data: ProfileFormValues) => {
+    if (!session?.user?.id) return;
+
+    setIsLoading(true);
+    try {
+      let avatarUrl = null;
+      let publicId = null;
+      const oldPublicId = user?.avatar_id as string | null;
+
+      if (selectedFile) {
+        //Upload รูปภาพ
+        const uploadResponse = (await userService.POST_FILE_UPLOAD({
+          file: selectedFile,
+        })) as FileUploadResponse;
+        avatarUrl = uploadResponse.url;
+        publicId = uploadResponse.public_id;
+      }
+      //Update Profile
+      const formData: UpdateProfileParams = {
+        username: data.username,
+        ...(avatarUrl && { avatar_url: avatarUrl }),
+        ...(publicId && { avatar_id: publicId }),
+      };
+      await userService.PUT_UPDATE_PROFILE(session.user.id, formData);
+
+      if (selectedFile && oldPublicId) {
+        //Delete รูปภาพเก่า
+        try {
+          await userService.DELETE_FILE(oldPublicId);
+        } catch (error) {
+          console.log("Failed to delete old avatar:", error);
+        }
+      }
+    } catch (error) {
+      console.log("Save failed:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -47,7 +107,12 @@ const ProfilePage = () => {
             Keep your personal details private. Information you add here is
             visible to anyone who can view your profile
           </div>
-          <ProfileForm user={user} onImageUpload={handleImageUploaded} onSave={handleSave} />
+          <ProfileForm
+            userData={userData as User}
+            onFileSelect={setSelectedFile}
+            onSave={handleSaveProfile}
+            isLoading={isLoading}
+          />
         </div>
       </div>
     </div>

@@ -27,7 +27,7 @@ function MovieInfo() {
     allowOnce,
     neverAllow,
   } = useLocationPermission();
-  
+
   const { cinemas, loading, refetch } = useNearbyCinemas(location, filter);
 
   useEffect(() => {
@@ -49,8 +49,8 @@ function MovieInfo() {
   }, [movieId]);
 
   useEffect(() => {
-      setDataCinemas(cinemas);
-    }, [cinemas]);
+    setDataCinemas(cinemas);
+  }, [cinemas]);
 
   const handleFilter = (value: string) => {
     setFilter(value);
@@ -61,15 +61,17 @@ function MovieInfo() {
     refetch(value);
   };
 
-   if (loading) return <p>Loading...</p>;
+  if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
   if (!movie) return <p>ไม่พบข้อมูลหนัง</p>;
 
   return (
     <>
       <NavAndFooterWithBanner>
-        <div className=" max-w-[1200px] mx-auto">
-          <FilterSearch />
+        <div className="max-w-[1200px]">
+          <div className="w-screen flex justify-center relative mx-auto -mt-10">
+            <FilterSearch />
+          </div>
           <div className="mt-10">
             <MovieInfoWidget movie={movie} />
           </div>

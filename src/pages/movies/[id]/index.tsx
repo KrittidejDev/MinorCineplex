@@ -60,10 +60,6 @@ const MoviesDetail: React.FC = () => {
       const res = await axios.get(
         `/api/cinemas?movie_id=${movieId}${dateQuery}`
       );
-
-      console.log("Raw API response:", res);
-      console.log("res.data.cinema:", res.data.cinema);
-
       setData(res.data.cinema);
     } catch (error: unknown) {
       if (error instanceof Error) console.log("Error:", error.message);

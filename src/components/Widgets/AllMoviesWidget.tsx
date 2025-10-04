@@ -16,9 +16,6 @@ function AllMoviesWidget() {
     const fetchMovies = async () => {
       try {
         const res = await axios.get<{ movie: APIMovie[] }>("/api/movies");
-
-        console.log("Raw movies from API:", res.data.movie);
-
         const Movies: MovieCardData[] = res.data.movie.map((movie) => ({
           id: movie.id,
           title: movie.title,

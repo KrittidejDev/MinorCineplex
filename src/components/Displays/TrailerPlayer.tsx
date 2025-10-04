@@ -3,21 +3,18 @@ interface VideoPlayerProps {
 }
 
 function TrailerPlayer({ url }: VideoPlayerProps) {
-    if (!url) return null;
-    
-    return (
-        <>
-        <div className="w-[840px] h-[472px] rounded-md overflow-hidden">
-        <video
+  if (!url) return null;
+
+  return (
+    <div className="w-[840px] h-[472px] rounded-md overflow-hidden">
+      <iframe
         src={url}
-        controls
-        autoPlay={false}
-        loop={false}
-        className="w-full h-full object-cover"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowFullScreen
+        className="w-full h-full"
       />
-      </div>
-        </>
-    )
+    </div>
+  );
 }
 
-export default TrailerPlayer
+export default TrailerPlayer;

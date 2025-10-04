@@ -26,8 +26,6 @@ export const uploadHandler = async (
   }
 };
 
-
-
 // Delete Handler
 export const deleteHandler = async (
   req: NextApiRequest,
@@ -35,13 +33,11 @@ export const deleteHandler = async (
 ) => {
   const { fileId } = req.query;
   if (!fileId) return res.status(400).json({ error: "File ID required" });
-  try{
+  try {
     await deleteFile(fileId as string);
     res.status(200).json({ message: `File deleted` });
-  }catch(error){
+  } catch (error) {
     if (error instanceof Error) res.status(500).json({ error: error.message });
     else res.status(500).json({ error: "Unknown error" });
   }
-
-
 };

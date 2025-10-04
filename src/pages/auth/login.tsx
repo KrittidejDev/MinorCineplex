@@ -17,9 +17,7 @@ const Login = () => {
         identifier: value.email,
         password: value.password,
       });
-      console.log("signin res", result);
       if (result?.ok) {
-        console.log("session", session, status);
         router.push("/");
       } else {
         setIsAlert(true);

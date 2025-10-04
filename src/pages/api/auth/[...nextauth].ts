@@ -25,10 +25,13 @@ export default NextAuth({
       async authorize(credentials) {
         if (!credentials?.identifier || !credentials.password) return null;
 
+        // Normalize email to lowercase for case-insensitive login
+        const normalizedIdentifier = credentials.identifier.toLowerCase();
+
         const user = await prisma.user.findFirst({
           where: {
             OR: [
-              { email: credentials.identifier },
+              { email: normalizedIdentifier },
               { username: credentials.identifier },
               { phone: credentials.identifier },
             ],

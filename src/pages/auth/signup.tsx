@@ -21,12 +21,10 @@ const Signup = () => {
           password: values.password,
         }
       );
-      console.log("Register success:", response.data);
       setSuccess(true);
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
         const message = error.response?.data?.message || error.message;
-        console.log(error);
         if (message.includes("Email")) {
           setError("email", { type: "server", message });
         }

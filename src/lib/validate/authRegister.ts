@@ -21,8 +21,7 @@ export const signupSchema = yup.object({
     .string()
     .trim()
     .required("Email is required")
-    .email("Invalid email format")
-    .transform((value) => value.toLowerCase()),
+    .email("Invalid email format"),
   password: yup
     .string()
     .required("Password is required")
@@ -53,8 +52,7 @@ export const signupFormSchema = yup.object({
     .string()
     .trim()
     .required("Email is required")
-    .email("Invalid email format")
-    .transform((value) => value.toLowerCase()),
+    .email("Invalid email format"),
   password: yup
     .string()
     .required("Password is required")

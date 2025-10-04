@@ -4,12 +4,12 @@ import { UseFormSetError } from "react-hook-form";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Button } from "../ui/button";
-import * as yup from "yup";
+import { signupFormSchema } from "../../lib/validate/authRegister";
 import Link from "next/link";
 
 export type FormValues = {
   username: string;
-  phoneNumber: string;
+  phone: string;
   email: string;
   password: string;
   confirmPassword: string;
@@ -23,22 +23,6 @@ type SignUpFormProps = {
 };
 
 const SignUpForm = ({ onSubmit }: SignUpFormProps) => {
-  const schema = yup.object().shape({
-    username: yup.string().required("Name is required"),
-    phoneNumber: yup.string().required("Phone Number is required"),
-    email: yup
-      .string()
-      .required("Email is required")
-      .matches(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, "Invalid email format"),
-    password: yup
-      .string()
-      .required("Password is required")
-      .min(8, "Password must be at least 8 characters"),
-    confirmPassword: yup
-      .string()
-      .required("Confirm Password is required")
-      .oneOf([yup.ref("password")], "Passwords must match"),
-  });
 
   const {
     control,
@@ -47,7 +31,7 @@ const SignUpForm = ({ onSubmit }: SignUpFormProps) => {
     formState: { errors },
     setError,
   } = useForm<FormValues>({
-    resolver: yupResolver(schema),
+    resolver: yupResolver(signupFormSchema),
   });
 
   const { username, email, password } = watch();
@@ -95,10 +79,11 @@ const SignUpForm = ({ onSubmit }: SignUpFormProps) => {
               {...field}
               label={"Phone Number"}
               placeholder="Phone Number"
-              errors={errors.phoneNumber?.message}
+              maxLength={15}
+              errors={errors.phone?.message}
             />
           )}
-          name="phoneNumber"
+          name="phone"
           defaultValue=""
         />
 

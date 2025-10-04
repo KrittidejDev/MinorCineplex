@@ -32,7 +32,11 @@ export default async function handler(
     case "GET": {
       try {
         const data = await getUserById(id);
-        res.status(200).json({ docs: data, status: 200 });
+        if (!data) {
+          return res.status(404).json({ error: "User not found" });
+        }
+        const { password, ...user } = data;
+        res.status(200).json({ docs: user, status: 200 });
         return;
       } catch (error: unknown) {
         console.error(error);

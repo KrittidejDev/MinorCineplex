@@ -22,11 +22,11 @@ interface FileUploadResponse {
 
 const ProfilePage = () => {
   const { data: session } = useSession();
-  const id = session?.user?.id;
-  const user = session?.user as User;
   const [userData, setUserData] = useState<User | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const id = session?.user?.id;
+  const user = session?.user as User;
 
   const fetchMe = async () => {
     if (!id) return;
@@ -37,9 +37,6 @@ const ProfilePage = () => {
       console.error("Fetch profile error:", err);
     }
   };
-
-  console.log(userData);
-
   useEffect(() => {
     if (id) {
       fetchMe();

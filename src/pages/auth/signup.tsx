@@ -16,7 +16,7 @@ const Signup = () => {
         "http://localhost:3000/api/auth/signup",
         {
           username: values.username,
-          phone: values.phoneNumber,
+          phone: values.phone,
           email: values.email,
           password: values.password,
         }
@@ -31,7 +31,7 @@ const Signup = () => {
           setError("email", { type: "server", message });
         }
         if (message.includes("Phone")) {
-          setError("phoneNumber", { type: "server", message });
+          setError("phone", { type: "server", message });
         }
       }
     }

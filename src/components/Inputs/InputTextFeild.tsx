@@ -14,6 +14,7 @@ type InputTextFieldProps = {
   require?: boolean;
   type?: React.HTMLInputTypeAttribute;
   className?: string;
+  maxLength?: number;
 };
 
 const InputTextFeild = ({
@@ -26,6 +27,7 @@ const InputTextFeild = ({
   label,
   require,
   type,
+  maxLength,
   ...props
 }: InputTextFieldProps) => {
   return (
@@ -39,6 +41,7 @@ const InputTextFeild = ({
         <Input
           {...props}
           type={type}
+          maxLength={maxLength}
           placeholder={placeholder}
           value={value ?? ""}
           onChange={onChange}

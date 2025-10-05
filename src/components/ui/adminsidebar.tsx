@@ -67,45 +67,47 @@ function AdminSidebar() {
   return (
     <>
       <div className="h-dvh bg-gray-gc1b flex flex-col justify-between py-[50px] px-[72px]">
-        <div className="flex">
-          <div className="mt-1 pr-2.5 border-r">
-            <LogoM />
+        <div className="flex flex-col gap-[30px]">
+          <div className="flex">
+            <div className="mt-1 pr-2.5 border-r">
+              <LogoM />
+            </div>
+            <h2 className="font-bold text-[44px] text-white-wfff pl-2.5">
+              Admin
+            </h2>
           </div>
-          <h2 className="font-bold text-[44px] text-white-wfff pl-2.5">
-            Admin
-          </h2>
-        </div>
 
-        <div className="flex flex-col gap-2mt-[30px]">
-          {tabs.map((tab) => (
-            <Link key={tab.title} href={tab.url}>
-              <button
-                onClick={() => setActiveTab(tab.title)}
-                className={`flex gap-3 py-3 px-4 cursor-pointer ${
-                  activeTab === tab.title ? "bg-gray-g63f rounded-sm" : ""
-                }`}
-              >
-                <span
-                  className={`${
-                    activeTab === tab.title
-                      ? "text-white-wfff"
-                      : "text-gray-gedd"
+          <div className="flex flex-col gap-2mt-[30px]">
+            {tabs.map((tab) => (
+              <Link key={tab.title} href={tab.url}>
+                <button
+                  onClick={() => setActiveTab(tab.title)}
+                  className={`flex gap-3 py-3 px-4 cursor-pointer ${
+                    activeTab === tab.title ? "bg-gray-g63f rounded-sm" : ""
                   }`}
                 >
-                  {tab.icon}
-                </span>
-                <span
-                  className={`font-bold ${
-                    activeTab === tab.title
-                      ? "text-white-wfff"
-                      : "text-gray-gedd"
-                  }`}
-                >
-                  {tab.title.charAt(0).toUpperCase() + tab.title.slice(1)}
-                </span>
-              </button>
-            </Link>
-          ))}
+                  <span
+                    className={`${
+                      activeTab === tab.title
+                        ? "text-white-wfff"
+                        : "text-gray-gedd"
+                    }`}
+                  >
+                    {tab.icon}
+                  </span>
+                  <span
+                    className={`font-bold ${
+                      activeTab === tab.title
+                        ? "text-white-wfff"
+                        : "text-gray-gedd"
+                    }`}
+                  >
+                    {tab.title.charAt(0).toUpperCase() + tab.title.slice(1)}
+                  </span>
+                </button>
+              </Link>
+            ))}
+          </div>
         </div>
 
         <button className="flex gap-3 py-3 px-4 mt-2 cursor-pointer">

@@ -8,12 +8,14 @@ import { SuccessAlert } from "@/components/ui/alert";
 
 const ResetPasswordUser = () => {
   const [isAlert, setIsAlert] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const { data: session } = useSession();
   const handleResetPassword = async (values: FormValues, reset: () => void) => {
     try {
       if (!session?.user.id) {
         throw new Error("User not found");
       }
+      setIsLoading(true);
       await axios.patch(`http://localhost:3000/api/auth/resetpassword`, {
         id: session?.user.id,
         newPassword: values.newPassword,
@@ -24,13 +26,15 @@ const ResetPasswordUser = () => {
       if (error instanceof AxiosError) {
         console.log(error);
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <>
     <NavBarWidget />
-    <div className="bg-blue-b flex flex-col min-h-[100dvh] lg:px-50">
+    <div className="bg-blue-b flex flex-col">
       
       <div className="flex-1 top-21 transition-all duration-500 ease-in-out py-10 md:pl-20 md:py-15 xl:pl-56 ">
         <div className="w-full max-w-[1129px] flex flex-col md:flex-row h-full gap-4 md:gap-12 ">
@@ -40,7 +44,7 @@ const ResetPasswordUser = () => {
           </div>
           {/* Content - Full Width Container */}
           <div className="flex items-center px-4 justify-center md:justify-start md:items-start w-full max-w-[380px] md:min-w-[380px]">
-            <ResetPassword align="left" onSubmit={handleResetPassword} />
+            <ResetPassword align="left" onSubmit={handleResetPassword} isLoading={isLoading} />
           </div>
         </div>
       </div>
@@ -55,7 +59,7 @@ const ResetPasswordUser = () => {
       </div>
     </div>
     </>
-  );
+  ); 
 };
 
 export default ResetPasswordUser;

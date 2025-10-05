@@ -65,3 +65,19 @@ export const signupFormSchema = yup.object({
     .required("Confirm Password is required")
     .oneOf([yup.ref("password")], "Passwords must match"),
 });
+
+
+// Schema for frontend validation (Reset Password)
+export const resetPasswordSchema = yup.object().shape({
+  newPassword: yup
+  .string()
+  .required("New Password is required")
+  .min(8, "Password must be at least 8 characters")
+  .matches(/[A-Z]/, "Password must contain at least one uppercase letter")
+  .matches(/[a-z]/, "Password must contain at least one lowercase letter")
+  .matches(/[0-9]/, "Password must contain at least one number"),
+  confirmPassword: yup
+  .string()
+  .required("Confirm New Password is required")
+  .oneOf([yup.ref("newPassword")], "Passwords must match"),
+});

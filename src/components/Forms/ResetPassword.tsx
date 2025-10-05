@@ -2,7 +2,7 @@ import InputPassword from "../Inputs/InputPassword";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Button } from "../ui/button";
-import * as yup from "yup";
+import { resetPasswordSchema } from "../../lib/validate/authRegister";
 export type FormValues = {
   newPassword: string;
   confirmPassword: string;
@@ -11,21 +11,10 @@ export type FormValues = {
 type ResetPasswordProps = {
   onSubmit?: (values: FormValues, reset: () => void) => void;
   align?: "center" | "left";
+  isLoading?: boolean;
 };
 
-const ResetPassword = ({ onSubmit, align }: ResetPasswordProps) => {
-  const schema = yup.object().shape({
-    newPassword: yup
-      .string()
-      .required("New password is required")
-      .min(8, "Password must be at least 8 characters"),
-    confirmPassword: yup
-      .string()
-      .required("Confirm password is required")
-      .min(8, "Password must be at least 8 characters")
-      .oneOf([yup.ref("newPassword")], "Passwords must match"),
-  });
-
+const ResetPassword = ({ onSubmit, align, isLoading }: ResetPasswordProps) => {
   const {
     control,
     watch,
@@ -33,7 +22,7 @@ const ResetPassword = ({ onSubmit, align }: ResetPasswordProps) => {
     reset,
     formState: { errors },
   } = useForm<FormValues>({
-    resolver: yupResolver(schema),
+    resolver: yupResolver(resetPasswordSchema),
   });
 
   const { newPassword, confirmPassword } = watch();
@@ -83,10 +72,10 @@ const ResetPassword = ({ onSubmit, align }: ResetPasswordProps) => {
       </div>
       <div className="w-full flex">
         <Button
-          disabled={isEmpty}
+          disabled={isEmpty || isLoading}
           className={`${align === "center" ? "btn-base blue-normal" : "btn-base white-outline-normal"} w-full max-w-[182px] h-12 flex rounded-b-sm justify-center items-center`}
         >
-          Reset Password
+          {isLoading ? "Loading..." : "Reset Password"}
         </Button>
       </div>
     </form>

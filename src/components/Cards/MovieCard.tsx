@@ -28,7 +28,7 @@ function MovieCard({
           <HoverCard3D>
           <div className="relative h-[235px] md:h-[416px]">
             {" "}
-            {/* container กำหนดขนาด */}
+
             <Image
               src={poster_url || "/fallback-poster.jpg"}
               alt={title}

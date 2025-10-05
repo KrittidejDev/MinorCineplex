@@ -26,7 +26,7 @@ function MovieCardInfo({
     <div className="w-[345px] h-fit flex gap-5">
       <div className="w-full">
         <HoverCard3D>
-          <div className="relative h-[235px]">
+          <div className="relative aspect-[2/3]">
             {" "}
             <Image
               src={poster_url || "/fallback-poster.jpg"}

@@ -70,7 +70,7 @@ function MovieInfo() {
       <NavAndFooterWithBanner>
         <div>
 
-          <div className="flex justify-center relative -mt-10">
+          <div className="flex justify-center relative lg:-mt-10">
             <FilterSearch />
           </div>
 

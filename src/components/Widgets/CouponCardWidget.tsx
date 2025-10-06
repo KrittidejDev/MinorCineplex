@@ -1,5 +1,7 @@
+'use client'
+
 import CouponCard from '../Cards/CouponCard'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import { Button } from '../ui/button'
 import Link from 'next/link'
 import axios from 'axios'
@@ -10,23 +12,39 @@ const CouponWidget = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    const fetchCoupons = async () => {
-      try {
-        setLoading(true)
-        const res = await axios.get<{ coupons: APICoupon[] }>('/api/coupons')
-        // ใช้แค่ 4 ตัวแรก
-        setCoupons(res.data.coupons.slice(0, 4))
-      } catch (err) {
-        console.error(err)
-        setError('ไม่สามารถโหลดคูปองได้')
-      } finally {
-        setLoading(false)
-      }
-    }
+// ใช้ useCallback ป้องกันสร้าง function ซ้ำตอน re-render
+const fetchCoupons = useCallback(async (isMounted: { current: boolean }) => {
+  try {
+    if (isMounted.current) setLoading(true)
+    const res = await axios.get<{ coupons: APICoupon[] }>('/api/coupons')
+    if (isMounted.current) setCoupons(res.data.coupons.slice(0, 4)) // ใช้แค่ 4 ตัวแรก
+  } catch (err) {
+    console.error(err)
+    if (isMounted.current) setError('ไม่สามารถโหลดคูปองได้')
+  } finally {
+    if (isMounted.current) setLoading(false)
+  }
+}, [])
 
-    fetchCoupons()
-  }, [])
+// useEffect เรียก fetchCoupons
+useEffect(() => {
+  const isMounted = { current: true }
+  fetchCoupons(isMounted).catch(console.error)
+
+  return () => {
+    isMounted.current = false
+  }
+}, [fetchCoupons])
+
+// ใช้ useCallback เพื่อ memoize function
+const formatDate = useCallback((isoDate?: string | null) => {
+  if (!isoDate) return 'N/A'
+  return new Date(isoDate).toLocaleDateString('en-GB', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+  })
+}, [])
 
   if (loading) return <p>Loading...</p>
   if (error) return <p>{error}</p>
@@ -44,7 +62,7 @@ const CouponWidget = () => {
           </Link>
         </div>
 
-        {/* Grid / Flex */}
+        {/* Grid */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:flex gap-5 justify-center">
           {coupons.map((coupon) => (
             <CouponCard
@@ -54,7 +72,7 @@ const CouponWidget = () => {
                 code: coupon.code,
                 title_en: coupon.title_en,
                 discount: coupon.discount_value,
-                expiresAt: coupon.end_date ? new Date(coupon.end_date).toISOString() : null,
+                expiresAt: formatDate(coupon.end_date),
                 image: coupon.image,
               }}
             />

@@ -4,6 +4,13 @@ import NavAndFooter from '@/components/MainLayout/NavAndFooter'
 import { Button } from '@/components/ui/button'
 import Image from 'next/image'
 import { APICoupon } from '@/types/coupon'
+import { userService } from '@/config/userServices'
+import { useSession } from 'next-auth/react'
+
+interface CouponStatusResponse {
+  coupon: APICoupon
+  is_collected: boolean
+}
 
 const CouponDetail = () => {
   const router = useRouter()
@@ -11,36 +18,68 @@ const CouponDetail = () => {
   const [coupon, setCoupon] = useState<APICoupon | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [collected, setCollected] = useState(false)
+  const { data: session } = useSession()
 
   useEffect(() => {
-    if (!id) return
-
-    // แปลง id ให้เป็น number
-    const couponId = Array.isArray(id)
-      ? parseInt(id[0])
-      : parseInt(id as string)
-    if (isNaN(couponId)) {
-      setError('Invalid coupon id')
-      setLoading(false)
-      return
-    }
-
+    if (!id) return;
+  
     const fetchCoupon = async () => {
       try {
-        const res = await fetch(`/api/coupons/${couponId}`)
-        if (!res.ok) throw new Error('Coupon not found')
-        const data = await res.json()
-        setCoupon(data.coupon)
+        setLoading(true);
+  
+        // บอก TypeScript ว่า response มี structure แบบนี้
+        const res = await userService.GET_COUPON_BY_ID(Number(id)) as CouponStatusResponse;
+        console.log('sssss', res);
+  
+        if (res?.coupon) {
+          setCoupon(res.coupon);
+          setCollected(!!res.is_collected);
+        } else {
+          throw new Error('Coupon not found');
+        }
       } catch (err: unknown) {
-        if (err instanceof Error) setError(err.message)
-        else setError('Unknown error')
+        if (err instanceof Error) setError(err.message);
+        else setError('Cannot load coupon');
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
+    };
+  
+    fetchCoupon();
+  }, [id]);
+  
+  const handleGetCoupon = async () => {
+    if (!session?.user?.id) {
+      alert('Please login to collect coupon')
+      return
     }
-
-    fetchCoupon()
-  }, [id])
+  
+    if (!coupon) {
+      alert('Coupon not found')
+      return
+    }
+  
+    setLoading(true)
+  
+    try {
+      await userService.COLLECT_COUPON(coupon.id)
+      setCollected(true)
+    } catch (err) {
+      console.error(err)
+      const error = err as {
+        response?: { data?: { error?: string } }
+        message?: string
+      }
+      const errorMessage =
+        error?.response?.data?.error ||
+        error?.message ||
+        'Failed to collect coupon'
+      alert(errorMessage)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   if (loading)
     return (
@@ -72,7 +111,6 @@ const CouponDetail = () => {
             height={387} // square
             className="rounded-t-[8px] w-full h-auto"
             priority
-            
           />
         </div>
 
@@ -89,10 +127,21 @@ const CouponDetail = () => {
               <p className="text-white text-sm sm:text-base">31 Dec 2024</p>
             </div>
           </div>
-
-          {/* Button */}
+          
           <div>
-            <Button className="btn-base blue-normal">Get coupon</Button>
+            <Button
+              className={`btn-base lg:w-[237px] lg:h-[48px] ${
+                collected ? ' blue-disabled' : 'blue-normal'
+              }`}
+              onClick={!collected && !loading ? handleGetCoupon : undefined}
+              disabled={collected || loading}
+            >
+              {loading
+                ? 'Collecting...'
+                : collected
+                  ? 'Coupon Saved'
+                  : 'Get coupon'}
+            </Button>
           </div>
           <div>
             <p>

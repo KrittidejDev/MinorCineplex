@@ -1,4 +1,7 @@
 import AddRoundLight from "../Icons/AddRoundLight"
+import Eye from "../Icons/Eye"
+import EditLight from "../Icons/EditLight"
+import Trash from "../Icons/Trash"
 import { Button } from "../ui/button"
 
 function createData(
@@ -30,7 +33,44 @@ export default function TableCard() {
                 onView: () => (""),
                 onEdit: () => (""),
                 onDelete: () => ("")
-            }
+            },
+            
+        ),
+        createData(
+            "Ratchayothin",
+            "55/55 xxxxxxx, xxxxxxx",
+            "090-000-0000",
+            14,
+            {
+                onView: () => (""),
+                onEdit: () => (""),
+                onDelete: () => ("")
+            },
+            
+        ),
+        createData(
+            "Ratchayothin",
+            "55/55 xxxxxxx, xxxxxxx",
+            "090-000-0000",
+            14,
+            {
+                onView: () => (""),
+                onEdit: () => (""),
+                onDelete: () => ("")
+            },
+            
+        ),
+        createData(
+            "Ratchayothin",
+            "55/55 xxxxxxx, xxxxxxx",
+            "090-000-0000",
+            14,
+            {
+                onView: () => (""),
+                onEdit: () => (""),
+                onDelete: () => ("")
+            },
+            
         ),
 
     ];
@@ -58,25 +98,25 @@ export default function TableCard() {
                                 <td className="text-blue-bbee px-4.75 py-7.5 text-right">
                                     <div className="flex justify-end gap-2">
                                         <button
-                                            className=" hover:bg-gray-gedd rounded"
+                                            className="p-2 bg-green-g372 hover:bg-gray-gedd rounded-full"
                                             onClick={cinema.actions.onView}
                                             title="View Details"
                                         >
-                                            👁️
+                                            <Eye />
                                         </button>
                                         <button
-                                            className=" hover:bg-gray-gedd rounded"
+                                            className="p-2 bg-blue-bbee hover:bg-gray-gedd rounded-full"
                                             onClick={cinema.actions.onEdit}
                                             title="Edit"
                                         >
-                                            ✏️
+                                            <EditLight />
                                         </button>
                                         <button
-                                            className=" hover:bg-gray-gedd rounded"
+                                            className="p-2 bg-red-r64b hover:bg-gray-gedd rounded-full"
                                             onClick={cinema.actions.onDelete}
                                             title="Delete"
                                         >
-                                            🗑️
+                                            <Trash />
                                         </button>
                                     </div>
                                 </td>

@@ -234,7 +234,7 @@ body {
 
 .white-outline-normal:active {
   background-color: #565F7E;
-  border: none;
+  
 }
 
 .white-outline-disabled {
@@ -247,7 +247,7 @@ body {
 
 .white-outline-disabled:active {
   background-color: hsla(223, 82%, 62%, 0.2);
-  border: none;
+ 
 }
 
 /* Gray Button States - hsla(227,19%,62%,1) */

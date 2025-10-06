@@ -11,6 +11,7 @@ import CitySelection from "@/components/ui/cityselection";
 import axios from "axios";
 import { APIMovie } from "@/types/movie";
 
+
 type TimeSlot = {
   id: string;
   start_time: string;
@@ -59,10 +60,6 @@ const MoviesDetail: React.FC = () => {
       const res = await axios.get(
         `/api/cinemas?movie_id=${movieId}${dateQuery}`
       );
-
-      console.log("Raw API response:", res);
-      console.log("res.data.cinema:", res.data.cinema);
-
       setData(res.data.cinema);
     } catch (error: unknown) {
       if (error instanceof Error) console.log("Error:", error.message);

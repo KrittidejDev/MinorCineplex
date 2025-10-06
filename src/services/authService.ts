@@ -18,8 +18,11 @@ export const registerUser = async (body: RegisterUserInput) => {
   await signupSchema.validate(body, { abortEarly: false });
 
   const { username, phone, email, password } = body;
+  
+  // Convert email to lowercase for case-insensitive comparison
+  const normalizedEmail = email.toLowerCase();
 
-  if (await userRepo.findUserByEmail(email)) {
+  if (await userRepo.findUserByEmail(normalizedEmail)) {
     throw { status: 400, message: "Email already exists" };
   }
 
@@ -32,7 +35,7 @@ export const registerUser = async (body: RegisterUserInput) => {
   const user = await userRepo.createUser({
     username,
     phone,
-    email,
+    email: normalizedEmail,
     password: hashed,
     role: "CUSTOMER",
   });

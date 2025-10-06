@@ -8,7 +8,6 @@ import { useLocationPermission } from "@/lib/hooks/useLocationPermission";
 import { useNearbyCinemas } from "@/lib/hooks/useNearbyCinemas";
 import dynamic from "next/dynamic";
 import FilterSearch from "@/components/Widgets/FilterSearch";
-import { Filter } from "lucide-react";
 
 const CurtainIntro = dynamic(
   () => import("@/components/Widgets/CurtainIntro"),
@@ -64,7 +63,7 @@ export default function Home() {
         />
       )}
       <div className="flex-1 max-w-[1200px]">
-        <div className="lg:absolute top-81.5 w-screen flex justify-center">
+        <div className="w-dvw flex justify-center relative mx-auto -mt-10">
           <FilterSearch />
         </div>
         <div className="mt-20">

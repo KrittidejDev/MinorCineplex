@@ -1,6 +1,5 @@
 import StarFill from "../Icons/StarFill";
 import Tag from "../Widgets/Tag";
-import Link from "next/link";
 import Image from "next/image";
 import { HoverCard3D } from "../Displays/HoverCard3D";
 
@@ -24,13 +23,12 @@ function MovieCard({
   const genres = genre ? genre.split(",").map((g) => g.trim()) : [];
 
   return (
-    <div className="w-[161px] h-fit md:w-[285px] md:h-[526px] md:mb-12 lg:mb-17 flex flex-col cursor-pointer">
-      <Link href={`/movies/${id}`} passHref>
+    <div className="w-[161px] h-fit md:w-[285px] md:h-[526px] md:mb-12 lg:mb-17 flex flex-col">
         <div className="h-[235px] md:h-[416px] rounded-sm ">
           <HoverCard3D>
           <div className="relative h-[235px] md:h-[416px]">
             {" "}
-            {/* container กำหนดขนาด */}
+
             <Image
               src={poster_url || "/fallback-poster.jpg"}
               alt={title}
@@ -54,7 +52,7 @@ function MovieCard({
             </p>
             <div className="flex items-center gap-[2px]">
               <StarFill width={16} height={16} color={"#4E7BEE"} />
-              <p className="font-medium fr-14 text-gray-g3b0">{rating}</p>
+              <p className="font-medium fr-14 text-gray-g3b0">{rating || "-"}</p>
             </div>
           </div>
           <div className="flex flex-col flex-1 justify-between">
@@ -66,7 +64,6 @@ function MovieCard({
             </div>
           </div>
         </div>
-      </Link>
     </div>
   );
 }

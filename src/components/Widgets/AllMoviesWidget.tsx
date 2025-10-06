@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useReducer, useState } from "react";
 import axios from "axios";
 import MovieCard from "../Cards/MovieCard";
 import { APIMovie, MovieCardData } from "@/types/movie";
+import { useRouter } from "next/router";
 
 function AllMoviesWidget() {
   const [activeTab, setActiveTab] = useState("nowShowing");
@@ -9,13 +10,12 @@ function AllMoviesWidget() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const router = useRouter();
+
   useEffect(() => {
     const fetchMovies = async () => {
       try {
         const res = await axios.get<{ movie: APIMovie[] }>("/api/movies");
-
-        console.log("Raw movies from API:", res.data.movie);
-
         const Movies: MovieCardData[] = res.data.movie.map((movie) => ({
           id: movie.id,
           title: movie.title,
@@ -81,6 +81,11 @@ function AllMoviesWidget() {
         <div className="flex justify-center py-20 px-4">
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 max-w-[1200px] w-full">
             {moviesToDisplay.map((movie) => (
+              <div
+              key={movie.id}
+              className="cursor-pointer"
+              onClick={() => router.push(`/movies/${movie.id}`)}
+            >
               <MovieCard
                 key={movie.id}
                 id={movie.id}
@@ -90,6 +95,7 @@ function AllMoviesWidget() {
                 rating={movie.rating}
                 genre={movie.genre}
               />
+              </div>
             ))}
           </div>
         </div>

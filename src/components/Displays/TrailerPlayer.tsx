@@ -1,23 +1,21 @@
 interface VideoPlayerProps {
   url?: string | null;
+  className?: string;
 }
 
-function TrailerPlayer({ url }: VideoPlayerProps) {
-    if (!url) return null;
-    
-    return (
-        <>
-        <div className="w-[840px] h-[472px] rounded-md overflow-hidden">
-        <video
+function TrailerPlayer({ url, className }: VideoPlayerProps) {
+  if (!url) return null;
+
+  return (
+    <div className={`w-full h-fit lg:w-[840px] aspect-video rounded-md overflow-hidden ${className || ""}`}>
+      <iframe
         src={url}
-        controls
-        autoPlay={false}
-        loop={false}
-        className="w-full h-full object-cover"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowFullScreen
+        className="w-full h-full block"
       />
-      </div>
-        </>
-    )
+    </div>
+  );
 }
 
-export default TrailerPlayer
+export default TrailerPlayer;

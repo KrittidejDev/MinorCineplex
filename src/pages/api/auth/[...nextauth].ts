@@ -8,6 +8,7 @@ interface MyUser {
   role: string;
   username?: string;
   email?: string | null;
+  avatar_id?: string | null;
 }
 
 export default NextAuth({
@@ -25,10 +26,13 @@ export default NextAuth({
       async authorize(credentials) {
         if (!credentials?.identifier || !credentials.password) return null;
 
+        // Normalize email to lowercase for case-insensitive login
+        const normalizedIdentifier = credentials.identifier.toLowerCase();
+
         const user = await prisma.user.findFirst({
           where: {
             OR: [
-              { email: credentials.identifier },
+              { email: normalizedIdentifier },
               { username: credentials.identifier },
               { phone: credentials.identifier },
             ],
@@ -48,6 +52,7 @@ export default NextAuth({
           email: user.email,
           username: user.username,
           role: user.role,
+          avatar_id: user.avatar_id,
         } as MyUser;
       },
     }),
@@ -59,6 +64,7 @@ export default NextAuth({
         token.id = u.id;
         token.role = u.role;
         token.username = u.username;
+        token.avatar_id = u.avatar_id;
       }
       return token;
     },
@@ -67,6 +73,7 @@ export default NextAuth({
       session.user.id = token.id as string;
       session.user.role = token.role as string;
       session.user.email = session.user.email ?? null;
+      session.user.avatar_id = token.avatar_id as string;
       return session;
     },
   },

@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
+import { userService } from '@/config/userServices'
 import CouponCard from '@/components/Cards/CouponCard'
 import {  APICoupon } from '@/types/coupon'
 
@@ -23,23 +24,20 @@ const SpecialCoupons = () => {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const fetchCoupons = async () => {
+    const fetchCollectedCoupons = async () => {
       try {
-        const res = await axios.get('/api/coupons')
-        if (res.data?.coupons && Array.isArray(res.data.coupons)) {
-          setCoupons(res.data.coupons)
-        } else {
-          setCoupons([])
-        }
-      } catch (error) {
-        console.error('Cannot load coupons', error)
-        setCoupons([])
+        setLoading(true)
+        const res = await userService.GET_COUPON() as { coupons: APICoupon[] }
+        console.log(res.coupons)
+        setCoupons(res.coupons)
+      } catch (err) {
+        console.error(err)
       } finally {
         setLoading(false)
       }
     }
 
-    fetchCoupons()
+    fetchCollectedCoupons()
   }, [])
 
   const filteredCoupons = coupons.filter(coupon => {

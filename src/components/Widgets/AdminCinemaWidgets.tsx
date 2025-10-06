@@ -44,7 +44,7 @@ export default function AdminCinemaWidgets() {
     ]
 
     return (
-        <div className="flex flex-col gap-10 mx-[70px]">
+        <div className="flex flex-col gap-10">
             <div className="flex items-center justify-between mt-20 px-17.5">
                 <h1 className="text-gray-g63f text-f-56 font-bold ">Cinema Branch</h1>
                 <Button
@@ -55,7 +55,7 @@ export default function AdminCinemaWidgets() {
                     Add Cinema
                 </Button>
             </div>
-            <div className="">
+            <div>
                 <TableCard
                     columns={cinemaColumns}
                     actions={cinemaActions}

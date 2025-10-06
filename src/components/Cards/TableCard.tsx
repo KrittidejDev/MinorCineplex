@@ -1,8 +1,7 @@
-import AddRoundLight from "../Icons/AddRoundLight"
 import Eye from "../Icons/Eye"
 import EditLight from "../Icons/EditLight"
 import Trash from "../Icons/Trash"
-import { Button } from "../ui/button"
+
 
 interface TableColumn{
     key: string

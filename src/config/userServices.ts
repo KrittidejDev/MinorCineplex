@@ -111,6 +111,9 @@ export const userService = {
 
   // Coupons
   // GET สถานะ coupon ของ user
+
+  GET_COUPON: () => 
+    apiService.get(`${apiPath}/coupons`),
   GET_COUPON_BY_ID: (id: number) =>
     apiService.get(`${apiPath}/coupons/${id}/collect`),
 

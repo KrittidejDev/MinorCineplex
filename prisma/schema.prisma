@@ -146,13 +146,15 @@ model showtime {
 }
 
 model showtime_seat {
-  id          String   @id @default(uuid())
+  id          String    @id @default(uuid())
   showtime_id String
   seat_id     String
-  status      String   @default("AVAILABLE")
+  status      String    @default("AVAILABLE")
   price       Float?
-  seat        seat     @relation(fields: [seat_id], references: [id])
-  showtime    showtime @relation(fields: [showtime_id], references: [id])
+  locked_at   DateTime?
+  locked_by   String?
+  seat        seat      @relation(fields: [seat_id], references: [id])
+  showtime    showtime  @relation(fields: [showtime_id], references: [id])
 
   @@unique([showtime_id, seat_id])
 }
@@ -197,7 +199,7 @@ model booking_seat {
 }
 
 model coupon {
-  id             Int          @id @default(autoincrement())
+  id             String       @id
   code           String       @unique
   title_en       String
   title_th       String
@@ -221,13 +223,31 @@ model coupon {
 model UserCoupon {
   id           String    @id @default(uuid())
   user_id      String
-  coupon_id    Int
+  coupon_id    String
   is_collected Boolean   @default(false)
   collected_at DateTime?
   coupon       coupon    @relation(fields: [coupon_id], references: [id])
   user         user      @relation(fields: [user_id], references: [id])
 
   @@unique([user_id, coupon_id])
+}
+
+model outbox {
+  sequence_id Int    @id @default(autoincrement())
+  mutation_id String
+  channel     String
+  name        String
+  data        Json?
+  headers     Json?
+}
+
+model seats {
+  id          String    @id
+  cinema_id   String
+  seat_number String
+  status      String    @default("available")
+  locked_by   String?
+  lock_expiry DateTime? @db.Timestamp(6)
 }
 
 enum booking_status {

@@ -38,7 +38,14 @@ export const create = async (data: CreateCouponInput) => {
   });
 };
 
-// 🔹 update coupon properties (ไม่ยุ่งกับ is_collected แล้ว)
+
+// 🔹 helper function สำหรับ parse date
+function parseDate(value?: Date | string | null) {
+  if (!value) return undefined;
+  const d = new Date(value);
+  return isNaN(d.getTime()) ? undefined : d;
+}
+
 export const update = async (
   id: number,
   data: Partial<CreateCouponInput>
@@ -46,17 +53,19 @@ export const update = async (
   return prisma.coupon.update({
     where: { id },
     data: {
-      code: data.code,
-      title_en: data.title_en,
-      title_th: data.title_th,
-      discription_en: data.discription_en,
-      discription_th: data.discription_th,
-      discount_value: data.discount_value,
-      start_date: data.start_date,
-      end_date: data.end_date,
-      image: data.image,
-      status: data.status,
+      code: data.code ?? undefined,
+      title_en: data.title_en ?? undefined,
+      title_th: data.title_th ?? undefined,
+      discription_en: data.discription_en ?? undefined,
+      discription_th: data.discription_th ?? undefined,
+      discount_value: data.discount_value ?? undefined,
+      start_date: parseDate(data.start_date),
+      end_date: parseDate(data.end_date),
+      image: data.image ?? undefined,
+      status: data.status ?? undefined,
     },
   });
 };
+
+
 

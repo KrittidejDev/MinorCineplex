@@ -4,7 +4,7 @@ import ScreenBar from "@/components/Seats/ScreenBar";
 import SeatInfo from "@/components/Seats/SeatInfo";
 import SeatRow from "../Seats/SeatRow";
 
-const SeatWidget = () => {
+const SeatWidget = ({ data }) => {
   const [selectSeats, setSelectSeats] = useState(seats);
 
   const totalSelected = selectSeats.filter(
@@ -19,11 +19,10 @@ const SeatWidget = () => {
     <div className="flex flex-col  max-w-[793px] items-center gap-y-15">
       <ScreenBar />
       <SeatRow
-
-      // seats={groupedSeats[row]}
-      // onSelectSeat={onSelectSeat}
+        seats={data?.seats}
+        // onSelectSeat={onSelectSeat}
       />
-      <SeatInfo />
+      <SeatInfo price={data?.price} />
     </div>
   );
 };

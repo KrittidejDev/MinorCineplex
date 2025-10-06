@@ -5,6 +5,8 @@ import DateRangeFill from "../Icons/DateRangeFill";
 import TimeFill from "../Icons/TimeFill";
 import Shop from "../Icons/Shop";
 import BookingInfo from "./BookingInfo";
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export interface BillInfo {
   totalSelected?: {
@@ -16,31 +18,39 @@ export interface BillInfo {
   totalPrice?: number;
 }
 
-function SummaryBoxCard({ totalSelected, totalPrice }: BillInfo) {
+function SummaryBoxCard({ data, totalSelected, totalPrice }: BillInfo) {
+  const [step, setStep] = useState("1");
+
+  const i18n = useTranslation();
+
   return (
     <>
       <div className="w-full max-w-full lg:max-w-[305px] h-fit bg-gray-gc1b rounded-lg">
         <div className="p-4">
-          <p className="text-sm text-gray-g3b0 pb-3">
-            Time remaining:{" "}
-            <span className="text-sm text-blue-bbee pl-2">04:55</span>
-          </p>
+          {step === "2" && (
+            <p className="text-sm text-gray-g3b0 pb-3">
+              Time remaining:{" "}
+              <span className="text-sm text-blue-bbee pl-2">04:55</span>
+            </p>
+          )}
           <div className="flex gap-4 items-center">
             <Image
-              src="https://m.media-amazon.com/images/M/MV5BMTMxNTMwODM0NF5BMl5BanBnXkFtZTcwODAyMTk2Mw@@._V1_.jpg"
-              alt="the_dark_knight"
+              src={data?.movie?.poster_url}
+              alt={data?.movie?.title}
               width={82.21}
               height={120}
               className="object-cover rounded-md"
             />
             <div className="flex flex-col gap-2">
-              <h4 className="font-bold text-xl text-white-wfff">
-                The Dark Knight
+              <h4 className="font-bold text-xl text-white-wfff line-clamp-2">
+                {data?.movie?.title}
               </h4>
-              <div className="hidden sm:flex flex-warp gap-2">
-                <Tag name="Action" variant="genre" />
-                <Tag name="Crime" variant="genre" />
-                <Tag name="TH" variant="language" />
+              <div className="hidden sm:flex flex-wrap gap-2">
+                {data?.movie?.genre.split(",").map((e, i) => (
+                  <div key={i}>
+                    <Tag name={e} variant="genre" />
+                  </div>
+                ))}
               </div>
             </div>
           </div>
@@ -48,19 +58,29 @@ function SummaryBoxCard({ totalSelected, totalPrice }: BillInfo) {
           <div className="flex flex-col gap-2 mt-6">
             <div className="flex items-center gap-4">
               <PinFill width={16} height={16} color={"#565F7E"} />
-              <p className="text-gray-gedd">Minor Cineplex Arkham</p>
+              <p className="text-gray-gedd">{data?.hall?.cinema?.name}</p>
             </div>
             <div className="flex items-center gap-4">
               <DateRangeFill width={16} height={16} color={"#565F7E"} />
-              <p className="text-gray-gedd">24 Jun 2024</p>
+              <p className="text-gray-gedd">
+                {data?.date &&
+                  new Date(data.date).toLocaleDateString(
+                    i18n.language === "en" ? "en-US" : "th-TH",
+                    {
+                      day: "numeric",
+                      month: "long",
+                      year: "numeric",
+                    }
+                  )}
+              </p>
             </div>
             <div className="flex items-center gap-4">
               <TimeFill width={16} height={16} color={"#565F7E"} />
-              <p className="text-gray-gedd">16:30</p>
+              <p className="text-gray-gedd">{data?.time_slot?.start_time}</p>
             </div>
             <div className="flex items-center gap-4">
               <Shop width={16} height={16} color={"#565F7E"} />
-              <p className="text-gray-gedd">Hall 1</p>
+              <p className="text-gray-gedd">{data?.hall?.name}</p>
             </div>
           </div>
         </div>

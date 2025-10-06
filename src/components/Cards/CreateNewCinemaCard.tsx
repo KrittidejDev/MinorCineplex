@@ -20,7 +20,7 @@ function CreateNewCinemaCard({ isShowModal, onClose }: CreateNewCinemaCardProps)
                         <input
                             type="text"
                             placeholder="Enter cinemaname"
-                            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full px-4 py-2 border border-blue-bbee rounded-md text-gray-g3b0 "
                         />
                     </div>
 
@@ -29,7 +29,7 @@ function CreateNewCinemaCard({ isShowModal, onClose }: CreateNewCinemaCardProps)
                         <input
                             type="text"
                             placeholder="Enter address"
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full px-3 py-2 border border-blue-bbee rounded-md text-gray-g3b0 "
                         />
                     </div>
 
@@ -38,7 +38,7 @@ function CreateNewCinemaCard({ isShowModal, onClose }: CreateNewCinemaCardProps)
                         <input
                             type="text"
                             placeholder="Enter phone number"
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full px-3 py-2 border border-blue-bbee rounded-md text-gray-g3b0 "
                         />
                     </div>
 
@@ -47,7 +47,7 @@ function CreateNewCinemaCard({ isShowModal, onClose }: CreateNewCinemaCardProps)
                         <textarea
                             placeholder="Enter cinema detail"
                             rows={4}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md resize-y focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full px-3 py-2 border border-blue-bbee rounded-md resize-y text-gray-g3b0 "
                         />
                     </div>
 
@@ -58,7 +58,7 @@ function CreateNewCinemaCard({ isShowModal, onClose }: CreateNewCinemaCardProps)
                         >
                             Cancel
                         </button>
-                        <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                        <button className="px-4 py-2 bg-blue-bbee text-white rounded-md hover:bg-blue-700">
                             Save
                         </button>
                     </div>

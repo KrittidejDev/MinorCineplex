@@ -56,16 +56,16 @@ const ProfileMycoupons = () => {
           "
         >
           {/* ProfileBar */}
-          <div className="w-full md:w-1/4 ">
+          <div className="w-full  md:w-1/4 lg:min-w-[250px]">
             <ProfileBar />
           </div>
 
           {/* Content - Full Width Container */}
-          <div className="flex flex-col items-start justify-start gap-y-5 w-full md:w-3/4 lg:w-4/5 px-0 md:px-0 lg:px-60">
+          <div className="flex flex-col items-start justify-start gap-y-5 w-full md:w-3/4 lg:w-4/5 px-0 md:px-0 lg:px-40">
             <div className="text-f-24 md:text-f-28 lg:text-f-36 px-0 md:px-0 lg:px-0">
               My coupons
             </div>
-            <div className="grid grid-cols-2 lg:grid-cols-2  gap-y-10 w-full px-0 md:px-0 lg:px-0">
+            <div className="grid grid-cols-2 lg:grid-cols-2  gap-y-10 w-full lg:w-2xl px-0 md:px-0 lg:px-0">
             {coupons.map((coupon) => (
                 <CouponCard key={coupon.id} coupon={coupon} />
               ))}

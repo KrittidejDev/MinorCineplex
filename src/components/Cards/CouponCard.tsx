@@ -1,73 +1,83 @@
-import React, { useState } from 'react'
-import { Button } from '../ui/button'
-import { useRouter } from 'next/router'
-import Image from 'next/image'
-import { CouponCardData } from '@/types/coupon'
-import { HoverCard3D } from "../Displays/HoverCard3D"
-import { useSession } from 'next-auth/react'
+import React, { useState, useEffect } from 'react';
+import { Button } from '../ui/button';
+import { useRouter } from 'next/router';
+import Image from 'next/image';
+import { CouponCardData } from '@/types/coupon';
+import { HoverCard3D } from "../Displays/HoverCard3D";
+import { useSession } from 'next-auth/react';
 
 interface CouponCardProps {
   coupon: Pick<
     CouponCardData,
-    'id' | 'code' | 'discount' | 'expiresAt' | 'title_en' | 'image' | 'is_collected'
-  >
+    'id' | 'code' | 'discount' | 'expiresAt' | 'title_en' | 'image'
+  >;
 }
 
 const CouponCard = ({ coupon }: CouponCardProps) => {
-  const router = useRouter()
-  const { data: session } = useSession()
-  const [collected, setCollected] = useState(coupon.is_collected)
+  const router = useRouter();
+  const { data: session } = useSession();
+  const [collected, setCollected] = useState(false); // เริ่ม false
+  const [loading, setLoading] = useState(false);
+
+  // 🔹 Fetch latest coupon status ของ user
+  useEffect(() => {
+    if (!session?.user?.id) return;
+
+    const fetchUserCouponStatus = async () => {
+      try {
+        const res = await fetch(`/api/coupons/${coupon.id}/collect`, {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' },
+        });
+
+        if (!res.ok) return;
+
+        const data = await res.json();
+        setCollected(!!data.collected);
+      } catch (err) {
+        console.error('Failed to fetch user coupon status', err);
+      }
+    };
+
+    fetchUserCouponStatus();
+  }, [coupon.id, session?.user?.id]);
 
   const handleClickCoupon = () => {
-    router.push(`/coupons/${coupon.id}`)
-  }
+    router.push(`/coupons/${coupon.id}`);
+  };
 
   const handleGetCoupon = async () => {
     if (!session?.user?.id) {
-      alert('Please login to collect coupon')
-      return
+      alert('Please login to collect coupon');
+      return;
     }
-  
+
+    setLoading(true);
+
     try {
-      const res = await fetch(`/api/coupons/${coupon.id}`, {
-        method: 'PUT',
+      const res = await fetch(`/api/coupons/${coupon.id}/collect`, {
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ is_collected: true }),
-      })
-  
-      if (!res.ok) {
-        const data = await res.json()
-        alert(data.error || 'Failed to collect coupon')
-        return
-      }
-  
-      setCollected(true)
-    } catch (err) {
-      console.error(err)
-      alert('Server error')
-    }
-  }
-  
-  const handleViewDetails = async () => {
-    try {
-      const res = await fetch(`/api/coupons/${coupon.id}`, { method: 'GET' });
+      });
+
       if (!res.ok) {
         const data = await res.json();
-        alert(data.error || 'Failed to fetch coupon details');
+        alert(data.error || 'Failed to collect coupon');
+        setLoading(false);
         return;
       }
-  
-      const { coupon: updatedCoupon } = await res.json();
-      console.log("Fetched coupon:", updatedCoupon);
-      // อัพเดต state เฉพาะ is_collected หรือทั้งหมดก็ได้
-      setCollected(updatedCoupon.is_collected);
-  
-      // อาจจะ navigate ไปหน้า details ด้วย
-      router.push(`/coupons/${coupon.id}`);
+
+      setCollected(true); // ปรับ state ให้ปุ่มเปลี่ยน
     } catch (err) {
       console.error(err);
-      alert('Server error while fetching details');
+      alert('Server error while collecting coupon');
+    } finally {
+      setLoading(false);
     }
+  };
+
+  const handleViewDetails = () => {
+    router.push(`/coupons/${coupon.id}`);
   };
 
   return (
@@ -112,8 +122,9 @@ const CouponCard = ({ coupon }: CouponCardProps) => {
 
           <div>
             {collected ? (
-              <Button className="btn-base white-outline-normal lg:w-[237px] lg:h-[48px]"
-              onClick={handleViewDetails}
+              <Button
+                className="btn-base white-outline-normal lg:w-[237px] lg:h-[48px]"
+                onClick={handleViewDetails}
               >
                 View details
               </Button>
@@ -121,15 +132,16 @@ const CouponCard = ({ coupon }: CouponCardProps) => {
               <Button
                 className="btn-base blue-normal lg:w-[237px] lg:h-[48px]"
                 onClick={handleGetCoupon}
+                disabled={loading}
               >
-                Get coupon
+                {loading ? 'Collecting...' : 'Get coupon'}
               </Button>
             )}
           </div>
         </div>
       </div>
     </HoverCard3D>
-  )
-}
+  );
+};
 
-export default CouponCard
+export default CouponCard;

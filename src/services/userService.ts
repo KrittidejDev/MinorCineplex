@@ -1,6 +1,8 @@
 import * as userRepo from "../repositories/userRepository";
 import { UpdateUserInput } from "../types/user";
 
+
+
 export const getUser = async () => {
   const user = await userRepo.getMany();
   return user;

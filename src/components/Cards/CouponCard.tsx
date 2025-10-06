@@ -39,7 +39,6 @@ const CouponCard = ({ coupon }: CouponCardProps) => {
           coupon.id
         )) as CouponStatusResponse
         console.log('res', response)
-        // ลอง check ทั้ง 3 แบบ
         const isCollected = response?.collected
         setCollected(!!isCollected)
       } catch (err) {

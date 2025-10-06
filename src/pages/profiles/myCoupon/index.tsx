@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react'
 import NavBarWidget from '@/components/Widgets/NavBarWidget'
 import ProfileBar from '@/components/Widgets/ProfileBar'
 import CouponCard from '@/components/Cards/CouponCard'
-import { CouponCardData, APICoupon } from '@/types/coupon'
-import axios from 'axios'
+import {  CouponCardData } from '@/types/coupon'
+import { userService } from '@/config/userServices'
+
 
 const ProfileMycoupons = () => {
   const [coupons, setCoupons] = useState<CouponCardData[]>([])
@@ -11,24 +12,12 @@ const ProfileMycoupons = () => {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    const fetchCoupons = async () => {
+    const fetchCollectedCoupons = async () => {
       try {
         setLoading(true)
-        const res = await axios.get<{ coupons: APICoupon[] }>('/api/coupons')
-        const apiCoupons: APICoupon[] = res.data.coupons
-
-        // แปลง APICoupon → CouponCardData
-        const cardData: CouponCardData[] = apiCoupons.map((c: APICoupon) => ({
-          id: c.id,
-          code: c.code,
-          title_en: c.title_en,
-          title_th: c.title_th,
-          discount: c.discount_value,
-          expiresAt: c.end_date ?? null,
-          image: c.image,
-        }))
-
-        setCoupons(cardData)
+        const res = await userService.GET_COUPON_COLLECTED() as { coupons: CouponCardData[] }
+        console.log(res.coupons)
+        setCoupons(res.coupons)
       } catch (err) {
         console.error(err)
         setError('ไม่สามารถโหลดคูปองได้')
@@ -37,7 +26,7 @@ const ProfileMycoupons = () => {
       }
     }
 
-    fetchCoupons()
+    fetchCollectedCoupons()
   }, [])
 
   if (loading) return <p className="text-center py-10">Loading...</p>
@@ -66,7 +55,7 @@ const ProfileMycoupons = () => {
               My coupons
             </div>
             <div className="grid grid-cols-2 lg:grid-cols-2  gap-y-10 w-full lg:w-2xl px-0 md:px-0 lg:px-0">
-            {coupons.map((coupon) => (
+              {coupons.map((coupon) => (
                 <CouponCard key={coupon.id} coupon={coupon} />
               ))}
             </div>

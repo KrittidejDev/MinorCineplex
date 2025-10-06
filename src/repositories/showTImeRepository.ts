@@ -103,6 +103,13 @@ export const getBookingInfoByShowtimeId = async (showtime_id: string) => {
           description: true,
         },
       },
+      time_slot: {
+        select: {
+          start_time: true,
+          end_time: true,
+          name: true,
+        },
+      },
       seats: {
         select: {
           id: true,

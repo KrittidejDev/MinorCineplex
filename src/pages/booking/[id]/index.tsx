@@ -22,7 +22,7 @@ const BookingSeat = () => {
     const fetchBookingInfo = async () => {
       const res = await userService.GET_SHOWTIME_BOOKING(id);
       console.log("res booking", res);
-      // setBookingInfo(data);
+      setBookingInfo(res);
     };
 
     fetchBookingInfo();
@@ -42,8 +42,8 @@ const BookingSeat = () => {
         <Stepper step={step} />
       </div>
       <div className="flex justify-center p-20 gap-x-24 flex-wrap">
-        <SeatWidget />
-        <SummaryBoxCard />
+        <SeatWidget data={bookingInfo} />
+        <SummaryBoxCard data={bookingInfo} />
       </div>
     </NavAndFooter>
   );

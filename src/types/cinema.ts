@@ -118,6 +118,9 @@ export interface BookingInfo {
     id: string;
     title: string;
     poster_url?: string;
+    rating?: string;
+    genre?: string;
+    duration_min: number;
   };
   seats: Seat[];
 }

@@ -6,6 +6,42 @@ import { useState } from "react"
 
 export default function AdminCinemaWidgets() {
     const [isShowCreateModal, setIsShowCreateModal] = useState(false)
+    
+    
+    const cinemaColumns = [
+        { key: 'name', label: 'Name', align: 'left' as const },
+        { key: 'address', label: 'Address', align: 'left' as const },
+        { key: 'phone', label: 'Phone Number', align: 'left' as const },
+        { key: 'halls', label: 'Halls', align: 'center' as const }
+        
+    ]
+    const cinemaData = [
+        {
+            name: "Ratchayothin",
+            address: "55/55 xxxxxxx, xxxxxxx",
+            phone: "090-000-0000",
+            halls: 14,
+            
+        },
+        {
+            name: "Central World",
+            address: "999/9 xxxxxxx, xxxxxxx",
+            phone: "090-111-1111",
+            halls: 12
+        }
+    ]
+    const cinemaActions = [
+        {
+            onView: () => console.log("View Cinema 1"),
+            onEdit: () => console.log("Edit Cinema 1"),
+            onDelete: () => console.log("Delete Cinema 1")
+        },
+        {
+            onView: () => console.log("View Cinema 2"),
+            onEdit: () => console.log("Edit Cinema 2"),
+            onDelete: () => console.log("Delete Cinema 2")
+        }
+    ]
 
     return (
         <div className="flex flex-col gap-10">
@@ -20,7 +56,11 @@ export default function AdminCinemaWidgets() {
                 </Button>
             </div>
             <div className="mx-[70px]">
-                <TableCard />
+                <TableCard
+                    columns={cinemaColumns}
+                    actions={cinemaActions}
+                    data={cinemaData}
+                />
             </div>
 
             {/* Create New Cinema Modal */}

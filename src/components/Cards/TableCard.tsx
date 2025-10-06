@@ -4,128 +4,92 @@ import EditLight from "../Icons/EditLight"
 import Trash from "../Icons/Trash"
 import { Button } from "../ui/button"
 
-function createData(
-    name: string,
-    address: string,
-    phone: string,
-    halls: number,
-    actions: { onView: () => void, onEdit: () => void, onDelete: () => void }
-) {
-    return {
-        name,
-        address,
-        phone,
-        halls,
-        actions
-    }
+interface TableColumn{
+    key: string
+    label: string
+    align?: 'left' | 'center' | 'right'
+    width?: string
 }
 
+interface TableAction{
+    onView: () => void
+    onEdit: () => void
+    onDelete: () => void
+}
 
+interface TableCardProps {
+    columns: TableColumn[]
+    actions: TableAction[]
+    data: any[]
+}
 
-export default function TableCard() {
-    const cinemaList = [
-        createData(
-            "Ratchayothin",
-            "55/55 xxxxxxx, xxxxxxx",
-            "090-000-0000",
-            14,
-            {
-                onView: () => (""),
-                onEdit: () => (""),
-                onDelete: () => ("")
-            },
-            
-        ),
-        createData(
-            "Ratchayothin",
-            "55/55 xxxxxxx, xxxxxxx",
-            "090-000-0000",
-            14,
-            {
-                onView: () => (""),
-                onEdit: () => (""),
-                onDelete: () => ("")
-            },
-            
-        ),
-        createData(
-            "Ratchayothin",
-            "55/55 xxxxxxx, xxxxxxx",
-            "090-000-0000",
-            14,
-            {
-                onView: () => (""),
-                onEdit: () => (""),
-                onDelete: () => ("")
-            },
-            
-        ),
-        createData(
-            "Ratchayothin",
-            "55/55 xxxxxxx, xxxxxxx",
-            "090-000-0000",
-            14,
-            {
-                onView: () => (""),
-                onEdit: () => (""),
-                onDelete: () => ("")
-            },
-            
-        ),
-
-    ];
-
-    return (
-        <div className="flex flex-col gap-10">
+export default function TableCard({ columns, actions, data }: TableCardProps) {
+    return(
+        <div className="flax flex-col gap-10">
             <div className="mx-[70px]">
-                <table className="w-full border border-blue-bbee">
+                <table className="w-full border broder-blue-bbee">
                     <thead>
-                        <tr className="bg-blue-bbee ">
-                            <th className="text-white-wfff px-5 py-7.5 text-fm-16 font-bold text-left ">Name</th>
-                            <th className="text-white-wfff px-5 py-7.5 text-fm-16 font-bold text-left">Address</th>
-                            <th className="text-white-wfff px-5 py-7.5 text-fm-16 font-bold text-left">Phone Number</th>
-                            <th className="text-white-wfff px-5 py-7.5 text-fm-16 font-bold text-center">Halls</th>
-                            <th className="text-white-wfff px-5 py-7.5 text-fm-16 font-bold text-right">Actions</th>
+                        <tr className="bg-blue-bbee">
+                            {columns.map((columns,index)=>(
+                                <th
+                                key={index}
+                                className={`text-white-wfff text-fr-16 px-5 py-7.5 text-${columns.align || 'left'}`}
+                                style={{ width: columns.width }}
+                                >
+                                    {columns.label}
+                                </th>
+                            ))}
+                            {actions&&(
+                                <th className="text-white-wfff text-fm-16 font-bold px-5 py-7.5 text-right">Actions</th>
+                            )}
                         </tr>
                     </thead>
                     <tbody>
-                        {cinemaList.map((cinema, index) => (
+                    {data.map((row, index) => (
                             <tr key={index} className="px-17.5">
-                                <td className="text-blue-bbee px-4.75 py-7.5 text-fr-16  text-left">{cinema.name}</td>
-                                <td className="text-blue-bbee px-4.75 py-7.5 text-fr-14  text-left">{cinema.address}</td>
-                                <td className="text-blue-bbee px-4.75 py-7.5 text-fr-14  text-left">{cinema.phone}</td>
-                                <td className="text-blue-bbee px-4.75 py-7.5 text-fr-14  text-center">{cinema.halls}</td>
-                                <td className="text-blue-bbee px-4.75 py-7.5 text-right">
-                                    <div className="flex justify-end gap-2">
-                                        <button
-                                            className="p-2 bg-green-g372 hover:bg-gray-gedd rounded-full"
-                                            onClick={cinema.actions.onView}
-                                            title="View Details"
-                                        >
-                                            <Eye />
-                                        </button>
-                                        <button
-                                            className="p-2 bg-blue-bbee hover:bg-gray-gedd rounded-full"
-                                            onClick={cinema.actions.onEdit}
-                                            title="Edit"
-                                        >
-                                            <EditLight />
-                                        </button>
-                                        <button
-                                            className="p-2 bg-red-r64b hover:bg-gray-gedd rounded-full"
-                                            onClick={cinema.actions.onDelete}
-                                            title="Delete"
-                                        >
-                                            <Trash />
-                                        </button>
-                                    </div>
-                                </td>
+                                {columns.map((column, colIndex) => (
+                                    <td 
+                                        key={colIndex}
+                                        className={`text-blue-bbee px-4.75 py-7.5 text-fr-14 text-${column.align || 'left'}`}
+                                    >
+                                        {row[column.key]}
+                                    </td>
+                                ))}
+                                {actions && (
+                                    <td className="text-blue-bbee px-4.75 py-7.5 text-right">
+                                        <div className="flex justify-end gap-2">
+                                            <button
+                                                className="p-2 bg-green-g372 hover:bg-gray-gedd rounded-full"
+                                                onClick={actions[index]?.onView}
+                                                title="View Details"
+                                            >
+                                                <Eye />
+                                            </button>
+                                            <button
+                                                className="p-2 bg-blue-bbee hover:bg-gray-gedd rounded-full"
+                                                onClick={actions[index]?.onEdit}
+                                                title="Edit"
+                                            >
+                                                <EditLight />
+                                            </button>
+                                            <button
+                                                className="p-2 bg-red-r64b hover:bg-gray-gedd rounded-full"
+                                                onClick={actions[index]?.onDelete}
+                                                title="Delete"
+                                            >
+                                                <Trash />
+                                            </button>
+                                        </div>
+                                    </td>
+                                )}
                             </tr>
                         ))}
                     </tbody>
+
                 </table>
+
             </div>
+
         </div>
     )
-
 }

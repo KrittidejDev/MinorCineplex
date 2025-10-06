@@ -117,4 +117,8 @@ export const userService = {
   // POST รับคูปอง
   COLLECT_COUPON: (id: number) =>
     apiService.post(`${apiPath}/coupons/${id}/collect`),
+  // GET coupon ที่เก็บแล้ว
+  GET_COUPON_COLLECTED : () => 
+    apiService.get(`${apiPath}/coupons/collected`),
+  
 }

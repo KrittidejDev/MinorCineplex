@@ -1,84 +1,89 @@
-import React, { useState, useEffect } from 'react';
-import { Button } from '../ui/button';
-import { useRouter } from 'next/router';
-import Image from 'next/image';
-import { CouponCardData } from '@/types/coupon';
-import { HoverCard3D } from "../Displays/HoverCard3D";
-import { useSession } from 'next-auth/react';
+import React, { useState, useEffect } from 'react'
+import { Button } from '../ui/button'
+import { useRouter } from 'next/router'
+import Image from 'next/image'
+import { CouponCardData } from '@/types/coupon'
+import { HoverCard3D } from '../Displays/HoverCard3D'
+import { useSession } from 'next-auth/react'
+import { userService } from '@/config/userServices'
 
 interface CouponCardProps {
   coupon: Pick<
     CouponCardData,
     'id' | 'code' | 'discount' | 'expiresAt' | 'title_en' | 'image'
-  >;
+  >
+}
+
+// 🔹 Define response types
+interface CouponStatusResponse {
+  coupon: CouponCardData
+  collected?: boolean
+  data?: {
+    collected?: boolean
+  }
 }
 
 const CouponCard = ({ coupon }: CouponCardProps) => {
-  const router = useRouter();
-  const { data: session } = useSession();
-  const [collected, setCollected] = useState(false); // เริ่ม false
-  const [loading, setLoading] = useState(false);
+  const router = useRouter()
+  const { data: session } = useSession()
+  const [collected, setCollected] = useState(false)
+  const [loading, setLoading] = useState(false)
 
   // 🔹 Fetch latest coupon status ของ user
   useEffect(() => {
-    if (!session?.user?.id) return;
+    if (!session?.user?.id) return
 
     const fetchUserCouponStatus = async () => {
       try {
-        const res = await fetch(`/api/coupons/${coupon.id}/collect`, {
-          method: 'GET',
-          headers: { 'Content-Type': 'application/json' },
-        });
-
-        if (!res.ok) return;
-
-        const data = await res.json();
-        setCollected(!!data.collected);
+        const response = (await userService.GET_COUPON_BY_ID(
+          coupon.id
+        )) as CouponStatusResponse
+        console.log('res', response)
+        // ลอง check ทั้ง 3 แบบ
+        const isCollected = response?.collected
+        setCollected(!!isCollected)
       } catch (err) {
-        console.error('Failed to fetch user coupon status', err);
+        console.error('Failed to fetch user coupon status', err)
       }
-    };
+    }
 
-    fetchUserCouponStatus();
-  }, [coupon.id, session?.user?.id]);
+    fetchUserCouponStatus()
+  }, [coupon.id, session?.user?.id])
 
   const handleClickCoupon = () => {
-    router.push(`/coupons/${coupon.id}`);
-  };
+    router.push(`/coupons/${coupon.id}`)
+  }
 
   const handleGetCoupon = async () => {
     if (!session?.user?.id) {
-      alert('Please login to collect coupon');
-      return;
+      alert('Please login to collect coupon')
+      return
     }
 
-    setLoading(true);
+    setLoading(true)
 
     try {
-      const res = await fetch(`/api/coupons/${coupon.id}/collect`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-      });
-
-      if (!res.ok) {
-        const data = await res.json();
-        alert(data.error || 'Failed to collect coupon');
-        setLoading(false);
-        return;
-      }
-
-      setCollected(true); // ปรับ state ให้ปุ่มเปลี่ยน
+      await userService.COLLECT_COUPON(coupon.id)
+      setCollected(true)
     } catch (err) {
-      console.error(err);
-      alert('Server error while collecting coupon');
+      console.error(err)
+      const error = err as {
+        response?: { data?: { error?: string } }
+        message?: string
+      }
+      const errorMessage =
+        error?.response?.data?.error ||
+        error?.message ||
+        'Failed to collect coupon'
+      alert(errorMessage)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   const handleViewDetails = () => {
-    router.push(`/coupons/${coupon.id}`);
-  };
+    router.push(`/coupons/${coupon.id}`)
+  }
 
   return (
     <HoverCard3D>
@@ -141,7 +146,7 @@ const CouponCard = ({ coupon }: CouponCardProps) => {
         </div>
       </div>
     </HoverCard3D>
-  );
-};
+  )
+}
 
-export default CouponCard;
+export default CouponCard

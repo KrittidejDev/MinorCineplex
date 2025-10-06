@@ -16,7 +16,7 @@ import Tab from "@/components/Widgets/Tab";
 import React, { useState } from "react";
 import InputTextFeild from "@/components/Inputs/InputTextFeild";
 import InputTextArea from "@/components/Inputs/InputTextArea";
-import ShowtimeSelection from "@/components/Widgets/ShowtimeSelection";
+
 import {
   IconCircle,
   PinFill,

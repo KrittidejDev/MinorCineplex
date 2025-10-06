@@ -8,7 +8,7 @@ export default function Dashboard() {
 
     <div className="flex">
       <AdminSidebar />
-      <div className="flex-1 max-w-[1200px] bg-white-wfff">
+      <div className="flex-1  bg-white-wfff">
         <AdminCinemaWidgets />
       </div>
     </div>

@@ -1,4 +1,4 @@
-import { Modal } from "../ui/Modal"
+import ModalEmpty from "../Modals/ModalEmpty"
 
 interface CreateNewCinemaCardProps {
     isShowModal: boolean
@@ -7,9 +7,12 @@ interface CreateNewCinemaCardProps {
 
 function CreateNewCinemaCard({ isShowModal, onClose }: CreateNewCinemaCardProps) {
     return (
-        
-            <div className="flex items-center justify-center w-[1200px] h-[784px] bg-white">
-                <div className=" rounded-lg shadow-lg p-6 w-auto ">
+        <ModalEmpty
+            isShowModal={isShowModal}
+            onClose={onClose}
+        >
+            <div className="bg-white w-[1200px]">
+                <div className=" rounded-lg shadow-lg px-30 py-10  w-auto ">
                     <h2 className="text-f-56 font-bold mb-6 text-gray-g63f ">Create New Cinema</h2>
 
                     <div className="mb-4">
@@ -17,7 +20,7 @@ function CreateNewCinemaCard({ isShowModal, onClose }: CreateNewCinemaCardProps)
                         <input
                             type="text"
                             placeholder="Enter cinemaname"
-                            className="w-full px-4 py-2 border border-blue-bbee rounded-md text-gray-g3b0"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                     </div>
 
@@ -26,7 +29,7 @@ function CreateNewCinemaCard({ isShowModal, onClose }: CreateNewCinemaCardProps)
                         <input
                             type="text"
                             placeholder="Enter address"
-                            className="w-full px-3 py-2 border border-blue-bbee rounded-md text-gray-g3b0"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                     </div>
 
@@ -35,7 +38,7 @@ function CreateNewCinemaCard({ isShowModal, onClose }: CreateNewCinemaCardProps)
                         <input
                             type="text"
                             placeholder="Enter phone number"
-                            className="w-full px-3 py-2 border border-blue-bbee rounded-md text-gray-g3b0 "
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                     </div>
 
@@ -44,7 +47,7 @@ function CreateNewCinemaCard({ isShowModal, onClose }: CreateNewCinemaCardProps)
                         <textarea
                             placeholder="Enter cinema detail"
                             rows={4}
-                            className="w-full px-3 py-2 border border-blue-bbee rounded-md resize-y text-gray-g3b0"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md resize-y focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                     </div>
 
@@ -61,7 +64,7 @@ function CreateNewCinemaCard({ isShowModal, onClose }: CreateNewCinemaCardProps)
                     </div>
                 </div>
             </div>
-       
+        </ModalEmpty>
     )
 }
 

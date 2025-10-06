@@ -35,11 +35,10 @@ const CouponCard = ({ coupon }: CouponCardProps) => {
 
     const fetchUserCouponStatus = async () => {
       try {
-        const response = (await userService.GET_COUPON_BY_ID(
+        const response = (await userService.GET_COUPON_COLLECTED_BY_ID(
           coupon.id
         )) as CouponStatusResponse
         console.log('res', response)
-        // ลอง check ทั้ง 3 แบบ
         const isCollected = response?.collected
         setCollected(!!isCollected)
       } catch (err) {

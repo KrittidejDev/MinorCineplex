@@ -111,10 +111,20 @@ export const userService = {
 
   // Coupons
   // GET สถานะ coupon ของ user
-  GET_COUPON_BY_ID: (id: number) =>
+
+  GET_COUPON: () => 
+    apiService.get(`${apiPath}/coupons`),
+
+  GET_COUPON_BY_ID: (id: number) => 
+    apiService.get(`${apiPath}/coupons/${id}`),
+  GET_COUPON_COLLECTED_BY_ID: (id: number) =>
     apiService.get(`${apiPath}/coupons/${id}/collect`),
 
   // POST รับคูปอง
   COLLECT_COUPON: (id: number) =>
     apiService.post(`${apiPath}/coupons/${id}/collect`),
+  // GET coupon ที่เก็บแล้ว
+  GET_COUPON_COLLECTED : () => 
+    apiService.get(`${apiPath}/coupons/collected`),
+  
 }

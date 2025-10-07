@@ -52,7 +52,6 @@ export default function TableCard({ columns, actions, data }: TableCardProps) {
                   {columns.map((column, colIndex) => {
                     let cellContent: React.ReactNode = row[column.key];
 
-                    // ✅ handle เฉพาะ column ที่ต้องการ
                     if (column.key === "poster_url") {
                       cellContent = (
                         <img

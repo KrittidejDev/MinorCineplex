@@ -51,11 +51,11 @@ export default function AdminCinemaWidgets() {
                     className="btn-base blue-normal text-fm-16 font-bold px-4 py-3 gap-2.5"
                     onClick={() => setIsShowCreateModal(true)}
                 >
-                    <AddRoundLight width={24} height={40} color={"#FFFFFF"} />
+                    <AddRoundLight width={24} height={24} color={"#FFFFFF"} />
                     Add Cinema
                 </Button>
             </div>
-            <div>
+            <div className="mx-[70px]">
                 <TableCard
                     columns={cinemaColumns}
                     actions={cinemaActions}

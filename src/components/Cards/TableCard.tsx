@@ -66,6 +66,10 @@ export default function TableCard({ columns, actions, data }: TableCardProps) {
                       cellContent = `${row[column.key]} mins`;
                     }
 
+                    if (column.key === "rating") {
+                      cellContent = row[column.key] ? row[column.key] : "-";
+                    }
+
                     return (
                       <td
                         key={colIndex}

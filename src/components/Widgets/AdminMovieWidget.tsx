@@ -22,7 +22,7 @@ function AdminMovieWidget() {
       poster_url: "https://cdn.majorcineplex.com/uploads/movie/3866/thumb_3866.jpg",
       trailer_url: null,
       genre: "Action,Sci-Fi",
-      rating: "8.8",
+      rating: "",
       description: null,
       created_at: new Date(),
       updated_at: new Date(),

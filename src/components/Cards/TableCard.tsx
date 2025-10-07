@@ -19,9 +19,20 @@ interface TableCardProps {
   columns: TableColumn[];
   actions: TableAction[];
   data: any[];
+  total?: number;
+  pageSize?: number;
 }
 
-export default function TableCard({ columns, actions, data }: TableCardProps) {
+export default function TableCard({
+  columns,
+  actions,
+  data,
+  total,
+  pageSize,
+}: TableCardProps) {
+  const from = data.length > 0 ? 1 : 0;
+  const to = data.length;
+
   return (
     <div className="flex flex-col gap-10">
       <div>
@@ -32,7 +43,7 @@ export default function TableCard({ columns, actions, data }: TableCardProps) {
                 {columns.map((col, index) => (
                   <th
                     key={index}
-                    className={`text-white-wfff text-fr-16 px-[30px] py-5 text-${col.align || "left"}`}
+                    className={`font-bold text-white-wfff text-fm-16 px-[30px] py-5 text-${col.align || "left"}`}
                     style={{ width: col.width }}
                   >
                     {col.label}
@@ -64,6 +75,10 @@ export default function TableCard({ columns, actions, data }: TableCardProps) {
 
                     if (column.key === "duration_min") {
                       cellContent = `${row[column.key]} mins`;
+                    }
+
+                    if (column.key === "rating") {
+                      cellContent = row[column.key] ? row[column.key] : "-";
                     }
 
                     return (
@@ -107,6 +122,12 @@ export default function TableCard({ columns, actions, data }: TableCardProps) {
               ))}
             </tbody>
           </table>
+        </div>
+        <div className="mt-5">
+          <p className="text-fr-14 text-gray-g3b0">
+            Showing {from} to {to} of {total ?? to} result
+            {(total ?? to) > 1 ? "s" : ""}
+          </p>
         </div>
       </div>
     </div>

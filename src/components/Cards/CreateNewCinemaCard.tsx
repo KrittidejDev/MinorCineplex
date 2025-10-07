@@ -27,7 +27,7 @@ function CreateNewCinemaCard({ isShowModal, onClose }: CreateNewCinemaCardProps)
             ...prev,
             [field]: e.target.value
         }))
-        // Clear error when user starts typing
+     
         if (errors[field as keyof typeof errors]) {
             setErrors(prev => ({
                 ...prev,
@@ -37,7 +37,7 @@ function CreateNewCinemaCard({ isShowModal, onClose }: CreateNewCinemaCardProps)
     }
 
     const handleSave = () => {
-        // Validation logic here
+        
         const newErrors = {
             cinemaName: !formData.cinemaName ? "Cinema name is required" : "",
             address: !formData.address ? "Address is required" : "",
@@ -47,10 +47,10 @@ function CreateNewCinemaCard({ isShowModal, onClose }: CreateNewCinemaCardProps)
         
         setErrors(newErrors)
         
-        // If no errors, proceed with save
+        
         if (!Object.values(newErrors).some(error => error)) {
             console.log("Saving cinema data:", formData)
-            // Add your save logic here
+          
         }
     }
 

@@ -80,17 +80,84 @@ function AdminCreateNewMovieForm({
             </div>
 
             <div className="flex mt-5">
-              <div className="flex flex-col">
-                <label htmlFor="duration" className="text-blue-bbee text-fr-16">
-                  Duration (minutes)
-                </label>
-                <input
-                  type="number"
-                  name="duration"
-                  id="duration"
-                  placeholder="e.g., 120"
-                  className="w-full p-3 border border-blue-bbee rounded-sm text-gray-gc1b placeholder:text-gray-g3b0 mt-1"
-                />
+              <div className="flex flex-col w-full">
+                <div className="flex gap-5">
+                  <div className="flex flex-col flex-1">
+                    <label
+                      htmlFor="duration"
+                      className="text-blue-bbee text-fr-16"
+                    >
+                      Duration (minutes)
+                    </label>
+                    <input
+                      type="number"
+                      name="duration"
+                      id="duration"
+                      placeholder="e.g., 120"
+                      className="w-full p-3 border border-blue-bbee rounded-sm text-gray-gc1b placeholder:text-gray-g3b0 mt-1"
+                    />
+                  </div>
+                  <div className="flex flex-col flex-1">
+                    <label
+                      htmlFor="genre"
+                      className="text-blue-bbee text-fr-16"
+                    >
+                      Genre
+                    </label>
+                    <input
+                      type="text"
+                      name="genre"
+                      id="genre"
+                      placeholder="Action"
+                      className="w-full p-3 border border-blue-bbee rounded-sm text-gray-gc1b placeholder:text-gray-g3b0 mt-1"
+                    />
+                  </div>
+                  <div className="flex flex-col flex-1">
+                    <label
+                      htmlFor="rating"
+                      className="text-blue-bbee text-fr-16"
+                    >
+                      Genre
+                    </label>
+                    <input
+                      type="text"
+                      name="rating"
+                      id="rating"
+                      placeholder="13+"
+                      className="w-full p-3 border border-blue-bbee rounded-sm text-gray-gc1b placeholder:text-gray-g3b0 mt-1"
+                    />
+                  </div>
+                </div>
+                <div className="flex flex-col mt-1">
+                  <label
+                    htmlFor="trailer"
+                    className="text-blue-bbee text-fr-16"
+                  >
+                    Trailer URL
+                  </label>
+                  <input
+                    type="text"
+                    name="trailer"
+                    id="trailer"
+                    placeholder="https://youtube.com/watch?"
+                    className="w-full p-3 border border-blue-bbee rounded-sm text-gray-gc1b placeholder:text-gray-g3b0 mt-1"
+                  />
+                </div>
+                <div className="flex justify-end gap-2 mt-10">
+                  <Button
+                    type="button"
+                    onClick={onClose}
+                    className="w-[120px] btn-base blue-normal opacity-40 text-fr-16"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    className="w-[120px] btn-base blue-normal text-fr-16"
+                  >
+                    Save
+                  </Button>
+                </div>
               </div>
             </div>
           </form>

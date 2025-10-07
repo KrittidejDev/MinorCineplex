@@ -61,14 +61,14 @@ function AdminMovieWidget() {
 
   const movieActions = [
     {
-      onView: () => console.log("View  1"),
-      onEdit: () => console.log("Edit  1"),
-      onDelete: () => console.log("Delete  1"),
+      onView: () => console.log("View Movie 1"),
+      onEdit: () => console.log("Edit Movie 1"),
+      onDelete: () => console.log("Delete Movie 1"),
     },
     {
-      onView: () => console.log("View  2"),
-      onEdit: () => console.log("Edit  2"),
-      onDelete: () => console.log("Delete  2"),
+      onView: () => console.log("View Movie 2"),
+      onEdit: () => console.log("Edit Movie 2"),
+      onDelete: () => console.log("Delete Movie 2"),
     },
   ];
 

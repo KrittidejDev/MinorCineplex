@@ -1,18 +1,25 @@
 import { useState } from "react";
 import { Button } from "../ui/button";
 import AddRoundLight from "../Icons/AddRoundLight";
-import AdminTableCard from "../Cards/AdminTableCard";
+import TableCard from "../Cards/TableCard";
 import { APIMovie } from "@/types/movie";
 
 function AdminMovieWidget() {
   const [isShowCreateModal, setIsShowCreateModal] = useState(false);
-  const movieHeader = ["Poster", "Title", "Genre", "Rating", "Duration", "Actions"];
-  const mockMovies: APIMovie[] = [
+  const movieColumns = [
+        { key: 'poster_url', label: 'Poster', align: 'left' as const },
+        { key: 'title', label: 'Title', align: 'left' as const },
+        { key: 'genre', label: 'Genre', align: 'center' as const },
+        { key: 'rating', label: 'Rating', align: 'center' as const },
+        { key: 'duration_min', label: 'Duration', align: 'center' as const },
+        
+    ]
+  const moviesData: APIMovie[] = [
     {
       id: "1",
       title: "Inception",
       duration_min: 148,
-      poster_url: "/images/inception.jpg",
+      poster_url: "https://cdn.majorcineplex.com/uploads/movie/3866/thumb_3866.jpg",
       trailer_url: null,
       genre: "Action,Sci-Fi",
       rating: "8.8",
@@ -25,7 +32,7 @@ function AdminMovieWidget() {
       id: "2",
       title: "Interstellar",
       duration_min: 169,
-      poster_url: "/images/interstellar.jpg",
+      poster_url: "https://cdn.majorcineplex.com/uploads/movie/3866/thumb_3866.jpg",
       trailer_url: null,
       genre: "Adventure,Drama,Sci-Fi",
       rating: "8.6",
@@ -38,7 +45,7 @@ function AdminMovieWidget() {
       id: "3",
       title: "The Dark Knight",
       duration_min: 152,
-      poster_url: "/images/the_dark_knight.jpg",
+      poster_url: "https://cdn.majorcineplex.com/uploads/movie/3866/thumb_3866.jpg",
       trailer_url: null,
       genre: "Action,Crime,Drama",
       rating: "9.0",
@@ -48,6 +55,19 @@ function AdminMovieWidget() {
       release_date: new Date("2008-07-18"),
     },
   ];
+
+  const movieActions = [
+        {
+            onView: () => console.log("View  1"),
+            onEdit: () => console.log("Edit  1"),
+            onDelete: () => console.log("Delete  1")
+        },
+        {
+            onView: () => console.log("View  2"),
+            onEdit: () => console.log("Edit  2"),
+            onDelete: () => console.log("Delete  2")
+        }
+    ]
 
   return (
     <>
@@ -63,7 +83,7 @@ function AdminMovieWidget() {
             Add Movie
           </Button>
         </div>
-        <AdminTableCard header={movieHeader} movies={mockMovies} />
+        <TableCard columns={movieColumns} data={moviesData} actions={movieActions} />
       </div>
     </>
   );

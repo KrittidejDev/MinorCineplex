@@ -32,7 +32,7 @@ export default function TableCard({ columns, actions, data }: TableCardProps) {
                 {columns.map((col, index) => (
                   <th
                     key={index}
-                    className={`text-white-wfff text-fr-16 px-[30px] py-5 text-${col.align || "left"}`}
+                    className={`font-bold text-white-wfff text-fm-16 px-[30px] py-5 text-${col.align || "left"}`}
                     style={{ width: col.width }}
                   >
                     {col.label}

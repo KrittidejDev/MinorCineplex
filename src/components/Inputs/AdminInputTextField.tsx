@@ -33,7 +33,7 @@ const AdminInputTextField = ({
         <div className="flex flex-col flex-1 gap-1 relative">
         {label && (
           <div className="text-blue-bbee text-fr-16 mb-1">
-            {label} {require && <span className="text-red-500">*</span>}
+            {label} {require && <span className="text-red-r64b">*</span>}
           </div>
         )}
         <div className="relative w-full">
@@ -48,20 +48,20 @@ const AdminInputTextField = ({
             className={clsx(
               `w-full px-3 py-3 border rounded-md text-gray-g3b0 focus:border-blue-bbee focus:outline-none`,
               errors
-                ? "border-red-500 text-red-500 placeholder-red-300"
-                : "border-blue-bbee text-gray-g3b0 placeholder-gray-400",
+                ? "border-red-r64b text-red-r64b placeholder-white-wfff"
+                : "border-blue-bbee text-gray-g3b0 placeholder-gray-g3b0",
               props.className
             )}
           />
           <div className="h-4 mt-1">
             <span
-              className={`text-fr-12 ${errors ? "text-red-500" : "text-gray-500"}`}
+              className={`text-fr-12 ${errors ? "text-red-r64b" : "text-gray-500"}`}
             >
               {!errors && (
                 <span className="text-fr-12 text-gray-500">{text}</span>
               )}
               {errors && (
-                <span className="text-fr-12 text-red-500">{errors}</span>
+                <span className="text-fr-12 text-red-r64b">{errors}</span>
               )}
             </span>
           </div>

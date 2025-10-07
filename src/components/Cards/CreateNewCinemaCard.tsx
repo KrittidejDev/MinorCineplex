@@ -112,7 +112,7 @@ function CreateNewCinemaCard({ isShowModal, onClose }: CreateNewCinemaCardProps)
                     <div className="flex justify-end space-x-3">
                         <button
                             onClick={onClose}
-                            className="px-11 py-3 bg-blue-bbee text-fr-16 text-white-wfff rounded-md hover:bg-gray-300 opacity-40"
+                            className="px-11 py-3 bg-blue-bbee text-fr-16 text-white-wfff rounded-md hover:bg-gray-g3b0 opacity-40"
                         >
                             Cancel
                         </button>

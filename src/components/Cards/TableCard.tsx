@@ -19,9 +19,20 @@ interface TableCardProps {
   columns: TableColumn[];
   actions: TableAction[];
   data: any[];
+  total?: number;
+  pageSize?: number;
 }
 
-export default function TableCard({ columns, actions, data }: TableCardProps) {
+export default function TableCard({
+  columns,
+  actions,
+  data,
+  total,
+  pageSize,
+}: TableCardProps) {
+  const from = data.length > 0 ? 1 : 0;
+  const to = data.length;
+
   return (
     <div className="flex flex-col gap-10">
       <div>
@@ -111,6 +122,12 @@ export default function TableCard({ columns, actions, data }: TableCardProps) {
               ))}
             </tbody>
           </table>
+        </div>
+        <div className="mt-5">
+          <p className="text-fr-14 text-gray-g3b0">
+            Showing {from} to {to} of {total ?? to} result
+            {(total ?? to) > 1 ? "s" : ""}
+          </p>
         </div>
       </div>
     </div>

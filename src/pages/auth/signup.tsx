@@ -21,6 +21,7 @@ const Signup = () => {
           password: values.password,
         }
       );
+      console.log(response);
       setSuccess(true);
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
@@ -30,6 +31,9 @@ const Signup = () => {
         }
         if (message.includes("Phone")) {
           setError("phone", { type: "server", message });
+        }
+        if (message.includes("Username")) {
+          setError("username", { type: "server", message });
         }
       }
     }

@@ -30,6 +30,10 @@ export const registerUser = async (body: RegisterUserInput) => {
     throw { status: 400, message: "Phone Number already exists" };
   }
 
+  if (await userRepo.findUserByUsername(username)) {
+    throw { status: 400, message: "Username already exists" };
+  }
+
   const hashed = await bcrypt.hash(password, 10);
 
   const user = await userRepo.createUser({

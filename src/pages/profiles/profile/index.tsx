@@ -4,6 +4,9 @@ import ProfileBar from "@/components/Widgets/ProfileBar";
 import { useSession } from "next-auth/react";
 import ProfileForm, { ProfileFormValues } from "@/components/Forms/ProfileForm";
 import { UpdateProfileParams, userService } from "@/config/userServices";
+import { AxiosError } from "axios";
+import { UseFormSetError } from "react-hook-form";
+import axios from "axios";
 
 interface User {
   username: string;
@@ -26,7 +29,6 @@ const ProfilePage = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const id = session?.user?.id;
-  const user = session?.user as User;
 
   const fetchMe = async () => {
     if (!id) return;
@@ -43,14 +45,17 @@ const ProfilePage = () => {
     }
   }, [id]);
 
-  const handleSaveProfile = async (data: ProfileFormValues) => {
+  const handleSaveProfile = async (
+    data: ProfileFormValues,
+    setError: UseFormSetError<ProfileFormValues>
+  ) => {
     if (!session?.user?.id) return;
 
     setIsLoading(true);
     try {
       let avatarUrl = null;
       let publicId = null;
-      const oldPublicId = user?.avatar_id as string | null;
+      const oldPublicId = userData?.avatar_id as string | null;
 
       if (selectedFile) {
         //Upload รูปภาพ
@@ -67,7 +72,10 @@ const ProfilePage = () => {
         ...(publicId && { avatar_id: publicId }),
       };
       await userService.PUT_UPDATE_PROFILE(session.user.id, formData);
-
+      // await axios.put(
+      //   `http://localhost:3000/api/users/${session.user.id}`,
+      //   formData
+      // );
       if (selectedFile && oldPublicId) {
         //Delete รูปภาพเก่า
         try {
@@ -76,7 +84,16 @@ const ProfilePage = () => {
           console.log("Failed to delete old avatar:", error);
         }
       }
-    } catch (error) {
+    } catch (error: unknown) {
+      if (error instanceof AxiosError && error.response) {
+        const message =
+          error.response?.data?.message ||
+          error.response?.data?.error ||
+          error.message;
+        if (message.includes("Username")) {
+          setError("username", { type: "server", message });
+        }
+      }
       console.log("Save failed:", error);
     } finally {
       setIsLoading(false);

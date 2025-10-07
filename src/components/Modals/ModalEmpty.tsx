@@ -1,5 +1,4 @@
 import React, { ReactNode } from "react";
-import CloseRoundLight from "../Icons/CloseRoundLight";
 
 interface ModalEmptyProps {
   children: ReactNode;

@@ -1,6 +1,11 @@
 import { updateUser, getUserById } from "@/services/userService";
 import type { NextApiRequest, NextApiResponse } from "next";
 
+type ServiceError = {
+  status: number;
+  message: string;
+};
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -22,10 +27,14 @@ export default async function handler(
         });
         const { password, ...userWithoutPassword } = updatedUser;
         res.status(200).json({ user: userWithoutPassword });
-      } catch (error) {
-        console.log(error);
-
-        res.status(500).json({ error: "Failed to update profile" });
+      } catch (err: unknown) {
+        const error = err as ServiceError;
+        if (error.status) {
+          return res
+            .status(error.status)
+            .json({ status: error.status, message: error.message });
+        }
+        return res.status(500).json({ error: "Server Error" });
       }
     }
 

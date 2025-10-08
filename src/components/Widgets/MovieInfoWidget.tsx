@@ -160,9 +160,7 @@ const MovieInfoWidget: React.FC<MoviesDetailWidgetProps> = ({ movie }) => {
                 {(movie.actors || []).map((actor) => {
                   const fullName = actor.name;
                   const truncated =
-                    fullName.length > 5
-                      ? fullName.slice(0, 5) + "…"
-                      : fullName;
+                    fullName.length > 5 ? fullName.slice(0, 5) + "…" : fullName;
                   const [firstName, ...rest] = truncated.split(" ");
                   const lastName = rest.join(" ");
 
@@ -186,6 +184,19 @@ const MovieInfoWidget: React.FC<MoviesDetailWidgetProps> = ({ movie }) => {
                 />
               </div>
             </div>
+          </div>
+        </div>
+        <div className="w-full mt-10">
+          <DateSelectionBarWidget
+            onSelectDate={(date) => setSelectedDate(date)}
+          />
+        </div>
+        <div className="max-w-[1200px] mx-auto flex flex-col lg:flex-row gap-5 items-center justify-center px-4 mt-10">
+          <div className="w-full lg:w-[895px]">
+            <InputSearch />
+          </div>
+          <div className="w-full lg:w-[285px]">
+            <CitySelection />
           </div>
         </div>
       </div>

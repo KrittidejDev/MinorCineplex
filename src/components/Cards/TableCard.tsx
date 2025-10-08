@@ -35,26 +35,21 @@ export default function TableCard({ columns, actions, data, headerPaddingClass =
 
     return(
         <div className="flax flex-col gap-10">
-            <div className="mx-[70px]">
-                <table className="w-full border border-blue-bbee">
+            <div className="mx-[70px] border border-blue-bbee rounded-t-[4px] overflow-hidden">
+                <table className="w-full">
                     <thead>
                         <tr className="bg-blue-bbee">
-                            {(() => { const columnsCount = columns.length; return columns.map((column,index)=>{
-                                const isFirst = index === 0;
-                                const isLast = index === columnsCount - 1 && !actions;
-                                const roundedClass = `${isFirst ? 'rounded-tl-[4px]' : ''} ${isLast ? 'rounded-tr-[4px]' : ''}`.trim();
-                                return (
-                                    <th
-                                        key={index}
-                                        className={`text-white-wfff text-fr-16 ${headerPaddingClass} ${roundedClass} text-${column.align || 'left'}`}
-                                        style={{ width: column.width }}
-                                    >
-                                        {column.label}
-                                    </th>
-                                )
-                            }) })()}
+                            {columns.map((column,index) => (
+                                <th
+                                    key={index}
+                                    className={`text-white-wfff text-fr-16 ${headerPaddingClass} text-${column.align || 'left'}`}
+                                    style={{ width: column.width }}
+                                >
+                                    {column.label}
+                                </th>
+                            ))}
                             {actions&&(
-                                <th className={`text-white-wfff ${actionsHeaderPaddingClass} font-bold text-right rounded-tr-[4px]`}>Actions</th>
+                                <th className={`text-white-wfff ${actionsHeaderPaddingClass} font-bold text-right`}>Actions</th>
                             )}
                         </tr>
                     </thead>
@@ -99,11 +94,8 @@ export default function TableCard({ columns, actions, data, headerPaddingClass =
                             </tr>
                         ))}
                     </tbody>
-
                 </table>
-
             </div>
-
         </div>
     )
 }

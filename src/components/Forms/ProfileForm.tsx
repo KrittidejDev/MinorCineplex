@@ -14,7 +14,6 @@ export type ProfileFormValues = {
 
 interface ProfileFormProps {
   userData: ProfileFormValues;
-  isLoading: boolean;
   onFileSelect: (file: File) => void;
   onSave: (
     values: ProfileFormValues,
@@ -23,7 +22,6 @@ interface ProfileFormProps {
 }
 const ProfileForm = ({
   userData,
-  isLoading,
   onFileSelect,
   onSave,
 }: ProfileFormProps) => {
@@ -31,7 +29,7 @@ const ProfileForm = ({
     control,
     handleSubmit,
     setValue,
-    formState: { errors },
+    formState: { errors, isSubmitting },
     setError,
   } = useForm<ProfileFormValues>({
     resolver: yupResolver(profileValidate),
@@ -77,8 +75,11 @@ const ProfileForm = ({
           )}
           name="email"
         />
-        <Button className="btn-base white-outline-normal w-28 h-12 rounded-sm">
-          {isLoading ? "Uploading..." : "Save"}
+        <Button 
+          className="btn-base white-outline-normal w-28 h-12 rounded-sm"
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? "Saving..." : "Save"}
         </Button>
       </div>
     </form>

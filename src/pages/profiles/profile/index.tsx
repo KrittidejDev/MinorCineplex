@@ -6,7 +6,7 @@ import ProfileForm, { ProfileFormValues } from "@/components/Forms/ProfileForm";
 import { UpdateProfileParams, userService } from "@/config/userServices";
 import { AxiosError } from "axios";
 import { UseFormSetError } from "react-hook-form";
-import axios from "axios";
+
 
 interface User {
   username: string;
@@ -27,7 +27,6 @@ const ProfilePage = () => {
   const { data: session } = useSession();
   const [userData, setUserData] = useState<User | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
   const id = session?.user?.id;
 
   const fetchMe = async () => {
@@ -50,8 +49,6 @@ const ProfilePage = () => {
     setError: UseFormSetError<ProfileFormValues>
   ) => {
     if (!session?.user?.id) return;
-
-    setIsLoading(true);
     try {
       let avatarUrl = null;
       let publicId = null;
@@ -95,18 +92,15 @@ const ProfilePage = () => {
         }
       }
       console.log("Save failed:", error);
-    } finally {
-      setIsLoading(false);
     }
   };
 
   return (
     <div className="bg-blue-b flex flex-col">
       <NavBarWidget />
-
       <div
         className="w-full flex flex-col md:flex-row max-w-[1129px] items-start gap-6 md:gap-12 top-21 transition-all duration-500 ease-in-out 
-      py-10 md:pl-20 md:py-15 xl:pl-56"
+    py-10 md:pl-20 md:py-15 xl:pl-56"
       >
         {/* ProfileBar */}
         <div className="w-full md:min-w-[240px] md:max-w-[257px]">
@@ -125,7 +119,6 @@ const ProfilePage = () => {
             userData={userData as User}
             onFileSelect={setSelectedFile}
             onSave={handleSaveProfile}
-            isLoading={isLoading}
           />
         </div>
       </div>

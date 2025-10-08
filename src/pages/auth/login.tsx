@@ -1,13 +1,12 @@
 import React, { useState } from "react";
 import SignInForm from "@/components/Forms/SignInForm";
-import { signIn, useSession } from "next-auth/react";
+import { signIn } from "next-auth/react";
 import { useRouter } from "next/router";
 import { AxiosError } from "axios";
 import { ErrorAlert } from "@/components/ui/alert";
 
 const Login = () => {
   const router = useRouter();
-  const { data: session, status } = useSession();
   const [isAlert, setIsAlert] = useState(false);
 
   const handleLogin = async (value: { email: string; password: string }) => {
@@ -39,7 +38,7 @@ const Login = () => {
           <ErrorAlert
             onClick={() => setIsAlert(false)}
             header="Invalid credentials"
-            text="Please try another email or phone number"
+            text="Please try another email or password"
           />
         )}
       </div>

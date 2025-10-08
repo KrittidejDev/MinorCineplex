@@ -171,7 +171,7 @@ const AllWidget = () => {
 
       {/* Icons Grid */}
       <div className="mt-20 w-full max-w-7xl px-4">
-        <IconsGrid size="40" color="#3B82F6" columns={5} />
+        <IconsGrid size="40" columns={5} />
       </div>
 
       {/* Icon Circle Components */}

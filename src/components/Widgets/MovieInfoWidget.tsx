@@ -57,7 +57,7 @@ const MovieInfoWidget: React.FC<MoviesDetailWidgetProps> = ({ movie }) => {
           <div className="max-w-[1200px] mx-auto flex flex-col gap-10 mt-10">
             <div>
               <h3 className="font-bold text-f-24">นักแสดง</h3>
-              <div className="flex gap-2.5 mt-5">
+              <div className="flex flex-wrap gap-2.5 mt-5">
                 {(movie.actors || []).map((actor) => (
                   <ActorProfile
                     key={actor.id}
@@ -70,7 +70,7 @@ const MovieInfoWidget: React.FC<MoviesDetailWidgetProps> = ({ movie }) => {
             </div>
             <div>
               <h3 className="font-bold text-f-24">ผู้กำกับ</h3>
-              <div className="flex gap-2.5 mt-5">
+              <div className="flex flex-wrap gap-2.5 mt-5">
                 {(movie.directors || []).map((director) => (
                   <DirectorProfile
                     key={director.id}

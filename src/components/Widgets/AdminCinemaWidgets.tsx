@@ -1,7 +1,7 @@
 import AddRoundLight from "../Icons/AddRoundLight"
 import { Button } from "../ui/button"
 import TableCard from "../Cards/TableCard"
-import CreateNewCinemaCard from "../Cards/CreateNewCinemaCard"
+import CreateNewCinemaCard from "../Forms/CreateNewCinemaCard"
 import { useState } from "react"
 
 export default function AdminCinemaWidgets() {

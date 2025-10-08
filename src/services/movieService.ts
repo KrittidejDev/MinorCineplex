@@ -1,6 +1,6 @@
 import * as movieRepo from "../repositories/movieRepository";
 import { prisma } from "@/lib/prisma";
-import { APIMovie } from "@/types/movie";
+import { APIMovie, Actor, Director } from "@/types/movie";
 
 export const getMovies = async () => {
   const movies = await movieRepo.getMany();
@@ -8,7 +8,43 @@ export const getMovies = async () => {
 };
 
 export async function getMovieById(id: string): Promise<APIMovie | null> {
-  return prisma.movie.findUnique({
-    where: { id }, // id เป็น string ตรงกับ UUID
+  const dbMovie = await prisma.movie.findUnique({
+    where: { id },
+    include: {
+      actors: {
+        include: { actor: true },
+      },
+      directors: {
+        include: { director: true },
+      },
+    },
   });
+
+  if (!dbMovie) return null;
+
+  const movie: APIMovie = {
+    id: dbMovie.id,
+    title: dbMovie.title,
+    duration_min: dbMovie.duration_min,
+    description: dbMovie.description,
+    poster_url: dbMovie.poster_url,
+    trailer_url: dbMovie.trailer_url,
+    genre: dbMovie.genre,
+    rating: dbMovie.rating,
+    created_at: dbMovie.created_at,
+    updated_at: dbMovie.updated_at,
+    release_date: dbMovie.release_date,
+    actors: dbMovie.actors?.map((ma) => ({
+      id: ma.actor.id,
+      name: ma.actor.name,
+      imageUrl: ma.actor.image_url || undefined,
+    })) || [],
+    directors: dbMovie.directors?.map((md) => ({
+      id: md.director.id,
+      name: md.director.name,
+      imageUrl: md.director.image_url || undefined,
+    })) || [],
+  };
+
+  return movie;
 }

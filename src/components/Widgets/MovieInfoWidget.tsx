@@ -58,14 +58,27 @@ const MovieInfoWidget: React.FC<MoviesDetailWidgetProps> = ({ movie }) => {
             <div>
               <h3 className="font-bold text-f-24">นักแสดง</h3>
               <div className="flex gap-2.5 mt-5">
-                <ActorProfile />
-                <ActorProfile />
+                {(movie.actors || []).map((actor) => (
+                  <ActorProfile
+                    key={actor.id}
+                    firstName={actor.name.split(" ")[0]}
+                    lastName={actor.name.split(" ").slice(1).join(" ")}
+                    imageUrl={actor.imageUrl || undefined}
+                  />
+                ))}
               </div>
             </div>
             <div>
               <h3 className="font-bold text-f-24">ผู้กำกับ</h3>
               <div className="flex gap-2.5 mt-5">
-                <DirectorProfile />
+                {(movie.directors || []).map((director) => (
+                  <DirectorProfile
+                    key={director.id}
+                    firstName={director.name.split(" ")[0]}
+                    lastName={director.name.split(" ").slice(1).join(" ")}
+                    imageUrl={director.imageUrl || undefined}
+                  />
+                ))}
               </div>
             </div>
             <div>
@@ -121,14 +134,27 @@ const MovieInfoWidget: React.FC<MoviesDetailWidgetProps> = ({ movie }) => {
             <div>
               <h3 className="font-bold text-f-24">ผู้กำกับ</h3>
               <div className="flex gap-2.5 mt-5">
-                <DirectorProfile />
+                {(movie.directors || []).map((director) => (
+                  <DirectorProfile
+                    key={director.id}
+                    firstName={director.name.split(" ")[0]}
+                    lastName={director.name.split(" ").slice(1).join(" ")}
+                    imageUrl={director.imageUrl || undefined}
+                  />
+                ))}
               </div>
             </div>
             <div>
               <h3 className="font-bold text-f-24">นักแสดง</h3>
               <div className="flex gap-2.5 mt-5">
-                <ActorProfile />
-                <ActorProfile />
+                {(movie.actors || []).map((actor) => (
+                  <ActorProfile
+                    key={actor.id}
+                    firstName={actor.name.split(" ")[0]}
+                    lastName={actor.name.split(" ").slice(1).join(" ")}
+                    imageUrl={actor.imageUrl || undefined}
+                  />
+                ))}
               </div>
             </div>
             <div>

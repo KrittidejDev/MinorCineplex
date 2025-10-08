@@ -9,10 +9,10 @@ export default function AdminCinemaWidgets() {
     
     
     const cinemaColumns = [
-        { key: 'name', label: 'Name', align: 'left' as const },
-        { key: 'address', label: 'Address', align: 'left' as const },
-        { key: 'phone', label: 'Phone Number', align: 'left' as const },
-        { key: 'halls', label: 'Halls', align: 'center' as const }
+        { key: 'name', label: <span className="text-white-wfff text-fm-16">Name</span>, align: 'left' as const },
+        { key: 'address', label: <span className="text-white-wfff text-fm-16">Address</span>, align: 'left' as const },
+        { key: 'phone', label: <span className="text-white-wfff text-fm-16">Phone Number</span>, align: 'left' as const },
+        { key: 'halls', label: <span className="text-white-wfff text-fm-16">Halls</span>, align: 'center' as const }
         
     ]
     const cinemaData = [
@@ -45,22 +45,28 @@ export default function AdminCinemaWidgets() {
 
     return (
         <div className="flex flex-col gap-10">
-            <div className="flex items-center justify-between mt-20 px-17.5">
-                <h1 className="text-gray-g63f text-f-56 font-bold ">Cinema Branch</h1>
+            <div className="flex items-center justify-between mt-20 mx-[70px]">
+                <h1 className="text-gray-g63f text-f-56 font-bold">Cinema Branch</h1>
                 <Button
-                    className="btn-base blue-normal text-fm-16 font-bold px-4 py-3 gap-2.5"
+                    className="btn-base blue-normal text-fm-16 font-bold gap-2.5 h-12 w-[135px] rounded-[4px]"
                     onClick={() => setIsShowCreateModal(true)}
                 >
-                    <AddRoundLight width={24} height={24} color={"#FFFFFF"} />
+                    <AddRoundLight width={24} height={40} color={"#FFFFFF"} />
                     Add Cinema
                 </Button>
             </div>
-            <div className="mx-[70px]">
+
+            <div>
                 <TableCard
                     columns={cinemaColumns}
                     actions={cinemaActions}
                     data={cinemaData}
+                    headerPaddingClass="px-[30px] py-5"
+                    actionsHeaderPaddingClass="px-[30px] py-5"
                 />
+                <div className="mx-[70px] mt-4 text-gray-g3b0 text-fr-14">
+                    Showing {cinemaData.length > 0 ? 1 : 0} to {Math.min(5, cinemaData.length)} of {cinemaData.length} results
+                </div>
             </div>
 
             {/* Create New Cinema Modal */}

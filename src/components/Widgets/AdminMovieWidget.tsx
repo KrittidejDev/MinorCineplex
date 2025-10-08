@@ -7,13 +7,7 @@ import AdminCreateNewMovieForm from "../Forms/AdminCreateNewMovieForm";
 
 function AdminMovieWidget() {
   const [isShowCreateModal, setIsShowCreateModal] = useState(false);
-  const movieColumns = [
-    { key: "poster_url", label: "Poster", align: "left" as const },
-    { key: "title", label: "Title", align: "left" as const },
-    { key: "genre", label: "Genre", align: "center" as const },
-    { key: "rating", label: "Rating", align: "center" as const },
-    { key: "duration_min", label: "Duration", align: "center" as const },
-  ];
+  
   const moviesData: APIMovie[] = [
     {
       id: "1",
@@ -59,6 +53,28 @@ function AdminMovieWidget() {
     },
   ];
 
+  // Transform data to show poster images
+  const displayData = moviesData.map(movie => ({
+    ...movie,
+    poster_url: (
+      <img 
+        src={movie.poster_url || "/images/placeholder.jpg"} 
+        alt={movie.title}
+        className="w-12 h-16 object-cover rounded"
+      />
+    ),
+    duration_min: `${movie.duration_min} min`,
+    rating: movie.rating || "-"
+  }));
+
+  const movieColumns = [
+    { key: "poster_url", label: <span className="text-white-wfff text-fm-16">Poster</span>, align: "left" as const },
+    { key: "title", label: <span className="text-white-wfff text-fm-16">Title</span>, align: "left" as const },
+    { key: "genre", label: <span className="text-white-wfff text-fm-16">Genre</span>, align: "center" as const },
+    { key: "rating", label: <span className="text-white-wfff text-fm-16">Rating</span>, align: "center" as const },
+    { key: "duration_min", label: <span className="text-white-wfff text-fm-16">Duration</span>, align: "center" as const },
+  ];
+
   const movieActions = [
     {
       onView: () => console.log("View Movie 1"),
@@ -74,24 +90,32 @@ function AdminMovieWidget() {
 
   return (
     <>
-      <div className="flex flex-col gap-5">
-        <div className="flex justify-between items-center">
-          <h1 className="font-bold text-f-56 text-gray-g63f">Movies</h1>
-
+      <div className="flex flex-col gap-10">
+        <div className="flex items-center justify-between mt-20 mx-[70px]">
+          <h1 className="text-gray-g63f text-f-56 font-bold">Movies</h1>
           <Button
-            className="btn-base blue-normal text-fm-16 font-bold px-4 py-3 gap-2.5"
+            className="btn-base blue-normal text-fm-16 font-bold gap-2.5 h-12 w-[135px] rounded-[4px]"
             onClick={() => setIsShowCreateModal(true)}
           >
-            <AddRoundLight width={24} height={24} color={"#FFFFFF"} />
+            <AddRoundLight width={24} height={40} color={"#FFFFFF"} />
             Add Movie
           </Button>
         </div>
-        <TableCard
-          columns={movieColumns}
-          data={moviesData}
-          actions={movieActions}
-        />
+
+        <div>
+          <TableCard
+            columns={movieColumns}
+            data={displayData}
+            actions={movieActions}
+            headerPaddingClass="px-[30px] py-5"
+            actionsHeaderPaddingClass="px-[30px] py-5"
+          />
+          <div className="mx-[70px] mt-4 text-gray-g3b0 text-fr-14">
+            Showing {moviesData.length > 0 ? 1 : 0} to {Math.min(5, moviesData.length)} of {moviesData.length} results
+          </div>
+        </div>
       </div>
+      
       <AdminCreateNewMovieForm
         isShowModal={isShowCreateModal}
         onClose={() => setIsShowCreateModal(false)}

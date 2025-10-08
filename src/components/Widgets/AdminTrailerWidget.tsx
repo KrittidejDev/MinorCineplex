@@ -61,15 +61,13 @@ export default function AdminTrailerWidget() {
       </div>
 
       <div>
-        <div className="rounded-[4px] overflow-hidden">
-          <TableCard 
-            columns={columns} 
-            actions={actions} 
-            data={trailers}
-            headerPaddingClass="px-[30px] py-5"
-            actionsHeaderPaddingClass="px-[30px] py-5"
-          />
-        </div>
+        <TableCard 
+          columns={columns} 
+          actions={actions} 
+          data={trailers}
+          headerPaddingClass="px-[30px] py-5"
+          actionsHeaderPaddingClass="px-[30px] py-5"
+        />
         <div className="mx-[70px] mt-4 text-gray-g3b0 text-fr-14">
           Showing {trailers.length > 0 ? 1 : 0} to {Math.min(5, trailers.length)} of {trailers.length} results
         </div>

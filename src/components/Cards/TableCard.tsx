@@ -55,7 +55,7 @@ export default function TableCard({ columns, actions, data, headerPaddingClass =
                     </thead>
                     <tbody>
                     {data.map((row, index) => (
-                            <tr key={index} className="px-17.5">
+                            <tr key={index} className={`px-17.5 border-b border-blue-bbee ${index === data.length - 1 ? 'border-b-0' : ''}`}>
                                 {columns.map((column, colIndex) => (
                                     <td 
                                         key={colIndex}

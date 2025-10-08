@@ -1,20 +1,21 @@
-import PinFill from '../Icons/PinFill'
-import DateTodayLight from '../Icons/DateTodayLight'
-import TimeFill from '../Icons/TimeFill'
-import Image from 'next/image'
+import PinFill from "../Icons/PinFill";
+import DateTodayLight from "../Icons/DateTodayLight";
+import TimeFill from "../Icons/TimeFill";
+import Image from "next/image";
+import Shop from "../Icons/Shop";
 interface BookingCardProps {
-  movieTitle: string
-  moviePoster: string
-  location: string
-  date: string
-  time: string
-  hall: string
-  bookingNumber: string
-  bookedDate: string
-  selectedSeats: string
-  ticketCount: number
-  paymentMethod: string
-  isPaid: boolean
+  movieTitle: string;
+  moviePoster: string;
+  location: string;
+  date: string;
+  time: string;
+  hall: string;
+  bookingNumber: string;
+  bookedDate: string;
+  selectedSeats: string;
+  ticketCount: number;
+  paymentMethod: string;
+  isPaid: boolean;
 }
 
 export const BookingCard: React.FC<BookingCardProps> = ({
@@ -56,7 +57,7 @@ export const BookingCard: React.FC<BookingCardProps> = ({
             </h2>
 
             {/* Booking Info - Right side on Desktop */}
-            <div className="text-right sm:block hidden flex-shrink-0">
+            <div className="flex-shrink-0 sm:flex hidden flex-col items-end">
               <div className="text-xs sm:text-sm text-gray-300 mb-1">
                 Booking No. {bookingNumber}
               </div>
@@ -86,24 +87,7 @@ export const BookingCard: React.FC<BookingCardProps> = ({
             </div>
 
             <div className="flex items-center gap-2">
-              <div className="w-3.5 h-3.5 flex items-center justify-center">
-                <svg
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M3 9H21V7C21 5.89543 20.1046 5 19 5H5C3.89543 5 3 5.89543 3 7V9Z"
-                    fill="#FFF"
-                  />
-                  <path
-                    d="M3 11V17C3 18.1046 3.89543 19 5 19H19C20.1046 19 21 18.1046 21 17V11H3Z"
-                    fill="#FFF"
-                  />
-                </svg>
-              </div>
+              <Shop width="14" height="14" color="#FFF" />
               <span className="text-xs sm:text-sm text-gray-200">{hall}</span>
             </div>
           </div>
@@ -111,7 +95,7 @@ export const BookingCard: React.FC<BookingCardProps> = ({
       </div>
 
       {/* Booking Info - Bottom Left on Mobile */}
-      <div className="text-left sm:hidden mb-3">
+      <div className="flex flex-col sm:hidden mb-3">
         <div className="text-xs text-gray-300 mb-1">
           Booking No. {bookingNumber}
         </div>
@@ -147,13 +131,13 @@ export const BookingCard: React.FC<BookingCardProps> = ({
         <div className="flex items-end w-full sm:w-auto justify-end">
           <button
             className={`px-2 py-1 sm:px-3 sm:py-2 rounded text-xs sm:text-sm font-medium whitespace-nowrap ${
-              isPaid ? 'bg-green-g372 text-white' : 'bg-red-r64b text-white'
+              isPaid ? "bg-green-g372 text-white" : "bg-red-r64b text-white"
             }`}
           >
-            {isPaid ? 'Paid' : 'Unpaid'}
+            {isPaid ? "Paid" : "Unpaid"}
           </button>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};

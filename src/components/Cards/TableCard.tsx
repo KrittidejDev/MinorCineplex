@@ -50,7 +50,7 @@ export default function TableCard({
                   </th>
                 ))}
                 {actions && (
-                  <th className="text-white-wfff text-fm-16 font-bold px-[30px] py-5 text-right">
+                  <th className="text-white-wfff text-fm-16 font-bold px-[75px] py-5 text-right">
                     Actions
                   </th>
                 )}

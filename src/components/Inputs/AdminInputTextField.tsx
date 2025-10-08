@@ -46,10 +46,10 @@ const AdminInputTextField = ({
             onChange={onChange}
             disabled={disabled}
             className={clsx(
-              `w-full px-3 py-3 border rounded-md text-gray-g3b0 focus:border-blue-bbee focus:outline-none`,
+              `w-full p-3 border rounded-sm text-gray-g63f focus:border-blue-bbee placeholder:text-gray-g3b0 focus:outline-none`,
               errors
                 ? "border-red-r64b text-red-r64b placeholder-white-wfff"
-                : "border-blue-bbee text-gray-g3b0 placeholder-gray-g3b0",
+                : "border-blue-bbee text-gray-g63f placeholder-gray-g63f",
               props.className
             )}
           />

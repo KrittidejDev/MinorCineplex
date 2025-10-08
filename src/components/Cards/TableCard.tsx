@@ -1,135 +1,101 @@
-import Eye from "../Icons/Eye";
-import EditLight from "../Icons/EditLight";
-import Trash from "../Icons/Trash";
+import AddRoundLight from "../Icons/AddRoundLight"
+import Eye from "../Icons/Eye"
+import EditLight from "../Icons/EditLight"
+import Trash from "../Icons/Trash"
+import { Button } from "../ui/button"
+import { ReactNode } from "react"
 
-interface TableColumn {
-  key: string;
-  label: string;
-  align?: "left" | "center" | "right";
-  width?: string;
+interface TableColumn{
+    key: string
+    label: ReactNode
+    align?: 'left' | 'center' | 'right'
+    width?: string
 }
 
-interface TableAction {
-  onView: () => void;
-  onEdit: () => void;
-  onDelete: () => void;
+interface TableAction{
+    onView: () => void
+    onEdit: () => void
+    onDelete: () => void
 }
 
 interface TableCardProps {
-  columns: TableColumn[];
-  actions: TableAction[];
-  data: any[];
-  total?: number;
-  pageSize?: number;
+    columns: TableColumn[]
+    actions: TableAction[]
+    data: any[]
+    headerPaddingClass?: string
+    actionsHeaderPaddingClass?: string
+    total?: number
+    pageSize?: number
 }
 
-export default function TableCard({
-  columns,
-  actions,
-  data,
-  total,
-  pageSize,
-}: TableCardProps) {
-  const from = data.length > 0 ? 1 : 0;
-  const to = data.length;
+export default function TableCard({ columns, actions, data, headerPaddingClass = "px-5 py-7.5", actionsHeaderPaddingClass = "px-5 py-7.5", total, pageSize }: TableCardProps) {
+    const from = data.length > 0 ? 1 : 0;
+    const to = data.length;
+    const totalResults = total ?? data.length;
 
-  return (
-    <div className="flex flex-col gap-10">
-      <div>
-        <div className="overflow-hidden rounded-t-sm border-l border-r border-blue-bbee">
-          <table className="w-full">
-            <thead>
-              <tr className="bg-blue-bbee">
-                {columns.map((col, index) => (
-                  <th
-                    key={index}
-                    className={`font-bold text-white-wfff text-fm-16 px-[30px] py-5 text-${col.align || "left"}`}
-                    style={{ width: col.width }}
-                  >
-                    {col.label}
-                  </th>
-                ))}
-                {actions && (
-                  <th className="text-white-wfff text-fm-16 font-bold px-[75px] py-5 text-right">
-                    Actions
-                  </th>
-                )}
-              </tr>
-            </thead>
-
-            <tbody>
-              {data.map((row, rowIndex) => (
-                <tr key={rowIndex}>
-                  {columns.map((column, colIndex) => {
-                    let cellContent: React.ReactNode = row[column.key];
-
-                    if (column.key === "poster_url") {
-                      cellContent = (
-                        <img
-                          src={row[column.key]}
-                          alt={row.title}
-                          className="w-[42px] h-[63px] overflow-hidden object-cover"
-                        />
-                      );
-                    }
-
-                    if (column.key === "duration_min") {
-                      cellContent = `${row[column.key]} mins`;
-                    }
-
-                    if (column.key === "rating") {
-                      cellContent = row[column.key] ? row[column.key] : "-";
-                    }
-
-                    return (
-                      <td
-                        key={colIndex}
-                        className={`text-blue-bbee px-[30px] py-5 border-b border-blue-bbee text-fr-14 text-${column.align || "left"}`}
-                      >
-                        {cellContent}
-                      </td>
-                    );
-                  })}
-
-                  {actions && (
-                    <td className="text-blue-bbee px-[30px] py-5 border-b border-blue-bbee text-right">
-                      <div className="flex justify-end gap-2">
-                        <button
-                          className="p-2 bg-green-g372 hover:bg-gray-gedd rounded-full"
-                          onClick={actions[rowIndex]?.onView}
-                          title="View Details"
-                        >
-                          <Eye />
-                        </button>
-                        <button
-                          className="p-2 bg-blue-bbee hover:bg-gray-gedd rounded-full"
-                          onClick={actions[rowIndex]?.onEdit}
-                          title="Edit"
-                        >
-                          <EditLight />
-                        </button>
-                        <button
-                          className="p-2 bg-red-r64b hover:bg-gray-gedd rounded-full"
-                          onClick={actions[rowIndex]?.onDelete}
-                          title="Delete"
-                        >
-                          <Trash />
-                        </button>
-                      </div>
-                    </td>
-                  )}
-                </tr>
-              ))}
-            </tbody>
-          </table>
+    return(
+        <div className="flax flex-col gap-10">
+            <div className="mx-[70px] border border-blue-bbee rounded-t-[4px] overflow-hidden">
+                <table className="w-full">
+                    <thead>
+                        <tr className="bg-blue-bbee">
+                            {columns.map((column,index) => (
+                                <th
+                                    key={index}
+                                    className={`text-white-wfff text-fr-16 ${headerPaddingClass} text-${column.align || 'left'}`}
+                                    style={{ width: column.width }}
+                                >
+                                    {column.label}
+                                </th>
+                            ))}
+                            {actions&&(
+                                <th className={`text-white-wfff ${actionsHeaderPaddingClass} font-bold text-right`}>Actions</th>
+                            )}
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {data.map((row, index) => (
+                            <tr key={index} className="px-17.5">
+                                {columns.map((column, colIndex) => (
+                                    <td 
+                                        key={colIndex}
+                                        className={`text-blue-bbee px-[30px] py-7.5 text-fr-14 text-${column.align || 'left'}`}
+                                    >
+                                        {row[column.key]}
+                                    </td>
+                                ))}
+                                {actions && (
+                                    <td className="text-blue-bbee px-[30px] py-[15px] text-right">
+                                        <div className="flex justify-end gap-2">
+                                            <button
+                                                className="p-2 bg-green-g372 hover:bg-green-g372/90 rounded-full text-white"
+                                                onClick={actions[index]?.onView}
+                                                title="View Details"
+                                            >
+                                                <Eye />
+                                            </button>
+                                            <button
+                                                className="p-2 bg-blue-bbee hover:bg-blue-bbee/90 rounded-full text-white"
+                                                onClick={actions[index]?.onEdit}
+                                                title="Edit"
+                                            >
+                                                <EditLight />
+                                            </button>
+                                            <button
+                                                className="p-2 bg-red-r64b hover:bg-red-r64b/90 rounded-full text-white"
+                                                onClick={actions[index]?.onDelete}
+                                                title="Delete"
+                                            >
+                                                <Trash />
+                                            </button>
+                                        </div>
+                                    </td>
+                                )}
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
         </div>
-        <div className="mt-5">
-          <p className="text-fr-14 text-gray-g3b0">
-            Showing {from} to {to} of {total ?? to} result
-            {(total ?? to) > 1 ? "s" : ""}
-          </p>
-        </div>
-      </div>
-    </div>
-  );
+    )
 }

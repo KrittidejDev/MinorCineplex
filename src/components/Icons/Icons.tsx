@@ -144,7 +144,9 @@ export const IconDisplay: React.FC<IconDisplayProps> = ({
   
   return (
     <div className="flex flex-col items-center gap-2 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-      <IconComponent width={size} height={size} color={color} />
+      <div className="text-white">
+        <IconComponent width={size} height={size} />
+      </div>
       <span className="text-sm text-gray-600 text-center">{icon.label}</span>
     </div>
   );
@@ -174,7 +176,6 @@ export const IconsGrid: React.FC<IconsGridProps> = ({
             key={index} 
             icon={icon} 
             size={size} 
-            color={color} 
           />
         ))}
       </div>

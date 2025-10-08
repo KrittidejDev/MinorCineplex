@@ -51,7 +51,9 @@ function MovieCard({
                 : "-"}
             </p>
             <div className="flex items-center gap-[2px]">
-              <StarFill width={16} height={16} color={"#4E7BEE"} />
+              <div className="text-blue-bbee">
+                <StarFill width={16} height={16} />
+              </div>
               <p className="font-medium fr-14 text-gray-g3b0">{rating || "-"}</p>
             </div>
           </div>

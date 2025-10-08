@@ -32,105 +32,101 @@ export const BookingCard: React.FC<BookingCardProps> = ({
   paymentMethod,
   isPaid,
 }) => {
+  const movieInfo = [
+    { icon: PinFill, value: location },
+    { icon: DateTodayLight, value: date },
+    { icon: TimeFill, value: time },
+    { icon: Shop, value: hall },
+  ];
+  const bookingInfo = [
+    { label: "Booking No.", value: bookingNumber },
+    { label: "Booked date", value: bookedDate },
+  ];
+  const ticketInfo = [
+    { label: "Selected Seat", value: selectedSeats },
+    { label: "Payment method", value: paymentMethod },
+  ];
   return (
-    <div className="bg-gray-gc1b rounded-lg p-3 sm:p-6 text-white max-w-sm sm:max-w-2xl mx-auto">
+    <div className="bg-gray-gc1b rounded-lg p-4 md:p-6 text-white">
       {/* Movie Section */}
-      <div className="flex items-stretch gap-3 mb-4">
+      <div className="flex flex-col sm:flex-row sm:justify-between gap-4 pb-4 md:pb-6 md:gap-6">
         {/* Movie Poster */}
-        <div className="flex-shrink-0 self-stretch">
-          <div className="relative w-16 sm:w-20 h-24 sm:h-28">
-            <Image
-              src={moviePoster}
-              alt={movieTitle}
-              fill
-              className="w-16 sm:w-20 h-full min-h-24 sm:min-h-28 object-cover rounded"
-            />
-          </div>
-        </div>
-
-        {/* Movie Details */}
-        <div className="flex-1 min-w-0">
-          {/* Movie Title and Booking Info */}
-          <div className="flex items-start justify-between mb-2">
-            <h2 className="text-lg sm:text-xl font-semibold text-white truncate flex-1 pr-2">
-              {movieTitle}
-            </h2>
-
-            {/* Booking Info - Right side on Desktop */}
-            <div className="flex-shrink-0 sm:flex hidden flex-col items-end">
-              <div className="text-xs sm:text-sm text-gray-300 mb-1">
-                Booking No. {bookingNumber}
-              </div>
-              <div className="text-xs sm:text-sm text-gray-300">
-                Booked date {bookedDate}
-              </div>
+        <div className="flex items-center gap-3">
+          <div className="flex">
+            <div className="relative min-w-[97px] min-h-[140px]">
+              <Image
+                src={moviePoster}
+                alt={movieTitle}
+                fill
+                className="object-cover rounded"
+              />
             </div>
           </div>
 
-          {/* Movie Info */}
-          <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <PinFill width="14" height="14" color="#FFF" />
-              <span className="text-xs sm:text-sm text-gray-200 truncate">
-                {location}
-              </span>
+          {/* Movie Details */}
+          <div className="flex flex-col gap-4">
+            {/* Movie Title and Booking Info */}
+            <div className="flex items-center justify-between mb-2">
+              <h2 className="text-f-20 text-white">{movieTitle}</h2>
             </div>
 
-            <div className="flex items-center gap-2">
-              <DateTodayLight width="14" height="14" color="#FFF" />
-              <span className="text-xs sm:text-sm text-gray-200">{date}</span>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <TimeFill width="14" height="14" color="#FFF" />
-              <span className="text-xs sm:text-sm text-gray-200">{time}</span>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <Shop width="14" height="14" color="#FFF" />
-              <span className="text-xs sm:text-sm text-gray-200">{hall}</span>
+            {/* Movie Info */}
+            <div className="flex flex-col gap-1">
+              {movieInfo.map((info, index) => (
+                <div key={index} className="flex items-center gap-2">
+                  <info.icon width="14" height="14" color="#565F7E" />
+                  <span className="text-fr-14 text-gray-gedd">
+                    {info.value}
+                  </span>
+                </div>
+              ))}
             </div>
           </div>
         </div>
-      </div>
-
-      {/* Booking Info - Bottom Left on Mobile */}
-      <div className="flex flex-col sm:hidden mb-3">
-        <div className="text-xs text-gray-300 mb-1">
-          Booking No. {bookingNumber}
+        {/* Booking Info - Right side on Desktop */}
+        <div className="flex flex-col gap-1">
+          {bookingInfo.map((booking, index) => (
+            <div
+              key={index}
+              className="flex gap-1 md:gap-2 md:flex-row md:justify-start text-fm-14 text-gray-g3b0"
+            >
+              <span>{booking.label}</span>
+              <span>{booking.value}</span>
+            </div>
+          ))}
         </div>
-        <div className="text-xs text-gray-300">Booked date {bookedDate}</div>
       </div>
 
       {/* Divider */}
-      <div className="border-t border-gray-600 mb-3"></div>
+      {/* <div className="border-t border-gray-g63f mb-4"></div> */}
 
       {/* Ticket and Payment Section */}
-      <div className="flex sm:items-center sm:justify-between gap-2 flex-col sm:flex-row">
+      <div className="flex sm:items-center sm:justify-between pt-6 gap-4 md:gap-6 flex-col sm:flex-row border-t border-gray-g63f">
         {/* Left Section - Ticket Info + Payment method under Selected Seat */}
-        <div className="flex items-start gap-2 w-full">
+        <div className="flex items-center gap-6 md:gap-2 w-full">
           {/* Ticket Count Button */}
-          <button className="bg-gray-g63f text-white px-2 py-1 sm:px-3 sm:py-2 rounded text-xs sm:text-sm font-medium whitespace-nowrap">
+          <button className="bg-gray-g63f text-gray-gedd font-fm-16 rounded-sm px-4 py-3">
             {ticketCount} Tickets
           </button>
 
           {/* Text Details stacked */}
-          <div className="flex flex-col min-w-0 flex-1">
-            <div className="text-xs sm:text-sm text-gray-200 w-full flex justify-between sm:justify-start">
-              <span className="opacity-90">Selected Seat</span>
-              <span className="font-medium sm:ml-14">{selectedSeats}</span>
-            </div>
-            <div className="text-xs sm:text-sm text-gray-200 w-full flex justify-between sm:justify-start">
-              <span className="opacity-90">Payment method</span>
-              <span className="font-medium sm:ml-5">{paymentMethod}</span>
-            </div>
+          <div className="flex flex-col justify-between gap-1 flex-1">
+            {ticketInfo.map((ticket, index) => (
+              <div
+                key={index}
+                className="text-fr-14 text-gray-g3b0 w-full flex gap-1 justify-between"
+              >
+                <span>{ticket.label}</span>
+                <span>{ticket.value}</span>
+              </div>
+            ))}
           </div>
         </div>
 
         {/* Right Section - Paid Status Button only */}
-        <div className="flex items-end w-full sm:w-auto justify-end">
+        <div className="flex w-full justify-end">
           <button
-            className={`px-2 py-1 sm:px-3 sm:py-2 rounded text-xs sm:text-sm font-medium whitespace-nowrap ${
+            className={`px-4 py-1.5 rounded-full text-fm-14 ${
               isPaid ? "bg-green-g372 text-white" : "bg-red-r64b text-white"
             }`}
           >

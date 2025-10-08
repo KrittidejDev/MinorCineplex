@@ -28,7 +28,7 @@ const SignUpForm = ({ onSubmit }: SignUpFormProps) => {
     control,
     watch,
     handleSubmit,
-    formState: { errors },
+    formState: { errors,isSubmitting },
     setError,
   } = useForm<FormValues>({
     resolver: yupResolver(signupFormSchema),
@@ -120,10 +120,10 @@ const SignUpForm = ({ onSubmit }: SignUpFormProps) => {
 
       <div className="w-full">
         <Button
-          disabled={isEmpty}
+          disabled={isEmpty || isSubmitting}
           className="btn-base blue-normal w-full h-12 flex rounded-b-sm justify-center items-center"
         >
-          Register
+          {isSubmitting ? "Loading..." : "Register"}
         </Button>
       </div>
       <div>

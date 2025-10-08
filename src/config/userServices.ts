@@ -12,6 +12,7 @@ export interface LoginParams {
 }
 export interface SignupParams {
   username: string
+  phone: string
   email: string
   password: string
 }
@@ -21,7 +22,7 @@ export interface UpdateProfileParams {
   avatar_id?: string
 }
 export interface ResetPasswordParams {
-  oldPassword: string
+  id: string
   newPassword: string
 }
 
@@ -60,8 +61,8 @@ export const userService = {
   GET_MY_PROFILE: (id: string) => apiService.get(`${apiPath}/users/${id}`),
   PUT_UPDATE_PROFILE: (id: string, params: UpdateProfileParams) =>
     apiService.put(`${apiPath}/users/${id}`, params),
-  RESET_PASSWORD: (id: string, params: ResetPasswordParams) =>
-    apiService.patch(`${apiPath}/users/${id}/password`, params),
+  RESET_PASSWORD: (params: ResetPasswordParams) =>
+    apiService.patch(`${apiPath}/auth/resetpassword`, params),
 
   // Category
   // GET_CATEGORY: (query?: string) =>

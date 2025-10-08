@@ -45,11 +45,11 @@ const AdminInputTextArea = ({
         rows={rows}
         style={{ height }}
         className={clsx(
-          `w-full px-3 py-2 border rounded-md resize-y text-gray-g3b0 focus:border-blue-bbee focus:outline-none`,
-          `w-full px-3 py-2 border rounded-md resize-y text-gray-g3b0 focus:border-blue-bbee focus:outline-none field-sizing-fixed`,
+          `w-full p-3 border rounded-sm text-gray-g63f focus:border-blue-bbee focus:outline-none`,
+          `w-full p-3 border rounded-sm text-gray-g63f focus:border-blue-bbee focus:outline-none field-sizing-fixed`,
           errors
             ? "border-red-r64b text-red-r64b placeholder-white-wfff"
-            : "border-blue-bbee text-gray-g3b0 placeholder-gray-g3b0"
+            : "border-blue-bbee text-gray-g63f placeholder-gray-g3b0"
         )}
       />
       {errors && <span className="text-fr-12 text-red-r64b">{errors}</span>}

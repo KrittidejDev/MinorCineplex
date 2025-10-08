@@ -25,7 +25,7 @@ const SeatSelected: React.FC<SeatSelectedProps> = ({
       xmlns="http://www.w3.org/2000/svg"
       onClick={onClick}
     >
-      <rect x="1" y="1" width="38" height="38" rx="5" fill={color} />
+      <rect x="1" y="1" width="38" height="38" rx="5" fill="currentColor" />
       <rect
         x="1"
         y="1"
@@ -38,7 +38,7 @@ const SeatSelected: React.FC<SeatSelectedProps> = ({
       <rect x="23" y="23" width="20" height="20" rx="10" fill="white" />
       <path
         d="M28.9167 34.1667L30.4831 35.3415C30.9118 35.663 31.5177 35.5895 31.857 35.1747L36.5 29.5"
-        stroke={color}
+        stroke="currentColor"
         strokeWidth="2"
         strokeLinecap="round"
       />

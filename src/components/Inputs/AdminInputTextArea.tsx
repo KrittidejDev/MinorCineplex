@@ -1,6 +1,5 @@
 import React, { ChangeEvent } from "react";
 import { Textarea } from "../ui/textarea";
-import { clsx } from "clsx";
 
 type AdminInputTextAreaProps = {
   placeholder?: string;
@@ -13,6 +12,7 @@ type AdminInputTextAreaProps = {
   maxLength?: number;
   height?: string;
   rows?: number;
+  className?: string;
 };
 
 const AdminInputTextArea = ({
@@ -26,12 +26,19 @@ const AdminInputTextArea = ({
   maxLength,
   height,
   rows,
+  className = "",
   ...props
 }: AdminInputTextAreaProps) => {
+  const baseClass =
+    "w-full mt-1 p-3 border rounded-sm text-gray-g63f focus:border-blue-bbee focus:outline-none field-sizing-fixed";
+  const errorClass = errors
+    ? "border-red-r64b text-red-r64b placeholder-white-wfff"
+    : "border-blue-bbee text-gray-g63f placeholder-gray-g3b0";
+
   return (
-    <div className="flex flex-col flex-1 gap-1 relative">
+    <div className="flex flex-col relative">
       {label && (
-        <div className="text-blue-bbee text-fr-16 mb-1">
+        <div className="text-blue-bbee text-fr-16">
           {label} {require && <span className="text-red-r64b">*</span>}
         </div>
       )}
@@ -44,13 +51,7 @@ const AdminInputTextArea = ({
         disabled={disabled}
         rows={rows}
         style={{ height }}
-        className={clsx(
-          `w-full p-3 border rounded-sm text-gray-g63f focus:border-blue-bbee focus:outline-none`,
-          `w-full p-3 border rounded-sm text-gray-g63f focus:border-blue-bbee focus:outline-none field-sizing-fixed`,
-          errors
-            ? "border-red-r64b text-red-r64b placeholder-white-wfff"
-            : "border-blue-bbee text-gray-g63f placeholder-gray-g3b0"
-        )}
+        className={`${baseClass} ${errorClass} ${className}`}
       />
       {errors && <span className="text-fr-12 text-red-r64b">{errors}</span>}
     </div>

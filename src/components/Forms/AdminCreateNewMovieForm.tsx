@@ -1,6 +1,9 @@
+import { useState } from "react";
 import ModalEmpty from "../Modals/ModalEmpty";
 import UploadFile from "../Icons/UploadFile";
 import { Button } from "../ui/button";
+import AdminInputTextField from "../Inputs/AdminInputTextField";
+import AdminInputTextArea from "../Inputs/AdminInputTextArea";
 
 interface CreateNewMovieFormProps {
   isShowModal: boolean;
@@ -11,6 +14,35 @@ function AdminCreateNewMovieForm({
   isShowModal,
   onClose,
 }: CreateNewMovieFormProps) {
+  const [formData, setFormData] = useState({
+    title: "",
+    description: "",
+    duration: "",
+    trailer: "",
+  });
+  const [errors, setErrors] = useState({
+    title: "",
+    description: "",
+    duration: "",
+    trailer: "",
+  });
+
+  const handleInputChange =
+    (field: string) =>
+    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      setFormData((prev) => ({
+        ...prev,
+        [field]: e.target.value,
+      }));
+
+      if (errors[field as keyof typeof errors]) {
+        setErrors((prev) => ({
+          ...prev,
+          [field]: "",
+        }));
+      }
+    };
+
   const genreOptions = [
     { value: "action", label: "Action" },
     { value: "comedy", label: "Comedy" },
@@ -52,29 +84,25 @@ function AdminCreateNewMovieForm({
                 </div>
               </div>
 
-              <div className="h-full flex flex-col flex-1">
-                <label htmlFor="title" className="text-blue-bbee text-fr-16">
-                  Title
-                </label>
-                <input
-                  type="text"
-                  name="title"
-                  id="title"
+              <div className="h-full flex flex-col gap-5 flex-1">
+                <AdminInputTextField
+                  label="Title"
                   placeholder="Enter movie title"
-                  className="w-full p-3 border border-blue-bbee rounded-sm text-gray-gc1b placeholder:text-gray-g3b0 mt-1"
+                  value={formData.title}
+                  onChange={handleInputChange("title")}
+                  errors={errors.title}
+                  require={true}
+                  type="text"
                 />
 
-                <label
-                  htmlFor="description"
-                  className="text-blue-bbee text-fr-16 mt-5"
-                >
-                  Description
-                </label>
-                <textarea
-                  name="description"
-                  id="description"
+                <AdminInputTextArea
+                  label="Description"
                   placeholder="Enter movie description"
-                  className="flex-1 p-3 border border-blue-bbee rounded-sm text-gray-gc1b placeholder:text-gray-g3b0 mt-1 resize-none"
+                  value={formData.description}
+                  onChange={handleInputChange("description")}
+                  errors={errors.description}
+                  require={true}
+                  rows={7}
                 />
               </div>
             </div>
@@ -83,18 +111,14 @@ function AdminCreateNewMovieForm({
               <div className="flex flex-col w-full">
                 <div className="flex gap-5">
                   <div className="flex flex-col flex-1">
-                    <label
-                      htmlFor="duration"
-                      className="text-blue-bbee text-fr-16"
-                    >
-                      Duration (minutes)
-                    </label>
-                    <input
+                    <AdminInputTextField
+                      label="Duration(minutes)"
+                      placeholder="e.g.,120"
+                      value={formData.duration}
+                      onChange={handleInputChange("duration")}
+                      errors={errors.duration}
+                      require={true}
                       type="number"
-                      name="duration"
-                      id="duration"
-                      placeholder="e.g., 120"
-                      className="w-full p-3 border border-blue-bbee rounded-sm text-gray-gc1b placeholder:text-gray-g3b0 mt-1"
                     />
                   </div>
                   <div className="flex flex-col flex-1">
@@ -117,7 +141,7 @@ function AdminCreateNewMovieForm({
                       htmlFor="rating"
                       className="text-blue-bbee text-fr-16"
                     >
-                      Genre
+                      Rating
                     </label>
                     <input
                       type="text"
@@ -129,18 +153,14 @@ function AdminCreateNewMovieForm({
                   </div>
                 </div>
                 <div className="flex flex-col mt-1">
-                  <label
-                    htmlFor="trailer"
-                    className="text-blue-bbee text-fr-16"
-                  >
-                    Trailer URL
-                  </label>
-                  <input
-                    type="text"
-                    name="trailer"
-                    id="trailer"
+                  <AdminInputTextField
+                    label="Trailer URL"
                     placeholder="https://youtube.com/watch?"
-                    className="w-full p-3 border border-blue-bbee rounded-sm text-gray-gc1b placeholder:text-gray-g3b0 mt-1"
+                    value={formData.trailer}
+                    onChange={handleInputChange("trailer")}
+                    errors={errors.trailer}
+                    require={false}
+                    type="text"
                   />
                 </div>
                 <div className="flex justify-end gap-2 mt-10">

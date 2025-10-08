@@ -64,7 +64,7 @@ const InputSearch = ({
           onChange={_handleChange}
           disabled={disabled}
           className={cx(
-            `bg-gray-g63f border rounded-sm h-12 pl-8 pr-3 py-3 focus:border-gray-g3b0 `,
+            `w-full bg-gray-g63f border rounded-sm h-12 pl-8 pr-3 py-3 focus:border-gray-g3b0 `,
             errors
               ? "border-red-r64b text-red-r64b placeholder-white"
               : "border-gray-gf7e text-white placeholder-gray-400"

@@ -1,3 +1,4 @@
+// api/coupons/[id]/index.ts
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getCouponById, updateCouponById } from "@/services/couponService";
 import { getServerSession } from "next-auth/next";
@@ -10,14 +11,11 @@ export default async function handler(
 ) {
   const { id } = req.query;
 
-  if (!id) {
+  if (!id || typeof id !== "string") {
     return res.status(400).json({ error: "Coupon ID is required" });
   }
 
-  const couponId = Number(id);
-  if (isNaN(couponId)) {
-    return res.status(400).json({ error: "Invalid coupon ID" });
-  }
+  const couponId = id; // ใช้ string ตรงๆ
 
   try {
     const session = await getServerSession(req, res, authOptions);

@@ -116,7 +116,7 @@ export const userService = {
   GET_COUPON: () => 
     apiService.get(`${apiPath}/coupons`),
 
-  GET_COUPON_BY_ID: (id: number) => 
+  GET_COUPON_BY_ID: (id: string) => 
     apiService.get(`${apiPath}/coupons/${id}`),
   GET_COUPON_COLLECTED_BY_ID: (id: number) =>
     apiService.get(`${apiPath}/coupons/${id}/collect`),

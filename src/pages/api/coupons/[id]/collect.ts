@@ -1,3 +1,4 @@
+// api/coupons/[id]/collect.ts
 import { NextApiRequest, NextApiResponse } from "next";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
@@ -11,9 +12,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   const userId = session.user.id;
-  const couponId = Number(req.query.id);
+  const couponId = req.query.id as string; // <-- ใช้ string ตาม Prisma schema
 
-  if (isNaN(couponId)) {
+  if (!couponId) {
     return res.status(400).json({ error: "Invalid coupon ID" });
   }
 

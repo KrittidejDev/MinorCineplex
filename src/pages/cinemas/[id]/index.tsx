@@ -1,7 +1,11 @@
-import React from "react";
+import CinemaDetallWidget from "@/components/Widgets/CinemaDetallWidget";
 
 const CinemaDetail = () => {
-  return <div>CinemaDetail</div>;
+  return (
+    <div>
+      <CinemaDetallWidget />
+    </div>
+  );
 };
 
 export default CinemaDetail;

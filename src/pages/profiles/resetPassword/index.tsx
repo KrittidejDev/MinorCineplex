@@ -1,52 +1,65 @@
-import React from 'react'
-import NavBarWidget from '@/components/Widgets/NavBarWidget'
-import ProfileBar from '@/components/Widgets/ProfileBar'
-import InputTextFeild from '@/components/Inputs/InputTextFeild'
-import { Button } from '@/components/ui/button'
-const index = () => {
+import { useState } from "react";
+import NavBarWidget from "@/components/Widgets/NavBarWidget";
+import ProfileBar from "@/components/Widgets/ProfileBar";
+import ResetPassword, { FormValues } from "@/components/Forms/ResetPassword";
+import { useSession } from "next-auth/react";
+import axios, { AxiosError } from "axios";
+import { SuccessAlert } from "@/components/ui/alert";
+
+const ResetPasswordUser = () => {
+  const [isAlert, setIsAlert] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const { data: session } = useSession();
+  const handleResetPassword = async (values: FormValues, reset: () => void) => {
+    try {
+      if (!session?.user.id) {
+        throw new Error("User not found");
+      }
+      setIsLoading(true);
+      await axios.patch(`http://localhost:3000/api/auth/resetpassword`, {
+        id: session?.user.id,
+        newPassword: values.newPassword,
+      });
+      reset();
+      setIsAlert(true);
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        console.log(error);
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
-    <div className="bg-blue-b flex flex-col min-h-[100dvh]">
-      <NavBarWidget />
-      <div className="flex-1">
-        <div
-          className="
-            flex flex-col md:flex-row 
-            items-start justify-start 
-            pt-10 md:pt-20 
-            px-5 md:px-10 lg:px-100 
-            h-full gap-6 md:gap-10
-          "
-        >
+    <>
+    <NavBarWidget />
+    <div className="bg-blue-b flex flex-col">
+      
+      <div className="flex-1 top-21 transition-all duration-500 ease-in-out py-10 md:pl-20 md:py-15 xl:pl-56 ">
+        <div className="w-full max-w-[1129px] flex flex-col md:flex-row h-full gap-4 md:gap-12 ">
           {/* ProfileBar */}
-          <div className="w-full md:w-1/4 lg:w-1/5">
+          <div className="w-full md:min-w-[240px] md:max-w-[257px]">
             <ProfileBar />
           </div>
-
           {/* Content - Full Width Container */}
-          <div className="flex flex-col items-start justify-start gap-y-11 w-full md:w-3/4 lg:w-4/5 px-0 md:px-0 lg:px-22">
-            <div className="text-f-20 sm:text-f-24 md:text-f-28 lg:text-f-36">
-              Reset password
-            </div>
-            <div className="flex flex-col gap-y-5 w-full ">
-              <InputTextFeild
-                label="New password"
-                placeholder="New password"
-                className="lg:w-[45%] w-[70%]"
-              />
-              <InputTextFeild
-                label="Confrim password"
-                placeholder="Confrim password"
-                className="lg:w-[45%] w-[70%]"
-              />
-              <Button className="flex btn-base white-outline-normal w-[22.5%] min-w-[100px]">
-                Reset password
-              </Button>
-            </div>
+          <div className="flex items-center px-4 justify-center md:justify-start md:items-start w-full max-w-[380px] md:min-w-[380px]">
+            <ResetPassword align="left" onSubmit={handleResetPassword} isLoading={isLoading} />
           </div>
         </div>
       </div>
+      <div className="absolute right-5 bottom-5">
+        {isAlert && (
+          <SuccessAlert
+            onClick={() => setIsAlert(false)}
+            header="Reset password success"
+            text="Your password has been reset successfully"
+          />
+        )}
+      </div>
     </div>
-  )
-}
+    </>
+  ); 
+};
 
-export default index
+export default ResetPasswordUser;

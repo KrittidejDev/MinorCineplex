@@ -1,0 +1,95 @@
+// lib/utils/province.ts
+
+export const provinceMap: Record<string, string> = {
+  กรุงเทพมหานคร: "Bangkok",
+  กรุงเทพ: "Bangkok",
+  กระบี่: "Krabi",
+  กาญจนบุรี: "Kanchanaburi",
+  กาฬสินธุ์: "Kalasin",
+  กำแพงเพชร: "Kamphaeng Phet",
+  ขอนแก่น: "Khon Kaen",
+  จันทบุรี: "Chanthaburi",
+  ฉะเชิงเทรา: "Chachoengsao",
+  ชลบุรี: "Chonburi",
+  ชัยนาท: "Chai Nat",
+  ชัยภูมิ: "Chaiyaphum",
+  ชุมพร: "Chumphon",
+  ตรัง: "Trang",
+  ตราด: "Trat",
+  ตาก: "Tak",
+  นครนายก: "Nakhon Nayok",
+  นครปฐม: "Nakhon Pathom",
+  นครพนม: "Nakhon Phanom",
+  นครราชสีมา: "Nakhon Ratchasima",
+  นครศรีธรรมราช: "Nakhon Si Thammarat",
+  นครสวรรค์: "Nakhon Sawan",
+  นนทบุรี: "Nonthaburi",
+  นราธิวาส: "Narathiwat",
+  น่าน: "Nan",
+  บึงกาฬ: "Bueng Kan",
+  บุรีรัมย์: "Buriram",
+  ปทุมธานี: "Pathum Thani",
+  ประจวบคีรีขันธ์: "Prachuap Khiri Khan",
+  ปราจีนบุรี: "Prachinburi",
+  ปัตตานี: "Pattani",
+  พะเยา: "Phayao",
+  พังงา: "Phang Nga",
+  พัทลุง: "Phatthalung",
+  พิจิตร: "Phichit",
+  พิษณุโลก: "Phitsanulok",
+  ภูเก็ต: "Phuket",
+  มหาสารคาม: "Maha Sarakham",
+  มุกดาหาร: "Mukdahan",
+  ยะลา: "Yala",
+  ยโสธร: "Yasothon",
+  ระนอง: "Ranong",
+  ระยอง: "Rayong",
+  ราชบุรี: "Ratchaburi",
+  ร้อยเอ็ด: "Roi Et",
+  ลพบุรี: "Lopburi",
+  ลำปาง: "Lampang",
+  ลำพูน: "Lamphun",
+  ศรีสะเกษ: "Sisaket",
+  สกลนคร: "Sakon Nakhon",
+  สงขลา: "Songkhla",
+  สตูล: "Satun",
+  สมุทรปราการ: "Samut Prakan",
+  สมุทรสงคราม: "Samut Songkhram",
+  สมุทรสาคร: "Samut Sakhon",
+  สระบุรี: "Saraburi",
+  สระแก้ว: "Sa Kaeo",
+  สิงห์บุรี: "Sing Buri",
+  สุพรรณบุรี: "Suphan Buri",
+  สุราษฎร์ธานี: "Surat Thani",
+  สุรินทร์: "Surin",
+  สุโขทัย: "Sukhothai",
+  หนองคาย: "Nong Khai",
+  หนองบัวลำภู: "Nong Bua Lam Phu",
+  อำนาจเจริญ: "Amnat Charoen",
+  อุดรธานี: "Udon Thani",
+  อุตรดิตถ์: "Uttaradit",
+  อุทัยธานี: "Uthai Thani",
+  อุบลราชธานี: "Ubon Ratchathani",
+  อ่างทอง: "Ang Thong",
+  เชียงราย: "Chiang Rai",
+  เชียงใหม่: "Chiang Mai",
+  เพชรบุรี: "Phetchaburi",
+  เพชรบูรณ์: "Phetchabun",
+  แพร่: "Phrae",
+  แม่ฮ่องสอน: "Mae Hong Son",
+  เลย: "Loei",
+};
+
+export const getProvinceName = (address: string | null | undefined) => {
+  if (!address) return { th: "Other", en: "Other" };
+
+  // ตรวจสอบทุกจังหวัดใน map ว่าอยู่ใน string หรือไม่
+  const foundTh = Object.keys(provinceMap).find((prov) =>
+    address.includes(prov)
+  );
+  if (foundTh) {
+    return { th: foundTh, en: provinceMap[foundTh] };
+  }
+
+  return { th: "Other", en: "Other" };
+};

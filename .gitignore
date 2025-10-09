@@ -10,6 +10,9 @@
 !.yarn/releases
 !.yarn/versions
 
+/prisma/seedShowtime.js
+/prisma/seedShowtime_backup.js
+
 # testing
 /coverage
 

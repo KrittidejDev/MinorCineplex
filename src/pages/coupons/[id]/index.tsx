@@ -1,71 +1,173 @@
-import React from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import { useRouter } from 'next/router'
 import NavAndFooter from '@/components/MainLayout/NavAndFooter'
 import { Button } from '@/components/ui/button'
+import Image from 'next/image'
+import { APICoupon } from '@/types/coupon'
+import { userService } from '@/config/userServices'
+import { useSession } from 'next-auth/react'
+import { HoverCard3D } from '@/components/Displays/HoverCard3D'
+interface CouponStatusResponse {
+  coupon: APICoupon
+  is_collected: boolean
+}
 
 const CouponDetail = () => {
+  const router = useRouter()
+  const { id } = router.query
+  const [coupon, setCoupon] = useState<APICoupon | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [collected, setCollected] = useState(false)
+  const { data: session } = useSession()
+
+  // ✅ ป้องกัน re-render ทุกครั้งที่ component re-renders
+  const formatDate = useCallback((isoDate?: string | null): string => {
+    if (!isoDate) return 'N/A'
+    const date = new Date(isoDate)
+    return date.toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+    })
+  }, [])
+
+  // ✅ ดึงข้อมูลคูปอง (แยก logic ออกมาเป็นฟังก์ชันเดียว)
+  const fetchCoupon = useCallback(async (couponId: number) => {
+    try {
+      setLoading(true)
+      const res = (await userService.GET_COUPON_BY_ID(couponId)) as CouponStatusResponse
+      if (res?.coupon) {
+        setCoupon(res.coupon)
+        setCollected(Boolean(res.is_collected))
+      } else {
+        throw new Error('Coupon not found')
+      }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Cannot load coupon'
+      setError(message)
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  // ✅ useEffect ปลอดภัยและไม่รันซ้ำโดยไม่จำเป็น
+  useEffect(() => {
+    if (!id) return
+    const couponId = Number(id)
+    if (isNaN(couponId)) return
+  
+    fetchCoupon(couponId).catch(console.error)
+  }, [id, fetchCoupon])
+  
+
+  // ✅ ป้องกันสร้างฟังก์ชัน handle ใหม่ทุก render
+  const handleGetCoupon = useCallback(async () => {
+    if (!session?.user?.id) {
+      alert('Please login to collect coupon')
+      return
+    }
+
+    if (!coupon) {
+      alert('Coupon not found')
+      return
+    }
+
+    try {
+      setLoading(true)
+      await userService.COLLECT_COUPON(coupon.id)
+      setCollected(true)
+    } catch (err) {
+      console.error(err)
+      const error = err as {
+        response?: { data?: { error?: string } }
+        message?: string
+      }
+      const errorMessage =
+        error?.response?.data?.error || error?.message || 'Failed to collect coupon'
+      alert(errorMessage)
+    } finally {
+      setLoading(false)
+    }
+  }, [coupon, session])
+
+  // ✅ คำนวณวันหมดอายุเพียงครั้งเดียว (memoized)
+  const formattedEndDate = useMemo(() => formatDate(coupon?.end_date), [coupon?.end_date, formatDate])
+
+  if (loading)
+    return (
+      <NavAndFooter>
+        <div className="text-center py-10 animate-pulse text-gray-400">Loading coupon...</div>
+      </NavAndFooter>
+    )
+
+  if (error)
+    return (
+      <NavAndFooter>
+        <p className="text-center text-red-400 py-10">{error}</p>
+      </NavAndFooter>
+    )
+
+  if (!coupon)
+    return (
+      <NavAndFooter>
+        <p className="text-center py-10">Coupon not found</p>
+      </NavAndFooter>
+    )
+
   return (
     <NavAndFooter>
-      <div className="flex flex-col lg:flex-row items-center w-full min-h-screen px-4 sm:px-8 lg:px-40 py-6 lg:py-30 gap-5">
-        
+      <div className="flex flex-col lg:flex-row items-center lg:items-start w-full min-h-screen px-4 sm:px-8 lg:px-130 py-6 lg:py-30 gap-5">
         {/* Left Side - Image */}
-        <div className="w-full lg:w-1/3 h-auto lg:h-full flex justify-center">
-          <img 
-            src="/file.svg" 
-            alt="mock" 
-            className="max-w-xs sm:max-w-sm lg:max-w-full object-contain"
+        <div className="flex justify-center lg:justify-start w-full lg:w-[387px]">
+          <HoverCard3D >
+          <Image
+            src={coupon.image || '/default-image.svg'}
+            alt={coupon.title_en}
+            width={387}
+            height={387}
+            className="rounded-t-[8px] w-full h-auto"
+            priority
           />
+          </HoverCard3D>
         </div>
 
         {/* Right Side - Content */}
-        <div className="w-full lg:w-2/3 h-auto lg:h-full bg-[#070C1B] rounded-[6px] p-6 sm:p-10 gap-10 lg:p-13 flex flex-col lg:gap-20">
-          
-          {/* Title */}
-          <div className="w-full">
+        <div className="w-full lg:w-2/3 bg-[#070C1B] rounded-[6px] p-6 sm:p-10 lg:p-13 flex flex-col gap-6">
+          <div>
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-3">
-              Minor Cineplex x COKE JOYFUL TOGETHER PACKAGE: Great Deal for
-              Only 999 THB!
+              {coupon.title_en}
             </h1>
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-5">
               <p className="text-[#8B93B0] text-sm sm:text-base">Valid until</p>
-              <p className="text-white text-sm sm:text-base">31 Dec 2024</p>
+              <p className="text-white text-sm sm:text-base">{formattedEndDate}</p>
             </div>
           </div>
 
-          {/* Button */}
-          <div>
-            <Button className="btn-base blue-normal">Get coupon</Button>
-          </div>
-           <div>
-            <p>
-              6 Movie Vouchers (Deluxe, Bench at all branches & Premium) 6
-              Soft Drink Vouchers (44 oz.)
-            </p>
+          <Button
+            className={`btn-base lg:w-[237px] lg:h-[48px] ${
+              collected ? 'blue-disabled' : 'blue-normal'
+            }`}
+            onClick={!collected && !loading ? handleGetCoupon : undefined}
+            disabled={collected || loading}
+          >
+            {loading ? 'Collecting...' : collected ? 'Coupon Saved' : 'Get coupon'}
+          </Button>
+
+          <div className="text-white text-sm sm:text-base space-y-2">
+            <p>{coupon.discription_en || '—'}</p>
             <p>📅 Sales Period: Jan 4 – Mar 31, 2025</p>
             <p>🎟 Redemption Period: Jan 4 – Jun 30, 2025</p>
-            </div>
-          {/* Details */}
-          <div className="text-white w-full flex flex-col gap-2 text-sm sm:text-base">
-           
-            <div>
+          </div>
+
+          <div className="text-white text-sm sm:text-base">
             <p className="mt-3 font-semibold">Terms & Conditions</p>
             <ul className="list-disc list-inside space-y-1">
               <li>Valid for a minimum purchase of 400 THB.</li>
-              <li>
-                Applicable for Deluxe seats at all branches and Premium seats.
-              </li>
-              <li>Valid from January 4, 2025 – June 30, 2025, only.</li>
-              <li>Resale for commercial purposes is not allowed.</li>
-              <li>Non-transferable to others.</li>
-              <li>
-                Cannot be combined with other discounts or promotional offers.
-              </li>
-              <li>Cannot be exchanged or redeemed for cash.</li>
-              <li>
-                Non-refundable and cannot be canceled under any circumstances.
-              </li>
+              <li>Applicable for Deluxe and Premium seats.</li>
+              <li>Cannot be combined with other offers or exchanged for cash.</li>
+              <li>Non-refundable and non-transferable.</li>
             </ul>
-
-            </div>
           </div>
         </div>
       </div>
@@ -73,4 +175,4 @@ const CouponDetail = () => {
   )
 }
 
-export default CouponDetail
+export default React.memo(CouponDetail)

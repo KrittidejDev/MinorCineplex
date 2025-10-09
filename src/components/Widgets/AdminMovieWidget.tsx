@@ -1,78 +1,89 @@
-import { useState } from "react";
+import { useState, useEffect,useMemo } from "react";
 import { Button } from "../ui/button";
 import AddRoundLight from "../Icons/AddRoundLight";
 import TableCard from "../Cards/TableCard";
 import { APIMovie } from "@/types/movie";
 import AdminCreateNewMovieForm from "../Forms/AdminCreateNewMovieForm";
+import AdminSearchBar from "../Inputs/AdminSearchBar";
+import axios from "axios";
 
 function AdminMovieWidget() {
   const [isShowCreateModal, setIsShowCreateModal] = useState(false);
-  
-  const moviesData: APIMovie[] = [
-    {
-      id: "1",
-      title: "Inception",
-      duration_min: 148,
-      poster_url:
-        "https://cdn.majorcineplex.com/uploads/movie/3866/thumb_3866.jpg",
-      trailer_url: null,
-      genre: "Action,Sci-Fi",
-      rating: "",
-      description: null,
-      created_at: new Date(),
-      updated_at: new Date(),
-      release_date: new Date("2010-07-16"),
-    },
-    {
-      id: "2",
-      title: "Interstellar",
-      duration_min: 169,
-      poster_url:
-        "https://cdn.majorcineplex.com/uploads/movie/3866/thumb_3866.jpg",
-      trailer_url: null,
-      genre: "Adventure,Drama,Sci-Fi",
-      rating: "8.6",
-      description: null,
-      created_at: new Date(),
-      updated_at: new Date(),
-      release_date: new Date("2014-11-07"),
-    },
-    {
-      id: "3",
-      title: "The Dark Knight",
-      duration_min: 152,
-      poster_url:
-        "https://cdn.majorcineplex.com/uploads/movie/3866/thumb_3866.jpg",
-      trailer_url: null,
-      genre: "Action,Crime,Drama",
-      rating: "9.0",
-      description: null,
-      created_at: new Date(),
-      updated_at: new Date(),
-      release_date: new Date("2008-07-18"),
-    },
-  ];
+  const [movies, setMovies] = useState<APIMovie[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
 
-  // Transform data to show poster images
-  const displayData = moviesData.map(movie => ({
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchMovies = async () => {
+      try {
+        const res = await axios.get<{ movie: APIMovie[] }>("/api/movies");;
+
+        if (isMounted) {
+          setMovies(Array.isArray(res.data.movie) ? res.data.movie : []);
+        }
+      } catch (err) {
+        console.error("Failed to fetch movies:", err);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    };
+
+    fetchMovies();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const filteredMovies = useMemo(() => {
+    if (!Array.isArray(movies)) return [];
+    if (!searchTerm) return movies;
+
+    return movies.filter((movie) =>
+      movie.title.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [movies, searchTerm]);
+
+  const displayData = filteredMovies.map((movie) => ({
     ...movie,
     poster_url: (
-      <img 
-        src={movie.poster_url || "/images/placeholder.jpg"} 
+      <img
+        src={movie.poster_url || "/images/placeholder.jpg"}
         alt={movie.title}
         className="w-12 h-16 object-cover rounded"
       />
     ),
-    duration_min: `${movie.duration_min} min`,
-    rating: movie.rating || "-"
+    duration_min: `${movie.duration_min} mins`,
+    rating: movie.rating || "-",
   }));
 
   const movieColumns = [
-    { key: "poster_url", label: <span className="text-white-wfff text-fm-16">Poster</span>, align: "left" as const },
-    { key: "title", label: <span className="text-white-wfff text-fm-16">Title</span>, align: "left" as const },
-    { key: "genre", label: <span className="text-white-wfff text-fm-16">Genre</span>, align: "center" as const },
-    { key: "rating", label: <span className="text-white-wfff text-fm-16">Rating</span>, align: "center" as const },
-    { key: "duration_min", label: <span className="text-white-wfff text-fm-16">Duration</span>, align: "center" as const },
+    {
+      key: "poster_url",
+      label: <span className="text-white-wfff text-fm-16">Poster</span>,
+      align: "left" as const,
+    },
+    {
+      key: "title",
+      label: <span className="text-white-wfff text-fm-16">Title</span>,
+      align: "left" as const,
+    },
+    {
+      key: "genre",
+      label: <span className="text-white-wfff text-fm-16">Genre</span>,
+      align: "center" as const,
+    },
+    {
+      key: "rating",
+      label: <span className="text-white-wfff text-fm-16">Rating</span>,
+      align: "center" as const,
+    },
+    {
+      key: "duration_min",
+      label: <span className="text-white-wfff text-fm-16">Duration</span>,
+      align: "center" as const,
+    },
   ];
 
   const movieActions = [
@@ -90,7 +101,7 @@ function AdminMovieWidget() {
 
   return (
     <>
-      <div className="flex flex-col gap-10">
+      <div className="flex flex-col">
         <div className="flex items-center justify-between mt-20 mx-[70px]">
           <h1 className="text-gray-g63f text-f-56 font-bold">Movies</h1>
           <Button
@@ -102,7 +113,13 @@ function AdminMovieWidget() {
           </Button>
         </div>
 
-        <div>
+        <div className="mx-[70px] mt-8">
+          <div className="w-full">
+            <AdminSearchBar placeholder="Search by Title" />
+          </div>
+        </div>
+
+        <div className="mt-5">
           <TableCard
             columns={movieColumns}
             data={displayData}
@@ -111,11 +128,12 @@ function AdminMovieWidget() {
             actionsHeaderPaddingClass="px-[30px] py-5"
           />
           <div className="mx-[70px] mt-4 text-gray-g3b0 text-fr-14">
-            Showing {moviesData.length > 0 ? 1 : 0} to {Math.min(5, moviesData.length)} of {moviesData.length} results
+            Showing {movies.length > 0 ? 1 : 0} to{" "}
+            {Math.min(5, movies.length)} of {movies.length} results
           </div>
         </div>
       </div>
-      
+
       <AdminCreateNewMovieForm
         isShowModal={isShowCreateModal}
         onClose={() => setIsShowCreateModal(false)}

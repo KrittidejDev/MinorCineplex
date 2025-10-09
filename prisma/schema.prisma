@@ -199,7 +199,7 @@ model booking_seat {
 }
 
 model coupon {
-  id             Int          @id @default(autoincrement())
+  id             String       @id
   code           String       @unique
   title_en       String
   title_th       String
@@ -223,7 +223,7 @@ model coupon {
 model UserCoupon {
   id           String    @id @default(uuid())
   user_id      String
-  coupon_id    Int
+  coupon_id    String
   is_collected Boolean   @default(false)
   collected_at DateTime?
   coupon       coupon    @relation(fields: [coupon_id], references: [id])

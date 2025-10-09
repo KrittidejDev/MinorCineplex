@@ -30,7 +30,7 @@ function AdminSidebar() {
   ];
 
   return (
-    <div className="h-dvh bg-gray-gc1b flex flex-col justify-between py-[50px] px-[72px]">
+    <div className="h-dvh bg-gray-gc1b flex flex-col justify-between py-[50px] px-10">
       <div className="flex flex-col gap-[30px]">
         <div className="flex">
           <div className="mt-1 pr-2.5 border-r">
@@ -39,7 +39,7 @@ function AdminSidebar() {
           <h2 className="font-bold text-[44px] text-white-wfff pl-2.5">Admin</h2>
         </div>
 
-        <div className="flex flex-col gap-2 mt-[30px]">
+        <div className="flex flex-col gap-2">
           {tabs.map((tab) => {
             const isActive =
               pathname === tab.url ||

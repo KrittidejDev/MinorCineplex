@@ -4,6 +4,7 @@ import UploadFile from "../Icons/UploadFile";
 import { Button } from "../ui/button";
 import AdminInputTextField from "../Inputs/AdminInputTextField";
 import AdminInputTextArea from "../Inputs/AdminInputTextArea";
+import AdminGenreInput from "../Inputs/AdminGenreInput ";
 
 interface CreateNewMovieFormProps {
   isShowModal: boolean;
@@ -20,6 +21,7 @@ function AdminCreateNewMovieForm({
     duration: "",
     trailer: "",
   });
+
   const [errors, setErrors] = useState({
     title: "",
     description: "",
@@ -43,6 +45,9 @@ function AdminCreateNewMovieForm({
       }
     };
 
+  const [selectedGenre, setSelectedGenre] = useState("");
+  const [selectedRating, setSelectedRating] = useState("");
+
   const genreOptions = [
     { value: "action", label: "Action" },
     { value: "comedy", label: "Comedy" },
@@ -52,6 +57,14 @@ function AdminCreateNewMovieForm({
     { value: "sci-fi", label: "Sci-Fi" },
     { value: "thriller", label: "Thriller" },
     { value: "animation", label: "Animation" },
+  ];
+
+  const ratingOptions = [
+    { value: "g", label: "G" },
+    { value: "13+", label: "13+" },
+    { value: "15+", label: "15+" },
+    { value: "18+", label: "18+" },
+    { value: "20+", label: "20+" },
   ];
 
   return (
@@ -122,33 +135,27 @@ function AdminCreateNewMovieForm({
                     />
                   </div>
                   <div className="flex flex-col flex-1">
-                    <label
-                      htmlFor="genre"
-                      className="text-blue-bbee text-fr-16"
-                    >
-                      Genre
-                    </label>
-                    <input
-                      type="text"
-                      name="genre"
-                      id="genre"
+                    <AdminGenreInput
+                      label="Genre"
                       placeholder="Action"
-                      className="w-full p-3 border border-blue-bbee rounded-sm text-gray-gc1b placeholder:text-gray-g3b0 mt-1"
+                      value={selectedGenre}
+                      onChange={(value) => setSelectedGenre(value)}
+                      options={genreOptions}
+                      errors={!selectedGenre ? "Genre is required" : undefined}
+                      require={true}
                     />
                   </div>
                   <div className="flex flex-col flex-1">
-                    <label
-                      htmlFor="rating"
-                      className="text-blue-bbee text-fr-16"
-                    >
-                      Rating
-                    </label>
-                    <input
-                      type="text"
-                      name="rating"
-                      id="rating"
+                    <AdminGenreInput
+                      label="Rating"
                       placeholder="13+"
-                      className="w-full p-3 border border-blue-bbee rounded-sm text-gray-gc1b placeholder:text-gray-g3b0 mt-1"
+                      value={selectedRating}
+                      onChange={(value) => setSelectedRating(value)}
+                      options={ratingOptions}
+                      errors={
+                        !selectedRating ? "Rating is required" : undefined
+                      }
+                      require={true}
                     />
                   </div>
                 </div>

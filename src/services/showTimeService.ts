@@ -1,8 +1,32 @@
 import * as showTimeRepo from "../repositories/showTImeRepository";
 
-export const getShowTimes = async (movie_id: string) => {
-  const showTimes = await showTimeRepo.getMany(movie_id);
-  return showTimes;
+interface ShowTimeData {
+  id: string;
+  movie: string;
+  cinema: string;
+  hall: string;
+  timeslot: string;
+}
+
+export interface ShowTimeFilter {
+  limit?: number;
+  movie?: string;
+  cinema?: string;
+  hall?: string;
+}
+
+export const getShowTimes = async ({ limit, movie, cinema, hall }: ShowTimeFilter) => {
+  const showTimes = await showTimeRepo.getMany({ limit, movie, cinema, hall });
+  const showTimesData = showTimes.map((showTime): ShowTimeData => {
+    return {
+      id: showTime.id,
+      movie: showTime.movie.title,
+      cinema: showTime.hall.cinema.name,
+      hall: showTime.hall.name,
+      timeslot: showTime.time_slot.start_time,
+    };
+  });
+  return showTimesData;
 };
 
 export const getShowTimeById = async (id: string) => {

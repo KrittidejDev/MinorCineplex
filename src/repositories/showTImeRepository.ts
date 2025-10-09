@@ -1,36 +1,44 @@
 import { PrismaClient } from "@/generated/prisma";
+import { ShowTimeFilter } from "../services/showTimeService";
 
 const prisma = new PrismaClient();
 
-export const getMany = (movie_id: string) => {
+export const getMany = ({ limit, movie, cinema, hall }: ShowTimeFilter) => {
+  let hallFilter = undefined;
+  if (cinema && hall) {
+    hallFilter = { cinema: { name: cinema }, name: hall };
+  } else if (cinema) {
+    hallFilter = { cinema: { name: cinema } };
+  } else if (hall) {
+    hallFilter = { name: hall };
+  }
+
+  const where = {
+    ...(movie && { movie: { title: movie } }),
+    ...(hallFilter && { hall: hallFilter }),
+  };
   return prisma.showtime.findMany({
-    where: { movie_id },
+    take: limit,
+    where,
     select: {
       id: true,
-      date: true,
-      price: true,
       movie: {
         select: {
-          id: true,
           title: true,
-          duration_min: true,
-          poster_url: true,
-          rating: true,
-          genre: true,
-          release_date: true,
-          description: true,
         },
       },
       hall: {
         select: {
-          id: true,
           name: true,
-          cinema: true,
+          cinema: {
+            select: {
+              name: true,
+            },
+          },
         },
       },
       time_slot: {
         select: {
-          id: true,
           start_time: true,
           end_time: true,
         },

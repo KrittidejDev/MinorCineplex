@@ -4,7 +4,7 @@ import UploadFile from "../Icons/UploadFile";
 import { Button } from "../ui/button";
 import AdminInputTextField from "../Inputs/AdminInputTextField";
 import AdminInputTextArea from "../Inputs/AdminInputTextArea";
-import AdminGenreInput from "../Inputs/AdminGenreInput ";
+import AdminDropdownInput from "../Inputs/AdminDropdownInput ";
 
 interface CreateNewMovieFormProps {
   isShowModal: boolean;
@@ -135,7 +135,7 @@ function AdminCreateNewMovieForm({
                     />
                   </div>
                   <div className="flex flex-col flex-1">
-                    <AdminGenreInput
+                    <AdminDropdownInput
                       label="Genre"
                       placeholder="Action"
                       value={selectedGenre}
@@ -146,7 +146,7 @@ function AdminCreateNewMovieForm({
                     />
                   </div>
                   <div className="flex flex-col flex-1">
-                    <AdminGenreInput
+                    <AdminDropdownInput
                       label="Rating"
                       placeholder="13+"
                       value={selectedRating}

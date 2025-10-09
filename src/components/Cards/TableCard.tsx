@@ -34,8 +34,8 @@ export default function TableCard({ columns, actions, data, headerPaddingClass =
     const totalResults = total ?? data.length;
 
     return(
-        <div className="flax flex-col gap-10">
-            <div className="mx-[70px] border border-blue-bbee rounded-t-[4px] overflow-hidden">
+        <div className="flax flex-col gap-10 px-[70px]">
+            <div className="border border-blue-bbee rounded-t-[4px] overflow-hidden">
                 <table className="w-full">
                     <thead>
                         <tr className="bg-blue-bbee">

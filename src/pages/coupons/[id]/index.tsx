@@ -1,3 +1,4 @@
+//pages/coupons/[id]/index.tsx
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/router'
 import NavAndFooter from '@/components/MainLayout/NavAndFooter'
@@ -33,7 +34,7 @@ const CouponDetail = () => {
   }, [])
 
   // ✅ ดึงข้อมูลคูปอง (แยก logic ออกมาเป็นฟังก์ชันเดียว)
-  const fetchCoupon = useCallback(async (couponId: number) => {
+  const fetchCoupon = useCallback(async (couponId: string) => {
     try {
       setLoading(true)
       const res = (await userService.GET_COUPON_BY_ID(couponId)) as CouponStatusResponse
@@ -54,7 +55,7 @@ const CouponDetail = () => {
   // ✅ useEffect ปลอดภัยและไม่รันซ้ำโดยไม่จำเป็น
   useEffect(() => {
     if (!id) return
-    const couponId = Number(id)
+    const couponId = String(id)
     if (isNaN(couponId)) return
   
     fetchCoupon(couponId).catch(console.error)

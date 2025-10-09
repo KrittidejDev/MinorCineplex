@@ -111,7 +111,7 @@ function AdminMovieWidget() {
   return (
     <>
       <div className="flex flex-col">
-        <div className="flex items-center justify-between mt-20 mx-[70px]">
+        <div className="flex items-center justify-between mt-20 px-[70px]">
           <h1 className="text-gray-g63f text-f-56 font-bold">Movies</h1>
           <Button
             className="btn-base blue-normal text-fm-16 font-bold gap-2.5 h-12 w-[135px] rounded-[4px]"
@@ -122,7 +122,7 @@ function AdminMovieWidget() {
           </Button>
         </div>
 
-        <div className="mx-[70px] mt-8">
+        <div className="px-[70px] mt-8">
           <div className="w-full">
             <AdminSearchBar
               placeholder="Search by Title"
@@ -140,7 +140,7 @@ function AdminMovieWidget() {
             headerPaddingClass="px-[30px] py-5"
             actionsHeaderPaddingClass="px-[30px] py-5"
           />
-          <div className="mx-[70px] mt-5 text-gray-g3b0 text-fr-14">
+          <div className="mt-5 text-gray-g3b0 text-fr-14">
             Showing {filteredMovies.length > 0 ? 1 : 0} to{" "}
             {Math.min(5, filteredMovies.length)} of {filteredMovies.length}{" "}
             results

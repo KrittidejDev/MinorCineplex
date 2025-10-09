@@ -1,38 +1,44 @@
-import { useState, useEffect,useMemo } from "react";
+"use client";
+
+import { useState, useEffect, useMemo } from "react";
 import { Button } from "../ui/button";
 import AddRoundLight from "../Icons/AddRoundLight";
 import TableCard from "../Cards/TableCard";
 import { APIMovie } from "@/types/movie";
 import AdminCreateNewMovieForm from "../Forms/AdminCreateNewMovieForm";
 import AdminSearchBar from "../Inputs/AdminSearchBar";
-import axios from "axios";
 
 function AdminMovieWidget() {
   const [isShowCreateModal, setIsShowCreateModal] = useState(false);
   const [movies, setMovies] = useState<APIMovie[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    let isMounted = true;
+    const isMounted = { current: true };
 
     const fetchMovies = async () => {
       try {
-        const res = await axios.get<{ movie: APIMovie[] }>("/api/movies");;
+        if (isMounted.current) setLoading(true);
+        const res = await fetch("/api/movies");
+        if (!res.ok) throw new Error("Failed to fetch movies");
+        const data: { movie: APIMovie[] } = await res.json();
 
-        if (isMounted) {
-          setMovies(Array.isArray(res.data.movie) ? res.data.movie : []);
-        }
+        if (isMounted.current)
+          setMovies(Array.isArray(data.movie) ? data.movie : []);
       } catch (err) {
-        console.error("Failed to fetch movies:", err);
+        console.error(err);
+        if (isMounted.current) setError("ไม่สามารถโหลดข้อมูลหนังได้");
       } finally {
-        if (isMounted) setLoading(false);
+        if (isMounted.current) setLoading(false);
       }
     };
 
-    fetchMovies();
+    fetchMovies().catch(console.error);
+
     return () => {
-      isMounted = false;
+      isMounted.current = false;
     };
   }, []);
 
@@ -99,6 +105,9 @@ function AdminMovieWidget() {
     },
   ];
 
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>{error}</p>;
+
   return (
     <>
       <div className="flex flex-col">
@@ -115,7 +124,11 @@ function AdminMovieWidget() {
 
         <div className="mx-[70px] mt-8">
           <div className="w-full">
-            <AdminSearchBar placeholder="Search by Title" />
+            <AdminSearchBar
+              placeholder="Search by Title"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
           </div>
         </div>
 
@@ -128,8 +141,9 @@ function AdminMovieWidget() {
             actionsHeaderPaddingClass="px-[30px] py-5"
           />
           <div className="mx-[70px] mt-4 text-gray-g3b0 text-fr-14">
-            Showing {movies.length > 0 ? 1 : 0} to{" "}
-            {Math.min(5, movies.length)} of {movies.length} results
+            Showing {filteredMovies.length > 0 ? 1 : 0} to{" "}
+            {Math.min(5, filteredMovies.length)} of {filteredMovies.length}{" "}
+            results
           </div>
         </div>
       </div>

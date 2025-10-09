@@ -199,7 +199,7 @@ model booking_seat {
 }
 
 model coupon {
-  id             String       @id
+  id             String       @id @default(uuid())
   code           String       @unique
   title_en       String
   title_th       String

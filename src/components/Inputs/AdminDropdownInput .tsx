@@ -1,16 +1,16 @@
 import React, { useState } from "react";
 import ExpandDownLight from "../Icons/ExpandDownLight";
 
-type GenreOption = {
+type DropdownOption = {
   value: string;
   label: string;
 };
 
-type AdminGenreInputProps = {
+type AdminDropdownInputProps = {
   placeholder?: string;
   value?: string;
   onChange?: (value: string) => void;
-  options?: GenreOption[];
+  options?: DropdownOption[];
   errors?: string;
   disabled?: boolean;
   label?: string;
@@ -19,7 +19,7 @@ type AdminGenreInputProps = {
   className?: string;
 };
 
-const AdminGenreInput = ({
+const AdminDropdownInput = ({
   placeholder = "",
   value = "",
   onChange,
@@ -30,7 +30,7 @@ const AdminGenreInput = ({
   text,
   require,
   className = "",
-}: AdminGenreInputProps) => {
+}: AdminDropdownInputProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const baseClass =
@@ -104,4 +104,4 @@ const AdminGenreInput = ({
   );
 };
 
-export default AdminGenreInput;
+export default AdminDropdownInput;

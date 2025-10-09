@@ -1,4 +1,4 @@
-//pages/coupons/[id]/index.tsx
+// pages/coupons/[id]/index.tsx
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/router'
 import NavAndFooter from '@/components/MainLayout/NavAndFooter'
@@ -8,6 +8,7 @@ import { APICoupon } from '@/types/coupon'
 import { userService } from '@/config/userServices'
 import { useSession } from 'next-auth/react'
 import { HoverCard3D } from '@/components/Displays/HoverCard3D'
+
 interface CouponStatusResponse {
   coupon: APICoupon
   is_collected: boolean
@@ -22,7 +23,7 @@ const CouponDetail = () => {
   const [collected, setCollected] = useState(false)
   const { data: session } = useSession()
 
-  // ✅ ป้องกัน re-render ทุกครั้งที่ component re-renders
+  // Format วันแบบ memoized
   const formatDate = useCallback((isoDate?: string | null): string => {
     if (!isoDate) return 'N/A'
     const date = new Date(isoDate)
@@ -33,7 +34,7 @@ const CouponDetail = () => {
     })
   }, [])
 
-  // ✅ ดึงข้อมูลคูปอง (แยก logic ออกมาเป็นฟังก์ชันเดียว)
+  // Fetch coupon จาก backend (UUID string)
   const fetchCoupon = useCallback(async (couponId: string) => {
     try {
       setLoading(true)
@@ -52,23 +53,19 @@ const CouponDetail = () => {
     }
   }, [])
 
-  // ✅ useEffect ปลอดภัยและไม่รันซ้ำโดยไม่จำเป็น
+  // useEffect ดึงข้อมูลเมื่อ router.query.id พร้อม
   useEffect(() => {
     if (!id) return
-    const couponId = String(id)
-    if (isNaN(couponId)) return
-  
+    const couponId = Array.isArray(id) ? id[0] : id // ใช้ string UUID ตรง ๆ
     fetchCoupon(couponId).catch(console.error)
   }, [id, fetchCoupon])
-  
 
-  // ✅ ป้องกันสร้างฟังก์ชัน handle ใหม่ทุก render
+  // Handle กดเก็บคูปอง
   const handleGetCoupon = useCallback(async () => {
     if (!session?.user?.id) {
       alert('Please login to collect coupon')
       return
     }
-
     if (!coupon) {
       alert('Coupon not found')
       return
@@ -76,14 +73,11 @@ const CouponDetail = () => {
 
     try {
       setLoading(true)
-      await userService.COLLECT_COUPON(coupon.id)
+      await userService.COLLECT_COUPON(coupon.id) // UUID string
       setCollected(true)
     } catch (err) {
       console.error(err)
-      const error = err as {
-        response?: { data?: { error?: string } }
-        message?: string
-      }
+      const error = err as { response?: { data?: { error?: string } }; message?: string }
       const errorMessage =
         error?.response?.data?.error || error?.message || 'Failed to collect coupon'
       alert(errorMessage)
@@ -92,13 +86,19 @@ const CouponDetail = () => {
     }
   }, [coupon, session])
 
-  // ✅ คำนวณวันหมดอายุเพียงครั้งเดียว (memoized)
-  const formattedEndDate = useMemo(() => formatDate(coupon?.end_date), [coupon?.end_date, formatDate])
+  // Memoized วันหมดอายุ
+  const formattedEndDate = useMemo(
+    () => formatDate(coupon?.end_date),
+    [coupon?.end_date, formatDate]
+  )
 
+  // Loading / Error / Not Found
   if (loading)
     return (
       <NavAndFooter>
-        <div className="text-center py-10 animate-pulse text-gray-400">Loading coupon...</div>
+        <div className="text-center py-10 animate-pulse text-gray-400">
+          Loading coupon...
+        </div>
       </NavAndFooter>
     )
 
@@ -121,15 +121,15 @@ const CouponDetail = () => {
       <div className="flex flex-col lg:flex-row items-center lg:items-start w-full min-h-screen px-4 sm:px-8 lg:px-130 py-6 lg:py-30 gap-5">
         {/* Left Side - Image */}
         <div className="flex justify-center lg:justify-start w-full lg:w-[387px]">
-          <HoverCard3D >
-          <Image
-            src={coupon.image || '/default-image.svg'}
-            alt={coupon.title_en}
-            width={387}
-            height={387}
-            className="rounded-t-[8px] w-full h-auto"
-            priority
-          />
+          <HoverCard3D>
+            <Image
+              src={coupon.image || '/default-image.svg'}
+              alt={coupon.title_en}
+              width={387}
+              height={387}
+              className="rounded-t-[8px] w-full h-auto"
+              priority
+            />
           </HoverCard3D>
         </div>
 

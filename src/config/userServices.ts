@@ -122,7 +122,7 @@ export const userService = {
     apiService.get(`${apiPath}/coupons/${id}/collect`),
 
   // POST รับคูปอง
-  COLLECT_COUPON: (id: number) =>
+  COLLECT_COUPON: (id: string) =>
     apiService.post(`${apiPath}/coupons/${id}/collect`),
   // GET coupon ที่เก็บแล้ว
   GET_COUPON_COLLECTED : () => 

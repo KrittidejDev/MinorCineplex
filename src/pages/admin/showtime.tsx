@@ -1,15 +1,17 @@
+import AdminSidebar from "@/components/ui/adminsidebar";
+import AdminShowtimeWidget from "@/components/Widgets/AdminShowtimeWidget";
 
-
-import AdminSidebar from "@/components/ui/adminsidebar"; 
-
-export default function Dashboard() {
- 
-
+export default function AdminShowtime() {
   return (
-
-     <div>
-      <AdminSidebar />
-    
+    <div className="bg-white-wfff">
+      <div className="flex">
+        <div>
+        <AdminSidebar />
+      </div>
+      <div className="w-full px-15 py-20">
+        <AdminShowtimeWidget />
+      </div>
+      </div>
     </div>
   );
 }

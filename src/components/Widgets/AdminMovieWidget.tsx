@@ -140,7 +140,7 @@ function AdminMovieWidget() {
             headerPaddingClass="px-[30px] py-5"
             actionsHeaderPaddingClass="px-[30px] py-5"
           />
-          <div className="mx-[70px] mt-4 text-gray-g3b0 text-fr-14">
+          <div className="mx-[70px] mt-5 text-gray-g3b0 text-fr-14">
             Showing {filteredMovies.length > 0 ? 1 : 0} to{" "}
             {Math.min(5, filteredMovies.length)} of {filteredMovies.length}{" "}
             results

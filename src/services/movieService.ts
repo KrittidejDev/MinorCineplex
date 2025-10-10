@@ -48,3 +48,23 @@ export async function getMovieById(id: string): Promise<APIMovie | null> {
 
   return movie;
 }
+
+export async function createMovie(data: {
+  title: string;
+  description: string;
+  duration: number;
+  genre: string;
+  rating: string;
+  trailer?: string;
+}) {
+  return await prisma.movie.create({
+    data: {
+      title: data.title,
+      description: data.description,
+      duration_min: data.duration,
+      genre: data.genre,
+      rating: data.rating,
+      trailer_url: data.trailer,
+    },
+  });
+}

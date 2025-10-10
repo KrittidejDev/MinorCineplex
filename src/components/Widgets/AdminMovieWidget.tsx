@@ -15,32 +15,24 @@ function AdminMovieWidget() {
   const [searchTerm, setSearchTerm] = useState("");
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const isMounted = { current: true };
+  const fetchMovies = async () => {
+  try {
+    setLoading(true);
+    const res = await fetch("/api/movies");
+    if (!res.ok) throw new Error("Failed to fetch movies");
+    const data: { movie: APIMovie[] } = await res.json();
+    setMovies(Array.isArray(data.movie) ? data.movie : []);
+  } catch (err) {
+    console.error(err);
+    setError("ไม่สามารถโหลดข้อมูลหนังได้");
+  } finally {
+    setLoading(false);
+  }
+};
 
-    const fetchMovies = async () => {
-      try {
-        if (isMounted.current) setLoading(true);
-        const res = await fetch("/api/movies");
-        if (!res.ok) throw new Error("Failed to fetch movies");
-        const data: { movie: APIMovie[] } = await res.json();
-
-        if (isMounted.current)
-          setMovies(Array.isArray(data.movie) ? data.movie : []);
-      } catch (err) {
-        console.error(err);
-        if (isMounted.current) setError("ไม่สามารถโหลดข้อมูลหนังได้");
-      } finally {
-        if (isMounted.current) setLoading(false);
-      }
-    };
-
-    fetchMovies().catch(console.error);
-
-    return () => {
-      isMounted.current = false;
-    };
-  }, []);
+useEffect(() => {
+  fetchMovies();
+}, []);
 
   const filteredMovies = useMemo(() => {
     if (!Array.isArray(movies)) return [];
@@ -149,9 +141,12 @@ function AdminMovieWidget() {
       </div>
 
       <AdminCreateNewMovieForm
-        isShowModal={isShowCreateModal}
-        onClose={() => setIsShowCreateModal(false)}
-      />
+  isShowModal={isShowCreateModal}
+  onClose={() => {
+    setIsShowCreateModal(false);
+    fetchMovies();
+  }}
+/>
     </>
   );
 }

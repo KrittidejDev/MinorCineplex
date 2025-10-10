@@ -23,6 +23,7 @@ function AdminEditMovieForm({
     title: "",
     description: "",
     duration: "",
+    rating: "",
     trailer: "",
   });
 
@@ -33,6 +34,7 @@ function AdminEditMovieForm({
     title: "",
     description: "",
     duration: "",
+    rating: "",
     trailer: "",
   });
 
@@ -42,10 +44,11 @@ function AdminEditMovieForm({
         title: movie.title || "",
         description: movie.description || "",
         duration: movie.duration_min?.toString() || "",
+        rating: movie.rating?.toString() || "",
         trailer: movie.trailer_url || "",
       });
-      setSelectedGenre(movie.genre || "");
-      setSelectedRating(movie.rating || "");
+      setSelectedGenre(movie.genre?.toLowerCase() || "");
+      setSelectedRating(movie.rating?.toString() || "");
       setPosterPreview(movie.poster_url || null);
     }
   }, [movie]);
@@ -89,27 +92,24 @@ function AdminEditMovieForm({
     { value: "animation", label: "Animation" },
   ];
 
-  const ratingOptions = [
-    { value: "g", label: "G" },
-    { value: "13+", label: "13+" },
-    { value: "15+", label: "15+" },
-    { value: "18+", label: "18+" },
-    { value: "20+", label: "20+" },
-  ];
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!movie) return;
 
+    const ratingValue = Number(formData.rating);
+    if (isNaN(ratingValue) || ratingValue < 0 || ratingValue > 5) {
+      alert("กรุณาใส่ Rating ระหว่าง 0 ถึง 5");
+      return;
+    }
+
     const payload = {
-  title: formData.title,
-  description: formData.description,
-  duration_min: Number(formData.duration),
-  trailer_url: formData.trailer,
-  genre: selectedGenre,
-  rating: selectedRating,
-};
+      title: formData.title,
+      description: formData.description,
+      duration_min: Number(formData.duration),
+      trailer_url: formData.trailer,
+      genre: selectedGenre,
+      rating: ratingValue.toString(),
+    };
 
     try {
       setLoading(true);
@@ -122,8 +122,8 @@ function AdminEditMovieForm({
         alert("แก้ไขภาพยนตร์ไม่สำเร็จ");
       }
     } catch (err: any) {
-  console.error("Error updating movie:", err.response?.data || err);
-  alert("มีข้อผิดพลาดในการบันทึกข้อมูล");
+      console.error("Error updating movie:", err.response?.data || err);
+      alert("มีข้อผิดพลาดในการบันทึกข้อมูล");
     } finally {
       setLoading(false);
     }
@@ -223,16 +223,14 @@ function AdminEditMovieForm({
                     />
                   </div>
                   <div className="flex flex-col flex-1">
-                    <AdminDropdownInput
+                    <AdminInputTextField
                       label="Rating"
-                      placeholder="13+"
-                      value={selectedRating}
-                      onChange={(value) => setSelectedRating(value)}
-                      options={ratingOptions}
-                      errors={
-                        !selectedRating ? "Rating is required" : undefined
-                      }
-                      require={true}
+                      placeholder="0 - 5"
+                      value={formData.rating}
+                      onChange={handleInputChange("rating")}
+                      errors={errors.rating}
+                      require={false}
+                      type="number"
                     />
                   </div>
                 </div>

@@ -16,23 +16,23 @@ function AdminMovieWidget() {
   const [error, setError] = useState<string | null>(null);
 
   const fetchMovies = async () => {
-  try {
-    setLoading(true);
-    const res = await fetch("/api/movies");
-    if (!res.ok) throw new Error("Failed to fetch movies");
-    const data: { movie: APIMovie[] } = await res.json();
-    setMovies(Array.isArray(data.movie) ? data.movie : []);
-  } catch (err) {
-    console.error(err);
-    setError("ไม่สามารถโหลดข้อมูลหนังได้");
-  } finally {
-    setLoading(false);
-  }
-};
+    try {
+      setLoading(true);
+      const res = await fetch("/api/movies");
+      if (!res.ok) throw new Error("Failed to fetch movies");
+      const data: { movie: APIMovie[] } = await res.json();
+      setMovies(Array.isArray(data.movie) ? data.movie : []);
+    } catch (err) {
+      console.error(err);
+      setError("ไม่สามารถโหลดข้อมูลหนังได้");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-useEffect(() => {
-  fetchMovies();
-}, []);
+  useEffect(() => {
+    fetchMovies();
+  }, []);
 
   const filteredMovies = useMemo(() => {
     if (!Array.isArray(movies)) return [];
@@ -84,18 +84,34 @@ useEffect(() => {
     },
   ];
 
-  const movieActions = [
-    {
-      onView: () => console.log("View Movie 1"),
-      onEdit: () => console.log("Edit Movie 1"),
-      onDelete: () => console.log("Delete Movie 1"),
+  const movieActions = filteredMovies.map((movie) => ({
+    onView: () => console.log("View Movie", movie.id),
+    onEdit: async () => {
+      const newTitle = prompt("Enter new title", movie.title);
+      if (!newTitle) return;
+
+      try {
+        await fetch(`/api/movies/${movie.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ title: newTitle }),
+        });
+        fetchMovies(); // refresh table
+      } catch (err) {
+        console.error(err);
+      }
     },
-    {
-      onView: () => console.log("View Movie 2"),
-      onEdit: () => console.log("Edit Movie 2"),
-      onDelete: () => console.log("Delete Movie 2"),
+    onDelete: async () => {
+      if (!confirm("Are you sure to delete this movie?")) return;
+
+      try {
+        await fetch(`/api/movies/${movie.id}`, { method: "DELETE" });
+        fetchMovies(); // refresh table
+      } catch (err) {
+        console.error(err);
+      }
     },
-  ];
+  }));
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
@@ -141,12 +157,12 @@ useEffect(() => {
       </div>
 
       <AdminCreateNewMovieForm
-  isShowModal={isShowCreateModal}
-  onClose={() => {
-    setIsShowCreateModal(false);
-    fetchMovies();
-  }}
-/>
+        isShowModal={isShowCreateModal}
+        onClose={() => {
+          setIsShowCreateModal(false);
+          fetchMovies();
+        }}
+      />
     </>
   );
 }

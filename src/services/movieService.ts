@@ -34,16 +34,18 @@ export async function getMovieById(id: string): Promise<APIMovie | null> {
     created_at: dbMovie.created_at,
     updated_at: dbMovie.updated_at,
     release_date: dbMovie.release_date,
-    actors: dbMovie.actors?.map((ma) => ({
-      id: ma.actor.id,
-      name: ma.actor.name,
-      imageUrl: ma.actor.image_url || undefined,
-    })) || [],
-    directors: dbMovie.directors?.map((md) => ({
-      id: md.director.id,
-      name: md.director.name,
-      imageUrl: md.director.image_url || undefined,
-    })) || [],
+    actors:
+      dbMovie.actors?.map((ma) => ({
+        id: ma.actor.id,
+        name: ma.actor.name,
+        imageUrl: ma.actor.image_url || undefined,
+      })) || [],
+    directors:
+      dbMovie.directors?.map((md) => ({
+        id: md.director.id,
+        name: md.director.name,
+        imageUrl: md.director.image_url || undefined,
+      })) || [],
   };
 
   return movie;
@@ -66,5 +68,32 @@ export async function createMovie(data: {
       rating: data.rating,
       trailer_url: data.trailer,
     },
+  });
+}
+
+export async function updateMovie(id: string, data: Partial<APIMovie>) {
+  const { actors, directors, ...rest } = data;
+
+  return await prisma.movie.update({
+    where: { id },
+    data: {
+      ...rest,
+      actors: actors
+        ? {
+            set: actors.map((actor) => ({ id: actor.id })), // Prisma nested update
+          }
+        : undefined,
+      directors: directors
+        ? {
+            set: directors.map((director) => ({ id: director.id })),
+          }
+        : undefined,
+    },
+  });
+}
+
+export async function deleteMovie(id: string) {
+  return await prisma.movie.delete({
+    where: { id },
   });
 }

@@ -1,21 +1,20 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import ModalEmpty from "../Modals/ModalEmpty";
 import UploadFile from "../Icons/UploadFile";
 import { Button } from "../ui/button";
 import AdminInputTextField from "../Inputs/AdminInputTextField";
 import AdminInputTextArea from "../Inputs/AdminInputTextArea";
 import AdminDropdownInput from "../Inputs/AdminDropdownInput ";
+import { APIMovie } from "@/types/movie";
 import axios from "axios";
 
-interface CreateNewMovieFormProps {
+interface EditMovieFormProps {
+  movie: APIMovie | null;
   isShowModal: boolean;
   onClose: () => void;
 }
 
-function AdminCreateNewMovieForm({
-  isShowModal,
-  onClose,
-}: CreateNewMovieFormProps) {
+function AdminEditMovieForm({ movie, isShowModal, onClose }: EditMovieFormProps) {
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -32,6 +31,20 @@ function AdminCreateNewMovieForm({
     duration: "",
     trailer: "",
   });
+
+  useEffect(() => {
+    if (movie) {
+      setFormData({
+        title: movie.title || "",
+        description: movie.description || "",
+        duration: movie.duration_min?.toString() || "",
+        trailer: movie.trailer_url || "",
+      });
+      setSelectedGenre(movie.genre || "");
+      setSelectedRating(movie.rating || "");
+      setPosterPreview(movie.poster_url || null);
+    }
+  }, [movie]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -95,10 +108,10 @@ function AdminCreateNewMovieForm({
       const res = await axios.post("/api/movies", payload);
 
       if (res.status === 201) {
-        alert("เพิ่มภาพยนตร์สำเร็จ!");
+        alert("แก้ไขภาพยนตร์สำเร็จ!");
         onClose();
       } else {
-        alert("เพิ่มภาพยนตร์ไม่สำเร็จ");
+        alert("แก้ไขภาพยนตร์ไม่สำเร็จ");
       }
     } catch (err) {
       console.error(err);
@@ -111,14 +124,11 @@ function AdminCreateNewMovieForm({
   return (
     <ModalEmpty isShowModal={isShowModal} onClose={onClose}>
       <div className="bg-white w-[1200px] h-[744px] rounded-sm shadow-lg py-10 px-[120px]">
-        <h1 className="font-bold text-f-56 text-gray-g63f">Add New Movie</h1>
+        <h1 className="font-bold text-f-56 text-gray-g63f">Edit Movie</h1>
         <div className="h-[316px] flex items-start gap-5 mt-5">
-         <form className="flex flex-col flex-1" onSubmit={handleSubmit}>
+          <form className="flex flex-col flex-1" onSubmit={handleSubmit}>
             <div className="h-[316px] flex items-start gap-5">
-              <div
-                className="w-[250px] h-full flex justify-center items-center text-center border border-blue-bbee rounded-sm border-dashed relative overflow-hidden cursor-pointer"
-                onClick={() => fileInputRef.current?.click()}
-              >
+              <div className="w-[250px] h-full flex justify-center items-center text-center border border-blue-bbee rounded-sm border-dashed relative overflow-hidden cursor-pointer">
                 {posterPreview ? (
                   <img
                     src={posterPreview}
@@ -253,4 +263,4 @@ function AdminCreateNewMovieForm({
   );
 }
 
-export default AdminCreateNewMovieForm;
+export default AdminEditMovieForm;

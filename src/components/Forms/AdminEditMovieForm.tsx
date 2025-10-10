@@ -14,7 +14,11 @@ interface EditMovieFormProps {
   onClose: () => void;
 }
 
-function AdminEditMovieForm({ movie, isShowModal, onClose }: EditMovieFormProps) {
+function AdminEditMovieForm({
+  movie,
+  isShowModal,
+  onClose,
+}: EditMovieFormProps) {
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -96,26 +100,30 @@ function AdminEditMovieForm({ movie, isShowModal, onClose }: EditMovieFormProps)
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (!movie) return;
+
     const payload = {
-      ...formData,
-      duration: Number(formData.duration),
-      genre: selectedGenre,
-      rating: selectedRating,
-    };
+  title: formData.title,
+  description: formData.description,
+  duration_min: Number(formData.duration),
+  trailer_url: formData.trailer,
+  genre: selectedGenre,
+  rating: selectedRating,
+};
 
     try {
       setLoading(true);
-      const res = await axios.post("/api/movies", payload);
+      const res = await axios.put(`/api/movies/${movie.id}`, payload);
 
-      if (res.status === 201) {
+      if (res.status === 200) {
         alert("แก้ไขภาพยนตร์สำเร็จ!");
         onClose();
       } else {
         alert("แก้ไขภาพยนตร์ไม่สำเร็จ");
       }
-    } catch (err) {
-      console.error(err);
-      alert("มีข้อผิดพลาดในการบันทึกข้อมูล");
+    } catch (err: any) {
+  console.error("Error updating movie:", err.response?.data || err);
+  alert("มีข้อผิดพลาดในการบันทึกข้อมูล");
     } finally {
       setLoading(false);
     }

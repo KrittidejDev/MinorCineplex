@@ -6,11 +6,13 @@ import AddRoundLight from "../Icons/AddRoundLight";
 import TableCard from "../Cards/TableCard";
 import { APIMovie } from "@/types/movie";
 import AdminCreateNewMovieForm from "../Forms/AdminCreateNewMovieForm";
+import AdminViewMovieForm from "../Forms/AdminViewMovieForm";
 import AdminEditMovieForm from "../Forms/AdminEditMovieForm";
 import AdminSearchBar from "../Inputs/AdminSearchBar";
 
 function AdminMovieWidget() {
   const [isShowCreateModal, setIsShowCreateModal] = useState(false);
+  const [viewMovie, setViewMovie] = useState<APIMovie | null>(null);
   const [editMovie, setEditMovie] = useState<APIMovie | null>(null);
   const [movies, setMovies] = useState<APIMovie[]>([]);
   const [loading, setLoading] = useState(true);
@@ -87,7 +89,7 @@ function AdminMovieWidget() {
   ];
 
   const movieActions = filteredMovies.map((movie) => ({
-    onView: () => console.log("View Movie", movie.id),
+    onView: () => setViewMovie(movie),
     onEdit: () => setEditMovie(movie),
     onDelete: async () => {
       if (!confirm("Are you sure to delete this movie?")) return;
@@ -150,6 +152,12 @@ function AdminMovieWidget() {
           setIsShowCreateModal(false);
           fetchMovies();
         }}
+      />
+
+      <AdminViewMovieForm
+        movie={viewMovie}
+        isShowModal={!!viewMovie}
+        onClose={() => setViewMovie(null)}
       />
 
       <AdminEditMovieForm

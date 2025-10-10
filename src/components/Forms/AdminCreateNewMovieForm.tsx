@@ -20,6 +20,7 @@ function AdminCreateNewMovieForm({
     title: "",
     description: "",
     duration: "",
+    rating: "",
     trailer: "",
   });
 
@@ -30,6 +31,7 @@ function AdminCreateNewMovieForm({
     title: "",
     description: "",
     duration: "",
+    rating: "",
     trailer: "",
   });
 
@@ -72,22 +74,20 @@ function AdminCreateNewMovieForm({
     { value: "animation", label: "Animation" },
   ];
 
-  const ratingOptions = [
-    { value: "g", label: "G" },
-    { value: "13+", label: "13+" },
-    { value: "15+", label: "15+" },
-    { value: "18+", label: "18+" },
-    { value: "20+", label: "20+" },
-  ];
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const ratingValue = Number(formData.rating);
+    if (isNaN(ratingValue) || ratingValue < 0 || ratingValue > 5) {
+      alert("Rating ต้องอยู่ระหว่าง 0 - 5");
+      return;
+    }
 
     const payload = {
       ...formData,
       duration: Number(formData.duration),
       genre: selectedGenre,
-      rating: selectedRating,
+      rating: ratingValue,
     };
 
     try {
@@ -113,7 +113,7 @@ function AdminCreateNewMovieForm({
       <div className="bg-white w-[1200px] h-[744px] rounded-sm shadow-lg py-10 px-[120px]">
         <h1 className="font-bold text-f-56 text-gray-g63f">Add New Movie</h1>
         <div className="h-[316px] flex items-start gap-5 mt-5">
-         <form className="flex flex-col flex-1" onSubmit={handleSubmit}>
+          <form className="flex flex-col flex-1" onSubmit={handleSubmit}>
             <div className="h-[316px] flex items-start gap-5">
               <div
                 className="w-[250px] h-full flex justify-center items-center text-center border border-blue-bbee rounded-sm border-dashed relative overflow-hidden cursor-pointer"
@@ -205,16 +205,14 @@ function AdminCreateNewMovieForm({
                     />
                   </div>
                   <div className="flex flex-col flex-1">
-                    <AdminDropdownInput
+                    <AdminInputTextField
                       label="Rating"
-                      placeholder="13+"
-                      value={selectedRating}
-                      onChange={(value) => setSelectedRating(value)}
-                      options={ratingOptions}
-                      errors={
-                        !selectedRating ? "Rating is required" : undefined
-                      }
-                      require={true}
+                      placeholder="0 - 5"
+                      value={formData.rating}
+                      onChange={handleInputChange("rating")}
+                      errors={errors.rating}
+                      require={false}
+                      type="number"
                     />
                   </div>
                 </div>

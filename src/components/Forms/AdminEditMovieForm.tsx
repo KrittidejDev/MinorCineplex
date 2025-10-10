@@ -14,11 +14,16 @@ interface EditMovieFormProps {
   onClose: () => void;
 }
 
-function AdminEditMovieForm({ movie, isShowModal, onClose }: EditMovieFormProps) {
+function AdminEditMovieForm({
+  movie,
+  isShowModal,
+  onClose,
+}: EditMovieFormProps) {
   const [formData, setFormData] = useState({
     title: "",
     description: "",
     duration: "",
+    rating: "",
     trailer: "",
   });
 
@@ -29,6 +34,7 @@ function AdminEditMovieForm({ movie, isShowModal, onClose }: EditMovieFormProps)
     title: "",
     description: "",
     duration: "",
+    rating: "",
     trailer: "",
   });
 
@@ -38,10 +44,11 @@ function AdminEditMovieForm({ movie, isShowModal, onClose }: EditMovieFormProps)
         title: movie.title || "",
         description: movie.description || "",
         duration: movie.duration_min?.toString() || "",
+        rating: movie.rating?.toString() || "",
         trailer: movie.trailer_url || "",
       });
-      setSelectedGenre(movie.genre || "");
-      setSelectedRating(movie.rating || "");
+      setSelectedGenre(movie.genre?.toLowerCase() || "");
+      setSelectedRating(movie.rating?.toString() || "");
       setPosterPreview(movie.poster_url || null);
     }
   }, [movie]);
@@ -85,36 +92,37 @@ function AdminEditMovieForm({ movie, isShowModal, onClose }: EditMovieFormProps)
     { value: "animation", label: "Animation" },
   ];
 
-  const ratingOptions = [
-    { value: "g", label: "G" },
-    { value: "13+", label: "13+" },
-    { value: "15+", label: "15+" },
-    { value: "18+", label: "18+" },
-    { value: "20+", label: "20+" },
-  ];
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!movie) return;
+
+    const ratingValue = Number(formData.rating);
+    if (isNaN(ratingValue) || ratingValue < 0 || ratingValue > 5) {
+      alert("กรุณาใส่ Rating ระหว่าง 0 ถึง 5");
+      return;
+    }
 
     const payload = {
-      ...formData,
-      duration: Number(formData.duration),
+      title: formData.title,
+      description: formData.description,
+      duration_min: Number(formData.duration),
+      trailer_url: formData.trailer,
       genre: selectedGenre,
-      rating: selectedRating,
+      rating: ratingValue.toString(),
     };
 
     try {
       setLoading(true);
-      const res = await axios.post("/api/movies", payload);
+      const res = await axios.put(`/api/movies/${movie.id}`, payload);
 
-      if (res.status === 201) {
+      if (res.status === 200) {
         alert("แก้ไขภาพยนตร์สำเร็จ!");
         onClose();
       } else {
         alert("แก้ไขภาพยนตร์ไม่สำเร็จ");
       }
-    } catch (err) {
-      console.error(err);
+    } catch (err: any) {
+      console.error("Error updating movie:", err.response?.data || err);
       alert("มีข้อผิดพลาดในการบันทึกข้อมูล");
     } finally {
       setLoading(false);
@@ -215,16 +223,14 @@ function AdminEditMovieForm({ movie, isShowModal, onClose }: EditMovieFormProps)
                     />
                   </div>
                   <div className="flex flex-col flex-1">
-                    <AdminDropdownInput
+                    <AdminInputTextField
                       label="Rating"
-                      placeholder="13+"
-                      value={selectedRating}
-                      onChange={(value) => setSelectedRating(value)}
-                      options={ratingOptions}
-                      errors={
-                        !selectedRating ? "Rating is required" : undefined
-                      }
-                      require={true}
+                      placeholder="0 - 5"
+                      value={formData.rating}
+                      onChange={handleInputChange("rating")}
+                      errors={errors.rating}
+                      require={false}
+                      type="number"
                     />
                   </div>
                 </div>

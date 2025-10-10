@@ -64,14 +64,14 @@ function AdminCreateNewMovieForm({
   const [loading, setLoading] = useState(false);
 
   const genreOptions = [
-    { value: "action", label: "Action" },
-    { value: "comedy", label: "Comedy" },
-    { value: "drama", label: "Drama" },
-    { value: "horror", label: "Horror" },
-    { value: "romance", label: "Romance" },
-    { value: "sci-fi", label: "Sci-Fi" },
-    { value: "thriller", label: "Thriller" },
-    { value: "animation", label: "Animation" },
+    { value: "Action", label: "Action" },
+    { value: "Comedy", label: "Comedy" },
+    { value: "Drama", label: "Drama" },
+    { value: "Horror", label: "Horror" },
+    { value: "Romance", label: "Romance" },
+    { value: "Sci-fi", label: "Sci-Fi" },
+    { value: "Thriller", label: "Thriller" },
+    { value: "Animation", label: "Animation" },
   ];
 
   const handleSubmit = async (e: React.FormEvent) => {

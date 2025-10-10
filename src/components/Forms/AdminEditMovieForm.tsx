@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import ModalEmpty from "../Modals/ModalEmpty";
 import UploadFile from "../Icons/UploadFile";
 import { Button } from "../ui/button";
@@ -14,7 +14,7 @@ interface EditMovieFormProps {
   onClose: () => void;
 }
 
-function AdminEditMovieForm({ isShowModal, onClose }: EditMovieFormProps) {
+function AdminEditMovieForm({ movie, isShowModal, onClose }: EditMovieFormProps) {
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -31,6 +31,20 @@ function AdminEditMovieForm({ isShowModal, onClose }: EditMovieFormProps) {
     duration: "",
     trailer: "",
   });
+
+  useEffect(() => {
+    if (movie) {
+      setFormData({
+        title: movie.title || "",
+        description: movie.description || "",
+        duration: movie.duration_min?.toString() || "",
+        trailer: movie.trailer_url || "",
+      });
+      setSelectedGenre(movie.genre || "");
+      setSelectedRating(movie.rating || "");
+      setPosterPreview(movie.poster_url || null);
+    }
+  }, [movie]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];

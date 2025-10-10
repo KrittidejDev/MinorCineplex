@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import ModalEmpty from "../Modals/ModalEmpty";
 import UploadFile from "../Icons/UploadFile";
 import { Button } from "../ui/button";
 import AdminInputTextField from "../Inputs/AdminInputTextField";
 import AdminInputTextArea from "../Inputs/AdminInputTextArea";
 import AdminDropdownInput from "../Inputs/AdminDropdownInput ";
+import axios from "axios";
 
 interface CreateNewMovieFormProps {
   isShowModal: boolean;
@@ -22,12 +23,23 @@ function AdminCreateNewMovieForm({
     trailer: "",
   });
 
+  const [posterFile, setPosterFile] = useState<File | null>(null);
+  const [posterPreview, setPosterPreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [errors, setErrors] = useState({
     title: "",
     description: "",
     duration: "",
     trailer: "",
   });
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setPosterFile(file);
+      setPosterPreview(URL.createObjectURL(file));
+    }
+  };
 
   const handleInputChange =
     (field: string) =>
@@ -47,6 +59,7 @@ function AdminCreateNewMovieForm({
 
   const [selectedGenre, setSelectedGenre] = useState("");
   const [selectedRating, setSelectedRating] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const genreOptions = [
     { value: "action", label: "Action" },
@@ -67,34 +80,80 @@ function AdminCreateNewMovieForm({
     { value: "20+", label: "20+" },
   ];
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const payload = {
+      ...formData,
+      duration: Number(formData.duration),
+      genre: selectedGenre,
+      rating: selectedRating,
+    };
+
+    try {
+      setLoading(true);
+      const res = await axios.post("/api/movies", payload);
+
+      if (res.status === 201) {
+        alert("เพิ่มภาพยนตร์สำเร็จ!");
+        onClose();
+      } else {
+        alert("เพิ่มภาพยนตร์ไม่สำเร็จ");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("มีข้อผิดพลาดในการบันทึกข้อมูล");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <ModalEmpty isShowModal={isShowModal} onClose={onClose}>
       <div className="bg-white w-[1200px] h-[744px] rounded-sm shadow-lg py-10 px-[120px]">
         <h1 className="font-bold text-f-56 text-gray-g63f">Add New Movie</h1>
         <div className="h-[316px] flex items-start gap-5 mt-5">
-          <form className="flex flex-col flex-1">
+         <form className="flex flex-col flex-1" onSubmit={handleSubmit}>
             <div className="h-[316px] flex items-start gap-5">
-              <div className="w-[250px] h-full flex justify-center pt-10 text-center border border-blue-bbee rounded-sm border-dashed">
-                <div className="flex flex-col items-center">
-                  <div className="p-[15px] flex justify-center items-center bg-gray-g3b0/40 rounded-full">
-                    <UploadFile width={40} height={40} />
-                  </div>
-                  <div className="mt-10">
-                    <h4 className="font-bold text-f-20 text-gray-g3b0">
-                      Upload Poster
-                    </h4>
-                    <div className="max-w-[155px] mt-2">
-                      <p className="text-[16px] text-gray-gedd">
-                        Drag and drop or click to upload
-                      </p>
+              <div
+                className="w-[250px] h-full flex justify-center items-center text-center border border-blue-bbee rounded-sm border-dashed relative overflow-hidden cursor-pointer"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                {posterPreview ? (
+                  <img
+                    src={posterPreview}
+                    alt="Poster Preview"
+                    className="object-cover w-full h-full"
+                  />
+                ) : (
+                  <div className="flex flex-col items-center">
+                    <div className="p-[15px] flex justify-center items-center bg-gray-g3b0/40 rounded-full">
+                      <UploadFile width={40} height={40} />
                     </div>
-                    <div className="mt-3.5">
-                      <Button className="btn-base blue-normal">
-                        Browse Files
-                      </Button>
+                    <div className="mt-10">
+                      <h4 className="font-bold text-f-20 text-gray-g3b0">
+                        Upload Poster
+                      </h4>
+                      <div className="max-w-[155px] mt-2">
+                        <p className="text-[16px] text-gray-gedd">
+                          Drag and drop or click to upload
+                        </p>
+                      </div>
+                      <div className="mt-3.5">
+                        <Button type="button" className="btn-base blue-normal">
+                          Browse Files
+                        </Button>
+                      </div>
                     </div>
                   </div>
-                </div>
+                )}
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  className="hidden"
+                />
               </div>
 
               <div className="h-full flex flex-col gap-5 flex-1">

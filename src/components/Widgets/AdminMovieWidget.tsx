@@ -6,10 +6,12 @@ import AddRoundLight from "../Icons/AddRoundLight";
 import TableCard from "../Cards/TableCard";
 import { APIMovie } from "@/types/movie";
 import AdminCreateNewMovieForm from "../Forms/AdminCreateNewMovieForm";
+import AdminEditMovieForm from "../Forms/AdminEditMovieForm";
 import AdminSearchBar from "../Inputs/AdminSearchBar";
 
 function AdminMovieWidget() {
   const [isShowCreateModal, setIsShowCreateModal] = useState(false);
+  const [editMovie, setEditMovie] = useState<APIMovie | null>(null);
   const [movies, setMovies] = useState<APIMovie[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -86,27 +88,13 @@ function AdminMovieWidget() {
 
   const movieActions = filteredMovies.map((movie) => ({
     onView: () => console.log("View Movie", movie.id),
-    onEdit: async () => {
-      const newTitle = prompt("Enter new title", movie.title);
-      if (!newTitle) return;
-
-      try {
-        await fetch(`/api/movies/${movie.id}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ title: newTitle }),
-        });
-        fetchMovies(); // refresh table
-      } catch (err) {
-        console.error(err);
-      }
-    },
+    onEdit: () => setEditMovie(movie),
     onDelete: async () => {
       if (!confirm("Are you sure to delete this movie?")) return;
 
       try {
         await fetch(`/api/movies/${movie.id}`, { method: "DELETE" });
-        fetchMovies(); // refresh table
+        fetchMovies();
       } catch (err) {
         console.error(err);
       }
@@ -160,6 +148,15 @@ function AdminMovieWidget() {
         isShowModal={isShowCreateModal}
         onClose={() => {
           setIsShowCreateModal(false);
+          fetchMovies();
+        }}
+      />
+
+      <AdminEditMovieForm
+        movie={editMovie}
+        isShowModal={!!editMovie}
+        onClose={() => {
+          setEditMovie(null);
           fetchMovies();
         }}
       />

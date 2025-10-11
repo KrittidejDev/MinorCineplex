@@ -2,10 +2,12 @@ import { Button } from "@/components/ui/button";
 import AddRoundLight from "@/components/Icons/AddRoundLight";
 import TableCard from "@/components/Cards/TableCard";
 import AdminShowtimeFilter from "./AdminShowtimeFilter";
-import DateSelectionBarWidget from "./DateSelectionBarWidget";
+import { ShowtimeQuery } from "@/pages/admin/showtime";
 
 interface AdminShowtimeWidgetProps {
   data: ShowTimeData[];
+  query: ShowtimeQuery;
+  setQuery: (query: ShowtimeQuery) => void;
 }
 
 export interface ShowTimeData {
@@ -16,7 +18,9 @@ export interface ShowTimeData {
   timeslot: string;
 }
 
-const AdminShowtimeWidget = ({ data }: AdminShowtimeWidgetProps) => {
+
+
+const AdminShowtimeWidget = ({ data, setQuery, query }: AdminShowtimeWidgetProps) => {
   const showtimeColumns = [
     { key: "movie", label: "Movie Name", align: "left" as const },
     { key: "cinema", label: "Cinema", align: "left" as const },
@@ -37,8 +41,6 @@ const AdminShowtimeWidget = ({ data }: AdminShowtimeWidgetProps) => {
     },
   ];
 
-  console.log(data);
-
   return (
     <div className="flex flex-col gap-10">
       <div className="flex justify-between items-center px-15 mt-20">
@@ -49,7 +51,7 @@ const AdminShowtimeWidget = ({ data }: AdminShowtimeWidgetProps) => {
         </Button>
       </div>
       <div className="px-15">
-        {/* <AdminShowtimeFilter data={data} /> */}
+        <AdminShowtimeFilter data={data} setQuery={setQuery} query={query} />
       </div>
       {/* <DateSelectionBarWidget onSelectDate={() => {}} /> */}
       <div className="w-full flex flex-col gap-10">

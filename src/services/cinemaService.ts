@@ -6,6 +6,11 @@ export const getCinemas = async () => {
   return cinema;
 };
 
+export const getCinemasForDropdown = async () => {
+  const cinema = await cinemaRepo.getForDropdown();
+  return cinema;
+};
+
 export const getCinemasByMovies = async (movie_id: string) => {
   const cinema = await cinemaRepo.getByMovies(movie_id);
   return cinema;

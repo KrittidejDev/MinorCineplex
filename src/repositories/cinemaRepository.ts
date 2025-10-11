@@ -2,6 +2,23 @@ import { PrismaClient } from "@/generated/prisma";
 
 const prisma = new PrismaClient();
 
+export const getForDropdown = () => {
+  return prisma.cinema.findMany({
+    select: {
+      id: true,
+      name: true,
+      name_en: true,
+      halls: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+    },
+    
+  });
+};
+
 export const getByMovies = (movie_id: string) => {
   return prisma.cinema.findMany({
     where: {

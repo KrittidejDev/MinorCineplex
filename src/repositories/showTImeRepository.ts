@@ -6,15 +6,15 @@ const prisma = new PrismaClient();
 export const getMany = ({ limit, movie, cinema, hall }: ShowTimeFilter) => {
   let hallFilter = undefined;
   if (cinema && hall) {
-    hallFilter = { cinema: { name: cinema }, name: hall };
+    hallFilter = { cinema: { id: cinema }, id: hall };
   } else if (cinema) {
-    hallFilter = { cinema: { name: cinema } };
+    hallFilter = { cinema: { id: cinema } };
   } else if (hall) {
-    hallFilter = { name: hall };
+    hallFilter = { id: hall };
   }
 
   const where = {
-    ...(movie && { movie: { title: movie } }),
+    ...(movie && { movie: { id: movie } }),
     ...(hallFilter && { hall: hallFilter }),
   };
   return prisma.showtime.findMany({

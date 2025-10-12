@@ -1,9 +1,19 @@
 import { PrismaClient } from "@/generated/prisma";
-import { ShowTimeFilter } from "../services/showTimeService";
+import {
+  CreateShowTimeData,
+  ShowTimeFilter,
+} from "../services/showTimeService";
 
 const prisma = new PrismaClient();
 
-export const getMany = ({ limit, movie, cinema, hall }: ShowTimeFilter) => {
+export const getMany = ({
+  limit,
+  movie,
+  cinema,
+  hall,
+  timeSlot,
+  date,
+}: ShowTimeFilter) => {
   let hallFilter = undefined;
   if (cinema && hall) {
     hallFilter = { cinema: { id: cinema }, id: hall };
@@ -12,16 +22,19 @@ export const getMany = ({ limit, movie, cinema, hall }: ShowTimeFilter) => {
   } else if (hall) {
     hallFilter = { id: hall };
   }
-
+ 
   const where = {
     ...(movie && { movie: { id: movie } }),
     ...(hallFilter && { hall: hallFilter }),
+    ...(timeSlot && { time_slot: { id: timeSlot } }),
+    ...(date && { date: new Date(date) }),
   };
   return prisma.showtime.findMany({
     take: limit,
     where,
     select: {
       id: true,
+      date: true,
       movie: {
         select: {
           title: true,
@@ -175,4 +188,30 @@ export const getBookingInfoByShowtimeId = async (showtime_id: string) => {
     ...showtime,
     seats: rows,
   };
+};
+
+export const isShowtimeExists = (
+  hall: string,
+  timeSlot: string,
+  date: string
+) => {
+  return prisma.showtime.findFirst({
+    where: {
+      hall_id: hall,
+      time_slot_id: timeSlot,
+      date: new Date(date),
+    },
+  });
+};
+
+export const createShowTime = (showTime: CreateShowTimeData) => {
+  return prisma.showtime.create({
+    data: {
+      movie_id: showTime.movie,
+      hall_id: showTime.hall,
+      time_slot_id: showTime.timeSlot,
+      date: new Date(showTime.date),
+      price: parseFloat(showTime.price.toString()),
+    },
+  });
 };

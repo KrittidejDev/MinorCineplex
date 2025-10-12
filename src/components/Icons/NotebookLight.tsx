@@ -19,11 +19,11 @@ const NotebookLight: React.FC<NotebookLightProps> = ({
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <rect x="6" y="4" width="13" height="17" rx="2" stroke={color} />
-      <path d="M15 10V8" stroke={color} strokeLinecap="round" />
-      <path d="M4 9H8" stroke={color} strokeLinecap="round" />
-      <path d="M4 13H8" stroke={color} strokeLinecap="round" />
-      <path d="M4 17H8" stroke={color} strokeLinecap="round" />
+      <rect x="6" y="4" width="13" height="17" rx="2" stroke="currentColor" />
+      <path d="M15 10V8" stroke="currentColor" strokeLinecap="round" />
+      <path d="M4 9H8" stroke="currentColor" strokeLinecap="round" />
+      <path d="M4 13H8" stroke="currentColor" strokeLinecap="round" />
+      <path d="M4 17H8" stroke="currentColor" strokeLinecap="round" />
     </svg>
   );
 };

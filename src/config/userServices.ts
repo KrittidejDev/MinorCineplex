@@ -1,46 +1,47 @@
-import apiService from "./apiServices";
-import { BASE_PATH_API } from "./apiConfig";
+import apiService from './apiServices'
+import { BASE_PATH_API } from './apiConfig'
 
-const apiPath = BASE_PATH_API;
+const apiPath = BASE_PATH_API
 
 // ----------- Types ----------------
 
 // Auth
 export interface LoginParams {
-  email: string;
-  password: string;
+  email: string
+  password: string
 }
 export interface SignupParams {
-  username: string;
-  email: string;
-  password: string;
+  username: string
+  phone: string
+  email: string
+  password: string
 }
 export interface UpdateProfileParams {
-  username?: string;
-  avatar_url?: string;
-  avatar_id?: string;
+  username?: string
+  avatar_url?: string
+  avatar_id?: string
 }
 export interface ResetPasswordParams {
-  oldPassword: string;
-  newPassword: string;
+  id: string
+  newPassword: string
 }
 
 // Category
 export interface CategoryParams {
-  name: string;
-  description?: string;
+  name: string
+  description?: string
 }
 
 // Article
 export interface ArticleParams {
-  title: string;
-  content: string;
-  categoryId: string;
+  title: string
+  content: string
+  categoryId: string
 }
 
 // File
 export interface FileUploadParams {
-  file: File | Blob;
+  file: File | Blob
 }
 
 // ----------- User Service ----------------
@@ -60,8 +61,8 @@ export const userService = {
   GET_MY_PROFILE: (id: string) => apiService.get(`${apiPath}/users/${id}`),
   PUT_UPDATE_PROFILE: (id: string, params: UpdateProfileParams) =>
     apiService.put(`${apiPath}/users/${id}`, params),
-  RESET_PASSWORD: (id: string, params: ResetPasswordParams) =>
-    apiService.patch(`${apiPath}/users/${id}/password`, params),
+  RESET_PASSWORD: (params: ResetPasswordParams) =>
+    apiService.patch(`${apiPath}/auth/resetpassword`, params),
 
   // seat booking
   POST_LOCK_SEAT: (seatId: string, userId: string) =>
@@ -70,7 +71,7 @@ export const userService = {
     apiService.patch(`${apiPath}/seats/${seatId}`),
 
   GET_SHOWTIME_BOOKING: (id: string, query?: string) =>
-    apiService.get(`${apiPath}/showtimes/${id}/booking${query ?? ""}`),
+    apiService.get(`${apiPath}/showtimes/${id}/booking${query ?? ''}`),
 
   // Payment
   POST_PAYMENT: (params: {
@@ -81,9 +82,9 @@ export const userService = {
 
   // File
   POST_FILE_UPLOAD: (params: FileUploadParams) => {
-    const formData = new FormData();
-    formData.append("file", params.file);
-    return apiService.post_formdata(`${apiPath}/file-upload`, formData);
+    const formData = new FormData()
+    formData.append('file', params.file)
+    return apiService.post_formdata(`${apiPath}/file-upload`, formData)
   },
 
   DELETE_FILE: (fileId: string) =>
@@ -91,7 +92,26 @@ export const userService = {
 
   // Cinema
   GET_CINEMAS: (query?: string) =>
-    apiService.get(`${apiPath}/cinemas${query ?? ""}`),
+    apiService.get(`${apiPath}/cinemas${query ?? ''}`),
   GET_CINEMA_BY_ID: (id: string, query?: string) =>
-    apiService.get(`${apiPath}/cinemas/detail/${id}${query ?? ""}`),
-};
+    apiService.get(`${apiPath}/cinemas/detail/${id}${query ?? ''}`),
+
+  // Coupons
+  // GET สถานะ coupon ของ user
+
+  GET_COUPON: () => 
+    apiService.get(`${apiPath}/coupons`),
+
+  GET_COUPON_BY_ID: (id: string) => 
+    apiService.get(`${apiPath}/coupons/${id}`),
+  GET_COUPON_COLLECTED_BY_ID: (id: number) =>
+    apiService.get(`${apiPath}/coupons/${id}/collect`),
+
+  // POST รับคูปอง
+  COLLECT_COUPON: (id: string) =>
+    apiService.post(`${apiPath}/coupons/${id}/collect`),
+  // GET coupon ที่เก็บแล้ว
+  GET_COUPON_COLLECTED : () => 
+    apiService.get(`${apiPath}/coupons/collected`),
+  
+}

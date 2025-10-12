@@ -1,14 +1,18 @@
 
 
 import AdminSidebar from "@/components/ui/adminsidebar"; 
+import AdminTrailerWidget from "@/components/Widgets/AdminTrailerWidget";
 
 export default function Dashboard() {
  
 
   return (
 
-     <div>
+     <div className="flex">
       <AdminSidebar />
+      <div className="flex-1  bg-white-wfff">
+        <AdminTrailerWidget />
+      </div>
     </div>
   );
 }

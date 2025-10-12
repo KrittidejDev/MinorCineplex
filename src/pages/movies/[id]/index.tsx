@@ -49,12 +49,6 @@ const MoviesDetail: React.FC = () => {
 
   const getCinemasByMovies = async (movieId: string, date?: Date) => {
     if (!movieId) return;
-    console.log(
-      "Fetching cinemas for movie_id:",
-      movie_id,
-      "with date:",
-      selectedDate
-    );
     try {
       const dateQuery = date ? `&date=${date.toISOString().split("T")[0]}` : "";
       const res = await axios.get(

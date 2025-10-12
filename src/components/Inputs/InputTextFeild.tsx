@@ -37,7 +37,7 @@ const InputTextFeild = ({
           {label} {require && <span className="text-red">*</span>}
         </div>
       )}
-      <div className="relative w-full">
+      <div className="relative">
         <Input
           {...props}
           type={type}
@@ -47,7 +47,7 @@ const InputTextFeild = ({
           onChange={onChange}
           disabled={disabled}
           className={clsx(
-            `bg-gray-g63f border rounded-sm h-12 pl-4 pr-3 py-3 focus:border-gray-g3b0 `,
+            `bg-gray-g63f w-full border rounded-sm h-12 pl-4 pr-3 py-3 focus:border-gray-g3b0 `,
             errors
               ? "border-red-r64b text-red-r64b placeholder-white"
               : "border-gray-gf7e text-white placeholder-gray-400",

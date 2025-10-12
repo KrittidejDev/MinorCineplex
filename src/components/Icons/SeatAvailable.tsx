@@ -32,12 +32,12 @@ const SeatAvailable: React.FC<SeatAvailableProps> = ({
         height="38.5"
         rx="5.25"
         fill="#8EAEFF"
-        stroke={color}
+        stroke="currentColor"
         strokeWidth="1.5"
       />
       <path
         d="M1 20H6.86667C8.52352 20 9.86667 21.3431 9.86667 23V29C9.86667 30.6569 11.2098 32 12.8667 32H27.1333C28.7902 32 30.1333 30.6569 30.1333 29V23C30.1333 21.3431 31.4765 20 33.1333 20H39"
-        stroke={color}
+        stroke="currentColor"
         strokeWidth="1.5"
       />
     </svg>

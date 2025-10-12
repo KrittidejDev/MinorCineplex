@@ -7,6 +7,7 @@ import * as yup from "yup";
 import Link from "next/link";
 import { DefaultCheckbox } from "../ui/checkbox";
 
+
 type FormValues = {
   email: string;
   password: string;
@@ -17,6 +18,7 @@ type SignUpFormProps = {
 };
 
 const SignInForm = ({ onSubmit }: SignUpFormProps) => {
+
   const schema = yup.object().shape({
     email: yup
       .string()
@@ -32,7 +34,7 @@ const SignInForm = ({ onSubmit }: SignUpFormProps) => {
     control,
     watch,
     handleSubmit,
-    formState: { errors },
+    formState: { errors,isSubmitting },
   } = useForm<FormValues>({
     resolver: yupResolver(schema),
   });
@@ -86,10 +88,10 @@ const SignInForm = ({ onSubmit }: SignUpFormProps) => {
       </div>
       <div className="w-full">
         <Button
-          disabled={isEmpty}
+          disabled={isEmpty || isSubmitting}
           className="btn-base blue-normal w-full h-12 flex rounded-b-sm justify-center items-center"
         >
-          Login
+          {isSubmitting ? "Loading..." : "Login"}
         </Button>
       </div>
       <div className="text-fr-16 text-gray-g3b0 flex gap-2 justify-center">

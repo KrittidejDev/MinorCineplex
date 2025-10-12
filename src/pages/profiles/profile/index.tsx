@@ -4,6 +4,9 @@ import ProfileBar from "@/components/Widgets/ProfileBar";
 import { useSession } from "next-auth/react";
 import ProfileForm, { ProfileFormValues } from "@/components/Forms/ProfileForm";
 import { UpdateProfileParams, userService } from "@/config/userServices";
+import { AxiosError } from "axios";
+import { UseFormSetError } from "react-hook-form";
+
 
 interface User {
   username: string;
@@ -24,9 +27,7 @@ const ProfilePage = () => {
   const { data: session } = useSession();
   const [userData, setUserData] = useState<User | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
   const id = session?.user?.id;
-  const user = session?.user as User;
 
   const fetchMe = async () => {
     if (!id) return;
@@ -43,14 +44,15 @@ const ProfilePage = () => {
     }
   }, [id]);
 
-  const handleSaveProfile = async (data: ProfileFormValues) => {
+  const handleSaveProfile = async (
+    data: ProfileFormValues,
+    setError: UseFormSetError<ProfileFormValues>
+  ) => {
     if (!session?.user?.id) return;
-
-    setIsLoading(true);
     try {
       let avatarUrl = null;
       let publicId = null;
-      const oldPublicId = user?.avatar_id as string | null;
+      const oldPublicId = userData?.avatar_id as string | null;
 
       if (selectedFile) {
         //Upload รูปภาพ
@@ -67,7 +69,10 @@ const ProfilePage = () => {
         ...(publicId && { avatar_id: publicId }),
       };
       await userService.PUT_UPDATE_PROFILE(session.user.id, formData);
-
+      // await axios.put(
+      //   `http://localhost:3000/api/users/${session.user.id}`,
+      //   formData
+      // );
       if (selectedFile && oldPublicId) {
         //Delete รูปภาพเก่า
         try {
@@ -76,20 +81,26 @@ const ProfilePage = () => {
           console.log("Failed to delete old avatar:", error);
         }
       }
-    } catch (error) {
+    } catch (error: unknown) {
+      if (error instanceof AxiosError && error.response) {
+        const message =
+          error.response?.data?.message ||
+          error.response?.data?.error ||
+          error.message;
+        if (message.includes("Username")) {
+          setError("username", { type: "server", message });
+        }
+      }
       console.log("Save failed:", error);
-    } finally {
-      setIsLoading(false);
     }
   };
 
   return (
     <div className="bg-blue-b flex flex-col">
       <NavBarWidget />
-
       <div
         className="w-full flex flex-col md:flex-row max-w-[1129px] items-start gap-6 md:gap-12 top-21 transition-all duration-500 ease-in-out 
-      py-10 md:pl-20 md:py-15 xl:pl-56"
+    py-10 md:pl-20 md:py-15 xl:pl-56"
       >
         {/* ProfileBar */}
         <div className="w-full md:min-w-[240px] md:max-w-[257px]">
@@ -108,7 +119,6 @@ const ProfilePage = () => {
             userData={userData as User}
             onFileSelect={setSelectedFile}
             onSave={handleSaveProfile}
-            isLoading={isLoading}
           />
         </div>
       </div>

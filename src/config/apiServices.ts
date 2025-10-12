@@ -48,16 +48,24 @@ const axiosSuccess = <T>(res: AxiosResponse<T>) => res.data;
 
 // Response error handler
 const axiosError = (error: AxiosError) => {
-  console.error("API Error:", error);
-
-  if (error.response?.status === 403) {
-    toast.error("เซสชันหมดอายุ กรุณาเข้าสู่ระบบใหม่");
-    if (logoutFn) logoutFn();
-    else window.location.href = "/login";
-  } else if (error.code === "ERR_NETWORK") {
-    toast.error("มีปัญหาการเชื่อมต่อ กรุณาลองใหม่อีกครั้ง");
+  // Handle specific error for PUT_UPDATE_PROFILE
+  if (
+    error.config?.url?.includes("/users/") &&
+    error.config?.method === "put"
+  ) {
+    throw error;
+    // Handle specific error for AUTH
+  } if (error.config?.url?.includes("/auth/register")) {
+    throw error;
   }
-
+  // if (error.response?.status === 403) {
+  //   toast.error("เซสชันหมดอายุ กรุณาเข้าสู่ระบบใหม่");
+  //   if (logoutFn) logoutFn();
+  //   else window.location.href = "/login";
+  // } else if (error.code === "ERR_NETWORK") {
+  //   toast.error("มีปัญหาการเชื่อมต่อ กรุณาลองใหม่อีกครั้ง");
+  // }
+  console.error("API Error:", error);
   return error.response;
 };
 

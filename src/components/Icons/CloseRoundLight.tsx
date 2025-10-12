@@ -24,13 +24,13 @@ const CloseRoundLight: React.FC<CloseRoundLightProps> = ({
     >
       <path
         d="M18 6L6 18"
-        stroke={color}
+        stroke="currentColor"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
       <path
         d="M6 6L18 18"
-        stroke={color}
+        stroke="currentColor"
         strokeLinecap="round"
         strokeLinejoin="round"
       />

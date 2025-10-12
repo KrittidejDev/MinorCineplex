@@ -64,7 +64,7 @@ const AdminComboBox = ({
   const selectedOption = options.find((option) => option.value === value);
   const displayValue = isOpen ? searchValue : selectedOption?.label || "";
   return (
-    <div className="flex flex-col relative">
+    <div className="w-full flex flex-col relative">
       {label && (
         <div className="text-blue-bbee text-fr-16">
           {label} {require && <span className="text-red-r64b">*</span>}

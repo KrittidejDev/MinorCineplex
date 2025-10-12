@@ -9,9 +9,10 @@ interface AdminShowtimeFilterProps {
   setQuery: (query: ShowtimeQuery) => void;
   movies: SelectOption[];
   cinemas: SelectCinemaOption[];
+  timeSlots: SelectOption[];
 }
 
-const AdminShowtimeFilter = ({ setQuery, query, movies, cinemas }: AdminShowtimeFilterProps) => {
+const AdminShowtimeFilter = ({ setQuery, query, movies, cinemas, timeSlots }: AdminShowtimeFilterProps) => {
   const [halls, setHalls] = useState<SelectOption[]>([]);
 
   useEffect(() => {
@@ -43,11 +44,11 @@ const AdminShowtimeFilter = ({ setQuery, query, movies, cinemas }: AdminShowtime
       label: "Hall",
       options: halls,
     },
-    // {
-    //   field: "timeslot",
-    //   label: "Timeslot",
-    //   options: timeslot,
-    // },
+    {
+      field: "timeSlot",
+      label: "Timeslot",
+      options: timeSlots,
+    },
   ];
 
   return (

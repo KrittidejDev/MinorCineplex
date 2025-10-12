@@ -7,6 +7,17 @@ export interface ShowtimeQuery {
   movie: string;
   cinema: string;
   hall: string;
+  timeSlot: string;
+  date: string;
+}
+
+export interface ShowtimeFormData {
+  movie: string;
+  cinema: string;
+  hall: string;
+  timeSlot: string;
+  date: string;
+  price: number;
 }
 
 export interface SelectOption {
@@ -21,6 +32,12 @@ export interface SelectCinemaOption extends SelectOption {
 interface MovieBasicInfo {
   id: string;
   title: string;
+}
+
+interface TimeSlotBasicInfo {
+  id: string;
+  start_time: string;
+  end_time: string;
 }
 
 interface CinemaFromAPI {
@@ -39,10 +56,21 @@ export default function AdminShowtime() {
     movie: "",
     cinema: "",
     hall: "",
+    timeSlot: "",
+    date: new Date().toISOString().split("T")[0],
+  });
+  const [formData, setFormData] = useState<ShowtimeFormData>({
+    movie: "",
+    cinema: "",
+    hall: "",
+    timeSlot: "",
+    date: new Date().toISOString().split("T")[0],
+    price: 100,
   });
   const [data, setData] = useState([]);
   const [movies, setMovies] = useState<SelectOption[]>([]);
   const [cinemas, setCinemas] = useState<SelectCinemaOption[]>([]);
+  const [timeSlots, setTimeSlots] = useState<SelectOption[]>([]);
 
   const getShowtime = useCallback(async () => {
     try {
@@ -53,35 +81,35 @@ export default function AdminShowtime() {
           movie: query.movie,
           cinema: query.cinema,
           hall: query.hall,
+          timeSlot: query.timeSlot,
+          date: query.date,
         },
       });
-      setData(data.showTimes);
+      setData(
+        (data.showTimes = data.showTimes.map((item: TimeSlotBasicInfo) => ({
+          ...item,
+          time_slot: `${item.start_time} - ${item.end_time}`,
+        })))
+      );
     } catch (error) {
       console.log(error);
     }
   }, [limit, page, query]);
-
-  const getMovies = async () => {
+  const fetchAll = async () => {
     try {
-      const { data } = await axios.get(`http://localhost:3000/api/movies`);
+      const [resMovies, resCinemas, resTimeSlots] = await Promise.all([
+        axios.get(`http://localhost:3000/api/movies`),
+        axios.get(`http://localhost:3000/api/cinemas?type=dropdown`),
+        axios.get(`http://localhost:3000/api/time-slots`),
+      ]);
       setMovies(
-        data.movie.map((item: MovieBasicInfo) => ({
+        resMovies.data.movie.map((item: MovieBasicInfo) => ({
           value: item.id,
           label: item.title,
         }))
       );
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const getCinemas = async () => {
-    try {
-      const { data } = await axios.get(
-        `http://localhost:3000/api/cinemas?type=dropdown`
-      );
       setCinemas(
-        data.cinema.map((item: CinemaFromAPI) => ({
+        resCinemas.data.cinema.map((item: CinemaFromAPI) => ({
           value: item.id,
           label: item.name,
           halls: item.halls.map((hall) => ({
@@ -90,14 +118,39 @@ export default function AdminShowtime() {
           })),
         }))
       );
+      setTimeSlots(
+        resTimeSlots.data.timeSlots.map((item: TimeSlotBasicInfo) => ({
+          value: item.id,
+          label: `${item.start_time} - ${item.end_time}`,
+        }))
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  };
+console.log("query", query);
+
+  const handleCreateShowtime = async (
+    event: React.FormEvent<HTMLFormElement>
+  ) => {
+    event.preventDefault();
+    try {
+      const response = await axios.post(
+        `http://localhost:3000/api/showtimes`,
+        formData
+      );
+      if (response.status === 200) {
+        console.log("Showtime created successfully");
+      } else {
+        console.log("Failed to create showtime");
+      }
     } catch (error) {
       console.log(error);
     }
   };
 
   useEffect(() => {
-    getMovies();
-    getCinemas();
+    fetchAll();
   }, []);
 
   useEffect(() => {
@@ -111,12 +164,16 @@ export default function AdminShowtime() {
           <AdminSidebar />
         </div>
         <div className="w-full">
-          <AdminShowtimeWidget 
-            data={data} 
-            setQuery={setQuery} 
+          <AdminShowtimeWidget
+            data={data}
+            setQuery={setQuery}
+            setFormData={setFormData}
+            handleCreateShowtime={handleCreateShowtime}
+            formData={formData}
             query={query}
             movies={movies}
             cinemas={cinemas}
+            timeSlots={timeSlots}
           />
         </div>
       </div>

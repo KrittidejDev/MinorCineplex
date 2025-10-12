@@ -141,7 +141,6 @@ model showtime {
   movie        movie           @relation(fields: [movie_id], references: [id])
   time_slot    time_slot       @relation(fields: [time_slot_id], references: [id])
   seats        showtime_seat[]
-
   @@unique([movie_id, hall_id, time_slot_id, date])
 }
 
@@ -151,11 +150,10 @@ model showtime_seat {
   seat_id     String
   status      String    @default("AVAILABLE")
   price       Float?
+  locked_by   String?  
   locked_at   DateTime?
-  locked_by   String?
-  seat        seat      @relation(fields: [seat_id], references: [id])
-  showtime    showtime  @relation(fields: [showtime_id], references: [id])
-
+  seat        seat     @relation(fields: [seat_id], references: [id])
+  showtime    showtime @relation(fields: [showtime_id], references: [id])
   @@unique([showtime_id, seat_id])
 }
 

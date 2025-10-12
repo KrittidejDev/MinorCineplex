@@ -15,14 +15,10 @@ export interface Showtime {
 
 interface ShowtimeSelectionProps {
   timeslot?: Showtime[];
-  movieId: string;
-  hallId: string;
 }
 
 export const ShowtimeSelection: React.FC<ShowtimeSelectionProps> = ({
   timeslot,
-  movieId,
-  hallId,
 }) => {
   const router = useRouter();
   const [now, setNow] = useState<Date>(new Date());
@@ -32,16 +28,9 @@ export const ShowtimeSelection: React.FC<ShowtimeSelectionProps> = ({
     return () => clearInterval(interval);
   }, []);
 
-  console.log("timeslottttttt", timeslot);
-
   const handleSelect = (ts: Showtime) => {
     router.push({
       pathname: `/booking/${ts?.showtime_id}`,
-      query: {
-        movieId,
-        hallId,
-        timeslotId: ts.id,
-      },
     });
   };
 

@@ -63,35 +63,21 @@ export const userService = {
   RESET_PASSWORD: (id: string, params: ResetPasswordParams) =>
     apiService.patch(`${apiPath}/users/${id}/password`, params),
 
-  // Category
-  // GET_CATEGORY: (query?: string) =>
-  //   apiService.get(`${apiPath}/categories${query ?? ""}`),
-  // GET_CATEGORY_BY_ID: (id: string) =>
-  //   apiService.get(`${apiPath}/categories/${id}`),
-  // POST_CREATE_CATEGORY: (params: CategoryParams) =>
-  //   apiService.post(`${apiPath}/categories`, params),
-  // PUT_EDIT_CATEGORY: (id: string, params: CategoryParams) =>
-  //   apiService.put(`${apiPath}/categories/${id}`, params),
-  // DELETE_CATEGORY: (id: string) =>
-  //   apiService.delete(`${apiPath}/categories/${id}`),
-
-  // Article
-  // GET_ARTICLE: (query?: string) =>
-  //   apiService.get(`${apiPath}/blogs${query ?? ""}`),
-  // GET_ARTICLE_BY_ID: (id: string) => apiService.get(`${apiPath}/blogs/${id}`),
-  // POST_CREATE_ARTICLE: (params: ArticleParams) =>
-  //   apiService.post(`${apiPath}/blogs`, params),
-  // PUT_EDIT_ARTICLE: (id: string, params: ArticleParams) =>
-  //   apiService.put(`${apiPath}/blogs/${id}`, params),
-  // DELETE_ARTICLE: (id: string) => apiService.delete(`${apiPath}/blogs/${id}`),
-
-  // Notification
-  // GET_NOTIFICATION: () => apiService.get(`${apiPath}/notification`),
-
-  // booking
+  // seat booking
+  POST_LOCK_SEAT: (seatId: string, userId: string) =>
+    apiService.post(`${apiPath}/seats/${seatId}`, { userId }),
+  PATCH_UNLOCK_SEAT: (seatId: string) =>
+    apiService.patch(`${apiPath}/seats/${seatId}`),
 
   GET_SHOWTIME_BOOKING: (id: string, query?: string) =>
     apiService.get(`${apiPath}/showtimes/${id}/booking${query ?? ""}`),
+
+  // Payment
+  POST_PAYMENT: (params: {
+    userId: string;
+    seats: string[];
+    couponId?: string;
+  }) => apiService.post(`${apiPath}/payment`, params),
 
   // File
   POST_FILE_UPLOAD: (params: FileUploadParams) => {

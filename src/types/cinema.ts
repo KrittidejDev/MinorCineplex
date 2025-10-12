@@ -11,7 +11,6 @@ export interface CinemaType {
   distance_text_th?: string;
 }
 
-// Interface สำหรับ showtime ของแต่ละวัน
 export interface ShowtimeDetail {
   id: string;
   movie: {
@@ -24,10 +23,10 @@ export interface ShowtimeDetail {
   time_slot: {
     id: string;
     name: string;
-    start_time: string; // เปลี่ยนเป็น string
-    end_time: string; // เปลี่ยนเป็น string
+    start_time: string;
+    end_time: string;
   };
-  date: string; // เปลี่ยนเป็น string (YYYY-MM-DD)
+  date: string;
   price: number;
   seats: {
     id: string;
@@ -102,10 +101,45 @@ export interface Seat {
   };
 }
 
+export interface BillInfo {
+  data?: BookingInfo | null;
+  totalSelected?: SelectedSeat[];
+  totalPrice?: number;
+  lockSeats?: () => void;
+  step?: string;
+}
+
+export interface SelectedSeat {
+  id: string;
+  seat_number: string;
+  row: string;
+  status: string;
+  price: number;
+  lockExpire?: number;
+  showtimeId?: string;
+}
+
+export interface Seat {
+  id: string;
+  row: string;
+  number: string;
+  status: string;
+  price: number;
+  seat_number?: string;
+  lockExpire?: number;
+}
+
+// สำหรับ SeatRow
+export interface SeatRowData {
+  row: string;
+  seats: Seat[];
+}
+
 export interface BookingInfo {
   id: string;
   date: string;
   price: number;
+  seats: SeatRowData[];
   hall: {
     id: string;
     name: string;
@@ -122,5 +156,8 @@ export interface BookingInfo {
     genre?: string;
     duration_min: number;
   };
-  seats: Seat[];
+  time_slot?: {
+    start_time: string;
+    end_time: string;
+  };
 }

@@ -3,7 +3,7 @@ import SeatBooked from "@/components/Icons/SeatBooked";
 import SeatReserved from "@/components/Icons/SeatReserved";
 
 type SeatInfoProps = {
-  price: string | number;
+  price?: string | number;
 };
 
 const SeatInfo: React.FC<SeatInfoProps> = ({ price }) => (

@@ -141,7 +141,6 @@ model showtime {
   movie        movie           @relation(fields: [movie_id], references: [id])
   time_slot    time_slot       @relation(fields: [time_slot_id], references: [id])
   seats        showtime_seat[]
-
   @@unique([movie_id, hall_id, time_slot_id, date])
 }
 
@@ -151,9 +150,10 @@ model showtime_seat {
   seat_id     String
   status      String   @default("AVAILABLE")
   price       Float?
+  locked_by   String?  
+  locked_at   DateTime?
   seat        seat     @relation(fields: [seat_id], references: [id])
   showtime    showtime @relation(fields: [showtime_id], references: [id])
-
   @@unique([showtime_id, seat_id])
 }
 
@@ -197,7 +197,7 @@ model booking_seat {
 }
 
 model coupon {
-  id             Int          @id @default(autoincrement())
+  id             String          @id @default(uuid())
   code           String       @unique
   title_en       String
   title_th       String
@@ -221,7 +221,7 @@ model coupon {
 model UserCoupon {
   id           String    @id @default(uuid())
   user_id      String
-  coupon_id    Int
+  coupon_id    String
   is_collected Boolean   @default(false)
   collected_at DateTime?
   coupon       coupon    @relation(fields: [coupon_id], references: [id])

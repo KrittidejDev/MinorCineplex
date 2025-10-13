@@ -47,7 +47,6 @@ const groupByProvince = (cinemas: CinemaWithDistance[]): CinemaByProvince[] => {
   cinemas.forEach((cinema) => {
     let province = cinema.provinceTh || "Other";
 
-    // รวมกรุงเทพ และ กรุงเทพมหานคร เป็นกลุ่มเดียว
     if (province === "กรุงเทพ" || province === "กรุงเทพมหานคร") {
       province = "กรุงเทพมหานคร";
       cinema.provinceEn = "Bangkok";

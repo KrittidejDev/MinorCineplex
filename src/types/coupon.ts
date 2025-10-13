@@ -1,13 +1,17 @@
 // types/coupon.ts
 export interface CouponCardData {
-  id: string; // Prisma ใช้ String UUID
+  id: string;
   code: string;
   title_en: string;
   title_th: string;
-  discount: number;
+  discount_value: number;
   expiresAt?: string | null;
   image?: string | null;
   is_collected?: boolean;
+}
+
+export interface CouponsData {
+  coupons: CouponCardData[];
 }
 
 export interface APICoupon {

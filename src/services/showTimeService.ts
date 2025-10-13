@@ -38,24 +38,28 @@ export interface ShowTimeFilter {
   hall?: string;
   timeSlot?: string;
   date?: string;
+  page?: number;
 }
 
-export const getShowTimes = async ({
+export const getShowTimesForAdmin = async ({
   limit,
   movie,
   cinema,
   hall,
   timeSlot,
   date,
+  page,
 }: ShowTimeFilter) => {
-  const showTimes = await showTimeRepo.getMany({
+  const { data: showTimes, total } = await showTimeRepo.getManyForAdmin({
     limit,
     movie,
     cinema,
     hall,
     timeSlot,
     date,
+    page,
   });
+
   const showTimesData = showTimes.map((showTime): ShowTimeData => {
     return {
       id: showTime.id,
@@ -72,7 +76,8 @@ export const getShowTimes = async ({
       price: showTime.price,
     };
   });
-  return showTimesData;
+
+  return { showTimes: showTimesData, total };
 };
 
 export const createShowTime = async (showTime: CreateShowTimeData) => {

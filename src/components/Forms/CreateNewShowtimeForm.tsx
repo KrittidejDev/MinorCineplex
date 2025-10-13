@@ -47,9 +47,10 @@ const CreateNewShowtimeForm = ({
 
   return (
     <ModalEmpty isShowModal={isShowModal} onClose={onClose}>
-      <form 
-      onSubmit={handleCreateShowtime}
-      className="w-full bg-white flex flex-col justify-center items-center py-10 px-20 rounded-lg">
+      <form
+        onSubmit={handleCreateShowtime}
+        className="w-full bg-white flex flex-col justify-center items-center py-10 px-20 rounded-lg"
+      >
         <h1 className="text-f-36 text-black">Create New Showtime</h1>
         <div className="w-full min-w-[1200px] flex flex-col gap-10 mt-10">
           <div className="flex justify-between gap-6">
@@ -58,7 +59,9 @@ const CreateNewShowtimeForm = ({
               placeholder="Select Cinema"
               options={cinemas}
               value={formData.cinema_id}
-              onChange={(value) => setFormData({ ...formData, cinema_id: value })}
+              onChange={(value) =>
+                setFormData({ ...formData, cinema_id: value })
+              }
             />
             <AdminComboBox
               label="Select Hall"
@@ -76,10 +79,10 @@ const CreateNewShowtimeForm = ({
             onChange={(value) => setFormData({ ...formData, movie_id: value })}
           />
           <div className="flex justify-between gap-6">
-            <InputAdminDate 
-            label="Select Date"
-            value={formData.date}
-            onChange={(value) => setFormData({ ...formData, date: value })}
+            <InputAdminDate
+              label="Select Date"
+              value={formData.date}
+              onChange={(value) => setFormData({ ...formData, date: value })}
             />
             <AdminComboBox
               label="Select Time"
@@ -94,8 +97,17 @@ const CreateNewShowtimeForm = ({
               label="Price"
               placeholder="Enter Price"
               type="number"
+              min="0"
               value={formData.price}
-              onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (
+                  value === "" ||
+                  (!isNaN(Number(value)) && Number(value) >= 0)
+                ) {
+                  setFormData({ ...formData, price: value });
+                }
+              }}
             />
           </div>
 

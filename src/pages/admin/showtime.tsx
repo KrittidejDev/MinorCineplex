@@ -33,6 +33,9 @@ export default function AdminShowtime() {
   const [movies, setMovies] = useState<SelectOption[]>([]);
   const [cinemas, setCinemas] = useState<SelectCinemaOption[]>([]);
   const [timeSlots, setTimeSlots] = useState<SelectOption[]>([]);
+  const [totalPages, setTotalPages] = useState(1);
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(0);
 
   // Fetch Showtime Data
   const getShowtime = useCallback(async () => {
@@ -44,8 +47,11 @@ export default function AdminShowtime() {
           hall: query.hall,
           timeSlot: query.timeSlot,
           date: query.date,
+          page: page,
         },
       });
+      setTotal(data.total);
+      setTotalPages(data.totalPages);
       const mappedData = data.showTimes.map((item: ShowtimeData) => ({
         ...item,
         movie_id: item.movie_id,
@@ -59,11 +65,11 @@ export default function AdminShowtime() {
         time_slot: `${item.start_time} - ${item.end_time}`,
       }));
       setData(mappedData);
+      return data.totalPages;
     } catch (error) {
       console.log(error);
     }
-  }, [query]);
-  console.log("formData", formData);
+  }, [query, page]);
 
   // Fetch Data For Query
   const fetchAll = async () => {
@@ -105,9 +111,15 @@ export default function AdminShowtime() {
     event: React.FormEvent<HTMLFormElement>
   ): Promise<boolean> => {
     event.preventDefault();
-    
+
     // Frontend validation
-    if (!formData.movie_id || !formData.hall_id || !formData.time_slot_id || !formData.date || !formData.price) {
+    if (
+      !formData.movie_id ||
+      !formData.hall_id ||
+      !formData.time_slot_id ||
+      !formData.date ||
+      !formData.price
+    ) {
       alert("Please fill in all required fields");
       return false;
     }
@@ -131,12 +143,17 @@ export default function AdminShowtime() {
           date: new Date().toISOString().split("T")[0],
           price: "",
         });
+        const newTotalPages = await getShowtime();
+        if (page > newTotalPages) {
+          setPage(Math.max(newTotalPages, 1));
+        }
         return true;
       }
       return false;
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        const errorMessage = error.response?.data?.error || "Failed to create showtime";
+        const errorMessage =
+          error.response?.data?.error || "Failed to create showtime";
         alert(`Error: ${errorMessage}`);
       } else {
         alert("Error: Failed to create showtime");
@@ -149,7 +166,13 @@ export default function AdminShowtime() {
   // Update Showtime
   const handleUpdateShowtime = async (id: string): Promise<boolean> => {
     // Frontend validation
-    if (!formData.movie_id || !formData.hall_id || !formData.time_slot_id || !formData.date || !formData.price) {
+    if (
+      !formData.movie_id ||
+      !formData.hall_id ||
+      !formData.time_slot_id ||
+      !formData.date ||
+      !formData.price
+    ) {
       alert("Please fill in all required fields");
       return false;
     }
@@ -167,13 +190,17 @@ export default function AdminShowtime() {
       );
       if (response.status === 200) {
         alert("Showtime updated successfully!");
-        await getShowtime();
+        const newTotalPages = await getShowtime();
+        if (page > newTotalPages) {
+          setPage(Math.max(newTotalPages, 1));
+        }
         return true;
       }
       return false;
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        const errorMessage = error.response?.data?.error || "Failed to update showtime";
+        const errorMessage =
+          error.response?.data?.error || "Failed to update showtime";
         alert(`Error: ${errorMessage}`);
       } else {
         alert("Error: Failed to update showtime");
@@ -192,7 +219,10 @@ export default function AdminShowtime() {
         );
         if (reponse.status === 200) {
           console.log("Showtime deleted successfully");
-          await getShowtime();
+          const newTotalPages = await getShowtime();
+          if (page > newTotalPages) {
+            setPage(Math.max(newTotalPages, 1));
+          }
         } else {
           console.log("Failed to delete showtime");
         }
@@ -207,8 +237,13 @@ export default function AdminShowtime() {
   }, []);
 
   useEffect(() => {
+    setPage(1);
     getShowtime();
-  }, [query, getShowtime]);
+  }, [query]);
+
+  useEffect(() => {
+    getShowtime();
+  }, [page]);
 
   return (
     <div className="bg-white-wfff">
@@ -218,6 +253,10 @@ export default function AdminShowtime() {
         </div>
         <div className="w-full">
           <AdminShowtimeWidget
+            totalPages={totalPages}
+            total={total}
+            currentPage={page}
+            setCurrentPage={setPage}
             data={data}
             query={query}
             setQuery={setQuery}

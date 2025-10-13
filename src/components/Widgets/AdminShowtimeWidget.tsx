@@ -17,6 +17,10 @@ import { dateFormat } from "@/lib/dateFormat";
 
 interface AdminShowtimeWidgetProps {
   data: ShowtimeData[];
+  totalPages: number;
+  total: number;
+  currentPage: number;
+  setCurrentPage: (page: number) => void;
   query: ShowtimeQuery;
   setQuery: (query: ShowtimeQuery) => void;
   formData: ShowtimeFormData;
@@ -33,6 +37,10 @@ interface AdminShowtimeWidgetProps {
 
 const AdminShowtimeWidget = ({
   data,
+  totalPages,
+  total,
+  currentPage,
+  setCurrentPage,
   query,
   setQuery,
   formData,
@@ -62,14 +70,13 @@ const AdminShowtimeWidget = ({
   };
 
   const handleEditShowtime = (id: string) => {
-    // ใช้ raw data จาก API (มี id) แทนที่จะใช้ mapped data
-    const rawShowtime = data.find(item => item.id === id);
+    const rawShowtime = data.find((item) => item.id === id);
     if (rawShowtime) {
       setFormData({
         id: rawShowtime.id,
-        cinema_id: rawShowtime.cinema_id,  // ใช้ id แทนชื่อ
+        cinema_id: rawShowtime.cinema_id,
         hall_id: rawShowtime.hall_id,
-        time_slot_id: rawShowtime.timeslot,  // timeslot เก็บ time_slot_id
+        time_slot_id: rawShowtime.timeslot,
         movie_id: rawShowtime.movie_id,
         date: rawShowtime.date,
         price: rawShowtime.price,
@@ -107,8 +114,6 @@ const AdminShowtimeWidget = ({
     }
   };
 
-
-  // Map data เพื่อแสดงในรูปแบบที่ต้องการ
   const mappedData = data.map((item) => ({
     ...item,
     timeslot: `${item.start_time} - ${item.end_time}`,
@@ -154,7 +159,6 @@ const AdminShowtimeWidget = ({
             timeSlots={timeSlots}
           />
         </div>
-        {/* <DateSelectionBarWidget onSelectDate={() => {}} /> */}
         <div className="w-full flex flex-col gap-10">
           <TableCard
             columns={showtimeColumns}
@@ -162,8 +166,35 @@ const AdminShowtimeWidget = ({
             actions={showtimeActions}
           />
         </div>
-        <div className="flex justify-start">
-          <span className="text-fm-14 text-gray-g63f">{`Showing ${data.length} of ${data.length} results`}</span>
+        <div className="px-15 flex items-center gap-2 justify-center">
+          <Button
+            disabled={currentPage === 1}
+            onClick={() => setCurrentPage(1)}
+          >
+            {"<<"}
+          </Button>
+          <Button
+            disabled={currentPage === 1}
+            onClick={() => setCurrentPage(currentPage - 1)}
+          >
+            {"<"}
+          </Button>
+          <span className="text-fm-14 text-gray-g63f">{`Page ${currentPage} of ${totalPages || 1}`}</span>
+          <Button
+            disabled={currentPage === totalPages || totalPages === 0}
+            onClick={() => setCurrentPage(currentPage + 1)}
+          >
+            {">"}
+          </Button>
+          <Button
+            disabled={currentPage === totalPages || totalPages === 0}
+            onClick={() => setCurrentPage(totalPages)}
+          >
+            {">>"}
+          </Button>
+        </div>
+        <div className="flex justify-start px-15">
+          <span className="text-fm-14 text-gray-g63f">{`Showing ${data.length} of ${total} results`}</span>
         </div>
       </div>
       <CreateNewShowtimeForm

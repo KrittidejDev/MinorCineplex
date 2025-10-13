@@ -115,7 +115,7 @@ export interface SelectedSeat {
   row: string;
   status: string;
   price: number;
-  lockExpire?: number;
+  lockExpire?: number | null;
   showtimeId?: string;
 }
 
@@ -126,7 +126,8 @@ export interface Seat {
   status: string;
   price: number;
   seat_number?: string;
-  lockExpire?: number;
+  lockExpire?: number | null;
+  locked_by?: string;
 }
 
 // สำหรับ SeatRow

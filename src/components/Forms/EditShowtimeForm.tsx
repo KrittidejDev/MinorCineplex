@@ -101,10 +101,14 @@ const EditShowtimeForm = ({
               label="Price"
               placeholder="Enter Price"
               type="number"
+              min="0"
               value={formData.price}
-              onChange={(e) =>
-                setFormData({ ...formData, price: e.target.value })
-              }
+              onChange={(e) => {
+                const value = e.target.value;
+                if (value === "" || (!isNaN(Number(value)) && Number(value) >= 0)) {
+                  setFormData({ ...formData, price: value });
+                }
+              }}
             />
           </div>
 

@@ -13,6 +13,7 @@ type AdminInputTextFieldProps = {
   type?: React.HTMLInputTypeAttribute;
   className?: string;
   maxLength?: number;
+  min?: string;
 };
 
 const AdminInputTextField = ({
@@ -27,6 +28,7 @@ const AdminInputTextField = ({
   type,
   maxLength,
   className = "",
+  min,
   ...props
 }: AdminInputTextFieldProps) => {
   const baseClass =
@@ -48,6 +50,7 @@ const AdminInputTextField = ({
           {...props}
           type={type}
           maxLength={maxLength}
+          min={min}
           placeholder={placeholder}
           value={value ?? ""}
           onChange={onChange}

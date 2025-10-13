@@ -7,13 +7,14 @@ import {
 
 const prisma = new PrismaClient();
 
-export const getMany = ({
+export const getManyForAdmin = async ({
   limit,
   movie,
   cinema,
   hall,
   timeSlot,
   date,
+  page,
 }: ShowTimeFilter) => {
   let hallFilter = undefined;
   if (cinema && hall) {
@@ -23,15 +24,19 @@ export const getMany = ({
   } else if (hall) {
     hallFilter = { id: hall };
   }
- 
+
   const where = {
     ...(movie && { movie: { id: movie } }),
     ...(hallFilter && { hall: hallFilter }),
     ...(timeSlot && { time_slot: { id: timeSlot } }),
     ...(date && { date: new Date(date) }),
   };
-  return prisma.showtime.findMany({
+
+  const total = await prisma.showtime.count({ where });
+
+  const data = await prisma.showtime.findMany({
     take: limit,
+    skip: ((page || 1) - 1) * (limit || 10),
     where,
     select: {
       id: true,
@@ -64,6 +69,8 @@ export const getMany = ({
       price: true,
     },
   });
+
+  return { data, total };
 };
 
 export const getByID = (id: string) => {
@@ -230,7 +237,10 @@ export const deleteShowTimeById = (id: string) => {
   });
 };
 
-export const updateShowTimeById = (id: string, showTime: UpdateShowTimeData) => {
+export const updateShowTimeById = (
+  id: string,
+  showTime: UpdateShowTimeData
+) => {
   return prisma.showtime.update({
     where: { id },
     data: {

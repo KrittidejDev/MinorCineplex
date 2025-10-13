@@ -7,63 +7,129 @@ import {
   SelectOption,
   SelectCinemaOption,
   ShowtimeFormData,
-} from "@/pages/admin/showtime";
-import { useState } from "react";
+  ShowtimeData,
+} from "@/types/adminShowtime";
 import CreateNewShowtimeForm from "../Forms/CreateNewShowtimeForm";
-import InputAdminDate from "../Inputs/InputAdminDate";
+import EditShowtimeForm from "../Forms/EditShowtimeForm";
+import ViewShowtime from "../Forms/ViewShowtime";
+import { useState } from "react";
+import { dateFormat } from "@/lib/dateFormat";
 
 interface AdminShowtimeWidgetProps {
-  data: ShowTimeData[];
+  data: ShowtimeData[];
   query: ShowtimeQuery;
   setQuery: (query: ShowtimeQuery) => void;
-  setFormData: (formData: ShowtimeFormData) => void;
   formData: ShowtimeFormData;
+  setFormData: (formData: ShowtimeFormData) => void;
   movies: SelectOption[];
   cinemas: SelectCinemaOption[];
   timeSlots: SelectOption[];
-  handleCreateShowtime: (event: React.FormEvent<HTMLFormElement>) => void;
-}
-
-export interface ShowTimeData {
-  id: string;
-  movie: string;
-  cinema: string;
-  hall: string;
-  timeslot: string;
+  handleCreateShowtime: (
+    event: React.FormEvent<HTMLFormElement>
+  ) => Promise<boolean>;
+  handleUpdateShowtime: (id: string) => Promise<boolean>;
+  handleDeleteShowtime: (id: string) => void;
 }
 
 const AdminShowtimeWidget = ({
   data,
-  setQuery,
   query,
+  setQuery,
   formData,
   setFormData,
   movies,
   cinemas,
   timeSlots,
   handleCreateShowtime,
+  handleUpdateShowtime,
+  handleDeleteShowtime,
 }: AdminShowtimeWidgetProps) => {
   const [isShowCreateModal, setIsShowCreateModal] = useState(false);
-  const [date, setDate] = useState<Date>(new Date());
+  const [isShowEditModal, setIsShowEditModal] = useState(false);
+  const [isShowViewModal, setIsShowViewModal] = useState(false);
+  const [selectedShowtime, setSelectedShowtime] = useState<ShowtimeData | null>(
+    null
+  );
+
+  const handleViewShowtime = (id: string) => {
+    const showtime = data.find((item) => item.id === id) as
+      | ShowtimeData
+      | undefined;
+    if (showtime) {
+      setSelectedShowtime(showtime);
+      setIsShowViewModal(true);
+    }
+  };
+
+  const handleEditShowtime = (id: string) => {
+    // ใช้ raw data จาก API (มี id) แทนที่จะใช้ mapped data
+    const rawShowtime = data.find(item => item.id === id);
+    if (rawShowtime) {
+      setFormData({
+        id: rawShowtime.id,
+        cinema_id: rawShowtime.cinema_id,  // ใช้ id แทนชื่อ
+        hall_id: rawShowtime.hall_id,
+        time_slot_id: rawShowtime.timeslot,  // timeslot เก็บ time_slot_id
+        movie_id: rawShowtime.movie_id,
+        date: rawShowtime.date,
+        price: rawShowtime.price,
+      });
+      setIsShowEditModal(true);
+    }
+  };
+
+  const clearFormData = () => {
+    setFormData({
+      movie_id: "",
+      cinema_id: "",
+      hall_id: "",
+      time_slot_id: "",
+      date: "",
+      price: "",
+    });
+  };
+
+  const handleCloseEditModal = () => {
+    setIsShowEditModal(false);
+    clearFormData();
+  };
+
+  const handleCloseCreateModal = () => {
+    setIsShowCreateModal(false);
+    clearFormData();
+  };
+
+  const onCreateSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    const result = await handleCreateShowtime(event);
+    if (result) {
+      setIsShowCreateModal(false);
+      clearFormData();
+    }
+  };
+
+
+  // Map data เพื่อแสดงในรูปแบบที่ต้องการ
+  const mappedData = data.map((item) => ({
+    ...item,
+    timeslot: `${item.start_time} - ${item.end_time}`,
+    date: dateFormat(item.date),
+  }));
+
   const showtimeColumns = [
-    { key: "movie", label: "Movie Name", align: "left" as const },
-    { key: "cinema", label: "Cinema", align: "left" as const },
-    { key: "hall", label: "Hall", align: "left" as const },
-    { key: "time_slot", label: "Timeslot", align: "left" as const },
+    { key: "movie_title", label: "Movie Name", align: "left" as const },
+    { key: "cinema_name", label: "Cinema", align: "left" as const },
+    { key: "hall_name", label: "Hall", align: "left" as const },
+    { key: "timeslot", label: "Timeslot", align: "left" as const },
+    { key: "date", label: "Date", align: "left" as const },
+    { key: "price", label: "Price", align: "right" as const },
   ];
 
-  const showtimeActions = [
-    {
-      onView: () => console.log("View Movie 1"),
-      onEdit: () => console.log("Edit Movie 1"),
-      onDelete: () => console.log("Delete Movie 1"),
-    },
-    {
-      onView: () => console.log("View Movie 2"),
-      onEdit: () => console.log("Edit Movie 2"),
-      onDelete: () => console.log("Delete Movie 2"),
-    },
-  ];
+  const showtimeActions = data.map((item) => ({
+    onView: () => handleViewShowtime(item.id),
+    onEdit: () => handleEditShowtime(item.id),
+    onDelete: () => handleDeleteShowtime(item.id),
+  }));
+
   return (
     <>
       <div className="flex flex-col gap-10">
@@ -77,19 +143,7 @@ const AdminShowtimeWidget = ({
             Add Showtime
           </Button>
         </div>
-        <div className="flex items-center gap-10 px-15">
-          <div className="flex items-center gap-2">
-            <p className="text-f-24 text-black">Date:</p>
-            <span className="text-f-24 text-gray-g3b0">{query.date}</span>
-          </div>
-          <div className="max-w-[200px]">
-            <InputAdminDate
-              label="Select Date"
-              value={query.date}
-              onChange={(value) => setQuery({ ...query, date: value })}
-            />
-          </div>
-        </div>
+
         <div className="px-15">
           <AdminShowtimeFilter
             data={data}
@@ -104,7 +158,7 @@ const AdminShowtimeWidget = ({
         <div className="w-full flex flex-col gap-10">
           <TableCard
             columns={showtimeColumns}
-            data={data}
+            data={mappedData}
             actions={showtimeActions}
           />
         </div>
@@ -119,9 +173,26 @@ const AdminShowtimeWidget = ({
         formData={formData}
         setFormData={setFormData}
         isShowModal={isShowCreateModal}
-        onClose={() => setIsShowCreateModal(false)}
-        handleCreateShowtime={handleCreateShowtime}
+        onClose={handleCloseCreateModal}
+        handleCreateShowtime={onCreateSubmit}
       />
+      <EditShowtimeForm
+        movies={movies}
+        cinemas={cinemas}
+        timeSlots={timeSlots}
+        formData={formData}
+        setFormData={setFormData}
+        isShowModal={isShowEditModal}
+        onClose={handleCloseEditModal}
+        handleUpdateShowtime={handleUpdateShowtime}
+      />
+      {selectedShowtime && (
+        <ViewShowtime
+          data={selectedShowtime}
+          isShowModal={isShowViewModal}
+          onClose={() => setIsShowViewModal(false)}
+        />
+      )}
     </>
   );
 };

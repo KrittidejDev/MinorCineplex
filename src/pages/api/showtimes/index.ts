@@ -6,7 +6,7 @@ export default async function handler(
   res: NextApiResponse
 ) {
   if (req.method === "GET") {
-    const { limit, movie, cinema, hall, timeSlot, date } = req.query;
+    const { limit, movie, hall, timeSlot, date } = req.query;
     const limitNumber = typeof limit === "string" ? parseInt(limit) : 10;
     const movieString = typeof movie === "string" ? movie : undefined;
     const hallString = typeof hall === "string" ? hall : undefined;
@@ -30,17 +30,18 @@ export default async function handler(
     }
   }
   if (req.method === "POST") {
-    const { movie, hall, timeSlot, date, price } = req.body;
-    if (!movie || !hall || !timeSlot || !date || !price) {
+    console.log("req.body", req.body);
+    const { movie_id, hall_id, time_slot_id, date, price } = req.body;
+    if (!movie_id || !hall_id || !time_slot_id || !date || !price) {
       return res.status(400).json({ 
         error: "Missing required fields" 
       });
     }
     try {
       const showTime = await createShowTime({
-        movie,
-        hall,
-        timeSlot,
+        movie_id,
+        hall_id,
+        time_slot_id,
         date,
         price,
       });

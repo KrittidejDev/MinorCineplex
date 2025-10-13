@@ -2,82 +2,43 @@ import AdminSidebar from "@/components/ui/adminsidebar";
 import AdminShowtimeWidget from "@/components/Widgets/AdminShowtimeWidget";
 import axios from "axios";
 import { useState, useEffect, useCallback } from "react";
-
-export interface ShowtimeQuery {
-  movie: string;
-  cinema: string;
-  hall: string;
-  timeSlot: string;
-  date: string;
-}
-
-export interface ShowtimeFormData {
-  movie: string;
-  cinema: string;
-  hall: string;
-  timeSlot: string;
-  date: string;
-  price: number;
-}
-
-export interface SelectOption {
-  value: string;
-  label: string;
-}
-
-export interface SelectCinemaOption extends SelectOption {
-  halls: SelectOption[];
-}
-
-interface MovieBasicInfo {
-  id: string;
-  title: string;
-}
-
-interface TimeSlotBasicInfo {
-  id: string;
-  start_time: string;
-  end_time: string;
-}
-
-interface CinemaFromAPI {
-  id: string;
-  name: string;
-  halls: {
-    id: string;
-    name: string;
-  }[];
-}
+import {
+  ShowtimeQuery,
+  ShowtimeFormData,
+  SelectOption,
+  SelectCinemaOption,
+  ShowtimeData,
+  MovieBasicInfo,
+  CinemaFromAPI,
+  TimeSlotBasicInfo,
+} from "@/types/adminShowtime";
 
 export default function AdminShowtime() {
-  const [page] = useState<number>(1);
-  const [limit] = useState<number>(20);
   const [query, setQuery] = useState<ShowtimeQuery>({
     movie: "",
     cinema: "",
     hall: "",
     timeSlot: "",
-    date: new Date().toISOString().split("T")[0],
+    date: "",
   });
   const [formData, setFormData] = useState<ShowtimeFormData>({
-    movie: "",
-    cinema: "",
-    hall: "",
-    timeSlot: "",
+    movie_id: "",
+    cinema_id: "",
+    hall_id: "",
+    time_slot_id: "",
     date: new Date().toISOString().split("T")[0],
-    price: 100,
+    price: "",
   });
   const [data, setData] = useState([]);
   const [movies, setMovies] = useState<SelectOption[]>([]);
   const [cinemas, setCinemas] = useState<SelectCinemaOption[]>([]);
   const [timeSlots, setTimeSlots] = useState<SelectOption[]>([]);
 
+  // Fetch Showtime Data
   const getShowtime = useCallback(async () => {
     try {
       const { data } = await axios.get(`http://localhost:3000/api/showtimes`, {
         params: {
-          limit: limit,
-          page: page,
           movie: query.movie,
           cinema: query.cinema,
           hall: query.hall,
@@ -85,16 +46,26 @@ export default function AdminShowtime() {
           date: query.date,
         },
       });
-      setData(
-        (data.showTimes = data.showTimes.map((item: TimeSlotBasicInfo) => ({
-          ...item,
-          time_slot: `${item.start_time} - ${item.end_time}`,
-        })))
-      );
+      const mappedData = data.showTimes.map((item: ShowtimeData) => ({
+        ...item,
+        movie_id: item.movie_id,
+        movie_title: item.movie_title,
+        cinema_id: item.cinema_id,
+        cinema_name: item.cinema_name,
+        hall_id: item.hall_id,
+        hall_name: item.hall_name,
+        timeslot: item.timeslot,
+        date: item.date,
+        time_slot: `${item.start_time} - ${item.end_time}`,
+      }));
+      setData(mappedData);
     } catch (error) {
       console.log(error);
     }
-  }, [limit, page, query]);
+  }, [query]);
+  console.log("formData", formData);
+
+  // Fetch Data For Query
   const fetchAll = async () => {
     try {
       const [resMovies, resCinemas, resTimeSlots] = await Promise.all([
@@ -128,24 +99,106 @@ export default function AdminShowtime() {
       console.log(error);
     }
   };
-console.log("query", query);
 
+  // CreateNewShowtimeForm
   const handleCreateShowtime = async (
     event: React.FormEvent<HTMLFormElement>
-  ) => {
+  ): Promise<boolean> => {
     event.preventDefault();
+    
+    // Frontend validation
+    if (!formData.movie_id || !formData.hall_id || !formData.time_slot_id || !formData.date || !formData.price) {
+      alert("Please fill in all required fields");
+      return false;
+    }
+
     try {
-      const response = await axios.post(
-        `http://localhost:3000/api/showtimes`,
-        formData
+      const response = await axios.post(`http://localhost:3000/api/showtimes`, {
+        movie_id: formData.movie_id,
+        hall_id: formData.hall_id,
+        time_slot_id: formData.time_slot_id,
+        date: formData.date,
+        price: parseFloat(formData.price) || 0,
+      });
+      if (response.status === 200) {
+        alert("Showtime created successfully!");
+        await getShowtime();
+        setFormData({
+          movie_id: "",
+          cinema_id: "",
+          hall_id: "",
+          time_slot_id: "",
+          date: new Date().toISOString().split("T")[0],
+          price: "",
+        });
+        return true;
+      }
+      return false;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const errorMessage = error.response?.data?.error || "Failed to create showtime";
+        alert(`Error: ${errorMessage}`);
+      } else {
+        alert("Error: Failed to create showtime");
+      }
+      console.error(error);
+      return false;
+    }
+  };
+
+  // Update Showtime
+  const handleUpdateShowtime = async (id: string): Promise<boolean> => {
+    // Frontend validation
+    if (!formData.movie_id || !formData.hall_id || !formData.time_slot_id || !formData.date || !formData.price) {
+      alert("Please fill in all required fields");
+      return false;
+    }
+
+    try {
+      const response = await axios.put(
+        `http://localhost:3000/api/showtimes/${id}`,
+        {
+          movie_id: formData.movie_id,
+          hall_id: formData.hall_id,
+          time_slot_id: formData.time_slot_id,
+          date: formData.date,
+          price: parseFloat(formData.price) || 0,
+        }
       );
       if (response.status === 200) {
-        console.log("Showtime created successfully");
-      } else {
-        console.log("Failed to create showtime");
+        alert("Showtime updated successfully!");
+        await getShowtime();
+        return true;
       }
+      return false;
     } catch (error) {
-      console.log(error);
+      if (axios.isAxiosError(error)) {
+        const errorMessage = error.response?.data?.error || "Failed to update showtime";
+        alert(`Error: ${errorMessage}`);
+      } else {
+        alert("Error: Failed to update showtime");
+      }
+      console.error(error);
+      return false;
+    }
+  };
+
+  // Delete Showtime
+  const handleDeleteShowtime = async (id: string) => {
+    if (window.confirm("Are you sure you want to delete this showtime?")) {
+      try {
+        const reponse = await axios.delete(
+          `http://localhost:3000/api/showtimes/${id}`
+        );
+        if (reponse.status === 200) {
+          console.log("Showtime deleted successfully");
+          await getShowtime();
+        } else {
+          console.log("Failed to delete showtime");
+        }
+      } catch (error) {
+        console.log(error);
+      }
     }
   };
 
@@ -155,7 +208,7 @@ console.log("query", query);
 
   useEffect(() => {
     getShowtime();
-  }, [page, limit, query, getShowtime]);
+  }, [query, getShowtime]);
 
   return (
     <div className="bg-white-wfff">
@@ -166,14 +219,16 @@ console.log("query", query);
         <div className="w-full">
           <AdminShowtimeWidget
             data={data}
-            setQuery={setQuery}
-            setFormData={setFormData}
-            handleCreateShowtime={handleCreateShowtime}
-            formData={formData}
             query={query}
+            setQuery={setQuery}
+            formData={formData}
+            setFormData={setFormData}
             movies={movies}
             cinemas={cinemas}
             timeSlots={timeSlots}
+            handleCreateShowtime={handleCreateShowtime}
+            handleUpdateShowtime={handleUpdateShowtime}
+            handleDeleteShowtime={handleDeleteShowtime}
           />
         </div>
       </div>

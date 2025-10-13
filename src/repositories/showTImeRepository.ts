@@ -1,6 +1,7 @@
 import { PrismaClient } from "@/generated/prisma";
 import {
   CreateShowTimeData,
+  UpdateShowTimeData,
   ShowTimeFilter,
 } from "../services/showTimeService";
 
@@ -37,14 +38,17 @@ export const getMany = ({
       date: true,
       movie: {
         select: {
+          id: true,
           title: true,
         },
       },
       hall: {
         select: {
+          id: true,
           name: true,
           cinema: {
             select: {
+              id: true,
               name: true,
             },
           },
@@ -52,10 +56,12 @@ export const getMany = ({
       },
       time_slot: {
         select: {
+          id: true,
           start_time: true,
           end_time: true,
         },
       },
+      price: true,
     },
   });
 };
@@ -191,15 +197,17 @@ export const getBookingInfoByShowtimeId = async (showtime_id: string) => {
 };
 
 export const isShowtimeExists = (
-  hall: string,
-  timeSlot: string,
-  date: string
+  hall_id: string,
+  time_slot_id: string,
+  date: string,
+  excludeId?: string
 ) => {
   return prisma.showtime.findFirst({
     where: {
-      hall_id: hall,
-      time_slot_id: timeSlot,
+      hall_id: hall_id,
+      time_slot_id: time_slot_id,
       date: new Date(date),
+      ...(excludeId && { id: { not: excludeId } }),
     },
   });
 };
@@ -207,9 +215,28 @@ export const isShowtimeExists = (
 export const createShowTime = (showTime: CreateShowTimeData) => {
   return prisma.showtime.create({
     data: {
-      movie_id: showTime.movie,
-      hall_id: showTime.hall,
-      time_slot_id: showTime.timeSlot,
+      movie_id: showTime.movie_id,
+      hall_id: showTime.hall_id,
+      time_slot_id: showTime.time_slot_id,
+      date: new Date(showTime.date),
+      price: parseFloat(showTime.price.toString()),
+    },
+  });
+};
+
+export const deleteShowTimeById = (id: string) => {
+  return prisma.showtime.delete({
+    where: { id },
+  });
+};
+
+export const updateShowTimeById = (id: string, showTime: UpdateShowTimeData) => {
+  return prisma.showtime.update({
+    where: { id },
+    data: {
+      movie_id: showTime.movie_id,
+      hall_id: showTime.hall_id,
+      time_slot_id: showTime.time_slot_id,
       date: new Date(showTime.date),
       price: parseFloat(showTime.price.toString()),
     },

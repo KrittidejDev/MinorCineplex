@@ -10,7 +10,7 @@ import { useEffect, useState } from "react";
 import InputAdminDate from "../Inputs/InputAdminDate";
 import AdminInputTextField from "../Inputs/AdminInputTextField";
 
-interface CreateNewShowtimeFormProps {
+interface EditShowtimeFormProps {
   isShowModal: boolean;
   onClose: () => void;
   movies: SelectOption[];
@@ -18,10 +18,10 @@ interface CreateNewShowtimeFormProps {
   timeSlots: SelectOption[];
   formData: ShowtimeFormData;
   setFormData: (formData: ShowtimeFormData) => void;
-  handleCreateShowtime: (event: React.FormEvent<HTMLFormElement>) => void;
+  handleUpdateShowtime: (id: string) => Promise<boolean>;
 }
 
-const CreateNewShowtimeForm = ({
+const EditShowtimeForm = ({
   movies,
   cinemas,
   timeSlots,
@@ -29,8 +29,8 @@ const CreateNewShowtimeForm = ({
   setFormData,
   isShowModal,
   onClose,
-  handleCreateShowtime,
-}: CreateNewShowtimeFormProps) => {
+  handleUpdateShowtime,
+}: EditShowtimeFormProps) => {
   const [halls, setHalls] = useState<SelectOption[]>([]);
   useEffect(() => {
     if (formData.cinema_id) {
@@ -44,13 +44,20 @@ const CreateNewShowtimeForm = ({
       setHalls([]);
     }
   }, [formData.cinema_id, cinemas]);
-
+  
   return (
     <ModalEmpty isShowModal={isShowModal} onClose={onClose}>
-      <form 
-      onSubmit={handleCreateShowtime}
-      className="w-full bg-white flex flex-col justify-center items-center py-10 px-20 rounded-lg">
-        <h1 className="text-f-36 text-black">Create New Showtime</h1>
+      <form
+        onSubmit={async (event) => {
+          event.preventDefault();
+          const result = await handleUpdateShowtime(formData.id || "");
+          if (result) {
+            onClose();
+          }
+        }}
+        className="w-full bg-white flex flex-col justify-center items-center py-10 px-20 rounded-lg"
+      >
+        <h1 className="text-f-36 text-black">Edit Showtime</h1>
         <div className="w-full min-w-[1200px] flex flex-col gap-10 mt-10">
           <div className="flex justify-between gap-6">
             <AdminComboBox
@@ -58,7 +65,7 @@ const CreateNewShowtimeForm = ({
               placeholder="Select Cinema"
               options={cinemas}
               value={formData.cinema_id}
-              onChange={(value) => setFormData({ ...formData, cinema_id: value })}
+              onChange={(value) => setFormData({ ...formData, cinema_id: value, hall_id: "" })}
             />
             <AdminComboBox
               label="Select Hall"
@@ -76,10 +83,10 @@ const CreateNewShowtimeForm = ({
             onChange={(value) => setFormData({ ...formData, movie_id: value })}
           />
           <div className="flex justify-between gap-6">
-            <InputAdminDate 
-            label="Select Date"
-            value={formData.date}
-            onChange={(value) => setFormData({ ...formData, date: value })}
+            <InputAdminDate
+              label="Select Date"
+              value={formData.date}
+              onChange={(value) => setFormData({ ...formData, date: value })}
             />
             <AdminComboBox
               label="Select Time"
@@ -95,7 +102,9 @@ const CreateNewShowtimeForm = ({
               placeholder="Enter Price"
               type="number"
               value={formData.price}
-              onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, price: e.target.value })
+              }
             />
           </div>
 
@@ -108,7 +117,7 @@ const CreateNewShowtimeForm = ({
               Cancel
             </Button>
             <Button type="submit" className="btn-base blue-normal w-[120px]">
-              Create
+              Save
             </Button>
           </div>
         </div>
@@ -116,4 +125,4 @@ const CreateNewShowtimeForm = ({
     </ModalEmpty>
   );
 };
-export default CreateNewShowtimeForm;
+export default EditShowtimeForm;

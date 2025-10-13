@@ -89,6 +89,7 @@ const AdminComboBox = ({
               className="focus:outline-none"
               type="text"
               disabled={disabled}
+              defaultValue={defaultValue}
               value={displayValue || searchValue || ""}
               onChange={handleChange}
               placeholder={placeholder}

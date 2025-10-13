@@ -1,7 +1,12 @@
 import { ShowTimeData } from "../Widgets/AdminShowtimeWidget";
 import { useEffect, useState } from "react";
 import AdminComboBox from "../Inputs/AdminComboBox";
-import { ShowtimeQuery, SelectOption, SelectCinemaOption } from "@/pages/admin/showtime";
+import {
+  ShowtimeQuery,
+  SelectOption,
+  SelectCinemaOption,
+} from "@/types/adminShowtime";
+import InputAdminDate from "../Inputs/InputAdminDate";
 
 interface AdminShowtimeFilterProps {
   data: ShowTimeData[];
@@ -12,7 +17,13 @@ interface AdminShowtimeFilterProps {
   timeSlots: SelectOption[];
 }
 
-const AdminShowtimeFilter = ({ setQuery, query, movies, cinemas, timeSlots }: AdminShowtimeFilterProps) => {
+const AdminShowtimeFilter = ({
+  setQuery,
+  query,
+  movies,
+  cinemas,
+  timeSlots,
+}: AdminShowtimeFilterProps) => {
   const [halls, setHalls] = useState<SelectOption[]>([]);
 
   useEffect(() => {
@@ -52,19 +63,36 @@ const AdminShowtimeFilter = ({ setQuery, query, movies, cinemas, timeSlots }: Ad
   ];
 
   return (
-    <div className="flex gap-4 justify-between">
-      {queryOptions.map((option) => (
-        <div key={option.field} className="min-w-[200px]">
-          <AdminComboBox
-            placeholder={`All ${option.label}s`}
-            defaultValue=""
-            value={query[option.field as keyof ShowtimeQuery]}
-            onChange={(value) => setQuery({ ...query, [option.field]: value })}
-            options={option.options}
-            disabled={option.field === "hall" && query.cinema === ""}
+    <div className="w-full">
+      <div className="flex items-center gap-10 py-5">
+        <div className="flex items-center gap-2">
+          <p className="text-f-20 text-black">Date:</p>
+          <span className="text-f-20 text-gray-g3b0">{query.date || "All Dates"}</span>
+        </div>
+        <div className="max-w-[200px]">
+          <InputAdminDate
+            label="Select Date"
+            value={query.date}
+            onChange={(value) => setQuery({ ...query, date: value })}
           />
         </div>
-      ))}
+      </div>
+      <div className="flex gap-4 justify-between">
+        {queryOptions.map((option) => (
+          <div key={option.field} className="min-w-[200px]">
+            <AdminComboBox
+              placeholder={`All ${option.label}s`}
+              defaultValue=""
+              value={query[option.field as keyof ShowtimeQuery]}
+              onChange={(value) =>
+                setQuery({ ...query, [option.field]: value })
+              }
+              options={option.options}
+              disabled={option.field === "hall" && query.cinema === ""}
+            />
+          </div>
+        ))}
+      </div>
     </div>
   );
 };

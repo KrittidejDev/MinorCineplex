@@ -1,31 +1,62 @@
 import { PrismaClient } from "@/generated/prisma";
+import {
+  CreateShowTimeData,
+  UpdateShowTimeData,
+  ShowTimeFilter,
+} from "../services/showTimeService";
 
 const prisma = new PrismaClient();
 
-export const getMany = (movie_id: string) => {
-  return prisma.showtime.findMany({
-    where: { movie_id },
+export const getManyForAdmin = async ({
+  limit,
+  movie,
+  cinema,
+  hall,
+  timeSlot,
+  date,
+  page,
+}: ShowTimeFilter) => {
+  let hallFilter = undefined;
+  if (cinema && hall) {
+    hallFilter = { cinema: { id: cinema }, id: hall };
+  } else if (cinema) {
+    hallFilter = { cinema: { id: cinema } };
+  } else if (hall) {
+    hallFilter = { id: hall };
+  }
+
+  const where = {
+    ...(movie && { movie: { id: movie } }),
+    ...(hallFilter && { hall: hallFilter }),
+    ...(timeSlot && { time_slot: { id: timeSlot } }),
+    ...(date && { date: new Date(date) }),
+  };
+
+  const total = await prisma.showtime.count({ where });
+
+  const data = await prisma.showtime.findMany({
+    take: limit,
+    skip: ((page || 1) - 1) * (limit || 10),
+    where,
     select: {
       id: true,
       date: true,
-      price: true,
       movie: {
         select: {
           id: true,
           title: true,
-          duration_min: true,
-          poster_url: true,
-          rating: true,
-          genre: true,
-          release_date: true,
-          description: true,
         },
       },
       hall: {
         select: {
           id: true,
           name: true,
-          cinema: true,
+          cinema: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
         },
       },
       time_slot: {
@@ -35,8 +66,11 @@ export const getMany = (movie_id: string) => {
           end_time: true,
         },
       },
+      price: true,
     },
   });
+
+  return { data, total };
 };
 
 export const getByID = (id: string) => {
@@ -167,4 +201,54 @@ export const getBookingInfoByShowtimeId = async (showtime_id: string) => {
     ...showtime,
     seats: rows,
   };
+};
+
+export const isShowtimeExists = (
+  hall_id: string,
+  time_slot_id: string,
+  date: string,
+  excludeId?: string
+) => {
+  return prisma.showtime.findFirst({
+    where: {
+      hall_id: hall_id,
+      time_slot_id: time_slot_id,
+      date: new Date(date),
+      ...(excludeId && { id: { not: excludeId } }),
+    },
+  });
+};
+
+export const createShowTime = (showTime: CreateShowTimeData) => {
+  return prisma.showtime.create({
+    data: {
+      movie_id: showTime.movie_id,
+      hall_id: showTime.hall_id,
+      time_slot_id: showTime.time_slot_id,
+      date: new Date(showTime.date),
+      price: parseFloat(showTime.price.toString()),
+    },
+  });
+};
+
+export const deleteShowTimeById = (id: string) => {
+  return prisma.showtime.delete({
+    where: { id },
+  });
+};
+
+export const updateShowTimeById = (
+  id: string,
+  showTime: UpdateShowTimeData
+) => {
+  return prisma.showtime.update({
+    where: { id },
+    data: {
+      movie_id: showTime.movie_id,
+      hall_id: showTime.hall_id,
+      time_slot_id: showTime.time_slot_id,
+      date: new Date(showTime.date),
+      price: parseFloat(showTime.price.toString()),
+    },
+  });
 };

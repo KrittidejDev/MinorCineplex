@@ -28,11 +28,17 @@ export const getMovies = async (
   }
 
   if (filters?.releaseDate) {
-    const date = new Date(filters.releaseDate);
-    where.release_date = {
-      gte: new Date(date.setHours(0, 0, 0, 0)),
-      lte: new Date(date.setHours(23, 59, 59, 999)),
-    };
+    const [day, month, year] = filters.releaseDate.split("/");
+
+    if (day && month && year) {
+      const formatted = `${year}-${month}-${day}`;
+      const date = new Date(formatted);
+
+      where.release_date = {
+        gte: new Date(date.setHours(0, 0, 0, 0)),
+        lte: new Date(date.setHours(23, 59, 59, 999)),
+      };
+    }
   }
 
   const movies = await prisma.movie.findMany({

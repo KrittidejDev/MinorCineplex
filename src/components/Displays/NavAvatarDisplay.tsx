@@ -1,10 +1,6 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import ArrowDown from "../Icons/ArrowDown";
-// import UserIcon from "../Icons/UserIcon";
-// import ResetPasswordIcon from "../Icons/ResetPasswordIcon";
-// import SignOutIcon from "../Icons/SignOutIcon";
-// import AdminBook from "../Icons/AdminBook";
 import Link from "next/link";
 
 interface AvatarDisplayProps {

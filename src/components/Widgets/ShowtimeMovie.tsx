@@ -64,11 +64,7 @@ export const ShowtimeMovie: React.FC<ShowtimeMovieProps> = ({ data }) => {
           {data?.halls?.map((hall) => (
             <div key={hall?.id}>
               <div className="text-f-24 mb-4">{hall?.name}</div>
-              <ShowtimeSelection
-                timeslot={hall?.timeslots}
-                movieId={data?.id}
-                hallId={hall?.id}
-              />
+              <ShowtimeSelection timeslot={hall?.timeslots} />
             </div>
           ))}
         </div>

@@ -5,6 +5,8 @@ import TableCard from "../Cards/TableCard";
 import Link from "../Icons/Link";
 import Eye from "../Icons/Eye";
 import SearchLight from "../Icons/SearchLight";
+import AdminInputTextField from "../Inputs/AdminInputTextField";
+import ModalEmpty from "../Modals/ModalEmpty";
 
 type TrailerRow = {
   name: string;
@@ -73,67 +75,58 @@ export default function AdminTrailerWidget() {
         </div>
       </div>
 
-      {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/50">
-          <div className="mt-24 w-full max-w-[920px] bg-white-wfff rounded-[8px] shadow-xl border border-gray-gedd">
-            <div className="p-8">
-              <h2 className="text-f-56 text-gray-g63f">Add New Trailer</h2>
-              <p className="text-fm-12 text-gray-g3b0 mt-1">Fill in the details below to add a new movie trailer</p>
+      <ModalEmpty isShowModal={isOpen} onClose={() => setIsOpen(false)}>
+        <div className="w-full max-w-[920px] bg-white-wfff rounded-[8px] shadow-xl border border-gray-gedd">
+          <div className="p-8">
+            <h2 className="text-f-56 text-gray-g63f">Add New Trailer</h2>
+            <p className="text-fm-12 text-gray-g3b0 mt-1">Fill in the details below to add a new movie trailer</p>
 
-              <div className="mt-6 flex flex-col gap-5">
-                <div>
-                  <label className="block text-blue-bbee text-fr-14 mb-2">Movie Name</label>
-                  <div className="relative">
+            <div className="mt-6 flex flex-col gap-5">
+              <AdminInputTextField
+                label="Movie Name"
+                type="text"
+                value={movieName}
+                onChange={(e) => setMovieName(e.target.value)}
+                placeholder="Search for a movies (e.g., Inception)"
+              />
+
+              <div>
+                <label className="block text-blue-bbee text-fr-14 mb-2">Trailer URL</label>
+                <div className="flex">
+                  <div className="relative flex-1">
                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-g3b0">
-                      <SearchLight />
+                      <Link />
                     </span>
                     <input
-                      value={movieName}
-                      onChange={(e) => setMovieName(e.target.value)}
-                      placeholder="Search for a movies (e.g., Inception)"
-                      className="w-full h-12 pl-9 pr-4 rounded-[4px] border border-blue-bbee/70 outline-none focus:border-blue-bbee text-fr-14 text-gray-g3b0"
+                      value={trailerUrl}
+                      onChange={(e) => setTrailerUrl(e.target.value)}
+                      placeholder="https://www.youtube.com/watch?..."
+                      className="w-full h-12 pl-9 pr-28 rounded-[4px] border border-blue-bbee/70 outline-none focus:border-blue-bbee text-fr-14 text-gray-g3b0"
                     />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-blue-bbee text-fr-14 mb-2">Trailer URL</label>
-                  <div className="flex">
-                    <div className="relative flex-1">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-g3b0">
-                        <Link />
-                      </span>
-                      <input
-                        value={trailerUrl}
-                        onChange={(e) => setTrailerUrl(e.target.value)}
-                        placeholder="https://www.youtube.com/watch?..."
-                        className="w-full h-12 pl-9 pr-28 rounded-[4px] border border-blue-bbee/70 outline-none focus:border-blue-bbee text-fr-14 text-gray-g3b0"
-                      />
-                      <button
-                        type="button"
-                        className="absolute right-0 top-1/2 -translate-y-1/2 bg-blue-bbee hover:bg-blue-bbee/90 text-white-wfff rounded-r-[4px] h-12 px-3 inline-flex items-center gap-2"
-                        onClick={() => trailerUrl && window.open(trailerUrl, "_blank")}
-                      >
-                        <Eye />
-                        <span className="text-fr-14">View</span>
-                      </button>
-                    </div>
+                    <button
+                      type="button"
+                      className="absolute right-0 top-1/2 -translate-y-1/2 bg-blue-bbee hover:bg-blue-bbee/90 text-white-wfff rounded-r-[4px] h-12 px-3 inline-flex items-center gap-2"
+                      onClick={() => trailerUrl && window.open(trailerUrl, "_blank")}
+                    >
+                      <Eye />
+                      <span className="text-fr-14">View</span>
+                    </button>
                   </div>
                 </div>
               </div>
+            </div>
 
-              <div className="mt-8 flex justify-end gap-3">
-                <Button className="h-11 px-6 rounded-[4px] bg-gray-gedd text-gray-g3b0 hover:bg-gray-gedd/90" onClick={() => setIsOpen(false)}>
-                  Cancel
-                </Button>
-                <Button className="h-11 px-6 rounded-[4px] bg-blue-bbee text-white-wfff hover:bg-blue-bbee/90" onClick={handleSave}>
-                  Save
-                </Button>
-              </div>
+            <div className="mt-8 flex justify-end gap-3">
+              <Button className="h-11 px-6 rounded-[4px] bg-gray-gedd text-gray-g3b0 hover:bg-gray-gedd/90" onClick={() => setIsOpen(false)}>
+                Cancel
+              </Button>
+              <Button className="h-11 px-6 rounded-[4px] bg-blue-bbee text-white-wfff hover:bg-blue-bbee/90" onClick={handleSave}>
+                Save
+              </Button>
             </div>
           </div>
         </div>
-      )}
+      </ModalEmpty>
     </div>
   );
 }

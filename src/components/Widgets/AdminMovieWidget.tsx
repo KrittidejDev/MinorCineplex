@@ -115,7 +115,7 @@ function AdminMovieWidget() {
             className="btn-base blue-normal text-fm-16 font-bold gap-2.5 h-12 w-[135px] rounded-[4px]"
             onClick={() => setIsShowCreateModal(true)}
           >
-            <AddRoundLight width={24} height={40} color={"#FFFFFF"} />
+            <AddRoundLight width={24} height={24} color="whtie-wfff"/>
             Add Movie
           </Button>
         </div>

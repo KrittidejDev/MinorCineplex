@@ -17,6 +17,13 @@ export const getById = (id: string) =>
   prisma.coupon.findUnique({ where: { id } });
 
 export const create = async (data: CreateCouponInput) => {
+  const allowedTypes = ["AMOUNT", "PERCENT",  "SPACIAL"];
+
+  // ถ้า data.discount_type ไม่มี หรือไม่ตรงกับ allowedTypes → ใช้ default "AMOUNT"
+  const discountType = allowedTypes.includes(String(data.discount_type))
+    ? data.discount_type!
+    : "AMOUNT";
+
   return prisma.coupon.create({
     data: {
       code: data.code,
@@ -24,7 +31,7 @@ export const create = async (data: CreateCouponInput) => {
       title_th: data.title_th ?? "",
       discription_en: data.discription_en ?? "",
       discription_th: data.discription_th ?? "",
-      discount_type: data.discount_type ?? "AMOUNT",
+      discount_type: discountType,
       discount_value: data.discount_value,
       start_date: parseDate(data.start_date),
       end_date: parseDate(data.end_date),

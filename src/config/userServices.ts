@@ -80,6 +80,13 @@ export const userService = {
     couponId?: string;
   }) => apiService.post(`${apiPath}/payment`, params),
 
+  // Payment
+  POST_PAYMENT: (params: {
+    userId: string;
+    seats: string[];
+    couponId?: string;
+  }) => apiService.post(`${apiPath}/payment`, params),
+
   // File
   POST_FILE_UPLOAD: (params: FileUploadParams) => {
     const formData = new FormData();

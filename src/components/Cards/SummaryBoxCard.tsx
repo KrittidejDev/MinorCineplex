@@ -1,14 +1,13 @@
 import Image from "next/image";
-import { useState } from "react";
-import { useTranslation } from "react-i18next";
 import Tag from "../Widgets/Tag";
 import PinFill from "../Icons/PinFill";
 import DateRangeFill from "../Icons/DateRangeFill";
 import TimeFill from "../Icons/TimeFill";
 import Shop from "../Icons/Shop";
 import BookingInfo from "./BookingInfo";
+import { useTranslation } from "react-i18next";
+import { BillInfo } from "@/types/cinema";
 import { Button } from "../ui/button";
-import { BillInfo, SelectedSeat } from "@/types/cinema";
 import { CouponCardData } from "@/types/coupon";
 
 interface Props extends BillInfo {
@@ -17,15 +16,12 @@ interface Props extends BillInfo {
   selectedCoupon?: CouponCardData | null;
   onSelectCoupon?: (coupon: CouponCardData) => void;
   onPayment?: () => void;
-  canPay: boolean;
-  paymentMethod?: "credit_card" | "qr_code";
 }
 
-export default function SummaryBoxCard({
+function SummaryBoxCard({
   data,
-  canPay,
-  totalSelected = [],
-  totalPrice = 0,
+  totalSelected,
+  totalPrice,
   lockSeats,
   step,
   countdown,
@@ -33,29 +29,24 @@ export default function SummaryBoxCard({
   selectedCoupon,
   onSelectCoupon,
   onPayment,
-  paymentMethod = "credit_card",
 }: Props) {
   const { i18n } = useTranslation();
-  const lang = i18n.language;
-
-  const [isCouponModalOpen, setCouponModalOpen] = useState(false);
+  const locale = i18n.language || "en";
 
   return (
     <div className="w-full max-w-full lg:max-w-[305px] h-fit bg-gray-gc1b rounded-lg">
       <div className="p-4">
-        {step === "3" && countdown && (
+        {step === "2" && (
           <p className="text-sm text-gray-g3b0 pb-3">
-            {lang === "en" ? "Time remaining:" : "เวลาที่เหลือ:"}{" "}
+            Time remaining:{" "}
             <span className="text-sm text-blue-bbee pl-2">{countdown}</span>
           </p>
         )}
+
         <div className="flex gap-4 items-center">
           <Image
             src={data?.movie?.poster_url || "/default-poster.jpg"}
-            alt={
-              data?.movie?.title ||
-              (lang === "en" ? "Movie Poster" : "โปสเตอร์หนัง")
-            }
+            alt={data?.movie?.title || "Movie Poster"}
             width={82}
             height={120}
             className="object-cover rounded-md"
@@ -71,6 +62,7 @@ export default function SummaryBoxCard({
             </div>
           </div>
         </div>
+
         <div className="flex flex-col gap-2 mt-6">
           <div className="flex items-center gap-4">
             <PinFill width={16} height={16} color={"#565F7E"} />
@@ -81,7 +73,7 @@ export default function SummaryBoxCard({
             <p className="text-gray-gedd">
               {data?.date &&
                 new Date(data.date).toLocaleDateString(
-                  lang === "en" ? "en-US" : "th-TH",
+                  locale === "en" ? "en-US" : "th-TH",
                   { day: "numeric", month: "long", year: "numeric" }
                 )}
             </p>
@@ -96,104 +88,41 @@ export default function SummaryBoxCard({
           </div>
         </div>
       </div>
-      {step === "2" && totalSelected.length > 0 && (
+
+      {step === "1" && totalSelected && totalSelected.length > 0 && (
         <BookingInfo
           totalSelected={totalSelected}
           totalPrice={totalPrice}
           lockSeats={lockSeats}
         />
       )}
-      {step === "3" && (
+
+      {step === "2" && (
         <div className="p-4 flex flex-col gap-4">
           {coupons.length > 0 && (
-            <div className="flex justify-between items-center text-gray-gedd">
-              <span>{lang === "en" ? "Coupon" : "คูปอง"}</span>
-              <Button
-                onClick={() => setCouponModalOpen(true)}
-                className="p-2 rounded bg-gray-g3b0 text-white text-sm"
-              >
-                {selectedCoupon
-                  ? `${selectedCoupon.code} - ${selectedCoupon.discount_value}%`
-                  : lang === "en"
-                    ? "Select Coupon"
-                    : "เลือกคูปอง"}
-              </Button>
-            </div>
-          )}
-          <div className="flex justify-between text-gray-gedd">
-            <span>{lang === "en" ? "Selected Seat" : "ที่นั่งที่เลือก"}</span>
-            <span>{totalSelected.map((s) => s.seat_number).join(", ")}</span>
-          </div>
-          <div className="flex justify-between text-white-wfff font-bold text-lg">
-            <span>{lang === "en" ? "Discount" : "ส่วนลด"}</span>
-            <span>-{selectedCoupon?.discount_value || 0}%</span>
-          </div>
-          <div className="flex justify-between text-gray-gedd">
-            <span>{lang === "en" ? "Payment Method" : "วิธีชำระเงิน"}</span>
-            <span className="capitalize text-white">
-              {paymentMethod === "credit_card"
-                ? lang === "en"
-                  ? "Credit Card"
-                  : "บัตรเครดิต"
-                : lang === "en"
-                  ? "QR Code"
-                  : "คิวอาร์โค้ด"}
-            </span>
-          </div>
-          <div className="flex justify-between text-white-wfff font-bold text-lg">
-            <span>{lang === "en" ? "Total" : "รวมทั้งหมด"}</span>
-            <span>
-              {new Intl.NumberFormat(lang === "en" ? "en-US" : "th-TH", {
-                style: "currency",
-                currency: "THB",
-              }).format(
-                totalPrice *
-                  (selectedCoupon ? 1 - selectedCoupon.discount_value / 100 : 1)
-              )}
-            </span>
-          </div>
-          <Button
-            className="btn-base blue-normal"
-            onClick={onPayment}
-            disabled={!canPay}
-          >
-            {lang === "en" ? "Next" : "ถัดไป"}
-          </Button>
-        </div>
-      )}
-      {isCouponModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50">
-          <div className="bg-gray-gc1b rounded-lg p-4 w-80 max-w-full shadow-lg">
-            <h4 className="text-white-wfff font-bold mb-4 text-center">
-              {lang === "en" ? "Select Coupon" : "เลือกคูปอง"}
-            </h4>
-            <div className="flex flex-col gap-2 max-h-64 overflow-y-auto">
-              {coupons.map((c) => (
-                <button
-                  key={c.id}
-                  className={`p-2 rounded text-left transition ${
-                    selectedCoupon?.id === c.id
-                      ? "bg-blue-bbee text-white-wfff"
-                      : "bg-gray-g3b0 text-gray-gedd hover:bg-gray-g63f"
-                  }`}
-                  onClick={() => {
-                    onSelectCoupon && onSelectCoupon(c);
-                    setCouponModalOpen(false);
-                  }}
-                >
-                  {c.code} - {c.discount_value}%
-                </button>
-              ))}
-            </div>
-            <Button
-              onClick={() => setCouponModalOpen(false)}
-              className="mt-4 w-full bg-gray-g3b0 hover:bg-gray-g63f text-white"
+            <select
+              value={selectedCoupon?.id || ""}
+              onChange={(e) => {
+                const coupon = coupons.find((c) => c.id === e.target.value);
+                if (coupon && onSelectCoupon) onSelectCoupon(coupon);
+              }}
+              className="w-full p-2 rounded bg-gray-g3b0 text-white"
             >
-              {lang === "en" ? "Close" : "ปิด"}
-            </Button>
-          </div>
+              <option value="">Select Coupon</option>
+              {coupons.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.code} - {c.discount}%
+                </option>
+              ))}
+            </select>
+          )}
+          <Button className="btn-base blue-normal" onClick={onPayment}>
+            Pay Now
+          </Button>
         </div>
       )}
     </div>
   );
 }
+
+export default SummaryBoxCard;

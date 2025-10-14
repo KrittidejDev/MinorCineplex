@@ -1,4 +1,4 @@
-import { ShowTimeData } from "../Widgets/AdminShowtimeWidget";
+import { ShowtimeData } from "@/types/adminShowtime";
 import { useEffect, useState } from "react";
 import AdminComboBox from "../Inputs/AdminComboBox";
 import {
@@ -7,9 +7,10 @@ import {
   SelectCinemaOption,
 } from "@/types/adminShowtime";
 import InputAdminDate from "../Inputs/InputAdminDate";
+import { CloseRoundLight } from "../Icons/Icons";
 
 interface AdminShowtimeFilterProps {
-  data: ShowTimeData[];
+  data: ShowtimeData[];
   query: ShowtimeQuery;
   setQuery: (query: ShowtimeQuery) => void;
   movies: SelectOption[];
@@ -25,6 +26,16 @@ const AdminShowtimeFilter = ({
   timeSlots,
 }: AdminShowtimeFilterProps) => {
   const [halls, setHalls] = useState<SelectOption[]>([]);
+
+  const clearQuery = () => {
+    setQuery({
+      movie: "",
+      cinema: "",
+      hall: "",
+      timeSlot: "",
+      date: "",
+    });
+  };
 
   useEffect(() => {
     if (query.cinema) {
@@ -64,25 +75,42 @@ const AdminShowtimeFilter = ({
 
   return (
     <div className="w-full">
-      <div className="flex items-center gap-10 py-5">
-        <div className="flex items-center gap-2">
-          <p className="text-f-20 text-black">Date:</p>
-          <span className="text-f-20 text-gray-g3b0">{query.date || "All Dates"}</span>
+      <div className="flex justify-between items-center py-5">
+        <div className="flex items-center gap-5">
+          <div className="flex items-center gap-2">
+            <p className="text-f-20 text-black">Date:</p>
+            <span className="text-f-20 text-gray-g3b0">
+              {query.date || "All Dates"}
+            </span>
+          </div>
+          <div className="flex max-w-[200px]">
+            <InputAdminDate
+              label="Select Date"
+              value={query.date}
+              onChange={(value) => setQuery({ ...query, date: value })}
+            />
+            <CloseRoundLight
+              onClick={() => setQuery({ ...query, date: "" })}
+              width={20}
+              height={20}
+              color={"#000000"}
+            />
+          </div>
         </div>
-        <div className="max-w-[200px]">
-          <InputAdminDate
-            label="Select Date"
-            value={query.date}
-            onChange={(value) => setQuery({ ...query, date: value })}
-          />
+        <div className="flex items-center gap-2">
+          <button
+            className="h-12 flex items-center justify-center btn-base blue-normal text-fm-16"
+            onClick={clearQuery}
+          >
+            Clear
+          </button>
         </div>
       </div>
       <div className="flex gap-4 justify-between">
         {queryOptions.map((option) => (
-          <div key={option.field} className="min-w-[200px]">
+          <div key={option.field} className="w-full min-w-[200px]">
             <AdminComboBox
               placeholder={`All ${option.label}s`}
-              defaultValue=""
               value={query[option.field as keyof ShowtimeQuery]}
               onChange={(value) =>
                 setQuery({ ...query, [option.field]: value })

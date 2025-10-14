@@ -25,6 +25,7 @@ interface AdminShowtimeWidgetProps {
   setQuery: (query: ShowtimeQuery) => void;
   formData: ShowtimeFormData;
   setFormData: (formData: ShowtimeFormData) => void;
+  clearFormData: () => void;
   movies: SelectOption[];
   cinemas: SelectCinemaOption[];
   timeSlots: SelectOption[];
@@ -45,6 +46,7 @@ const AdminShowtimeWidget = ({
   setQuery,
   formData,
   setFormData,
+  clearFormData,
   movies,
   cinemas,
   timeSlots,
@@ -70,30 +72,19 @@ const AdminShowtimeWidget = ({
   };
 
   const handleEditShowtime = (id: string) => {
-    const rawShowtime = data.find((item) => item.id === id);
-    if (rawShowtime) {
+    const originalShowtime = data.find((item) => item.id === id);
+    if (originalShowtime) {
       setFormData({
-        id: rawShowtime.id,
-        cinema_id: rawShowtime.cinema_id,
-        hall_id: rawShowtime.hall_id,
-        time_slot_id: rawShowtime.timeslot,
-        movie_id: rawShowtime.movie_id,
-        date: rawShowtime.date,
-        price: rawShowtime.price,
+        id: originalShowtime.id,
+        cinema_id: originalShowtime.cinema_id,
+        hall_id: originalShowtime.hall_id,
+        time_slot_id: originalShowtime.timeslot,
+        movie_id: originalShowtime.movie_id,
+        date: originalShowtime.date,
+        price: originalShowtime.price,
       });
       setIsShowEditModal(true);
     }
-  };
-
-  const clearFormData = () => {
-    setFormData({
-      movie_id: "",
-      cinema_id: "",
-      hall_id: "",
-      time_slot_id: "",
-      date: "",
-      price: "",
-    });
   };
 
   const handleCloseEditModal = () => {

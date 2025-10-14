@@ -15,7 +15,7 @@ export interface CouponsData {
 }
 
 export interface APICoupon {
-  id: string; // UUID
+  id: string;
   code: string;
   title_en: string;
   title_th: string;
@@ -42,7 +42,7 @@ export interface CreateCouponInput {
   title_th?: string;
   discription_en?: string;
   discription_th?: string;
-  discount_type?: string; // AMOUNT / PERCENT
+  discount_type?: string;
   discount_value: number;
   start_date: Date | string;
   end_date: Date | string;

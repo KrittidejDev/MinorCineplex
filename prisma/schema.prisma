@@ -141,7 +141,6 @@ model showtime {
   movie        movie           @relation(fields: [movie_id], references: [id])
   time_slot    time_slot       @relation(fields: [time_slot_id], references: [id])
   seats        showtime_seat[]
-
   @@unique([movie_id, hall_id, time_slot_id, date])
 }
 

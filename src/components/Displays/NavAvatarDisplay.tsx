@@ -56,11 +56,7 @@ export const AvatarDisplay: React.FC<AvatarDisplayProps> = ({
           }
         >
           <Image
-            src={
-              data?.avatar?.url ||
-              //   `https://i.pravatar.cc/150?u=${data?.username}`
-              `https://i.pravatar.cc/150?u=pk`
-            }
+            src={data?.avatar?.url || `https://i.pravatar.cc/150?u=pk`}
             alt="avatar"
             width={48}
             height={48}

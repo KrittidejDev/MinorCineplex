@@ -9,7 +9,6 @@ import {
   SelectValue,
 } from "../ui/select";
 
-// Types for filter options
 interface FilterOption {
   value: string;
   label: string;
@@ -28,34 +27,16 @@ interface FilterData {
   releaseDate?: string;
 }
 
-// Movie data interface
 interface Movie {
   id: string;
   title: string;
-  title_en?: string;
-  duration_min: number;
-  description?: string;
-  poster_url?: string;
-  trailer_url?: string;
   genre?: string;
-  rating?: string;
   release_date?: Date;
 }
 
 const languageOptions: FilterOption[] = [
   { value: "th", label: "ไทย" },
   { value: "en", label: "English" },
-];
-
-const genreOptions: FilterOption[] = [
-  { value: "action", label: "Action" },
-  { value: "comedy", label: "Comedy" },
-  { value: "drama", label: "Drama" },
-  { value: "horror", label: "Horror" },
-  { value: "romance", label: "Romance" },
-  { value: "sci-fi", label: "Sci-Fi" },
-  { value: "thriller", label: "Thriller" },
-  { value: "animation", label: "Animation" },
 ];
 
 const cityOptions: FilterOption[] = [
@@ -81,29 +62,50 @@ const FilterSearch: React.FC<FilterSearchProps> = ({
 
   const [movies, setMovies] = useState<Movie[]>([]);
   const [movieOptions, setMovieOptions] = useState<FilterOption[]>([]);
+  const [genreOptions, setGenreOptions] = useState<FilterOption[]>([]);
 
-  // Fetch movies from API
   useEffect(() => {
-    const fetchMovies = async () => {
-      try {
-        const response = await fetch("/api/movies");
-        const data = await response.json();
-        if (data.movie) {
-          setMovies(data.movie);
-          // Convert movies to filter options
-          const options = data.movie.map((movie: Movie) => ({
-            value: movie.id,
-            label: movie.title,
-          }));
-          setMovieOptions(options);
-        }
-      } catch (error) {
-        console.error("Error fetching movies:", error);
-      }
-    };
+  const fetchMovies = async () => {
+    try {
+      const response = await fetch("/api/movies");
+      const data = await response.json();
 
-    fetchMovies();
-  }, []);
+      if (data.movie) {
+        const movieList = data.movie as Movie[];
+        setMovies(movieList);
+
+        const movieOpts = movieList.map((m) => ({
+          value: m.id,
+          label: m.title,
+        }));
+        setMovieOptions(movieOpts);
+
+        const allGenres: string[] = movieList.flatMap((m) => {
+          if (!m.genre) return [];
+          if (Array.isArray(m.genre)) return m.genre;
+
+          return m.genre
+            .split(/[,|]/)
+            .map((g) => g.trim())
+            .filter((g) => g !== "");
+        });
+
+        const uniqueGenres = Array.from(new Set(allGenres));
+
+        const genreOpts = uniqueGenres.map((g) => ({
+          value: g.toLowerCase(),
+          label: g,
+        }));
+
+        setGenreOptions(genreOpts);
+      }
+    } catch (error) {
+      console.error("Error fetching movies:", error);
+    }
+  };
+
+  fetchMovies();
+}, []);
 
   const handleInputChange = (field: keyof FilterData, value: string) => {
     setFilters((prev) => ({
@@ -113,15 +115,11 @@ const FilterSearch: React.FC<FilterSearchProps> = ({
   };
 
   const handleSearch = () => {
-    if (onSearch) {
-      onSearch(filters);
-    }
+    if (onSearch) onSearch(filters);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
-      handleSearch();
-    }
+    if (e.key === "Enter") handleSearch();
   };
 
   return (
@@ -158,7 +156,7 @@ const FilterSearch: React.FC<FilterSearchProps> = ({
           </Select>
         </div>
 
-        {/* Language and Genre Row */}
+        {/* Language + Genre */}
         <div className="flex gap-2 lg:contents">
           <div className="w-39 lg:w-48">
             <Select
@@ -184,6 +182,7 @@ const FilterSearch: React.FC<FilterSearchProps> = ({
               </SelectContent>
             </Select>
           </div>
+
           <div className="w-39 lg:w-48">
             <Select
               value={filters.genre}
@@ -196,21 +195,27 @@ const FilterSearch: React.FC<FilterSearchProps> = ({
                 </div>
               </SelectTrigger>
               <SelectContent className="bg-gray-g63f border-gray-gf7e">
-                {genreOptions.map((option) => (
-                  <SelectItem
-                    key={option.value}
-                    value={option.value}
-                    className="text-white hover:bg-gray-gf7e focus:bg-gray-gf7e cursor-pointer"
-                  >
-                    {option.label}
+                {genreOptions.length > 0 ? (
+                  genreOptions.map((option) => (
+                    <SelectItem
+                      key={option.value}
+                      value={option.value}
+                      className="text-white hover:bg-gray-gf7e focus:bg-gray-gf7e cursor-pointer"
+                    >
+                      {option.label}
+                    </SelectItem>
+                  ))
+                ) : (
+                  <SelectItem disabled value="none">
+                    No genres found
                   </SelectItem>
-                ))}
+                )}
               </SelectContent>
             </Select>
           </div>
         </div>
 
-        {/* City and Release Date Row */}
+        {/* City + Release Date */}
         <div className="flex gap-2 lg:contents">
           <div className="w-39 lg:w-48">
             <Select
@@ -236,6 +241,8 @@ const FilterSearch: React.FC<FilterSearchProps> = ({
               </SelectContent>
             </Select>
           </div>
+
+          {/* Release Date */}
           <div className="w-39 lg:w-48">
             <div className="relative">
               <Input
@@ -247,23 +254,12 @@ const FilterSearch: React.FC<FilterSearchProps> = ({
                 }
                 onKeyPress={handleKeyPress}
                 className="bg-gray-g63f border-gray-gf7e text-white placeholder-gray-g3b0 rounded-sm h-9 pl-4 pr-12 focus:border-gray-g3b0 focus:ring-0 w-full cursor-pointer"
-                onClick={() => {
-                  const dateInput = document.querySelector(
-                    'input[type="date"]'
-                  ) as HTMLInputElement;
-                  if (dateInput) {
-                    dateInput.focus();
-                    dateInput.click();
-                  }
-                }}
               />
-              {/* Overlay the date input on top of the text input */}
               <input
                 type="date"
                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                 onChange={(e) => {
                   if (e.target.value) {
-                    // Format date to DD/MM/YYYY
                     const date = new Date(e.target.value);
                     const formattedDate = date.toLocaleDateString("en-GB");
                     handleInputChange("releaseDate", formattedDate);

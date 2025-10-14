@@ -2,11 +2,13 @@ import React, { useState } from "react";
 import MovieCard from "../Cards/MovieCard";
 import { APIMovie } from "@/types/movie";
 import { useRouter } from "next/router";
+import { Button } from "../ui/button";
+import Link from "next/link";
 
 interface NowShowingComingSoonProps {
   movies: APIMovie[];
   loading: boolean;
-  showAll?: boolean; // ถ้า true = search result ให้แสดงรวมทั้งหมด
+  showAll?: boolean;
 }
 
 export default function NowShowingComingSoon({
@@ -25,10 +27,8 @@ export default function NowShowingComingSoon({
   let moviesToDisplay;
 
   if (showAll) {
-    // search mode: แสดงทั้งหมดรวมกัน
     moviesToDisplay = movies;
   } else {
-    // normal mode: แยก Now Showing / Coming Soon และ slice 4 เรื่อง
     const nowShowingMovies = movies
       .filter((m) => m.release_date && new Date(m.release_date) <= today)
       .slice(0, 4);
@@ -67,7 +67,13 @@ export default function NowShowingComingSoon({
               >
                 Coming soon
               </button>
+              
             </div>
+            <Link href="/movies" passHref>
+                <Button className="btn-base-transparent-underline-normal text-sm hover:underline cursor-pointer">
+                  View all
+                </Button>
+              </Link>
           </div>
         )}
 

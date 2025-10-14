@@ -18,7 +18,7 @@ interface Props extends BillInfo {
   onSelectCoupon?: (coupon: CouponCardData) => void;
   onPayment?: () => void;
   canPay: boolean;
-  paymentMethod?: "credit_card" | "qr_code"; // ✅ รับจาก PaymentForm
+  paymentMethod?: "credit_card" | "qr_code";
 }
 
 export default function SummaryBoxCard({
@@ -33,7 +33,7 @@ export default function SummaryBoxCard({
   selectedCoupon,
   onSelectCoupon,
   onPayment,
-  paymentMethod = "credit_card", // ✅ default
+  paymentMethod = "credit_card",
 }: Props) {
   const { i18n } = useTranslation();
   const lang = i18n.language;
@@ -42,15 +42,13 @@ export default function SummaryBoxCard({
 
   return (
     <div className="w-full max-w-full lg:max-w-[305px] h-fit bg-gray-gc1b rounded-lg">
-      {/* Movie Info */}
       <div className="p-4">
-        {step === "2" && countdown && (
+        {step === "3" && countdown && (
           <p className="text-sm text-gray-g3b0 pb-3">
             {lang === "en" ? "Time remaining:" : "เวลาที่เหลือ:"}{" "}
             <span className="text-sm text-blue-bbee pl-2">{countdown}</span>
           </p>
         )}
-
         <div className="flex gap-4 items-center">
           <Image
             src={data?.movie?.poster_url || "/default-poster.jpg"}
@@ -73,8 +71,6 @@ export default function SummaryBoxCard({
             </div>
           </div>
         </div>
-
-        {/* Cinema Info */}
         <div className="flex flex-col gap-2 mt-6">
           <div className="flex items-center gap-4">
             <PinFill width={16} height={16} color={"#565F7E"} />
@@ -100,20 +96,15 @@ export default function SummaryBoxCard({
           </div>
         </div>
       </div>
-
-      {/* Step 1 Summary */}
-      {step === "1" && totalSelected.length > 0 && (
+      {step === "2" && totalSelected.length > 0 && (
         <BookingInfo
           totalSelected={totalSelected}
           totalPrice={totalPrice}
           lockSeats={lockSeats}
         />
       )}
-
-      {/* Step 2: Payment + Coupon */}
-      {step === "2" && (
+      {step === "3" && (
         <div className="p-4 flex flex-col gap-4">
-          {/* Coupon Button */}
           {coupons.length > 0 && (
             <div className="flex justify-between items-center text-gray-gedd">
               <span>{lang === "en" ? "Coupon" : "คูปอง"}</span>
@@ -129,20 +120,14 @@ export default function SummaryBoxCard({
               </Button>
             </div>
           )}
-
-          {/* Selected Seat */}
           <div className="flex justify-between text-gray-gedd">
             <span>{lang === "en" ? "Selected Seat" : "ที่นั่งที่เลือก"}</span>
             <span>{totalSelected.map((s) => s.seat_number).join(", ")}</span>
           </div>
-
-          {/* Discount */}
           <div className="flex justify-between text-white-wfff font-bold text-lg">
             <span>{lang === "en" ? "Discount" : "ส่วนลด"}</span>
             <span>-{selectedCoupon?.discount_value || 0}%</span>
           </div>
-
-          {/* Payment Method */}
           <div className="flex justify-between text-gray-gedd">
             <span>{lang === "en" ? "Payment Method" : "วิธีชำระเงิน"}</span>
             <span className="capitalize text-white">
@@ -155,8 +140,6 @@ export default function SummaryBoxCard({
                   : "คิวอาร์โค้ด"}
             </span>
           </div>
-
-          {/* Total */}
           <div className="flex justify-between text-white-wfff font-bold text-lg">
             <span>{lang === "en" ? "Total" : "รวมทั้งหมด"}</span>
             <span>
@@ -169,8 +152,6 @@ export default function SummaryBoxCard({
               )}
             </span>
           </div>
-
-          {/* Payment Button */}
           <Button
             className="btn-base blue-normal"
             onClick={onPayment}
@@ -180,8 +161,6 @@ export default function SummaryBoxCard({
           </Button>
         </div>
       )}
-
-      {/* Coupon Modal */}
       {isCouponModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50">
           <div className="bg-gray-gc1b rounded-lg p-4 w-80 max-w-full shadow-lg">

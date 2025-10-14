@@ -10,9 +10,15 @@ export const findUserByPhone = (phone: string) => {
   return prisma.user.findUnique({ where: { phone } });
 };
 
-export const findUserByUsername = (username: string) => {
-  return prisma.user.findUnique({ where: { username } });
-};
+export const findUserByUsername = (username: string, id: string) => {
+  return prisma.user.findUnique({ where: {
+    username: username,
+    NOT: {
+      id: id,
+    },
+  },
+});
+}
 
 export const createUser = (data: {
   username: string;

@@ -16,7 +16,7 @@ export const getUserById = async (id: string) => {
 
 export const updateUser = async (id: string, data: UpdateUserInput) => {
   const { username } = data;
-  if (await authRepo.findUserByUsername(username as string)) {
+  if (await authRepo.findUserByUsername(username as string, id as string)) {
     throw { status: 400, message: "Username already exists" };
   }
   const user = await userRepo.updateUser(id, data);

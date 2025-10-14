@@ -23,28 +23,37 @@ const NavbarWithBannerWidget = () => {
       <Carousel plugins={[plugin.current]} className="w-full ">
         <CarouselContent>
           <CarouselItem>
-            <Image
-              src="/images/banner.png"
-              alt="banner"
-              width={1440}
-              height={400}
-            />
+            <div className="relative w-full h-[400px]">
+              <Image
+                src="/images/banner.png"
+                alt="banner"
+                fill
+                className="object-cover"
+                priority
+              />
+            </div>
           </CarouselItem>
           <CarouselItem>
-            <Image
-              src="/images/banner.png"
-              alt="banner"
-              width={1440}
-              height={400}
-            />
+            <div className="relative w-full h-[400px]">
+              <Image
+                src="/images/cinema.webp"
+                alt="banner"
+                fill
+                className="object-cover"
+                loading="lazy"
+              />
+            </div>
           </CarouselItem>
           <CarouselItem>
-            <Image
-              src="/images/banner.png"
-              alt="banner"
-              width={1440}
-              height={400}
-            />
+            <div className="relative w-full h-[400px]">
+              <Image
+              src="/images/cover-cinema.png"
+                alt="banner"
+                fill
+                className="object-cover"
+                loading="lazy"
+              />
+            </div>
           </CarouselItem>
         </CarouselContent>
         <div className="absolute top-1/2 -translate-y-1/2 left-20">

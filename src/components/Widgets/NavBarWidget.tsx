@@ -5,23 +5,23 @@ import LogoM from "../Icons/LogoM";
 import Hamburger from "../Icons/Hamburger";
 import { signOut, useSession } from "next-auth/react";
 import { userService } from "@/config/userServices";
+import { UserDataResponse } from "@/types/user";
 
-export interface User {
-  id: string;
-  username: string;
-  email: string;
-  avatar?: string;
+interface response {
+  status: number;
+  docs: UserDataResponse;
 }
+
 
 const NavBarWidget = () => {
   const { data: session, status } = useSession();
   const id = session?.user?.id;
-  const [userData, setUserData] = useState<User | null>(null);
+  const [userData, setUserData] = useState<UserDataResponse | null>(null);
 
   const fetchMe = async () => {
     if (!id) return;
     try {
-      const res = await userService.GET_MY_PROFILE(id);
+      const res = (await userService.GET_MY_PROFILE(id)) as response;
       console.log("My Profile:", res);
       if (res.status === 200) {
         setUserData(res.docs);
@@ -44,7 +44,7 @@ const NavBarWidget = () => {
       </Link>
       <div className="hidden md:flex">
         {status === "authenticated" ? (
-          <AvatarDisplay onLogOut={signOut} data={userData} />
+          <AvatarDisplay onLogOut={signOut} data={userData as UserDataResponse} />
         ) : (
           <div>
             <Link href={"/auth/login"}>

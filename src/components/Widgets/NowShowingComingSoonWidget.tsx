@@ -1,80 +1,75 @@
+import React, { useState } from "react";
 import MovieCard from "../Cards/MovieCard";
-import { useState, useEffect } from "react";
-import axios from "axios";
-import { APIMovie, MovieCardData } from "@/types/movie";
-import Link from "next/link";
-import { Button } from "../ui/button";
+import { APIMovie } from "@/types/movie";
 import { useRouter } from "next/router";
 
-function NowShowingComingSoon() {
+interface NowShowingComingSoonProps {
+  movies: APIMovie[];
+  loading: boolean;
+  showAll?: boolean; // ถ้า true = search result ให้แสดงรวมทั้งหมด
+}
+
+export default function NowShowingComingSoon({
+  movies,
+  loading,
+  showAll = false,
+}: NowShowingComingSoonProps) {
   const [activeTab, setActiveTab] = useState("nowShowing");
-  const [movies, setMovies] = useState<MovieCardData[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchMovies = async () => {
-      try {
-        const res = await axios.get<{ movie: APIMovie[] }>("/api/movies");
-        const Movies: MovieCardData[] = res.data.movie.map((movie) => ({
-          id: movie.id,
-          title: movie.title,
-          poster_url: movie.poster_url,
-          release_date: movie.release_date
-            ? new Date(movie.release_date)
-            : null,
-          rating: movie.rating,
-          genre: movie.genre,
-        }));
-        setMovies(Movies);
-      } catch (err) {
-        console.error(err);
-        setError("ไม่สามารถโหลดหนังได้");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchMovies();
-  }, []);
-
-  const today = new Date();
-  const nowShowingMovies = movies
-    .filter((m) => m.release_date && m.release_date <= today)
-    .slice(0, 4);
-  const comingSoonMovies = movies
-    .filter((m) => m.release_date && m.release_date > today)
-    .slice(0, 4);
-
-  const moviesToDisplay =
-    activeTab === "nowShowing" ? nowShowingMovies : comingSoonMovies;
-
   const router = useRouter();
+  const today = new Date();
+
+  if (loading) return <div className="text-center py-20">Loading...</div>;
+  if (!movies || movies.length === 0)
+    return <div className="text-center py-20">No movies found</div>;
+
+  let moviesToDisplay;
+
+  if (showAll) {
+    // search mode: แสดงทั้งหมดรวมกัน
+    moviesToDisplay = movies;
+  } else {
+    // normal mode: แยก Now Showing / Coming Soon และ slice 4 เรื่อง
+    const nowShowingMovies = movies
+      .filter((m) => m.release_date && new Date(m.release_date) <= today)
+      .slice(0, 4);
+
+    const comingSoonMovies = movies
+      .filter((m) => m.release_date && new Date(m.release_date) > today)
+      .slice(0, 4);
+
+    moviesToDisplay =
+      activeTab === "nowShowing" ? nowShowingMovies : comingSoonMovies;
+  }
 
   return (
     <div className="w-screen flex justify-center py-20 px-4">
       <div className="flex flex-col gap-10">
-        <div className="flex justify-between">
-          <div className="flex gap-4">
-            <button
-              onClick={() => setActiveTab("nowShowing")}
-              className={`font-bold text-f-24 py-1 cursor-pointer ${activeTab === "nowShowing" ? "text-white-wfff border-b border-gray-gf7e" : "text-gray-g3b0 border-b border-transparent"}`}
-            >
-              Now showing
-            </button>
-            <button
-              onClick={() => setActiveTab("comingSoon")}
-              className={`font-bold text-f-24 py-1 cursor-pointer ${activeTab === "comingSoon" ? "text-white-wfff border-b border-gray-gf7e" : "text-gray-g3b0 border-b border-transparent"}`}
-            >
-              Coming soon
-            </button>
+        {!showAll && (
+          <div className="flex justify-between">
+            <div className="flex gap-4">
+              <button
+                onClick={() => setActiveTab("nowShowing")}
+                className={`font-bold text-f-24 py-1 cursor-pointer ${
+                  activeTab === "nowShowing"
+                    ? "text-white-wfff border-b border-gray-gf7e"
+                    : "text-gray-g3b0 border-b border-transparent"
+                }`}
+              >
+                Now showing
+              </button>
+              <button
+                onClick={() => setActiveTab("comingSoon")}
+                className={`font-bold text-f-24 py-1 cursor-pointer ${
+                  activeTab === "comingSoon"
+                    ? "text-white-wfff border-b border-gray-gf7e"
+                    : "text-gray-g3b0 border-b border-transparent"
+                }`}
+              >
+                Coming soon
+              </button>
+            </div>
           </div>
-          <Link href="/movies" passHref>
-            <Button className="btn-base-transparent-underline-normal text-sm hover:underline cursor-pointer">
-              View all
-            </Button>
-          </Link>
-        </div>
+        )}
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
           {moviesToDisplay.map((movie) => (
@@ -84,13 +79,10 @@ function NowShowingComingSoon() {
               onClick={() => router.push(`/movies/${movie.id}`)}
             >
               <MovieCard
-                key={movie.id}
                 id={movie.id}
                 title={movie.title}
                 poster_url={movie.poster_url}
-                release_date={
-                  movie.release_date ? new Date(movie.release_date) : undefined
-                }
+                release_date={movie.release_date || undefined}
                 rating={movie.rating}
                 genre={movie.genre}
               />
@@ -101,5 +93,3 @@ function NowShowingComingSoon() {
     </div>
   );
 }
-
-export default NowShowingComingSoon;

@@ -52,7 +52,7 @@ const CreateNewShowtimeForm = ({
         className="w-full bg-white flex flex-col justify-center items-center py-10 px-20 rounded-lg"
       >
         <h1 className="text-f-36 text-black">Create New Showtime</h1>
-        <div className="w-full min-w-[1200px] flex flex-col gap-10 mt-10">
+        <div className="w-full min-w-[700px] max-w-[1200px] flex flex-col gap-10 mt-10">
           <div className="flex justify-between gap-6">
             <AdminComboBox
               label="Select Cinema"
@@ -93,22 +93,24 @@ const CreateNewShowtimeForm = ({
                 setFormData({ ...formData, time_slot_id: value })
               }
             />
-            <AdminInputTextField
-              label="Price"
-              placeholder="Enter Price"
-              type="number"
-              min="0"
-              value={formData.price}
-              onChange={(e) => {
-                const value = e.target.value;
-                if (
-                  value === "" ||
-                  (!isNaN(Number(value)) && Number(value) >= 0)
-                ) {
-                  setFormData({ ...formData, price: value });
-                }
-              }}
-            />
+            <div className="w-full h-12 max-w-[120px]">
+              <AdminInputTextField
+                label="Price"
+                placeholder="Enter Price"
+                type="number"
+                min="0"
+                value={formData.price}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (
+                    value === "" ||
+                    (!isNaN(Number(value)) && Number(value) >= 0)
+                  ) {
+                    setFormData({ ...formData, price: value });
+                  }
+                }}
+              />
+            </div>
           </div>
 
           <div className="flex justify-end gap-3 mt-10">

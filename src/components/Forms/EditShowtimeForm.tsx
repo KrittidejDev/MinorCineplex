@@ -44,7 +44,7 @@ const EditShowtimeForm = ({
       setHalls([]);
     }
   }, [formData.cinema_id, cinemas]);
-  
+
   return (
     <ModalEmpty isShowModal={isShowModal} onClose={onClose}>
       <form
@@ -58,14 +58,16 @@ const EditShowtimeForm = ({
         className="w-full bg-white flex flex-col justify-center items-center py-10 px-20 rounded-lg"
       >
         <h1 className="text-f-36 text-black">Edit Showtime</h1>
-        <div className="w-full min-w-[1200px] flex flex-col gap-10 mt-10">
+        <div className="w-full min-w-[700px] max-w-[1200px] flex flex-col gap-10 mt-10">
           <div className="flex justify-between gap-6">
             <AdminComboBox
               label="Select Cinema"
               placeholder="Select Cinema"
               options={cinemas}
               value={formData.cinema_id}
-              onChange={(value) => setFormData({ ...formData, cinema_id: value, hall_id: "" })}
+              onChange={(value) =>
+                setFormData({ ...formData, cinema_id: value, hall_id: "" })
+              }
             />
             <AdminComboBox
               label="Select Hall"
@@ -97,19 +99,24 @@ const EditShowtimeForm = ({
                 setFormData({ ...formData, time_slot_id: value })
               }
             />
-            <AdminInputTextField
-              label="Price"
-              placeholder="Enter Price"
-              type="number"
-              min="0"
-              value={formData.price}
-              onChange={(e) => {
-                const value = e.target.value;
-                if (value === "" || (!isNaN(Number(value)) && Number(value) >= 0)) {
-                  setFormData({ ...formData, price: value });
-                }
-              }}
-            />
+            <div className="w-full h-12 max-w-[120px]">
+              <AdminInputTextField
+                label="Price"
+                placeholder="Enter Price"
+                type="number"
+                min="0"
+                value={formData.price}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (
+                    value === "" ||
+                    (!isNaN(Number(value)) && Number(value) >= 0)
+                  ) {
+                    setFormData({ ...formData, price: value });
+                  }
+                }}
+              />
+            </div>
           </div>
 
           <div className="flex justify-end gap-3 mt-10">

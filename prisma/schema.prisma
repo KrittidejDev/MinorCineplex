@@ -230,6 +230,7 @@ model UserCoupon {
   used_at      DateTime?
   coupon       coupon    @relation(fields: [coupon_id], references: [id])
   user         user      @relation(fields: [user_id], references: [id])
+
   @@unique([user_id, coupon_id])
   @@unique([user_id, coupon_id], map: "usercoupon_user_id_coupon_id_idx")
 }

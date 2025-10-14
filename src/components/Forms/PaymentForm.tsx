@@ -10,12 +10,10 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { QRCodeType } from "@/types/omise";
 import { useOmisePayment } from "@/lib/hooks/useOmisePayment";
 import InputTextFeild from "../Inputs/InputTextFeild";
-import { useTranslation } from "react-i18next";
 
 interface PaymentFormProps {
   amount: number;
   metadata?: Record<string, any>;
-  countdown?: string;
   onSuccess?: () => void;
   onValidChange?: (valid: boolean) => void;
   onPaymentMethodChange?: (method: "credit_card" | "qr_code") => void;
@@ -73,14 +71,7 @@ const formatExpiration = (value: string) => {
 
 const PaymentForm = forwardRef<PaymentFormHandles, PaymentFormProps>(
   (
-    {
-      amount,
-      metadata,
-      onSuccess,
-      onValidChange,
-      onPaymentMethodChange,
-      countdown,
-    },
+    { amount, metadata, onSuccess, onValidChange, onPaymentMethodChange },
     ref
   ) => {
     const {
@@ -98,8 +89,6 @@ const PaymentForm = forwardRef<PaymentFormHandles, PaymentFormProps>(
       },
     });
 
-    const { i18n } = useTranslation();
-    const lang = i18n.language;
     const watchedValues = watch();
     const [paymentMethod, setPaymentMethod] = useState<
       "credit_card" | "qr_code"
@@ -191,8 +180,6 @@ const PaymentForm = forwardRef<PaymentFormHandles, PaymentFormProps>(
       const qrValid = paymentMethod === "qr_code" && qrPaid;
       onValidChange?.(paymentMethod === "credit_card" ? cardValid : qrValid);
     }, [errors, watchedValues, paymentMethod, qrPaid, onValidChange]);
-
-    console.log("countdown", countdown);
 
     return (
       <div className="flex flex-1 flex-col gap-4">
@@ -305,26 +292,14 @@ const PaymentForm = forwardRef<PaymentFormHandles, PaymentFormProps>(
               </button>
             ) : (
               <div className="space-y-3">
-                <div className="rounded bg-gray-g63f p-10 flex flex-col items-center justify-center">
-                  <p className="text-sm text-gray-g3b0 pb-3">
-                    {lang === "en" ? "Time remaining:" : "เวลาที่เหลือ:"}{" "}
-                    <span className="text-sm text-blue-bbee pl-2">
-                      {countdown}
-                    </span>
-                  </p>
+                <div className="rounded bg-gray-g63f p-10 flex justify-center">
                   <img
                     src={qrCodeUrl}
                     alt="QR Code"
-                    className="h-80 object-contain mb-3"
+                    className="h-80 object-contain"
                   />
-                  <p className="mb-3 text-gray-gedd text-fr-16">
-                    Minor Cineplex Public limited company
-                  </p>
-                  <div className="mb-3 text-f-20 text-white">THB{amount}</div>
-                  <p className="text-center text-gray-gedd text-[10px]">
-                    {paymentStatus}
-                  </p>
                 </div>
+                <p className="text-center text-white">{paymentStatus}</p>
               </div>
             )}
           </div>

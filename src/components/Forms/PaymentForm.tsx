@@ -196,7 +196,7 @@ const PaymentForm = forwardRef<PaymentFormHandles, PaymentFormProps>(
     }, [errors, watchedValues, paymentMethod, qrPaid, onValidChange]);
 
     return (
-      <div className="flex flex-1 flex-col w-full gap-4">
+      <div className="flex flex-1 flex-col w-full gap-4 px-4 md:px-0">
         <div className="flex gap-4">
           {["credit_card", "qr_code"].map((method) => (
             <button
@@ -206,7 +206,7 @@ const PaymentForm = forwardRef<PaymentFormHandles, PaymentFormProps>(
                 setPaymentMethod(method as "credit_card" | "qr_code");
                 onPaymentMethodChange?.(method as "credit_card" | "qr_code");
               }}
-              className={`px-3 py-1 border-b-2 transition text-f-24 ${
+              className={`px-1 py-1 border-b-1 transition text-f-24 ${
                 paymentMethod === method
                   ? "border-gray-g63f text-white"
                   : "border-transparent text-gray-g3b0"
@@ -219,7 +219,7 @@ const PaymentForm = forwardRef<PaymentFormHandles, PaymentFormProps>(
 
         {paymentMethod === "credit_card" && (
           <div className="space-y-4">
-            <div className="flex items-center gap-x-5">
+            <div className="flex flex-col md:flex-row md:items-center gap-x-5">
               <Controller
                 name="number"
                 control={control}
@@ -250,7 +250,7 @@ const PaymentForm = forwardRef<PaymentFormHandles, PaymentFormProps>(
                 )}
               />
             </div>
-            <div className="flex items-center gap-x-5">
+            <div className="flex flex-col md:flex-row md:items-center gap-x-5">
               <Controller
                 name="expiration"
                 control={control}
@@ -288,18 +288,21 @@ const PaymentForm = forwardRef<PaymentFormHandles, PaymentFormProps>(
                 )}
               />
             </div>
-            <div>
+
+            {/* For test */}
+            <div className="px-5 md:px-0">
               data for test
               <div> card number : 4242-4242-4242-4242</div>
               <div> Card owner : John </div>
               <div> Expiry date : 10/27 </div>
               <div> cvc : 123 </div>
             </div>
+            
           </div>
         )}
 
         {paymentMethod === "qr_code" && (
-          <div className="space-y-4 ">
+          <div className="space-y-4 px-4">
             {!qrCodeUrl ? (
               <button
                 type="button"
@@ -320,7 +323,7 @@ const PaymentForm = forwardRef<PaymentFormHandles, PaymentFormProps>(
               </button>
             ) : (
               <div className="space-y-3">
-                <div className="rounded bg-gray-g63f p-10 flex flex-col flex-1 items-center justify-center ">
+                <div className="rounded bg-gray-g63f p-10 flex flex-col flex-1 items-center justify-center">
                   <div className="text-gray-g3b0 text-fr-14 mb-5">
                     Time remaining :{" "}
                     <span className="text-blue-bbee">{countdown}</span>

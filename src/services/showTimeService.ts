@@ -82,6 +82,33 @@ export const getShowTimesForAdmin = async ({
 
 export const createShowTime = async (showTime: CreateShowTimeData) => {
   try {
+    const selectedDate = new Date(showTime.date);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const selectedDay = new Date(selectedDate);
+    selectedDay.setHours(0, 0, 0, 0);
+
+    if (selectedDay < today) {
+      throw new Error("Cannot create showtime for past dates");
+    }
+
+    if (selectedDay.getTime() === today.getTime()) {
+      const timeSlot = await showTimeRepo.getTimeSlotById(
+        showTime.time_slot_id
+      );
+
+      if (timeSlot) {
+        const currentTime = new Date();
+        const [hours, minutes] = timeSlot.start_time.split(":").map(Number);
+        const showtimeDateTime = new Date(selectedDate);
+        showtimeDateTime.setHours(hours, minutes, 0, 0);
+
+        if (showtimeDateTime <= currentTime) {
+          throw new Error("Cannot create showtime for past time slots");
+        }
+      }
+    }
+
     const existingShowtime = await showTimeRepo.isShowtimeExists(
       showTime.hall_id,
       showTime.time_slot_id,
@@ -107,32 +134,43 @@ export const createShowTime = async (showTime: CreateShowTimeData) => {
   }
 };
 
-export const getShowTimeById = async (id: string) => {
-  const showTimes = await showTimeRepo.getByID(id);
-  return showTimes;
-};
-
-export const getBookingInfo = async (showtime_id: string) => {
-  const data = await showTimeRepo.getBookingInfoByShowtimeId(showtime_id);
-  return data;
-};
-
-export const deleteShowTimeById = async (id: string) => {
-  const showTimes = await showTimeRepo.deleteShowTimeById(id);
-  return showTimes;
-};
-
 export const updateShowTimeById = async (
   id: string,
   showTime: UpdateShowTimeData
 ) => {
   try {
-    // Check if showtime exists, but exclude current showtime from check
+    const selectedDate = new Date(showTime.date);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const selectedDay = new Date(selectedDate);
+    selectedDay.setHours(0, 0, 0, 0);
+
+    if (selectedDay < today) {
+      throw new Error("Cannot update showtime for past dates");
+    }
+
+    if (selectedDay.getTime() === today.getTime()) {
+      const timeSlot = await showTimeRepo.getTimeSlotById(
+        showTime.time_slot_id
+      );
+
+      if (timeSlot) {
+        const currentTime = new Date();
+        const [hours, minutes] = timeSlot.start_time.split(":").map(Number);
+        const showtimeDateTime = new Date(selectedDate);
+        showtimeDateTime.setHours(hours, minutes, 0, 0);
+
+        if (showtimeDateTime <= currentTime) {
+          throw new Error("Cannot update showtime for past time slots");
+        }
+      }
+    }
+
     const existingShowtime = await showTimeRepo.isShowtimeExists(
       showTime.hall_id,
       showTime.time_slot_id,
       showTime.date,
-      id // exclude current showtime
+      id
     );
     if (existingShowtime) {
       throw new Error("Showtime already exists in this hall and time slot");
@@ -146,4 +184,19 @@ export const updateShowTimeById = async (
     }
     throw new Error("Failed to update show time");
   }
+};
+
+export const getShowTimeById = async (id: string) => {
+  const showTimes = await showTimeRepo.getByID(id);
+  return showTimes;
+};
+
+export const getBookingInfo = async (showtime_id: string) => {
+  const data = await showTimeRepo.getBookingInfoByShowtimeId(showtime_id);
+  return data;
+};
+
+export const deleteShowTimeById = async (id: string) => {
+  const showTimes = await showTimeRepo.deleteShowTimeById(id);
+  return showTimes;
 };

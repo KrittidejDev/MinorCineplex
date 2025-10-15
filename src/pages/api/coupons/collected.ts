@@ -13,25 +13,40 @@ export default async function handler(
 
   const session = await getServerSession(req, res, authOptions);
   const userId = session?.user?.id;
-  // if (!userId) return res.status(401).json({ error: 'Unauthorized' })
-  if (!userId) return;
-  // ดึง coupon ทั้งหมด
-  const coupons = await getCoupons();
+  if (!userId) return res.status(401).json({ error: "Unauthorized" });
 
-  // เพิ่ม is_collected แล้ว filter เฉพาะ collected
-  const collectedCoupons = await Promise.all(
-    coupons.map(async (c) => {
-      const userCoupon = await prisma.userCoupon.findUnique({
-        where: {
-          user_id_coupon_id: {
-            user_id: userId,
-            coupon_id: c.id, // ต้องเป็น string ตรงกับ schema
+  try {
+    // 1️⃣ ดึง coupon ทั้งหมด (มี end_date ด้วย)
+    const coupons = await getCoupons();
+
+    // 2️⃣ map เช็คว่า user เก็บคูปองหรือยัง
+    const collectedCoupons = await Promise.all(
+      coupons.map(async (c) => {
+        const userCoupon = await prisma.userCoupon.findUnique({
+          where: {
+            user_id_coupon_id: { user_id: userId, coupon_id: c.id },
           },
-        },
-      });
-      return { ...c, is_collected: !!userCoupon?.is_collected };
-    })
-  ).then((arr) => arr.filter((c) => c.is_collected));
+          select: {
+            is_collected: true,
+            collected_at: true,
+          },
+        });
 
-  return res.status(200).json({ coupons: collectedCoupons });
+        if (!userCoupon?.is_collected) return null;
+
+        // 3️⃣ return coupon พร้อม end_date
+        return {
+          ...c, // จะรวม field ของ coupon: end_date, title_en, image, etc.
+          collected_at: userCoupon.collected_at,
+        };
+      })
+    );
+
+    const filtered = collectedCoupons.filter((c) => c !== null);
+
+    return res.status(200).json({ coupons: filtered });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "Failed to fetch collected coupons" });
+  }
 }

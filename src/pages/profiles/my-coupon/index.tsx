@@ -1,4 +1,3 @@
-'use client'
 
 import React, { useEffect, useState, useCallback } from 'react'
 import NavBarWidget from '@/components/Widgets/NavBarWidget'
@@ -16,6 +15,7 @@ const ProfileMyCoupons = () => {
     try {
       if (isMounted.current) setLoading(true)
       const res = await userService.GET_COUPON_COLLECTED() as { coupons: CouponCardData[] }
+      console.log('dada', res.coupons)
       if (isMounted.current) setCoupons(res.coupons)
     } catch (err) {
       console.error(err)

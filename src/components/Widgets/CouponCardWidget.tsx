@@ -1,4 +1,3 @@
-'use client'
 
 import CouponCard from '../Cards/CouponCard'
 import React, { useEffect, useState, useCallback } from 'react'
@@ -71,7 +70,7 @@ const formatDate = useCallback((isoDate?: string | null) => {
                 id: coupon.id,
                 code: coupon.code,
                 title_en: coupon.title_en,
-                expiresAt: formatDate(coupon.end_date),
+                end_date: formatDate(coupon.end_date),
                 image: coupon.image,
               }}
             />

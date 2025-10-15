@@ -75,7 +75,6 @@ export default function Home() {
     try {
       setLoadingMovies(true);
       setSearchActive(true);
-      console.log("Searching movies with filters:", filters);
 
       const params: any = {};
       if (filters.title) {

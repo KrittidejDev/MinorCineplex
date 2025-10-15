@@ -39,21 +39,22 @@ const ProfileMyCoupons = () => {
   if (error) return <p className="text-center py-10">{error}</p>
 
   return (
-    <div className="bg-blue-b flex flex-col min-h-[100dvh]">
+    <div className="bg-blue-b flex flex-col">
       <NavBarWidget />
       <div className="flex-1">
-        <div className="flex flex-col md:flex-row items-start justify-start pt-10 md:pt-20 px-5 md:px-10 lg:px-100 h-full gap-6 md:gap-10">
+        <div className="w-full flex flex-col md:flex-row items-start gap-6 md:gap-12 top-21 transition-all duration-500 ease-in-out 
+    py-10 md:pl-20 md:py-15 xl:pl-56">
           
           {/* ProfileBar */}
-          <div className="w-full md:w-1/4 lg:min-w-[250px]">
+          <div className="w-full md:min-w-[240px] md:max-w-[257px]">
             <ProfileBar />
           </div>
 
           {/* Content */}
-          <div className="flex flex-col items-start justify-start gap-y-5 w-full md:w-3/4 lg:w-4/5 px-0 lg:px-40">
+          <div className="flex flex-col px-4 gap-6 md:gap-12 justify-start items-start w-full">
             <div className="text-f-24 md:text-f-28 lg:text-f-36">My coupons</div>
 
-            <div className="grid grid-cols-2 lg:grid-cols-2 gap-y-10 w-full lg:w-2xl">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 w-full gap-y-10 max-w-[795px]">
               {coupons.map((coupon) => (
                 <CouponCard key={coupon.id} coupon={coupon} />
               ))}

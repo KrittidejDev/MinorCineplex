@@ -1,10 +1,11 @@
 // pages/booking/[id]/success/index.tsx
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { useSession } from "next-auth/react";
+// import { useSession } from "next-auth/react";
 import NavAndFooter from "@/components/MainLayout/NavAndFooter";
 import { Button } from "@/components/ui/button";
 import { CheckCircle, Calendar, Clock, MapPin, Ticket } from "lucide-react";
+import Image from "next/image";
 
 interface BookingDetail {
   id: string;
@@ -58,7 +59,7 @@ interface BookingDetail {
 const BookingSuccessPage = () => {
   const router = useRouter();
   const { id } = router.query;
-  const { data: session } = useSession();
+  // const { data: session } = useSession();
   const [booking, setBooking] = useState<BookingDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -164,10 +165,13 @@ const BookingSuccessPage = () => {
               {/* Movie Poster */}
               <div className="flex justify-center">
                 {booking.showtime.movie.poster_url ? (
-                  <img
+                  <Image
                     src={booking.showtime.movie.poster_url}
                     alt={booking.showtime.movie.title}
+                    width={300}
+                    height={450}
                     className="w-full max-w-sm rounded-lg shadow-lg"
+                    priority
                   />
                 ) : (
                   <div className="w-full max-w-sm aspect-[2/3] bg-gray-700 rounded-lg flex items-center justify-center">

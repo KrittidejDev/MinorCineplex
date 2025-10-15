@@ -42,7 +42,9 @@ export default async function handler(
       paid: charge.paid,
       charge,
     });
-  } catch (err: any) {
-    res.status(500).json({ success: false, error: err.message });
+  } catch (err: unknown) {
+    const errorMessage =
+      err instanceof Error ? err.message : "Internal server error";
+    res.status(500).json({ success: false, error: errorMessage });
   }
 }

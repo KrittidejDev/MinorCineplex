@@ -35,7 +35,7 @@ export default function Home() {
     neverAllow,
   } = useLocationPermission();
 
-  const { cinemas, loading, refetch } = useNearbyCinemas(location, filter);
+  const { cinemas, refetch } = useNearbyCinemas(location, filter);
   const searchParams = useSearchParams();
 
   useEffect(() => {

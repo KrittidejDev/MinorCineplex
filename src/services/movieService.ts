@@ -1,4 +1,3 @@
-import * as movieRepo from "../repositories/movieRepository";
 import { prisma } from "@/lib/prisma";
 import { APIMovie } from "@/types/movie";
 
@@ -63,9 +62,8 @@ export const getMovies = async (
     release_date: movie.release_date || null,
     showtimes:
       movie.showtimes?.map((s) => {
-        // รวม date + time_slot.start_time เป็น Date
-        const dateStr = s.date.toISOString().split("T")[0]; // yyyy-mm-dd
-        return new Date(`${dateStr}T${s.time_slot.start_time}`);
+        const dateStr = s.date.toISOString().split("T")[0];
+        return new Date(`${dateStr}T${s.time_slot.start_time}`).toISOString();
       }) || [],
     actors:
       movie.actors?.map((ma) => ({
@@ -157,7 +155,7 @@ export async function updateMovie(id: string, data: Partial<APIMovie>) {
       ...rest,
       actors: actors
         ? {
-            set: actors.map((actor) => ({ id: actor.id })), // Prisma nested update
+            set: actors.map((actor) => ({ id: actor.id })),
           }
         : undefined,
       directors: directors

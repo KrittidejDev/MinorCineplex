@@ -4,7 +4,7 @@ import Image from "next/image";
 import { HoverCard3D } from "../Displays/HoverCard3D";
 
 interface Movies {
-  id: string;
+  id?: string;
   title: string;
   poster_url?: string | null;
   release_date?: Date | null;
@@ -13,7 +13,6 @@ interface Movies {
 }
 
 function MovieCardInfo({
-  id,
   title,
   poster_url,
   release_date,

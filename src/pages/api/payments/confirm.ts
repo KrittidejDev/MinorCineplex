@@ -5,6 +5,16 @@ import { authOptions } from "../auth/[...nextauth]";
 import { sql } from "@/lib/db";
 import { ably } from "@/lib/ablyServer";
 
+interface ShowtimeSeat {
+  id: string;
+  showtime_id: string;
+  seat_id: string;
+  status: "AVAILABLE" | "LOCKED" | "BOOKED";
+  price: number;
+  locked_at: string | null;
+  locked_by: string | null;
+}
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -19,60 +29,71 @@ export default async function handler(
     return res.status(401).json({ error: "Unauthorized" });
   }
 
-  const { showtimeId, seats, totalPrice, couponId } = req.body;
+  const { showtimeId, seats, totalPrice, couponId } = req.body as {
+    showtimeId: string;
+    seats: string[];
+    totalPrice: number;
+    couponId?: string | null;
+  };
 
   if (!showtimeId || !seats || !Array.isArray(seats) || seats.length === 0) {
     return res.status(400).json({ error: "Invalid request data" });
   }
 
   try {
-    // Verify all seats are locked by current user
-    const seatRecords = await sql`
+    // ดึงข้อมูลเก้าอี้จาก DB
+    const seatRecordsRaw: Record<string, unknown>[] = await sql`
       SELECT id, showtime_id, seat_id, status, price, locked_at, locked_by
       FROM showtime_seat
       WHERE showtime_id = ${showtimeId}
       AND id = ANY(${seats})
     `;
 
+    // แปลงเป็น ShowtimeSeat[]
+    const seatRecords: ShowtimeSeat[] = seatRecordsRaw.map((r) => ({
+      id: String(r.id),
+      showtime_id: String(r.showtime_id),
+      seat_id: String(r.seat_id),
+      status: r.status as "AVAILABLE" | "LOCKED" | "BOOKED",
+      price: Number(r.price ?? 0),
+      locked_at: r.locked_at ? String(r.locked_at) : null,
+      locked_by: r.locked_by ? String(r.locked_by) : null,
+    }));
+
     console.log("🔍 Seat records found:", seatRecords.length);
 
-    // Check if any seat is not locked by current user
+    // ตรวจสอบว่าเก้าอี้ถูกล็อกโดยผู้ใช้งานปัจจุบันหรือไม่
     const invalidSeats = seatRecords.filter(
-      (seat: any) =>
-        seat.locked_by !== session.user.id || seat.status !== "LOCKED"
+      (seat) => seat.locked_by !== session.user.id || seat.status !== "LOCKED"
     );
 
     if (invalidSeats.length > 0) {
       console.log("❌ Invalid seats:", invalidSeats);
       return res.status(400).json({
         error: "Some seats are not locked by you or have expired",
-        invalidSeats: invalidSeats.map((s: any) => s.id),
+        invalidSeats: invalidSeats.map((s) => s.id),
       });
     }
 
-    // Note: We don't check expiry here because frontend countdown handles it
-    // If payment is submitted, user did it within the time limit
-
-    // Create booking
+    // สร้าง booking
     const bookingResult = await sql`
       INSERT INTO booking (id, user_id, showtime_id, status, total_price, created_at, updated_at)
       VALUES (gen_random_uuid(), ${session.user.id}, ${showtimeId}, 'PAID', ${totalPrice}, NOW(), NOW())
       RETURNING id
     `;
-
-    const bookingId = bookingResult[0].id;
+    const bookingId = String(bookingResult[0].id);
     console.log("✅ Created booking:", bookingId);
 
-    // Create booking seats
+    // สร้าง booking_seat
     for (const seatRecord of seatRecords) {
       await sql`
         INSERT INTO booking_seat (id, booking_id, seat_id, price)
-        VALUES (gen_random_uuid(), ${bookingId}, ${seatRecord.seat_id}, ${seatRecord.price || 200})
+        VALUES (gen_random_uuid(), ${bookingId}, ${seatRecord.seat_id}, ${seatRecord.price})
       `;
     }
     console.log("✅ Created booking_seats:", seatRecords.length);
 
-    // Update showtime_seat status to BOOKED
+    // อัปเดต showtime_seat เป็น BOOKED
     await sql`
       UPDATE showtime_seat
       SET status = 'BOOKED', locked_by = NULL, locked_at = NULL
@@ -81,7 +102,7 @@ export default async function handler(
     `;
     console.log("✅ Updated showtime_seats to BOOKED");
 
-    // Publish Ably events for each seat
+    // ส่ง event real-time ผ่าน Ably
     const channel = ably.channels.get(`showtime:${showtimeId}`);
     for (const seatId of seats) {
       await channel.publish("update", {
@@ -93,7 +114,7 @@ export default async function handler(
     }
     console.log("✅ Published Ably events");
 
-    // Update coupon usage if coupon was applied
+    // อัปเดต coupon ถ้ามี
     if (couponId) {
       await sql`
         UPDATE coupon

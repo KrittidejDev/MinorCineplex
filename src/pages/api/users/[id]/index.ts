@@ -25,7 +25,10 @@ export default async function handler(
           avatar_url,
           avatar_id,
         });
+
+        // สร้าง object ใหม่โดยไม่เอา password
         const { password, ...userWithoutPassword } = updatedUser;
+
         res.status(200).json({ user: userWithoutPassword });
       } catch (err: unknown) {
         const error = err as ServiceError;
@@ -36,6 +39,7 @@ export default async function handler(
         }
         return res.status(500).json({ error: "Server Error" });
       }
+      return;
     }
 
     case "GET": {
@@ -44,14 +48,18 @@ export default async function handler(
         if (!data) {
           return res.status(404).json({ error: "User not found" });
         }
-        const { password, ...user } = data;
-        res.status(200).json({ docs: user, status: 200 });
+
+        // สร้าง object ใหม่โดยไม่เอา password
+        const { password, ...userWithoutPassword } = data;
+
+        res.status(200).json({ docs: userWithoutPassword, status: 200 });
         return;
       } catch (error: unknown) {
         console.error(error);
         if (error instanceof Error) {
           return res.status(500).json({ error: error.message });
         }
+        return res.status(500).json({ error: "Server Error" });
       }
     }
 

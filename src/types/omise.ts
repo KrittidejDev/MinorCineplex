@@ -68,7 +68,7 @@ export interface CreateChargeParams {
   amount: number;
   currency?: string;
   description?: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, string | number>;
   returnUri?: string;
 }
 

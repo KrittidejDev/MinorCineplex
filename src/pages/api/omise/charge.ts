@@ -52,11 +52,14 @@ export default async function handler(
       success: true,
       charge,
     });
-  } catch (error: any) {
-    console.error("Charge error:", error.message || error);
+  } catch (err: unknown) {
+    const errorMessage =
+      err instanceof Error ? err.message : "Internal server error";
+    console.error("Charge error:", err instanceof Error ? err : err);
+
     res.status(500).json({
       success: false,
-      error: error.message || "Internal server error",
+      error: errorMessage,
     });
   }
 }

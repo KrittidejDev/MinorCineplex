@@ -12,7 +12,9 @@ export default async function handler(
 ) {
   try {
     const user = await registerUser(req.body);
+
     const { password, ...userData } = user;
+
     res.status(201).json({ message: "Register successfully", userData });
   } catch (err: unknown) {
     const error = err as ServiceError;
@@ -23,5 +25,4 @@ export default async function handler(
     }
     return res.status(500).json({ error: "Server Error" });
   }
-  return res.status(500).json({ error: "Server Error" });
 }

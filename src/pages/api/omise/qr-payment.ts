@@ -93,11 +93,17 @@ export default async function handler(
       qrCodeUrl,
       charge,
     });
-  } catch (err: any) {
+  } catch (err: unknown) {
+    const errorMessage =
+      err instanceof Error ? err.message : "Failed to create QR payment";
+
     res.status(500).json({
       success: false,
-      error: err.message || "Failed to create QR payment",
-      details: process.env.NODE_ENV === "development" ? err.stack : undefined,
+      error: errorMessage,
+      details:
+        process.env.NODE_ENV === "development" && err instanceof Error
+          ? err.stack
+          : undefined,
     });
   }
 }

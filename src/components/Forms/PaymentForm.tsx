@@ -3,6 +3,7 @@ import React, {
   useImperativeHandle,
   forwardRef,
   useState,
+  useCallback,
 } from "react";
 import { useForm, Controller } from "react-hook-form";
 import * as yup from "yup";
@@ -10,10 +11,11 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { QRCodeType } from "@/types/omise";
 import { useOmisePayment } from "@/lib/hooks/useOmisePayment";
 import InputTextFeild from "../Inputs/InputTextFeild";
+import Image from "next/image";
 
 interface PaymentFormProps {
   amount: number;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, string | number>;
   countdown: string;
   onSuccess?: () => void;
   onValidChange?: (valid: boolean) => void;
@@ -98,10 +100,11 @@ const PaymentForm = forwardRef<PaymentFormHandles, PaymentFormProps>(
     });
 
     const watchedValues = watch();
+
     const [paymentMethod, setPaymentMethod] = useState<
       "credit_card" | "qr_code"
     >("credit_card");
-    const [qrCodeType, setQrCodeType] = useState<QRCodeType>("promptpay");
+    const [qrCodeType] = useState<QRCodeType>("promptpay"); // ลบ setQrCodeType เพราะไม่ได้ใช้
     const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
     const [qrPaid, setQrPaid] = useState(false);
     const [paymentStatus, setPaymentStatus] = useState("");
@@ -150,9 +153,9 @@ const PaymentForm = forwardRef<PaymentFormHandles, PaymentFormProps>(
       }
     };
 
-    const handleQRCodePayment = async () => {
+    const handleQRCodePayment = useCallback(async () => {
       try {
-        if (qrCodeUrl) return; // ป้องกัน loop
+        if (qrCodeUrl) return;
         setPaymentStatus("Generating QR code...");
         const result = await payWithQRCode(amount, qrCodeType, metadata);
         if (result.success && result.qrCodeUrl) {
@@ -167,16 +170,19 @@ const PaymentForm = forwardRef<PaymentFormHandles, PaymentFormProps>(
         setPaymentStatus("Failed to generate QR code");
         setQrPaid(false);
       }
-    };
+    }, [amount, qrCodeType, metadata, payWithQRCode, qrCodeUrl]);
 
     useEffect(() => {
-      if (paymentMethod === "qr_code") handleQRCodePayment();
-      else {
-        setQrCodeUrl(null);
-        setQrPaid(false);
-        setPaymentStatus("");
-      }
-    }, [paymentMethod, qrCodeType]);
+      const run = async () => {
+        if (paymentMethod === "qr_code") await handleQRCodePayment();
+        else {
+          setQrCodeUrl(null);
+          setQrPaid(false);
+          setPaymentStatus("");
+        }
+      };
+      run();
+    }, [paymentMethod, qrCodeType, handleQRCodePayment]);
 
     useEffect(() => {
       const cardValid =
@@ -197,7 +203,7 @@ const PaymentForm = forwardRef<PaymentFormHandles, PaymentFormProps>(
               key={method}
               type="button"
               onClick={() => {
-                setPaymentMethod(method as any);
+                setPaymentMethod(method as "credit_card" | "qr_code");
                 onPaymentMethodChange?.(method as "credit_card" | "qr_code");
               }}
               className={`px-3 py-1 border-b-2 transition text-f-24 ${
@@ -299,11 +305,18 @@ const PaymentForm = forwardRef<PaymentFormHandles, PaymentFormProps>(
                 type="button"
                 onClick={handleQRCodePayment}
                 disabled={loading}
-                className={`w-full py-3 rounded-lg font-medium ${loading ? "bg-gray-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700 text-white"}`}
+                className={`w-full py-3 rounded-lg font-medium ${
+                  loading
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-blue-600 hover:bg-blue-700 text-white"
+                }`}
               >
                 {loading
                   ? "Generating QR Code..."
-                  : `Generate QR Code (${new Intl.NumberFormat("th-TH", { style: "currency", currency: "THB" }).format(amount)})`}
+                  : `Generate QR Code (${new Intl.NumberFormat("th-TH", {
+                      style: "currency",
+                      currency: "THB",
+                    }).format(amount)})`}
               </button>
             ) : (
               <div className="space-y-3">
@@ -312,10 +325,12 @@ const PaymentForm = forwardRef<PaymentFormHandles, PaymentFormProps>(
                     Time remaining :{" "}
                     <span className="text-blue-bbee">{countdown}</span>
                   </div>
-                  <img
+                  <Image
                     src={qrCodeUrl}
                     alt="QR Code"
-                    className="h-80 object-contain mb-5"
+                    width={320}
+                    height={320}
+                    className="object-contain mb-5"
                   />
                   <div className="text-gray-gedd text-fr-16">
                     Minor Cineplex Public limited company

@@ -11,8 +11,8 @@ export default async function handler(
   res: NextApiResponse
 ) {
   try {
-    const user = await resetPassword(req.body);
-    res.status(200).json({ message: "Reset password successfully"});
+    await resetPassword(req.body); // ไม่ต้องเก็บค่าไว้
+    res.status(200).json({ message: "Reset password successfully" });
   } catch (err: unknown) {
     const error = err as ServiceError;
     if (error.status) {
@@ -22,5 +22,4 @@ export default async function handler(
     }
     return res.status(500).json({ error: "Server Error" });
   }
-  return res.status(500).json({ error: "Server Error" });
 }

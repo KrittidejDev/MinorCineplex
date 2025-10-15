@@ -10,6 +10,8 @@ import dynamic from "next/dynamic";
 import FilterSearch from "@/components/Widgets/FilterSearch";
 import axios from "axios";
 import { APIMovie } from "@/types/movie";
+import { CinemaByProvince } from "@/components/Widgets/CinemaLocation";
+
 
 const CurtainIntro = dynamic(
   () => import("@/components/Widgets/CurtainIntro"),
@@ -18,7 +20,7 @@ const CurtainIntro = dynamic(
 
 export default function Home() {
   const [filter, setFilter] = useState<string>("1");
-  const [dataCinemas, setDataCinemas] = useState<any[]>([]);
+  const [dataCinemas, setDataCinemas] = useState<CinemaByProvince[]>([]);
   const [showCurtain, setShowCurtain] = useState(false);
   const [movies, setMovies] = useState<APIMovie[]>([]);
   const [loadingMovies, setLoadingMovies] = useState(false);
@@ -76,7 +78,7 @@ export default function Home() {
       setLoadingMovies(true);
       setSearchActive(true);
 
-      const params: any = {};
+      const params: Record<string, string> = {};
       if (filters.title) {
         params.title = filters.title;
       }

@@ -1,9 +1,10 @@
 import React from "react";
 import FilterSearch from "./FilterSearch";
+import { FilterData } from "./FilterSearch";
 
 // Example usage of FilterSearch component
 const FilterSearchExample: React.FC = () => {
-    const handleSearch = (filters: any) => {
+    const handleSearch = (filters: FilterData) => {
         console.log("Search filters:", filters);
         // Here you would typically make an API call with the filters
         // Example: searchMovies(filters);

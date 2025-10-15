@@ -73,13 +73,6 @@ export const userService = {
   GET_SHOWTIME_BOOKING: (id: string, query?: string) =>
     apiService.get(`${apiPath}/showtimes/${id}/booking${query ?? ""}`),
 
-  // Payment
-  POST_PAYMENT: (params: {
-    userId: string;
-    seats: string[];
-    couponId?: string;
-  }) => apiService.post(`${apiPath}/payment`, params),
-
   // File
   POST_FILE_UPLOAD: (params: FileUploadParams) => {
     const formData = new FormData();
@@ -110,4 +103,13 @@ export const userService = {
     apiService.post(`${apiPath}/coupons/${id}/collect`),
   // GET coupon ที่เก็บแล้ว
   GET_COUPON_COLLECTED: () => apiService.get(`${apiPath}/coupons/collected`),
+
+  // Payment
+  POST_PAYMENT: (params: {
+    userId: string;
+    showtimeId: string;
+    seats: string[];
+    totalPrice: number;
+    couponId?: string | null;
+  }) => apiService.post(`${apiPath}/payments/confirm`, params),
 };

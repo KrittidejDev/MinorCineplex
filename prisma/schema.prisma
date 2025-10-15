@@ -253,6 +253,11 @@ model seats {
   lock_expiry DateTime? @db.Timestamp(6)
 }
 
+model playing_with_neon {
+  id    Int    @id @default(autoincrement())
+  name  String
+  value Float? @db.Real
+}
 
 enum booking_status {
   PAID

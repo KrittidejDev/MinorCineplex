@@ -29,13 +29,17 @@ export default function NowShowingComingSoon({
   if (showAll) {
     moviesToDisplay = movies;
   } else {
+    const today = new Date();
+    const todayStr = today.toISOString().split("T")[0];
+
     const nowShowingMovies = movies
       .filter(
         (m) =>
           m.release_date &&
           new Date(m.release_date) <= today &&
-          m.showtimes &&
-          m.showtimes.some((st) => new Date(st) >= today)
+          m.showtimes?.some(
+            (st) => new Date(st).toISOString().split("T")[0] === todayStr
+          )
       )
       .slice(0, 4);
 

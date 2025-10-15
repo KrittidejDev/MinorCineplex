@@ -24,7 +24,7 @@ function MoviesDetailWidget({ movie }: MoviesDetailWidgetProps) {
             )}
           </div>
 
-          <div className="flex flex-col flex-1 py-10 px-4 lg:p-[60px] bg-gray-gc1b/70 backdrop-blur-xl rounded-md">
+          <div className="flex flex-col flex-1 py-10 px-4 lg:p-[50px] bg-gray-gc1b/70 backdrop-blur-xl rounded-md">
             <div className="flex flex-col gap-4">
               <h2 className="text-f-36 text-white-wfff">
                 {movie?.title ?? ""}

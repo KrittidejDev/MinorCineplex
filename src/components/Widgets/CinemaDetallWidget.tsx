@@ -55,10 +55,10 @@ const CinemaDetallWidget: React.FC = () => {
         className="hidden md:flex object-cover object-center w-full z-0 max-h-[583px] overflow-hidden"
       />
 
-      <div className="flex-1 flex flex-col items-center box-border">
-        <div className="w-full max-w-[1200px] max-h-[400px] md:my-[43px] flex flex-col items-center z-20 bg-gray-gc1b/70 md:rounded-lg overflow-hidden">
+      <div className="w-dvw flex-1 flex flex-col items-center box-border">
+        <div className="w-full max-w-[1200px] md:my-[43px] flex flex-col items-center z-20 bg-gray-gc1b/70 md:rounded-lg p-4 lg:p-0">
           <div className="flex w-full mb-6 md:mb-0">
-            <div className="flex flex-1 md:max-w-[274px] max-h-[400px] box-border overflow-hidden object-cover object-center">
+            <div className="flex flex-1 md:max-w-[274px] box-border overflow-hidden object-cover object-center rounded-sm md:rounded-none">
               <HoverCard3D>
                 <Image
                   src="/images/cinema.webp"
@@ -70,7 +70,7 @@ const CinemaDetallWidget: React.FC = () => {
               </HoverCard3D>
             </div>
             <div className="flex flex-col flex-1 w-full p-4 md:p-[60px]">
-              <h1 className="text-white text-2xl sm:text-3xl md:text-4xl font-bold mb-6 line-clamp-1">
+              <h1 className="text-white text-2xl sm:text-3xl md:text-4xl font-bold mb-6">
                 {i18n.language === "en"
                   ? cinemaData?.name_en
                   : cinemaData?.name}
@@ -133,10 +133,10 @@ const CinemaDetallWidget: React.FC = () => {
             )}
           </div>
         </div>
-        <section className="w-full z-10">
+        <section className="w-dvw z-1">
           <DateSelectionBarWidget onSelectDate={handleSelectDate} />
         </section>
-        <section className="w-full max-w-[1200px] px-4 sm:px-0">
+        <section className="w-dvw py-4 sm:px-0">
           <div className="space-y-6 py-10 md:py-20">
             {cinemaData?.movies?.map((movie: ShowtimeMovieData) => (
               <div key={movie.id}>

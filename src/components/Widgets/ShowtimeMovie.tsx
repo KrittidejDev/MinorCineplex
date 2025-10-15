@@ -31,36 +31,38 @@ export const ShowtimeMovie: React.FC<ShowtimeMovieProps> = ({ data }) => {
   console.log("booking data", data);
 
   return (
-    <div className="bg-gray-gc1b rounded-lg shadow-lg flex h-[488px]">
-      <div className="w-1/5 box-border flex flex-col gap-y-6 p-6">
-        <HoverCard3D>
-          <Image
-            src={data?.poster_url || ""}
-            alt={data?.title}
-            className="h-[254px] w-full max-w-[174px] object-cover overflow-hidden rounded-lg"
-            width={274}
-            height={400}
-          />
-        </HoverCard3D>
-        <div className="w-[174px] box-border">
-          <div className="text-f-20 line-clamp-2 h-[52px] mb-2">
-            {data?.title}
+    <div className="bg-gray-gc1b rounded-lg shadow-lg flex flex-col md:flex-row h-fit max-w-[1200px] mx-auto">
+      <div className="box-border flex md:flex-col p-6">
+        <div className="flex gap-x-6">
+          <HoverCard3D>
+            <Image
+              src={data?.poster_url || ""}
+              alt={data?.title}
+              className="h-[254px] w-full max-w-[174px] object-cover overflow-hidden rounded-lg"
+              width={274}
+              height={400}
+            />
+          </HoverCard3D>
+          <div className="w-[174px] box-border">
+            <div className="text-f-20 line-clamp-2 mb-2">{data?.title}</div>
+            <div className="flex flex-wrap gap-2 mb-2">
+              {genres?.map((genre, i) => (
+                <Tag key={i} name={genre} variant="genre" />
+              ))}
+            </div>
+            <div className="font-bold text-fr-16 mt-6">
+              <Link
+                href={`/movies/${data?.id}/movie-info`}
+                className="transparent-underline-normal"
+              >
+                Movie detail
+              </Link>
+            </div>
           </div>
-          <div className="flex flex-wrap gap-2 mb-2">
-            {genres?.map((genre, i) => (
-              <Tag key={i} name={genre} variant="genre" />
-            ))}
-          </div>
-          <Link
-            href={`/movies/${data?.id}/detail`}
-            className="transparent-underline-normal"
-          >
-            Movie detail
-          </Link>
         </div>
       </div>
-      <div className="flex flex-1 p-10">
-        <div className="flex flex-col flex-1 h-full overflow-y-auto gap-y-15">
+      <div className="flex flex-1 px-10 py-5 md:py-10">
+        <div className="flex flex-col flex-1 h-full overflow-y-auto gap-y-10 md:gap-y-15">
           {data?.halls?.map((hall) => (
             <div key={hall?.id}>
               <div className="text-f-24 mb-4">{hall?.name}</div>

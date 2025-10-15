@@ -74,6 +74,7 @@ model movie {
   genre_en       String?
   actors         movie_actor[]
   directors      movie_director[]
+  languages      movie_language[]
   showtimes      showtime[]
 }
 
@@ -97,6 +98,16 @@ model director {
   movies     movie_director[]
 }
 
+model language {
+  id         String           @id @default(uuid())
+  name       String           @unique
+  code       String           @unique // เช่น 'th', 'en', 'zh'
+  created_at DateTime         @default(now())
+  updated_at DateTime         @updatedAt
+  name_en    String?
+  movies     movie_language[]
+}
+
 model movie_actor {
   id       String @id @default(uuid())
   movie_id String
@@ -115,6 +126,16 @@ model movie_director {
   movie       movie    @relation(fields: [movie_id], references: [id])
 
   @@unique([movie_id, director_id])
+}
+
+model movie_language {
+  id          String   @id @default(uuid())
+  movie_id    String
+  language_id String
+  language    language @relation(fields: [language_id], references: [id])
+  movie       movie    @relation(fields: [movie_id], references: [id])
+
+  @@unique([movie_id, language_id])
 }
 
 model time_slot {

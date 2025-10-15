@@ -71,7 +71,6 @@ const formatDate = useCallback((isoDate?: string | null) => {
                 id: coupon.id,
                 code: coupon.code,
                 title_en: coupon.title_en,
-                discount: coupon.discount_value,
                 expiresAt: formatDate(coupon.end_date),
                 image: coupon.image,
               }}

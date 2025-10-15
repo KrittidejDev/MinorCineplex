@@ -10,7 +10,7 @@ import BookingInfo from './BookingInfo'
 import { Button } from '../ui/button'
 import { BillInfo, SelectedSeat } from '@/types/cinema'
 import { CouponCardData } from '@/types/coupon'
-import { useRouter } from 'next/router'
+
 
 interface Props extends BillInfo {
   countdown?: string
@@ -38,7 +38,7 @@ export default function SummaryBoxCard({
 }: Props) {
   const { i18n } = useTranslation()
   const lang = i18n.language
-  const router = useRouter()
+  
 
   const [isCouponModalOpen, setCouponModalOpen] = useState(false)
 
@@ -238,8 +238,8 @@ export default function SummaryBoxCard({
                           </h5>
                           <p className="text-gray-gedd text-xs mt-1 line-clamp-1">
                             {lang === 'en'
-                              ? `Valid until ${c.expiresAt ? new Date(c.expiresAt).toLocaleDateString() : 'N/A'}`
-                              : `ใช้ได้ถึง ${c.expiresAt ? new Date(c.expiresAt).toLocaleDateString() : 'N/A'}`}
+                              ? `Valid until ${c.end_date ? new Date(c.end_date).toLocaleDateString() : 'N/A'}`
+                              : `ใช้ได้ถึง ${c.end_date ? new Date(c.end_date).toLocaleDateString() : 'N/A'}`}
                           </p>
                         </div>
 

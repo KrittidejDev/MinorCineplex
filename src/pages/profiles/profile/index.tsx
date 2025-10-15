@@ -6,14 +6,12 @@ import ProfileForm, { ProfileFormValues } from "@/components/Forms/ProfileForm";
 import { UpdateProfileParams, userService } from "@/config/userServices";
 import { AxiosError } from "axios";
 import { UseFormSetError } from "react-hook-form";
+import { SuccessAlert } from "@/components/ui/alert";
+import { UserDataResponse } from "@/types/user";
 
-
-interface User {
-  username: string;
-  email: string;
-  id: string;
-  avatar_id: string | null;
-  avatar_url: string | null;
+interface response {
+  status: number;
+  docs: UserDataResponse;
 }
 
 interface FileUploadResponse {
@@ -25,14 +23,15 @@ interface FileUploadResponse {
 
 const ProfilePage = () => {
   const { data: session } = useSession();
-  const [userData, setUserData] = useState<User | null>(null);
+  const [userData, setUserData] = useState<UserDataResponse | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isSuccessAlert, setIsSuccessAlert] = useState(false);
   const id = session?.user?.id;
 
   const fetchMe = async () => {
     if (!id) return;
     try {
-      const res = await userService.GET_MY_PROFILE(id);
+      const res = (await userService.GET_MY_PROFILE(id)) as response;
       setUserData(res.docs);
     } catch (err) {
       console.error("Fetch profile error:", err);
@@ -43,6 +42,10 @@ const ProfilePage = () => {
       fetchMe();
     }
   }, [id]);
+
+  const clearSuccessAlert = () => {
+    setIsSuccessAlert(false);
+  };
 
   const handleSaveProfile = async (
     data: ProfileFormValues,
@@ -69,10 +72,6 @@ const ProfilePage = () => {
         ...(publicId && { avatar_id: publicId }),
       };
       await userService.PUT_UPDATE_PROFILE(session.user.id, formData);
-      // await axios.put(
-      //   `http://localhost:3000/api/users/${session.user.id}`,
-      //   formData
-      // );
       if (selectedFile && oldPublicId) {
         //Delete รูปภาพเก่า
         try {
@@ -81,6 +80,8 @@ const ProfilePage = () => {
           console.log("Failed to delete old avatar:", error);
         }
       }
+      window.location.reload();
+      setIsSuccessAlert(true);
     } catch (error: unknown) {
       if (error instanceof AxiosError && error.response) {
         const message =
@@ -116,11 +117,20 @@ const ProfilePage = () => {
             visible to anyone who can view your profile
           </div>
           <ProfileForm
-            userData={userData as User}
+            userData={userData as UserDataResponse}
             onFileSelect={setSelectedFile}
             onSave={handleSaveProfile}
           />
         </div>
+      </div>
+      <div className="absolute bottom-5 right-5">
+        {isSuccessAlert && (
+          <SuccessAlert
+            header="Profile updated successfully"
+            text="Your profile has been updated successfully"
+            onClick={clearSuccessAlert}
+          />
+        )}
       </div>
     </div>
   );

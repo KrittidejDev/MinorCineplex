@@ -10,9 +10,21 @@ export const findUserByPhone = (phone: string) => {
   return prisma.user.findUnique({ where: { phone } });
 };
 
-export const findUserByUsername = (username: string) => {
-  return prisma.user.findUnique({ where: { username } });
-};
+export const findUserByUsername = (username: string, id?: string) => {
+  if (id) {
+    // For update operations - check username exists for other users
+    return prisma.user.findUnique({ where: {
+      username: username,
+      NOT: {
+        id: id,
+      },
+    },
+  });
+  } else {
+    // For registration - check if username already exists
+    return prisma.user.findUnique({ where: { username } });
+  }
+}
 
 export const createUser = (data: {
   username: string;

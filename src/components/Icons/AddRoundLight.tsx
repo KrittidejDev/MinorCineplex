@@ -3,13 +3,11 @@ import React from "react";
 interface AddRoundLightProps {
   width?: string | number;
   height?: string | number;
-  color?: string;
 }
 
 const AddRoundLight: React.FC<AddRoundLightProps> = ({
   width = "24",
   height = "24",
-  color = "#FFF",
 }) => {
   return (
     <svg

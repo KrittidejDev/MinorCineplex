@@ -59,7 +59,7 @@ function CreateNewCinemaCard({ isShowModal, onClose }: CreateNewCinemaCardProps)
             isShowModal={isShowModal}
             onClose={onClose}
         >
-            <div className="bg-white w-[1200px] h-[784px] rounded-lg shadow-lg">
+            <div className="bg-white w-[1200px] h-auto rounded-lg shadow-lg">
                 <div className=" px-30 py-12.5  w-auto  ">
                     <h2 className="text-f-56 font-bold mb-6 text-gray-g63f ">Create New Cinema</h2>
 

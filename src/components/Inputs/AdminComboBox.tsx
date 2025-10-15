@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import ExpandDownLight from "../Icons/ExpandDownLight";
 import CloseRoundLight from "../Icons/CloseRoundLight";
 
@@ -8,7 +8,6 @@ type DropdownOption = {
 };
 
 type AdminComboBoxProps = {
-  defaultValue?: string;
   placeholder?: string;
   value?: string;
   onChange?: (value: string) => void;
@@ -22,7 +21,6 @@ type AdminComboBoxProps = {
 };
 
 const AdminComboBox = ({
-  defaultValue = "",
   placeholder,
   value,
   onChange,
@@ -36,6 +34,7 @@ const AdminComboBox = ({
 }: AdminComboBoxProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
+  const dropdownRef = useRef<HTMLInputElement>(null);
 
   const baseClass =
     "w-full mt-1 p-2 border rounded-sm focus:outline-none placeholder:text-gray-g3b0 cursor-pointer";
@@ -48,6 +47,26 @@ const AdminComboBox = ({
     setSearchValue("");
     setIsOpen(false);
   };
+
+  const handleOutsideClick = (e: MouseEvent) => {
+    if (
+      dropdownRef.current &&
+      !dropdownRef.current.contains(e.target as Node)
+    ) {
+      setIsOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    if (isOpen) {
+      document.addEventListener("mousedown", handleOutsideClick);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, [isOpen]);
+
   const handleClear = () => {
     setSearchValue("");
     onChange?.("");
@@ -86,14 +105,14 @@ const AdminComboBox = ({
         >
           <div className="flex items-center justify-between">
             <input
-              className="focus:outline-none"
+              className="focus:outline-none w-full"
               type="text"
               disabled={disabled}
-              defaultValue={defaultValue}
               value={displayValue || searchValue || ""}
               onChange={handleChange}
               placeholder={placeholder}
             />
+
             {searchValue || value !== "" ? (
               <CloseRoundLight
                 width={20}
@@ -113,7 +132,10 @@ const AdminComboBox = ({
 
         {/* Dropdown Options */}
         {isOpen && !disabled && (
-          <div className="absolute z-50 w-full mt-1 bg-white border border-blue-bbee rounded-sm shadow-lg max-h-60 overflow-y-auto">
+          <div
+            ref={dropdownRef}
+            className="absolute z-50 w-full mt-1 bg-white border border-blue-bbee rounded-sm shadow-lg max-h-60 overflow-y-auto"
+          >
             {displayOption.map((option) => (
               <div
                 key={option.value}

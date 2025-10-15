@@ -68,6 +68,9 @@ export const getManyForAdmin = async ({
       },
       price: true,
     },
+    orderBy: {
+      date: "desc",
+    },
   });
 
   return { data, total };

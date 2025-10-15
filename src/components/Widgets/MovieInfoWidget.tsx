@@ -55,30 +55,61 @@ const MovieInfoWidget: React.FC<MoviesDetailWidgetProps> = ({ movie }) => {
 
         {activeTab === "ข้อมูลภาพยนต์" && (
           <div className="max-w-[1200px] mx-auto flex flex-col gap-10 mt-10">
+            {/* ==== นักแสดง ==== */}
             <div>
               <h3 className="font-bold text-f-24">นักแสดง</h3>
               <div className="flex flex-wrap gap-2.5 mt-5">
-                {(movie.actors || []).map((actor) => (
-                  <ActorProfile
-                    key={actor.id}
-                    firstName={actor.name.split(" ")[0]}
-                    lastName={actor.name.split(" ").slice(1).join(" ")}
-                    imageUrl={actor.imageUrl || undefined}
-                  />
-                ))}
+                {(movie.actors || []).map((actor) => {
+                  const [firstName, ...rest] = actor.name.split(" ");
+                  const lastName = rest.join(" ");
+                  const hasImage = !!actor.imageUrl;
+
+                  return (
+                    <div key={actor.id}>
+                      {hasImage ? (
+                        <ActorProfile
+                          firstName={firstName}
+                          lastName={lastName}
+                          imageUrl={actor.imageUrl ?? undefined}
+                        />
+                      ) : (
+                        <div className="flex flex-col items-center text-white-wfff text-sm">
+                          <span>{firstName}</span>
+                          {lastName && <span>{lastName}</span>}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </div>
+
+            {/* ==== ผู้กำกับ ==== */}
             <div>
               <h3 className="font-bold text-f-24">ผู้กำกับ</h3>
               <div className="flex flex-wrap gap-2.5 mt-5">
-                {(movie.directors || []).map((director) => (
-                  <DirectorProfile
-                    key={director.id}
-                    firstName={director.name.split(" ")[0]}
-                    lastName={director.name.split(" ").slice(1).join(" ")}
-                    imageUrl={director.imageUrl || undefined}
-                  />
-                ))}
+                {(movie.directors || []).map((director) => {
+                  const [firstName, ...rest] = director.name.split(" ");
+                  const lastName = rest.join(" ");
+                  const hasImage = !!director.imageUrl;
+
+                  return (
+                    <div key={director.id}>
+                      {hasImage ? (
+                        <DirectorProfile
+                          firstName={firstName}
+                          lastName={lastName}
+                          imageUrl={director.imageUrl ?? undefined}
+                        />
+                      ) : (
+                        <div className="flex flex-col items-center text-white-wfff text-sm">
+                          <span>{firstName}</span>
+                          {lastName && <span>{lastName}</span>}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </div>
             <div>
@@ -142,14 +173,24 @@ const MovieInfoWidget: React.FC<MoviesDetailWidgetProps> = ({ movie }) => {
                       : fullName;
                   const [firstName, ...rest] = truncated.split(" ");
                   const lastName = rest.join(" ");
+                  const hasImage = !!(
+                    director.imageUrl && director.imageUrl !== "null"
+                  );
 
                   return (
-                    <DirectorProfile
-                      key={director.id}
-                      firstName={firstName}
-                      lastName={lastName}
-                      imageUrl={director.imageUrl || undefined}
-                    />
+                    <React.Fragment key={director.id}>
+                      {hasImage ? (
+                        <DirectorProfile
+                          firstName={firstName}
+                          lastName={lastName}
+                          imageUrl={director.imageUrl ?? undefined}
+                        />
+                      ) : (
+                        <div className="text-white text-center">
+                          {firstName} <br /> {lastName}
+                        </div>
+                      )}
+                    </React.Fragment>
                   );
                 })}
               </div>
@@ -163,14 +204,24 @@ const MovieInfoWidget: React.FC<MoviesDetailWidgetProps> = ({ movie }) => {
                     fullName.length > 5 ? fullName.slice(0, 5) + "…" : fullName;
                   const [firstName, ...rest] = truncated.split(" ");
                   const lastName = rest.join(" ");
+                  const hasImage = !!(
+                    actor.imageUrl && actor.imageUrl !== "null"
+                  );
 
                   return (
-                    <ActorProfile
-                      key={actor.id}
-                      firstName={firstName}
-                      lastName={lastName}
-                      imageUrl={actor.imageUrl || undefined}
-                    />
+                    <React.Fragment key={actor.id}>
+                      {hasImage ? (
+                        <ActorProfile
+                          firstName={firstName}
+                          lastName={lastName}
+                          imageUrl={actor.imageUrl ?? undefined}
+                        />
+                      ) : (
+                        <div className="text-white">
+                          {firstName} {lastName}
+                        </div>
+                      )}
+                    </React.Fragment>
                   );
                 })}
               </div>

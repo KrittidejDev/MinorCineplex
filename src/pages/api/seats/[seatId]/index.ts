@@ -1,4 +1,3 @@
-// pages/api/seats/[seatId].ts
 import type { NextApiRequest, NextApiResponse } from "next";
 import { sql } from "@/lib/db";
 import { ably } from "@/lib/ablyServer";
@@ -43,7 +42,6 @@ export default async function handler(
           seatId,
           status: "LOCKED",
           locked_by: userId,
-          locked_at: result[0].locked_at.toISOString(),
         });
 
       return res.json({ success: true });
@@ -69,8 +67,6 @@ export default async function handler(
         .publish("update", {
           seatId,
           status: "AVAILABLE",
-          locked_by: null,
-          locked_at: null,
         });
 
       return res.json({ success: true });

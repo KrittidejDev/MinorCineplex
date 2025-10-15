@@ -26,7 +26,7 @@ export default function AdminShowtime() {
     cinema_id: "",
     hall_id: "",
     time_slot_id: "",
-    date: new Date().toISOString().split("T")[0],
+    date: "",
     price: "",
   });
   const [data, setData] = useState([]);
@@ -70,6 +70,17 @@ export default function AdminShowtime() {
       console.log(error);
     }
   }, [query, page]);
+
+  const clearFormData = () => {
+    setFormData({
+      movie_id: "",
+      cinema_id: "",
+      hall_id: "",
+      time_slot_id: "",
+      date: "",
+      price: "",
+    });
+  };
 
   // Fetch Data For Query
   const fetchAll = async () => {
@@ -135,14 +146,7 @@ export default function AdminShowtime() {
       if (response.status === 200) {
         alert("Showtime created successfully!");
         await getShowtime();
-        setFormData({
-          movie_id: "",
-          cinema_id: "",
-          hall_id: "",
-          time_slot_id: "",
-          date: new Date().toISOString().split("T")[0],
-          price: "",
-        });
+        clearFormData();
         const newTotalPages = await getShowtime();
         if (page > newTotalPages) {
           setPage(Math.max(newTotalPages, 1));
@@ -246,12 +250,12 @@ export default function AdminShowtime() {
   }, [page]);
 
   return (
-    <div className="bg-white-wfff">
+    <div className="bg-white-wfff w-full">
       <div className="flex">
         <div>
           <AdminSidebar />
         </div>
-        <div className="w-full">
+        <div className="w-ful max-w-[1200px]">
           <AdminShowtimeWidget
             totalPages={totalPages}
             total={total}
@@ -262,6 +266,7 @@ export default function AdminShowtime() {
             setQuery={setQuery}
             formData={formData}
             setFormData={setFormData}
+            clearFormData={clearFormData}
             movies={movies}
             cinemas={cinemas}
             timeSlots={timeSlots}

@@ -12,6 +12,7 @@ import {
   CinemaFromAPI,
   TimeSlotBasicInfo,
 } from "@/types/adminShowtime";
+import { validateShowtimeFormData, validateShowtimeDateTime } from "@/lib/utils/showtimeValidation";
 
 export default function AdminShowtime() {
   const [query, setQuery] = useState<ShowtimeQuery>({
@@ -117,21 +118,26 @@ export default function AdminShowtime() {
     }
   };
 
-  // CreateNewShowtimeForm
   const handleCreateShowtime = async (
     event: React.FormEvent<HTMLFormElement>
   ): Promise<boolean> => {
     event.preventDefault();
 
-    // Frontend validation
-    if (
-      !formData.movie_id ||
-      !formData.hall_id ||
-      !formData.time_slot_id ||
-      !formData.date ||
-      !formData.price
-    ) {
-      alert("Please fill in all required fields");
+
+    const formValidation = validateShowtimeFormData(formData);
+    if (!formValidation.isValid) {
+      alert(formValidation.errorMessage);
+      return false;
+    }
+
+    const dateTimeValidation = validateShowtimeDateTime(
+      formData.date,
+      formData.time_slot_id,
+      timeSlots
+    );
+    
+    if (!dateTimeValidation.isValid) {
+      alert(dateTimeValidation.errorMessage);
       return false;
     }
 
@@ -167,17 +173,22 @@ export default function AdminShowtime() {
     }
   };
 
-  // Update Showtime
   const handleUpdateShowtime = async (id: string): Promise<boolean> => {
-    // Frontend validation
-    if (
-      !formData.movie_id ||
-      !formData.hall_id ||
-      !formData.time_slot_id ||
-      !formData.date ||
-      !formData.price
-    ) {
-      alert("Please fill in all required fields");
+
+    const formValidation = validateShowtimeFormData(formData);
+    if (!formValidation.isValid) {
+      alert(formValidation.errorMessage);
+      return false;
+    }
+
+    const dateTimeValidation = validateShowtimeDateTime(
+      formData.date,
+      formData.time_slot_id,
+      timeSlots
+    );
+    
+    if (!dateTimeValidation.isValid) {
+      alert(dateTimeValidation.errorMessage);
       return false;
     }
 
@@ -248,7 +259,6 @@ export default function AdminShowtime() {
   useEffect(() => {
     getShowtime();
   }, [page]);
-
   return (
     <div className="bg-white-wfff w-full">
       <div className="flex">

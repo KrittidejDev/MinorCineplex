@@ -16,6 +16,18 @@ export const getManyForAdmin = async ({
   date,
   page,
 }: ShowTimeFilter) => {
+  let dateFilter = undefined;
+  if (date) {
+    // ใช้ local time เพื่อหลีกเลี่ยง timezone offset
+    const dateStr = date;
+    const startOfDay = new Date(`${dateStr}T00:00:00.000Z`);
+    const endOfDay = new Date(`${dateStr}T23:59:59.999Z`);
+
+    dateFilter = {
+      gte: startOfDay,
+      lte: endOfDay,
+    };
+  }
   let hallFilter = undefined;
   if (cinema && hall) {
     hallFilter = { cinema: { id: cinema }, id: hall };
@@ -29,7 +41,7 @@ export const getManyForAdmin = async ({
     ...(movie && { movie: { id: movie } }),
     ...(hallFilter && { hall: hallFilter }),
     ...(timeSlot && { time_slot: { id: timeSlot } }),
-    ...(date && { date: new Date(date) }),
+    ...(dateFilter && { date: dateFilter }),
   };
 
   const total = await prisma.showtime.count({ where });
@@ -173,7 +185,18 @@ export const getBookingInfoByShowtimeId = async (showtime_id: string) => {
   if (!showtime) return null;
 
   // Group seats by row
-  const grouped: Record<string, any[]> = {};
+  const grouped: Record<
+    string,
+    Array<{
+      id: string;
+      status: string;
+      price: number | null;
+      seat_id: string;
+      seat_number: string;
+      row: string;
+      col: string;
+    }>
+  > = {};
   for (const s of showtime.seats) {
     const row = s.seat.row;
     if (!grouped[row]) grouped[row] = [];
@@ -216,21 +239,44 @@ export const isShowtimeExists = (
     where: {
       hall_id: hall_id,
       time_slot_id: time_slot_id,
-      date: new Date(date),
+      date: new Date(`${date}T00:00:00.000Z`),
       ...(excludeId && { id: { not: excludeId } }),
     },
   });
 };
 
-export const createShowTime = (showTime: CreateShowTimeData) => {
-  return prisma.showtime.create({
-    data: {
-      movie_id: showTime.movie_id,
-      hall_id: showTime.hall_id,
-      time_slot_id: showTime.time_slot_id,
-      date: new Date(showTime.date),
+export const createShowTime = async (showTime: CreateShowTimeData) => {
+  // เริ่ม transaction เพื่อสร้าง showtime และ seats พร้อมกัน
+  return await prisma.$transaction(async (tx) => {
+    // สร้าง showtime
+    const newShowtime = await tx.showtime.create({
+      data: {
+        movie_id: showTime.movie_id,
+        hall_id: showTime.hall_id,
+        time_slot_id: showTime.time_slot_id,
+        date: new Date(`${showTime.date}T00:00:00.000Z`),
+        price: parseFloat(showTime.price.toString()),
+      },
+    });
+
+    // ดึง seats ทั้งหมดจาก hall
+    const hallSeats = await tx.seat.findMany({
+      where: { hall_id: showTime.hall_id },
+    });
+
+    // สร้าง showtime_seat สำหรับทุก seat ใน hall
+    const showtimeSeats = hallSeats.map((seat) => ({
+      showtime_id: newShowtime.id,
+      seat_id: seat.id,
+      status: "AVAILABLE",
       price: parseFloat(showTime.price.toString()),
-    },
+    }));
+
+    await tx.showtime_seat.createMany({
+      data: showtimeSeats,
+    });
+
+    return newShowtime;
   });
 };
 
@@ -240,18 +286,65 @@ export const deleteShowTimeById = (id: string) => {
   });
 };
 
-export const updateShowTimeById = (
+export const updateShowTimeById = async (
   id: string,
   showTime: UpdateShowTimeData
 ) => {
-  return prisma.showtime.update({
+  return await prisma.$transaction(async (tx) => {
+    // อัปเดต showtime
+    const updatedShowtime = await tx.showtime.update({
+      where: { id },
+      data: {
+        movie_id: showTime.movie_id,
+        hall_id: showTime.hall_id,
+        time_slot_id: showTime.time_slot_id,
+        date: new Date(`${showTime.date}T00:00:00.000Z`),
+        price: parseFloat(showTime.price.toString()),
+      },
+    });
+
+    // ถ้า hall เปลี่ยน ให้อัปเดต seats
+    const currentShowtime = await tx.showtime.findUnique({
+      where: { id },
+      include: { seats: true },
+    });
+
+    if (currentShowtime && currentShowtime.hall_id !== showTime.hall_id) {
+      // ลบ seats เก่า
+      await tx.showtime_seat.deleteMany({
+        where: { showtime_id: id },
+      });
+
+      // ดึง seats ใหม่จาก hall ใหม่
+      const hallSeats = await tx.seat.findMany({
+        where: { hall_id: showTime.hall_id },
+      });
+
+      // สร้าง showtime_seat ใหม่
+      const showtimeSeats = hallSeats.map((seat) => ({
+        showtime_id: id,
+        seat_id: seat.id,
+        status: "AVAILABLE",
+        price: parseFloat(showTime.price.toString()),
+      }));
+
+      await tx.showtime_seat.createMany({
+        data: showtimeSeats,
+      });
+    } else {
+      // อัปเดต price ของ seats ที่มีอยู่
+      await tx.showtime_seat.updateMany({
+        where: { showtime_id: id },
+        data: { price: parseFloat(showTime.price.toString()) },
+      });
+    }
+
+    return updatedShowtime;
+  });
+};
+
+export const getTimeSlotById = (id: string) => {
+  return prisma.time_slot.findUnique({
     where: { id },
-    data: {
-      movie_id: showTime.movie_id,
-      hall_id: showTime.hall_id,
-      time_slot_id: showTime.time_slot_id,
-      date: new Date(showTime.date),
-      price: parseFloat(showTime.price.toString()),
-    },
   });
 };

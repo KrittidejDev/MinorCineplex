@@ -226,6 +226,8 @@ model UserCoupon {
   coupon_id    String
   is_collected Boolean   @default(false)
   collected_at DateTime?
+  is_used      Boolean   @default(false)
+  used_at      DateTime?
   coupon       coupon    @relation(fields: [coupon_id], references: [id])
   user         user      @relation(fields: [user_id], references: [id])
 
@@ -251,6 +253,11 @@ model seats {
   lock_expiry DateTime? @db.Timestamp(6)
 }
 
+model playing_with_neon {
+  id    Int    @id @default(autoincrement())
+  name  String
+  value Float? @db.Real
+}
 
 enum booking_status {
   PAID

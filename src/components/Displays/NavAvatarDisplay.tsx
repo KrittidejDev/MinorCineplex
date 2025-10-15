@@ -4,6 +4,7 @@ import ArrowDown from "../Icons/ArrowDown";
 import Link from "next/link";
 import { UserDataResponse } from "@/types/user";
 import UserDuotone from "../Icons/UserDuotone";
+import router from "next/router";
 
 interface AvatarDisplayProps {
   data?: UserDataResponse | null;
@@ -38,7 +39,7 @@ export const AvatarDisplay: React.FC<AvatarDisplayProps> = ({
   };
 
   const _handleClickAdmin = () => {
-    // router("/admin/article");
+    router.push("/admin/dashboard"); 
   };
 
   const btnProfileStyle =
@@ -79,7 +80,7 @@ export const AvatarDisplay: React.FC<AvatarDisplayProps> = ({
             }
           }}
         >
-          {data?.role === "admin" && (
+          {data?.role === "ADMIN" && (
             <button className={btnProfileStyle} onClick={_handleClickAdmin}>
               {/* <AdminBook /> */}
               Dashboard

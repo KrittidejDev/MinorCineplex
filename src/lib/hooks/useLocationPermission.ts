@@ -38,6 +38,7 @@ export const useLocationPermission = (): UseLocationPermissionReturn => {
       setLocation({ lat: data.latitude, lng: data.longitude });
       setLoading(false);
     } catch (err) {
+      console.error(err);
       setError("Cannot get location from IP fallback");
       setLoading(false);
     }

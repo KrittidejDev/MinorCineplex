@@ -2,9 +2,6 @@ import React, { useState, useMemo, useEffect, useRef } from "react";
 import { Button } from "../ui/button";
 import AddRoundLight from "../Icons/AddRoundLight";
 import TableCard from "../Cards/TableCard";
-import Eye from "../Icons/Eye";
-import EditLight from "../Icons/EditLight";
-import Trash from "../Icons/Trash";
 import SearchLight from "../Icons/SearchLight";
 import ArrowDown from "../Icons/ArrowDown";
 import CloseRoundLight from "../Icons/CloseRoundLight";
@@ -30,7 +27,7 @@ export default function AdminHallWidget() {
       linkedShowtime: 3,
     },
     {
-      id: "2", 
+      id: "2",
       hallName: "Hall B",
       cinema: "Grand Cinema",
       seatingCapacity: 120,
@@ -39,7 +36,7 @@ export default function AdminHallWidget() {
     {
       id: "3",
       hallName: "Hall C",
-      cinema: "Grand Cinema", 
+      cinema: "Grand Cinema",
       seatingCapacity: 100,
       linkedShowtime: 1,
     },
@@ -63,27 +60,39 @@ export default function AdminHallWidget() {
   const [selectedCinema, setSelectedCinema] = useState("All Cinemas");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  
+
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalCinema, setModalCinema] = useState("Cinema Branch");
   const [hallName, setHallName] = useState("");
   const [seatingCapacity, setSeatingCapacity] = useState("");
 
-  const cinemaOptions = ["All Cinemas", "Grand Cinema", "Central Cinema", "Paragon Cinema"];
-  const modalCinemaOptions = ["Cinema Branch", "Grand Cinema", "Central Cinema", "Paragon Cinema"];
+  const cinemaOptions = [
+    "All Cinemas",
+    "Grand Cinema",
+    "Central Cinema",
+    "Paragon Cinema",
+  ];
+  const modalCinemaOptions = [
+    "Cinema Branch",
+    "Grand Cinema",
+    "Central Cinema",
+    "Paragon Cinema",
+  ];
 
   const filteredHalls = useMemo(() => {
-    return halls.filter(hall => {
-      const matchesSearch = hall.hallName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          hall.cinema.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesCinema = selectedCinema === "All Cinemas" || hall.cinema === selectedCinema;
+    return halls.filter((hall) => {
+      const matchesSearch =
+        hall.hallName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        hall.cinema.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesCinema =
+        selectedCinema === "All Cinemas" || hall.cinema === selectedCinema;
       return matchesSearch && matchesCinema;
     });
   }, [halls, searchTerm, selectedCinema]);
 
   const displayData = useMemo(() => {
-    return filteredHalls.map(hall => ({
+    return filteredHalls.map((hall) => ({
       ...hall,
       linkedShowtime: (
         <div className="flex justify-center">
@@ -97,25 +106,29 @@ export default function AdminHallWidget() {
 
   const columns = useMemo(
     () => [
-      { 
-        key: "hallName", 
-        label: <span className="text-white-wfff text-fm-16">Hall name</span>, 
-        align: "left" as const 
+      {
+        key: "hallName",
+        label: <span className="text-white-wfff text-fm-16">Hall name</span>,
+        align: "left" as const,
       },
-      { 
-        key: "cinema", 
-        label: <span className="text-white-wfff text-fm-16">Cinema</span>, 
-        align: "left" as const 
+      {
+        key: "cinema",
+        label: <span className="text-white-wfff text-fm-16">Cinema</span>,
+        align: "left" as const,
       },
-      { 
-        key: "seatingCapacity", 
-        label: <span className="text-white-wfff text-fm-16">Seating Capacity</span>, 
-        align: "left" as const 
+      {
+        key: "seatingCapacity",
+        label: (
+          <span className="text-white-wfff text-fm-16">Seating Capacity</span>
+        ),
+        align: "left" as const,
       },
-      { 
-        key: "linkedShowtime", 
-        label: <span className="text-white-wfff text-fm-16">Linked Showtime</span>, 
-        align: "left" as const 
+      {
+        key: "linkedShowtime",
+        label: (
+          <span className="text-white-wfff text-fm-16">Linked Showtime</span>
+        ),
+        align: "left" as const,
       },
     ],
     []
@@ -144,7 +157,7 @@ export default function AdminHallWidget() {
 
   const handleSave = () => {
     if (!hallName || !seatingCapacity || !modalCinema) return;
-    
+
     const newHall: HallRow = {
       id: Date.now().toString(),
       hallName,
@@ -152,24 +165,27 @@ export default function AdminHallWidget() {
       seatingCapacity: parseInt(seatingCapacity),
       linkedShowtime: 0,
     };
-    
-    setHalls(prev => [...prev, newHall]);
+
+    setHalls((prev) => [...prev, newHall]);
     handleClose();
   };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setIsDropdownOpen(false);
       }
     };
 
     if (isDropdownOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener("mousedown", handleClickOutside);
     }
 
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [isDropdownOpen]);
 
@@ -221,7 +237,7 @@ export default function AdminHallWidget() {
             <span>{selectedCinema}</span>
             <ArrowDown width={16} height={16} />
           </button>
-          
+
           {isDropdownOpen && (
             <div className="absolute top-full left-0 right-0 mt-1 bg-white-wfff border border-blue-bbee/70 rounded-[4px] shadow-lg z-10">
               {cinemaOptions.map((option) => (
@@ -251,7 +267,8 @@ export default function AdminHallWidget() {
           actionsHeaderPaddingClass="px-[30px] py-5"
         />
         <div className="mx-[70px] mt-4 text-gray-g3b0 text-fr-14">
-          Showing {filteredHalls.length > 0 ? 1 : 0} to {Math.min(5, filteredHalls.length)} of {filteredHalls.length} results
+          Showing {filteredHalls.length > 0 ? 1 : 0} to{" "}
+          {Math.min(5, filteredHalls.length)} of {filteredHalls.length} results
         </div>
       </div>
 
@@ -260,14 +277,17 @@ export default function AdminHallWidget() {
         <div className="w-full max-w-[920px] bg-white-wfff rounded-[8px] shadow-xl border border-gray-gedd">
           <div className="p-8 min-h-[61px]">
             <h2 className="text-f-56 text-gray-g63f">Create New Hall</h2>
-            
+
             <div className="mt-6 flex flex-col gap-5">
               {/* Select Cinema */}
               <AdminComboBox
                 label="Select Cinema"
                 value={modalCinema}
                 onChange={setModalCinema}
-                options={modalCinemaOptions.map(option => ({ value: option, label: option }))}
+                options={modalCinemaOptions.map((option) => ({
+                  value: option,
+                  label: option,
+                }))}
                 placeholder="Select Cinema"
               />
 
@@ -291,10 +311,16 @@ export default function AdminHallWidget() {
             </div>
 
             <div className="mt-8 flex justify-end gap-3">
-              <Button className="h-11 px-6 rounded-[4px] bg-gray-gedd text-gray-g3b0 hover:bg-gray-gedd" onClick={handleClose}>
+              <Button
+                className="h-11 px-6 rounded-[4px] bg-gray-gedd text-gray-g3b0 hover:bg-gray-gedd"
+                onClick={handleClose}
+              >
                 Cancel
               </Button>
-              <Button className="h-11 px-6 rounded-[4px] bg-blue-bbee text-white-wfff hover:bg-blue-b9a8" onClick={handleSave}>
+              <Button
+                className="h-11 px-6 rounded-[4px] bg-blue-bbee text-white-wfff hover:bg-blue-b9a8"
+                onClick={handleSave}
+              >
                 Save
               </Button>
             </div>

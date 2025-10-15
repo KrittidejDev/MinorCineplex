@@ -1,4 +1,5 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
+import Image from "next/image";
 import ModalEmpty from "../Modals/ModalEmpty";
 import UploadFile from "../Icons/UploadFile";
 import { Button } from "../ui/button";
@@ -27,23 +28,22 @@ function AdminViewMovieForm({
   });
 
   const [posterPreview, setPosterPreview] = useState<string | null>(null);
-
   const [selectedGenre, setSelectedGenre] = useState("");
 
   useEffect(() => {
-  if (movie) {
-    setFormData({
-      title: movie.title || "",
-      description: movie.description || "",
-      duration: movie.duration_min?.toString() || "",
-      rating: movie.rating?.toString() || "",
-      trailer: movie.trailer_url || "",
-    });
+    if (movie) {
+      setFormData({
+        title: movie.title || "",
+        description: movie.description || "",
+        duration: movie.duration_min?.toString() || "",
+        rating: movie.rating?.toString() || "",
+        trailer: movie.trailer_url || "",
+      });
 
-    setSelectedGenre(movie.genre?.toLowerCase() || "");
-    setPosterPreview(movie.poster_url || null);
-  }
-}, [movie]);
+      setSelectedGenre(movie.genre?.toLowerCase() || "");
+      setPosterPreview(movie.poster_url || null);
+    }
+  }, [movie]);
 
   const genreOptions = [
     { value: "action", label: "Action" },
@@ -64,12 +64,14 @@ function AdminViewMovieForm({
           <form className="flex flex-col flex-1">
             <div className="h-[316px] flex items-start gap-5">
               {/* Poster Preview */}
-              <div className="w-[250px] h-full flex justify-center items-center text-center border border-blue-bbee rounded-sm border-dashed overflow-hidden">
+              <div className="w-[250px] h-full flex justify-center items-center text-center border border-blue-bbee rounded-sm border-dashed overflow-hidden relative">
                 {posterPreview ? (
-                  <img
+                  <Image
                     src={posterPreview}
                     alt="Poster Preview"
+                    fill
                     className="object-cover w-full h-full"
+                    sizes="250px"
                   />
                 ) : (
                   <div className="flex flex-col items-center text-gray-g3b0">

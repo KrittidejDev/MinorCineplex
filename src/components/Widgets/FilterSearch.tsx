@@ -62,7 +62,7 @@ const FilterSearch: React.FC<FilterSearchProps> = ({
     releaseDate: "",
   });
 
-  const [movies, setMovies] = useState<Movie[]>([]);
+  const [, setMovies] = useState<Movie[]>([]);
   const [movieOptions, setMovieOptions] = useState<FilterOption[]>([]);
   const [genreOptions, setGenreOptions] = useState<FilterOption[]>([]);
 

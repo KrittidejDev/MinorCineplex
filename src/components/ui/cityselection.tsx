@@ -1,4 +1,3 @@
-import Image from "next/image";
 import ExpandDownLight from "../Icons/ExpandDownLight";
 
 function CitySelection() {

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { AvatarDisplay } from "../Displays/NavAvatarDisplay";
 import LogoM from "../Icons/LogoM";
 import Hamburger from "../Icons/Hamburger";
@@ -12,13 +12,13 @@ interface response {
   docs: UserDataResponse;
 }
 
-
 const NavBarWidget = () => {
   const { data: session, status } = useSession();
   const id = session?.user?.id;
   const [userData, setUserData] = useState<UserDataResponse | null>(null);
 
-  const fetchMe = async () => {
+  // ใช้ useCallback เพื่อให้ fetchMe เป็น dependency ของ useEffect
+  const fetchMe = useCallback(async () => {
     if (!id) return;
     try {
       const res = (await userService.GET_MY_PROFILE(id)) as response;
@@ -29,13 +29,13 @@ const NavBarWidget = () => {
     } catch (err) {
       console.error("Fetch profile error:", err);
     }
-  };
+  }, [id]);
 
   useEffect(() => {
     if (status === "authenticated") {
       fetchMe();
     }
-  }, [status]);
+  }, [status, fetchMe]);
 
   return (
     <div className="w-full py-4 px-20 flex items-center justify-between bg-black/20 z-10">
@@ -44,7 +44,10 @@ const NavBarWidget = () => {
       </Link>
       <div className="hidden md:flex">
         {status === "authenticated" ? (
-          <AvatarDisplay onLogOut={signOut} data={userData as UserDataResponse} />
+          <AvatarDisplay
+            onLogOut={signOut}
+            data={userData as UserDataResponse}
+          />
         ) : (
           <div>
             <Link href={"/auth/login"}>

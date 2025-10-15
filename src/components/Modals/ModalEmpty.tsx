@@ -7,12 +7,7 @@ interface ModalEmptyProps {
   isCloseBtn?: boolean;
 }
 
-const ModalEmpty = ({
-  children,
-  isShowModal,
-  onClose,
-  isCloseBtn = true,
-}: ModalEmptyProps) => {
+const ModalEmpty = ({ children, isShowModal, onClose }: ModalEmptyProps) => {
   return (
     <div
       className={`fixed inset-0 bg-black/50 flex items-center justify-center z-50 ${

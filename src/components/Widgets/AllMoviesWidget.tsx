@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer, useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import MovieCard from "../Cards/MovieCard";
 import { APIMovie, MovieCardData } from "@/types/movie";
@@ -7,8 +7,8 @@ import { useRouter } from "next/router";
 function AllMoviesWidget() {
   const [activeTab, setActiveTab] = useState("nowShowing");
   const [movies, setMovies] = useState<MovieCardData[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [, setLoading] = useState(true);
+  const [, setError] = useState<string | null>(null);
 
   const router = useRouter();
 
@@ -82,19 +82,19 @@ function AllMoviesWidget() {
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 max-w-[1200px] w-full">
             {moviesToDisplay.map((movie) => (
               <div
-              key={movie.id}
-              className="cursor-pointer"
-              onClick={() => router.push(`/movies/${movie.id}`)}
-            >
-              <MovieCard
                 key={movie.id}
-                id={movie.id}
-                title={movie.title}
-                poster_url={movie.poster_url}
-                release_date={movie.release_date ?? undefined}
-                rating={movie.rating}
-                genre={movie.genre}
-              />
+                className="cursor-pointer"
+                onClick={() => router.push(`/movies/${movie.id}`)}
+              >
+                <MovieCard
+                  key={movie.id}
+                  id={movie.id}
+                  title={movie.title}
+                  poster_url={movie.poster_url}
+                  release_date={movie.release_date ?? undefined}
+                  rating={movie.rating}
+                  genre={movie.genre}
+                />
               </div>
             ))}
           </div>

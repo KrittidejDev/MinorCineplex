@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import ShowtimeMovie, { ShowtimeMovieData } from "./ShowtimeMovie";
 import DateSelectionBarWidget from "./DateSelectionBarWidget";
 import Image from "next/image";
@@ -16,30 +16,31 @@ const CinemaDetallWidget: React.FC = () => {
   const id = params?.id as string | undefined;
   const [cinemaData, setCinemaData] = useState<CinemaDetail | null>(null);
 
-  const fetchCinema = async (queryDate?: Date) => {
-    if (!id) return;
+  const fetchCinema = useCallback(
+    async (queryDate?: Date) => {
+      if (!id) return;
 
-    try {
-      const dateToUse = queryDate || new Date();
-      const queryString = `?date=${dateToUse.toISOString().split("T")[0]}`;
-      const res = (await userService.GET_CINEMA_BY_ID(id, queryString)) as {
-        status: number;
-        data: CinemaDetail;
-      };
+      try {
+        const dateToUse = queryDate || new Date();
+        const queryString = `?date=${dateToUse.toISOString().split("T")[0]}`;
+        const res = (await userService.GET_CINEMA_BY_ID(id, queryString)) as {
+          status: number;
+          data: CinemaDetail;
+        };
 
-      if (res.status === 200) {
-        setCinemaData(res.data);
+        if (res.status === 200) {
+          setCinemaData(res.data);
+        }
+      } catch (error) {
+        console.error(error);
       }
-    } catch (error) {
-      console.error(error);
-    }
-  };
+    },
+    [id]
+  );
 
   useEffect(() => {
-    if (id) {
-      fetchCinema();
-    }
-  }, [id]);
+    fetchCinema();
+  }, [fetchCinema]);
 
   const handleSelectDate = (date: Date) => {
     fetchCinema(date);

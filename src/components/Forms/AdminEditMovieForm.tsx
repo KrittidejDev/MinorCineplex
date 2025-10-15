@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import Image from "next/image";
 import ModalEmpty from "../Modals/ModalEmpty";
 import UploadFile from "../Icons/UploadFile";
 import { Button } from "../ui/button";
@@ -27,7 +28,8 @@ function AdminEditMovieForm({
     trailer: "",
   });
 
-  const [posterFile, setPosterFile] = useState<File | null>(null);
+  // ใช้จริงผ่าน posterPreview → eslint ไม่เตือนอีก
+  const [, setPosterFile] = useState<File | null>(null);
   const [posterPreview, setPosterPreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [errors, setErrors] = useState({
@@ -37,6 +39,11 @@ function AdminEditMovieForm({
     rating: "",
     trailer: "",
   });
+
+  const [selectedGenre, setSelectedGenre] = useState("");
+  // กำหนดไว้แต่ไม่ใช้จริง → ปิด eslint เตือน
+  const [, setSelectedRating] = useState("");
+  const [, setLoading] = useState(false);
 
   useEffect(() => {
     if (movie) {
@@ -76,10 +83,6 @@ function AdminEditMovieForm({
         }));
       }
     };
-
-  const [selectedGenre, setSelectedGenre] = useState("");
-  const [selectedRating, setSelectedRating] = useState("");
-  const [loading, setLoading] = useState(false);
 
   const genreOptions = [
     { value: "Action", label: "Action" },
@@ -143,10 +146,12 @@ function AdminEditMovieForm({
             <div className="h-[316px] flex items-start gap-5">
               <div className="w-[250px] h-full flex justify-center items-center text-center border border-blue-bbee rounded-sm border-dashed relative overflow-hidden cursor-pointer">
                 {posterPreview ? (
-                  <img
+                  <Image
                     src={posterPreview}
                     alt="Poster Preview"
+                    fill
                     className="object-cover w-full h-full"
+                    sizes="250px"
                   />
                 ) : (
                   <div className="flex flex-col items-center">

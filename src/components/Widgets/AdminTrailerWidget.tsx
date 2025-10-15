@@ -4,7 +4,6 @@ import AddRoundLight from "../Icons/AddRoundLight";
 import TableCard from "../Cards/TableCard";
 import Link from "../Icons/Link";
 import Eye from "../Icons/Eye";
-import SearchLight from "../Icons/SearchLight";
 import AdminInputTextField from "../Inputs/AdminInputTextField";
 import ModalEmpty from "../Modals/ModalEmpty";
 
@@ -21,8 +20,18 @@ export default function AdminTrailerWidget() {
 
   const columns = useMemo(
     () => [
-      { key: "name", label: <span className="text-white-wfff text-fm-16">Time Slot Name</span>, align: "left" as const },
-      { key: "url", label: <span className="text-white-wfff text-fm-16">URL</span>, align: "left" as const },
+      {
+        key: "name",
+        label: (
+          <span className="text-white-wfff text-fm-16">Time Slot Name</span>
+        ),
+        align: "left" as const,
+      },
+      {
+        key: "url",
+        label: <span className="text-white-wfff text-fm-16">URL</span>,
+        align: "left" as const,
+      },
     ],
     []
   );
@@ -63,15 +72,16 @@ export default function AdminTrailerWidget() {
       </div>
 
       <div>
-        <TableCard 
-          columns={columns} 
-          actions={actions} 
+        <TableCard
+          columns={columns}
+          actions={actions}
           data={trailers}
           headerPaddingClass="px-[30px] py-5"
           actionsHeaderPaddingClass="px-[30px] py-5"
         />
         <div className="mx-[70px] mt-4 text-gray-g3b0 text-fr-14">
-          Showing {trailers.length > 0 ? 1 : 0} to {Math.min(5, trailers.length)} of {trailers.length} results
+          Showing {trailers.length > 0 ? 1 : 0} to{" "}
+          {Math.min(5, trailers.length)} of {trailers.length} results
         </div>
       </div>
 
@@ -79,7 +89,9 @@ export default function AdminTrailerWidget() {
         <div className="w-full max-w-[920px] bg-white-wfff rounded-[8px] shadow-xl border border-gray-gedd">
           <div className="p-8">
             <h2 className="text-f-56 text-gray-g63f">Add New Trailer</h2>
-            <p className="text-fm-12 text-gray-g3b0 mt-1">Fill in the details below to add a new movie trailer</p>
+            <p className="text-fm-12 text-gray-g3b0 mt-1">
+              Fill in the details below to add a new movie trailer
+            </p>
 
             <div className="mt-6 flex flex-col gap-5">
               <AdminInputTextField
@@ -91,7 +103,9 @@ export default function AdminTrailerWidget() {
               />
 
               <div>
-                <label className="block text-blue-bbee text-fr-14 mb-2">Trailer URL</label>
+                <label className="block text-blue-bbee text-fr-14 mb-2">
+                  Trailer URL
+                </label>
                 <div className="flex">
                   <div className="relative flex-1">
                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-g3b0">
@@ -106,7 +120,9 @@ export default function AdminTrailerWidget() {
                     <button
                       type="button"
                       className="absolute right-0 top-1/2 -translate-y-1/2 bg-blue-bbee hover:bg-blue-bbee/90 text-white-wfff rounded-r-[4px] h-12 px-3 inline-flex items-center gap-2"
-                      onClick={() => trailerUrl && window.open(trailerUrl, "_blank")}
+                      onClick={() =>
+                        trailerUrl && window.open(trailerUrl, "_blank")
+                      }
                     >
                       <Eye />
                       <span className="text-fr-14">View</span>
@@ -117,10 +133,16 @@ export default function AdminTrailerWidget() {
             </div>
 
             <div className="mt-8 flex justify-end gap-3">
-              <Button className="h-11 px-6 rounded-[4px] bg-gray-gedd text-gray-g3b0 hover:bg-gray-gedd/90" onClick={() => setIsOpen(false)}>
+              <Button
+                className="h-11 px-6 rounded-[4px] bg-gray-gedd text-gray-g3b0 hover:bg-gray-gedd/90"
+                onClick={() => setIsOpen(false)}
+              >
                 Cancel
               </Button>
-              <Button className="h-11 px-6 rounded-[4px] bg-blue-bbee text-white-wfff hover:bg-blue-bbee/90" onClick={handleSave}>
+              <Button
+                className="h-11 px-6 rounded-[4px] bg-blue-bbee text-white-wfff hover:bg-blue-bbee/90"
+                onClick={handleSave}
+              >
                 Save
               </Button>
             </div>
@@ -130,7 +152,3 @@ export default function AdminTrailerWidget() {
     </div>
   );
 }
-
-
-
-

@@ -2,13 +2,8 @@ import React, { useMemo, useState } from "react";
 import { Button } from "../ui/button";
 import AddRoundLight from "../Icons/AddRoundLight";
 import TableCard from "../Cards/TableCard";
-import Banner from "../Icons/Banner";
-import Eye from "../Icons/Eye";
-import EditLight from "../Icons/EditLight";
-import Trash from "../Icons/Trash";
 import CloudUpload from "../Icons/CloudUpload";
 import IconCircle from "../Icons/IconCircle";
-import ArrowDown from "../Icons/ArrowDown";
 import AdminComboBox from "../Inputs/AdminComboBox";
 import AdminInputTextField from "../Inputs/AdminInputTextField";
 import ModalEmpty from "../Modals/ModalEmpty";
@@ -29,21 +24,21 @@ export default function AdminBannerWidget() {
 
   const columns = useMemo(
     () => [
-      { 
-        key: "image", 
-        label: <span className="text-white-wfff text-fm-16">Image</span>, 
+      {
+        key: "image",
+        label: <span className="text-white-wfff text-fm-16">Image</span>,
         align: "left" as const,
-        width: "120px"
+        width: "120px",
       },
-      { 
-        key: "name", 
-        label: <span className="text-white-wfff text-fm-16">Banner Name</span>, 
-        align: "left" as const 
+      {
+        key: "name",
+        label: <span className="text-white-wfff text-fm-16">Banner Name</span>,
+        align: "left" as const,
       },
-      { 
-        key: "displayPage", 
-        label: <span className="text-white-wfff text-fm-16">Display Page</span>, 
-        align: "left" as const 
+      {
+        key: "displayPage",
+        label: <span className="text-white-wfff text-fm-16">Display Page</span>,
+        align: "left" as const,
       },
     ],
     []
@@ -68,12 +63,15 @@ export default function AdminBannerWidget() {
 
   const handleSave = () => {
     if (!bannerName || !displayPage || !bannerImage) return;
-    setBanners((prev) => [...prev, { 
-      id: Date.now().toString(),
-      image: bannerImage.name,
-      name: bannerName,
-      displayPage: displayPage
-    }]);
+    setBanners((prev) => [
+      ...prev,
+      {
+        id: Date.now().toString(),
+        image: bannerImage.name,
+        name: bannerName,
+        displayPage: displayPage,
+      },
+    ]);
     setIsOpen(false);
   };
 
@@ -87,7 +85,7 @@ export default function AdminBannerWidget() {
   const dropdownOptions = [
     { value: "Home", label: "Home" },
     { value: "Movies", label: "Movies" },
-    { value: "Cinemas", label: "Cinemas" }
+    { value: "Cinemas", label: "Cinemas" },
   ];
 
   return (
@@ -114,7 +112,8 @@ export default function AdminBannerWidget() {
           actionsHeaderPaddingClass="px-[30px] py-5"
         />
         <div className="mx-[70px] mt-4 text-gray-g3b0 text-fr-14">
-          Showing {banners.length > 0 ? 1 : 0} to {Math.min(5, banners.length)} of {banners.length} results
+          Showing {banners.length > 0 ? 1 : 0} to {Math.min(5, banners.length)}{" "}
+          of {banners.length} results
         </div>
       </div>
 
@@ -122,7 +121,10 @@ export default function AdminBannerWidget() {
         <div className="w-full max-w-[920px] bg-white-wfff rounded-[8px] shadow-xl border border-gray-gedd">
           <div className="p-8 min-h-[61px]">
             <h2 className="text-f-56 text-gray-g63f">Create New Banner</h2>
-            <p className="text-fr-16 text-gray-g3b0 mt-1">Fill in the details below to create a new promotional banner for the website.</p>
+            <p className="text-fr-16 text-gray-g3b0 mt-1">
+              Fill in the details below to create a new promotional banner for
+              the website.
+            </p>
 
             <div className="mt-6 flex flex-col gap-5">
               <AdminInputTextField
@@ -142,7 +144,9 @@ export default function AdminBannerWidget() {
               />
 
               <div>
-                <label className="block text-blue-bbee text-fr-16 mb-2">Banner Image</label>
+                <label className="block text-blue-bbee text-fr-16 mb-2">
+                  Banner Image
+                </label>
                 <div className="relative">
                   <input
                     type="file"
@@ -152,7 +156,7 @@ export default function AdminBannerWidget() {
                   />
                   <div className="border-1 border-dashed border-blue-bbee rounded-[4px] px-8 py-15 text-center hover:border-blue-bbee/70 transition-colors">
                     <div className="flex justify-center mb-4">
-                      <IconCircle 
+                      <IconCircle
                         icon={CloudUpload}
                         size={70}
                         backgroundColor="bg-gray-g3b0/40"
@@ -161,19 +165,30 @@ export default function AdminBannerWidget() {
                       />
                     </div>
                     <p className="text-fr-16 text-gray-g3b0 mb-1">
-                      <span className="text-gray-g3b0 text-f-20">Click to upload</span> or Drag and drop
+                      <span className="text-gray-g3b0 text-f-20">
+                        Click to upload
+                      </span>{" "}
+                      or Drag and drop
                     </p>
-                    <p className="text-fr-16 text-gray-g3b0">SVG, PNG, JPG or GIF (MAX 800x400px)</p>
+                    <p className="text-fr-16 text-gray-g3b0">
+                      SVG, PNG, JPG or GIF (MAX 800x400px)
+                    </p>
                   </div>
                 </div>
               </div>
             </div>
 
             <div className="mt-8 flex justify-end gap-3">
-              <Button className="h-11 px-6 rounded-[4px] bg-gray-gedd text-gray-g3b0 hover:bg-gray-gedd" onClick={() => setIsOpen(false)}>
+              <Button
+                className="h-11 px-6 rounded-[4px] bg-gray-gedd text-gray-g3b0 hover:bg-gray-gedd"
+                onClick={() => setIsOpen(false)}
+              >
                 Cancel
               </Button>
-              <Button className="h-11 px-6 rounded-[4px] bg-blue-bbee text-white-wfff hover:bg-blue-b9a8" onClick={handleSave}>
+              <Button
+                className="h-11 px-6 rounded-[4px] bg-blue-bbee text-white-wfff hover:bg-blue-b9a8"
+                onClick={handleSave}
+              >
                 Save
               </Button>
             </div>

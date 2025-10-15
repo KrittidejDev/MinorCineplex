@@ -2,7 +2,6 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { uploadFile } from "@/services/fileServices";
 import type { MulterFile } from "@/types/file";
 import { deleteFile } from "@/services/fileServices";
-import { Car } from "lucide-react";
 
 // Upload Handler
 export const uploadHandler = async (

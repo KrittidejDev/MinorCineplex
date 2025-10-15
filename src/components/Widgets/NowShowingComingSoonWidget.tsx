@@ -18,7 +18,6 @@ export default function NowShowingComingSoon({
 }: NowShowingComingSoonProps) {
   const [activeTab, setActiveTab] = useState("nowShowing");
   const router = useRouter();
-  const today = new Date();
 
   if (loading) return <div className="text-center py-20">Loading...</div>;
   if (!movies || movies.length === 0)
@@ -26,7 +25,7 @@ export default function NowShowingComingSoon({
 
   let moviesToDisplay;
 
-   if (showAll) {
+  if (showAll) {
     moviesToDisplay = movies;
   } else {
     const today = new Date();

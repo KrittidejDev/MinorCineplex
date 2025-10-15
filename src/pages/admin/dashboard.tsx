@@ -1,10 +1,7 @@
 "use client";
-import { useSession, signIn, signOut } from "next-auth/react";
-import AdminSidebar from "@/components/ui/adminsidebar"; 
+import AdminSidebar from "@/components/ui/adminsidebar";
 
 export default function Dashboard() {
-  const { data: session } = useSession();
-
   // if (!session?.user) return <button onClick={() => signIn()}>Login</button>;
 
   return (
@@ -16,7 +13,7 @@ export default function Dashboard() {
     //   <p>Email: {session.user.email}</p>
     //   <button onClick={() => signOut()}>Logout</button>
     // </div>
-     <div >
+    <div>
       <AdminSidebar />
       {/* <h1>Dashboard</h1>
       <p>ID: </p>

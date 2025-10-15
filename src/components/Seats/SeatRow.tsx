@@ -5,6 +5,7 @@ import SeatReserved from "@/components/Icons/SeatReserved";
 import SeatSelected from "@/components/Icons/SeatSelected";
 import { SeatRowData, SelectedSeat, Seat } from "@/types/cinema";
 import { ablyClient } from "@/lib/ably";
+import type { InboundMessage } from "ably";
 
 interface SeatRowProps {
   seatsData?: SeatRowData[];
@@ -12,6 +13,14 @@ interface SeatRowProps {
   onSelectSeat: (seats: SelectedSeat[]) => void;
   showtimeId?: string;
   userId?: string;
+}
+
+interface AblySeatMessage {
+  data: {
+    seatId: string;
+    status: Seat["status"];
+    locked_by?: string | null;
+  };
 }
 
 const SeatRow: React.FC<SeatRowProps> = ({
@@ -31,13 +40,19 @@ const SeatRow: React.FC<SeatRowProps> = ({
     if (!showtimeId) return;
     const channel = ablyClient.channels.get(`showtime:${showtimeId}`);
 
-    const handleUpdate = (msg: any) => {
+    const handleUpdate = (message: InboundMessage) => {
+      const msg = message as unknown as AblySeatMessage; // ✅ แปลง type ภายใน ไม่กระทบโฟลว์
+      if (!msg?.data) return;
+
       const { seatId, status, locked_by } = msg.data;
+
       setLocalSeats((prev) =>
         prev.map((row) => ({
           ...row,
           seats: row.seats.map((seat) =>
-            seat.id === seatId ? { ...seat, status, locked_by } : seat
+            seat.id === seatId
+              ? { ...seat, status, locked_by: locked_by ?? undefined }
+              : seat
           ),
         }))
       );

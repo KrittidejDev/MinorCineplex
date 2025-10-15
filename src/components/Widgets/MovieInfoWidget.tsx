@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import MovieCard from "../Cards/MovieCard";
 import MovieCardInfo from "../Cards/MovieCardInfo";
 import { APIMovie } from "@/types/movie";
@@ -47,10 +47,14 @@ const MovieInfoWidget: React.FC<MoviesDetailWidgetProps> = ({ movie }) => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [loading, setLoading] = useState<boolean>(false);
 
-  if (!movie) return <p>ไม่พบข้อมูลหนัง</p>;
+  // ฟังก์ชันช่วยแยกชื่อ Actor/Director
+  const splitName = (name: string) => {
+    const [firstName, ...rest] = name.split(" ");
+    return { firstName, lastName: rest.join(" ") };
+  };
 
   // ดึงรอบฉายจาก API
-  const getMovieShowtimes = async (movieId: string, date: Date) => {
+  const getMovieShowtimes = useCallback(async (movieId: string, date: Date) => {
     setLoading(true);
     try {
       const dateQuery = date ? `?date=${date.toISOString().split("T")[0]}` : "";
@@ -62,19 +66,16 @@ const MovieInfoWidget: React.FC<MoviesDetailWidgetProps> = ({ movie }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     if (movie?.id) {
       getMovieShowtimes(movie.id, selectedDate);
     }
-  }, [movie?.id, selectedDate]);
+  }, [movie?.id, selectedDate, getMovieShowtimes]);
 
-  // ฟังก์ชันช่วยแยกชื่อ Actor/Director
-  const splitName = (name: string) => {
-    const [firstName, ...rest] = name.split(" ");
-    return { firstName, lastName: rest.join(" ") };
-  };
+  // --- Move this check after all hooks ---
+  if (!movie) return <p>ไม่พบข้อมูลหนัง</p>;
 
   return (
     <>
@@ -187,6 +188,7 @@ const MovieInfoWidget: React.FC<MoviesDetailWidgetProps> = ({ movie }) => {
             </div>
           )}
         </div>
+
         {/* รอบฉาย */}
         {activeTab === "รอบฉาย" && (
           <div className="mt-10">

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
+import Image from "next/image";
 import { Button } from "../ui/button";
 import AddRoundLight from "../Icons/AddRoundLight";
 import TableCard from "../Cards/TableCard";
@@ -50,9 +51,11 @@ function AdminMovieWidget() {
   const displayData = filteredMovies.map((movie) => ({
     ...movie,
     poster_url: (
-      <img
+      <Image
         src={movie.poster_url || "/images/placeholder.jpg"}
         alt={movie.title}
+        width={48}
+        height={64}
         className="w-12 h-16 object-cover rounded"
       />
     ),
@@ -115,7 +118,7 @@ function AdminMovieWidget() {
             className="btn-base blue-normal text-fm-16 font-bold gap-2.5 h-12 w-[135px] rounded-[4px]"
             onClick={() => setIsShowCreateModal(true)}
           >
-            <AddRoundLight width={24} height={24} color="whtie-wfff"/>
+            <AddRoundLight width={24} height={24} color="white-wfff" />
             Add Movie
           </Button>
         </div>

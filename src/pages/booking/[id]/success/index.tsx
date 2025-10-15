@@ -138,7 +138,7 @@ const BookingSuccessPage = () => {
 
   return (
     <NavAndFooter>
-      <div className="min-h-screen bg-gray-gc1b py-12 px-4">
+      <div className="min-h-screen py-12 px-4">
         <div className="max-w-4xl mx-auto">
           {/* Success Header */}
           <div className="bg-gray-g63f rounded-2xl p-8 mb-6 text-center">

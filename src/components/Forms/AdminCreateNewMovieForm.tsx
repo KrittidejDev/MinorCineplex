@@ -6,6 +6,7 @@ import AdminInputTextField from "../Inputs/AdminInputTextField";
 import AdminInputTextArea from "../Inputs/AdminInputTextArea";
 import AdminDropdownInput from "../Inputs/AdminDropdownInput ";
 import axios from "axios";
+import Image from "next/image";
 
 interface CreateNewMovieFormProps {
   isShowModal: boolean;
@@ -24,7 +25,7 @@ function AdminCreateNewMovieForm({
     trailer: "",
   });
 
-  const [posterFile, setPosterFile] = useState<File | null>(null);
+  const [, setPosterFile] = useState<File | null>(null); // removed unused variable warning
   const [posterPreview, setPosterPreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [errors, setErrors] = useState({
@@ -60,9 +61,7 @@ function AdminCreateNewMovieForm({
     };
 
   const [selectedGenre, setSelectedGenre] = useState("");
-  const [selectedRating, setSelectedRating] = useState("");
-  const [loading, setLoading] = useState(false);
-
+  // removed selectedRating and loading warnings by safely omitting
   const genreOptions = [
     { value: "Action", label: "Action" },
     { value: "Comedy", label: "Comedy" },
@@ -91,7 +90,6 @@ function AdminCreateNewMovieForm({
     };
 
     try {
-      setLoading(true);
       const res = await axios.post("/api/movies", payload);
 
       if (res.status === 201) {
@@ -103,8 +101,6 @@ function AdminCreateNewMovieForm({
     } catch (err) {
       console.error(err);
       alert("มีข้อผิดพลาดในการบันทึกข้อมูล");
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -120,9 +116,11 @@ function AdminCreateNewMovieForm({
                 onClick={() => fileInputRef.current?.click()}
               >
                 {posterPreview ? (
-                  <img
+                  <Image
                     src={posterPreview}
                     alt="Poster Preview"
+                    fill
+                    sizes="250px"
                     className="object-cover w-full h-full"
                   />
                 ) : (

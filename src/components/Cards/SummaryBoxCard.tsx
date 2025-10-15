@@ -8,7 +8,7 @@ import TimeFill from '../Icons/TimeFill'
 import Shop from '../Icons/Shop'
 import BookingInfo from './BookingInfo'
 import { Button } from '../ui/button'
-import { BillInfo, SelectedSeat } from '@/types/cinema'
+import { BillInfo } from '@/types/cinema'
 import { CouponCardData } from '@/types/coupon'
 
 interface Props extends BillInfo {

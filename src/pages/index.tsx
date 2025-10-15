@@ -68,8 +68,6 @@ export default function Home() {
     }
   };
 
-  console.log("movie data", movies);
-
   useEffect(() => {
     const lastShown = localStorage.getItem("curtain_last_shown");
     const now = Date.now();

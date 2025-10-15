@@ -10,7 +10,7 @@ import { userService } from '@/config/userServices'
 interface CouponCardProps {
   coupon: Pick<
     CouponCardData,
-    'id' | 'code' | 'discount' | 'expiresAt' | 'title_en' | 'image'
+    'id' | 'code' |  'expiresAt' | 'title_en' | 'image'
   >
 }
 

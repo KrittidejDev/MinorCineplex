@@ -10,6 +10,7 @@ import BookingInfo from './BookingInfo'
 import { Button } from '../ui/button'
 import { BillInfo, SelectedSeat } from '@/types/cinema'
 import { CouponCardData } from '@/types/coupon'
+import { useRouter } from 'next/router'
 
 interface Props extends BillInfo {
   countdown?: string
@@ -37,6 +38,7 @@ export default function SummaryBoxCard({
 }: Props) {
   const { i18n } = useTranslation()
   const lang = i18n.language
+  const router = useRouter()
 
   const [isCouponModalOpen, setCouponModalOpen] = useState(false)
 
@@ -184,7 +186,7 @@ export default function SummaryBoxCard({
       {/* Coupon Modal */}
       {isCouponModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50">
-          <div className="relative bg-gray-gc1b rounded-xl p-6 w-[95%] max-w-3xl shadow-2xl">
+          <div className="relative bg-gray-g63f rounded-xl p-6 w-[95%] max-w-3xl shadow-2xl">
             {/* ปุ่ม X */}
             <button
               onClick={() => setCouponModalOpen(false)}
@@ -209,30 +211,35 @@ export default function SummaryBoxCard({
                       className={`flex items-stretch border rounded-lg overflow-hidden transition-all duration-300 cursor-pointer
                   ${
                     isSelected
-                      ? 'border-blue-bbee bg-blue-bbee/10 opacity-70'
-                      : 'border-gray-g3b0 bg-gray-g63f/30 hover:bg-gray-g63f/60'
+                      ? 'border-gray-g3b0 bg-gray-g3b0'
+                      : 'border-gray-gc1b bg-gray-g63f/30 hover:bg-gray-g63f/60'
                   }`}
                       onClick={() => onSelectCoupon && onSelectCoupon(c)}
                     >
                       {/* รูป */}
-                      <div className="w-24 h-auto flex-shrink-0">
-                        <img
+                      <div className="w-24 h-auto flex-shrink-0 relative">
+                        <Image
                           src={c.image || '/default-coupon.png'}
                           alt={c.title_en}
-                          className="object-cover w-full h-full"
+                          fill
+                          className="object-cover"
                         />
                       </div>
 
                       {/* ข้อมูลคูปอง */}
-                      <div className="flex flex-col justify-between p-3 flex-1">
+                      <div
+                        className={`flex flex-col justify-between p-3 flex-1 transition-colors ${
+                          isSelected ? 'bg-gray-g3b0' : 'bg-gray-gc1b'
+                        }`}
+                      >
                         <div>
                           <h5 className="text-white-wfff font-semibold text-sm line-clamp-2">
                             {lang === 'en' ? c.title_en : c.title_th}
                           </h5>
                           <p className="text-gray-gedd text-xs mt-1 line-clamp-1">
                             {lang === 'en'
-                              ? `Valid until  ${new Date(c.end_date).toLocaleDateString()}`
-                              : `ใช้ได้ถึง ${new Date(c.end_date).toLocaleDateString()}`}
+                              ? `Valid until ${c.expiresAt ? new Date(c.expiresAt).toLocaleDateString() : 'N/A'}`
+                              : `ใช้ได้ถึง ${c.expiresAt ? new Date(c.expiresAt).toLocaleDateString() : 'N/A'}`}
                           </p>
                         </div>
 
@@ -245,7 +252,7 @@ export default function SummaryBoxCard({
                             className="text-blue-bbee text-xs hover:underline flex items-center gap-1"
                             onClick={(e) => {
                               e.stopPropagation()
-                              window.open(`/coupon/${c.id}`, '_blank')
+                              window.open(`/coupons/${c.id}`, '_blank')
                             }}
                           >
                             {lang === 'en' ? 'View details' : 'ดูรายละเอียด'} →

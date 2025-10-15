@@ -8,6 +8,13 @@ export default function AdminTimeSlotsWidget() {
         <div className="flex flex-col gap-10">
             <div className="flex justify-between items-center px-15 mt-20">
                 <h1 className="text-f-56 text-gray-g63f">Time Slots</h1>
+                <Button
+                    className="btn-base blue-normal text-fm-16 font-bold gap-2.5 h-12 w-[135px] rounded-[4px]"
+                    
+                >
+                    <AddRoundLight width={24} height={40}  />
+                    Add Time Slot
+                </Button>
             </div>
         </div>
     )

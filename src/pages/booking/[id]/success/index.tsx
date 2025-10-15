@@ -309,7 +309,7 @@ const BookingSuccessPage = () => {
             </Button>
             <Button
               className="btn-base white-outline-normal"
-              onClick={() => router.push("/my-bookings")}
+              onClick={() => router.push("/profiles/booking-history")}
             >
               ดูการจองทั้งหมด
             </Button>

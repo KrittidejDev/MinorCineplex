@@ -10,7 +10,7 @@ import BookingInfo from './BookingInfo'
 import { Button } from '../ui/button'
 import { BillInfo, SelectedSeat } from '@/types/cinema'
 import { CouponCardData } from '@/types/coupon'
-import { useRouter } from 'next/router'
+
 
 interface Props extends BillInfo {
   countdown?: string
@@ -38,7 +38,7 @@ export default function SummaryBoxCard({
 }: Props) {
   const { i18n } = useTranslation()
   const lang = i18n.language
-  const router = useRouter()
+  
 
   const [isCouponModalOpen, setCouponModalOpen] = useState(false)
 

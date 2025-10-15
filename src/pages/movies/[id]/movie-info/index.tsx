@@ -60,7 +60,7 @@ function MovieInfo() {
 
   const { cinemas, loading, refetch } = useNearbyCinemas(location, filter);
   const [data, setData] = useState<Cinema[]>([]);
-    const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
   useEffect(() => {
     if (!movieId) return;
@@ -98,13 +98,11 @@ function MovieInfo() {
   };
 
   useEffect(() => {
-  if (movieId) getCinemasByMovies(movieId as string, selectedDate);
-}, [movieId, selectedDate]);
+    if (movieId) getCinemasByMovies(movieId as string, selectedDate);
+  }, [movieId, selectedDate]);
 
-const handleSelectShowtime = (showtimeId: string) => {
-    router.push(
-      `/movies/${movieId}/movie-booking/seat?showtime=${showtimeId}`
-    );
+  const handleSelectShowtime = (showtimeId: string) => {
+    router.push(`/movies/${movieId}/movie-booking/seat?showtime=${showtimeId}`);
   };
 
   const handleFilter = (value: string) => {
@@ -124,7 +122,6 @@ const handleSelectShowtime = (showtimeId: string) => {
     <>
       <NavAndFooterWithBanner>
         <div>
-
           <div className="w-dvw flex justify-center relative mx-auto -mt-10">
             <FilterSearch />
           </div>
@@ -133,49 +130,6 @@ const handleSelectShowtime = (showtimeId: string) => {
             <MovieInfoWidget movie={movie} />
           </div>
         </div>
-
-        <div className="w-full max-w-[1200px] mx-auto my-10">
-                <div className="flex flex-col items-center gap-6 md:px-4">
-                  {data.map((cinema: Cinema) => {
-                    const groups = cinema.halls
-                      .map((hall) => ({
-                        hallId: hall.id,
-                        hallLabel: hall.name,
-                        times: hall.showtimes
-                          .filter(
-                            (showtime) =>
-                              new Date(showtime.date).toDateString() ===
-                              selectedDate.toDateString()
-                          )
-                          .map((showtime) => ({
-                            id: showtime.id,
-                            label: showtime.time_slot.start_time,
-                            disabled: false,
-                          })),
-                      }))
-                      .filter((group) => group.times.length > 0);
-        
-                    if (groups.length === 0) return null;
-        
-                    return (
-                      <div
-                        key={cinema.id}
-                        className="w-full md:rounded-md bg-gray-gc1b p-4"
-                      >
-                        <ShowTime
-                          groups={groups}
-                          cinemaName={cinema.name_en}
-                          badges={["Hearing assistance", "Wheelchair access"]}
-                          onChange={(time) => {
-                            if (time) handleSelectShowtime(time.id);
-                          }}
-                        />
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-
         <CinemaLocation data={dataCinemas} filterCinema={handleFilter} />
 
         <LocationPermissionModal

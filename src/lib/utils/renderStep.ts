@@ -1,4 +1,4 @@
-export const RENDER_STEPER_STATUS = (step) => {
+export const RENDER_STEPER_STATUS = (step: string) => {
   switch (step) {
     case "1":
       return {

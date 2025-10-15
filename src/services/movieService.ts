@@ -147,7 +147,7 @@ export async function createMovie(data: {
 }
 
 export async function updateMovie(id: string, data: Partial<APIMovie>) {
-  const { actors, directors, ...rest } = data;
+  const { actors, directors, showtimes, ...rest } = data;
 
   return await prisma.movie.update({
     where: { id },
@@ -163,6 +163,7 @@ export async function updateMovie(id: string, data: Partial<APIMovie>) {
             set: directors.map((director) => ({ id: director.id })),
           }
         : undefined,
+      // showtimes ไม่ต้องส่งตรง ๆ ถ้าไม่ได้ใช้ nested update
     },
   });
 }

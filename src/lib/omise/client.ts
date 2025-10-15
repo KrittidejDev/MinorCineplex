@@ -18,10 +18,10 @@ class OmiseClient {
     return `Basic ${Buffer.from(`${this.secretKey}:`).toString("base64")}`;
   }
 
-  private async request<T>(
+  private async request<T, Body = unknown>(
     endpoint: string,
     method: "GET" | "POST" = "GET",
-    body?: any
+    body?: Body
   ): Promise<T> {
     const url = `${OMISE_API_URL}${endpoint}`;
     const headers: HeadersInit = {
@@ -37,7 +37,10 @@ class OmiseClient {
     const data = await response.json();
 
     if (!response.ok) {
-      const msg = data.message || data.error || "Omise API request failed";
+      const msg =
+        (data as { message?: string; error?: string }).message ||
+        (data as { message?: string; error?: string }).error ||
+        "Omise API request failed";
       throw new Error(msg);
     }
 
@@ -47,7 +50,16 @@ class OmiseClient {
   async createCharge(
     params: CreateChargeParams & { token: string }
   ): Promise<Charge> {
-    return this.request<Charge>("/charges", "POST", {
+    return this.request<
+      Charge,
+      {
+        amount: number;
+        currency?: string;
+        description?: string;
+        metadata?: Record<string, unknown>;
+        card: string;
+      }
+    >("/charges", "POST", {
       amount: params.amount,
       currency: params.currency || "THB",
       description: params.description,
@@ -59,7 +71,17 @@ class OmiseClient {
   async createChargeWithSource(
     params: CreateChargeParams & { source: string }
   ): Promise<Charge> {
-    return this.request<Charge>("/charges", "POST", {
+    return this.request<
+      Charge,
+      {
+        amount: number;
+        currency?: string;
+        description?: string;
+        metadata?: Record<string, unknown>;
+        source: string;
+        return_uri?: string;
+      }
+    >("/charges", "POST", {
       amount: params.amount,
       currency: params.currency || "THB",
       description: params.description,
@@ -70,7 +92,16 @@ class OmiseClient {
   }
 
   async createSource(params: CreateSourceParams): Promise<Source> {
-    return this.request<Source>("/sources", "POST", {
+    return this.request<
+      Source,
+      {
+        type: string;
+        amount?: number;
+        currency?: string;
+        description?: string;
+        metadata?: Record<string, unknown>;
+      }
+    >("/sources", "POST", {
       type: params.type,
       amount: params.amount,
       currency: params.currency || "THB",

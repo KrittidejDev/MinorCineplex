@@ -3,7 +3,7 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ["cdn.majorcineplex.com", "res.cloudinary.com"],
+    domains: ["cdn.majorcineplex.com", "res.cloudinary.com", "api.omise.co"],
     remotePatterns: [
       {
         protocol: "https",

@@ -1,24 +1,58 @@
+// SeatGrid.tsx
 import SeatRow from "./SeatRow";
+import { SeatRowData, SelectedSeat, Seats } from "@/types/cinema";
 
 interface SeatGridProps {
   groupedSeats: Record<
     string,
-    { id: string; row: string; status: string; price: number }[]
+    {
+      id: string;
+      row: string;
+      status: string;
+      price: number;
+      seat_number?: string;
+      col?: string;
+    }[]
   >;
-  onSelectSeat: (seatId: string) => void;
+  selectedSeats: SelectedSeat[];
+  onSelectSeat: (seats: SelectedSeat[]) => void;
+  showtimeId?: string;
+  userId?: string;
 }
 
-const SeatGrid: React.FC<SeatGridProps> = ({ groupedSeats, onSelectSeat }) => {
+const SeatGrid: React.FC<SeatGridProps> = ({
+  groupedSeats,
+  selectedSeats,
+  onSelectSeat,
+  showtimeId,
+  userId,
+}) => {
+  const seatsData: SeatRowData[] = Object.keys(groupedSeats).map((row) => ({
+    row,
+    seats: groupedSeats[row].map(
+      (s): Seats => ({
+        id: s.id,
+        status: s.status,
+        price: s.price,
+        seat: {
+          id: s.id,
+          seat_number: s.seat_number || s.id,
+          row: s.row,
+          col: s.col || "",
+        },
+      })
+    ),
+  }));
+
   return (
     <div className="w-full flex flex-col gap-6">
-      {Object.keys(groupedSeats).map((row) => (
-        <SeatRow
-          key={row}
-          rowLabel={row}
-          seats={groupedSeats[row]}
-          onSelectSeat={onSelectSeat}
-        />
-      ))}
+      <SeatRow
+        seatsData={seatsData}
+        selectedSeats={selectedSeats}
+        onSelectSeat={onSelectSeat}
+        showtimeId={showtimeId}
+        userId={userId}
+      />
     </div>
   );
 };

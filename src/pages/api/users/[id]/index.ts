@@ -27,7 +27,8 @@ export default async function handler(
         });
 
         // สร้าง object ใหม่โดยไม่เอา password
-        const { password, ...userWithoutPassword } = updatedUser;
+        const { password: _password, ...userWithoutPassword } = updatedUser;
+        void _password; // ป้องกัน warning no-unused-vars
 
         res.status(200).json({ user: userWithoutPassword });
       } catch (err: unknown) {
@@ -50,7 +51,8 @@ export default async function handler(
         }
 
         // สร้าง object ใหม่โดยไม่เอา password
-        const { password, ...userWithoutPassword } = data;
+        const { password: _password, ...userWithoutPassword } = data;
+        void _password; // ป้องกัน warning no-unused-vars
 
         res.status(200).json({ docs: userWithoutPassword, status: 200 });
         return;

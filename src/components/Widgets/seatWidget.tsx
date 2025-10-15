@@ -4,12 +4,19 @@ import SeatInfo from "@/components/Seats/SeatInfo";
 import SeatRow from "@/components/Seats/SeatRow";
 import { BookingInfo, SelectedSeat, SeatRowData } from "@/types/cinema";
 import { ablyClient } from "@/lib/ably";
+import type { InboundMessage } from "ably";
 
 interface SeatWidgetProps {
   data?: BookingInfo | null;
   selectedSeats: SelectedSeat[];
   onSelectSeat: (seatIds: SelectedSeat[]) => void;
   userId?: string;
+}
+
+interface AblySeatUpdateMessage {
+  seatId: string;
+  status: string;
+  locked_by?: string | null;
 }
 
 const SeatWidget: React.FC<SeatWidgetProps> = ({
@@ -28,13 +35,23 @@ const SeatWidget: React.FC<SeatWidgetProps> = ({
     if (!data?.id) return;
     const channel = ablyClient.channels.get(`showtime:${data.id}`);
 
-    const handleUpdate = (msg: any) => {
-      const { seatId, status, locked_by } = msg.data;
+    const handleUpdate = (msg: InboundMessage) => {
+      // msg.data เป็น any หรือ object จริง ๆ ต้อง cast
+      const payload = msg.data as AblySeatUpdateMessage;
+      const { seatId, status, locked_by } = payload;
+
       setSeatsData((prev) =>
         prev.map((row) => ({
           ...row,
           seats: row.seats.map((seat) =>
-            seat.id === seatId ? { ...seat, status, locked_by } : seat
+            seat.id === seatId
+              ? {
+                  ...seat,
+                  status,
+                  // แปลง null เป็น undefined
+                  locked_by: locked_by ?? undefined,
+                }
+              : seat
           ),
         }))
       );

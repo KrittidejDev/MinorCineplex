@@ -1,3 +1,5 @@
+// Cinema Types
+
 export interface CinemaType {
   id: string;
   name: string;
@@ -28,13 +30,15 @@ export interface ShowtimeDetail {
   };
   date: string;
   price: number;
-  seats: {
-    id: string;
-    status: string;
-    price: number;
-    seat_id: string;
-    showtime_id: string;
-  }[];
+  seats: ShowtimeSeat[];
+}
+
+export interface ShowtimeSeat {
+  id: string;
+  status: string;
+  price: number;
+  seat_id: string;
+  showtime_id: string;
 }
 
 // Interface สำหรับ hall
@@ -42,14 +46,16 @@ export interface HallDetail {
   id: string;
   name: string;
   seat_count?: number | null;
-  seats: {
-    id: string;
-    seat_number: string;
-    row: string;
-    col: string;
-    hall_id: string;
-  }[];
+  seats: HallSeat[];
   showtimes: ShowtimeDetail[];
+}
+
+export interface HallSeat {
+  id: string;
+  seat_number: string;
+  row: string;
+  col: string;
+  hall_id: string;
 }
 
 export interface ShowtimeMovieData {
@@ -89,7 +95,8 @@ export interface CinemaDetail {
   }[];
 }
 
-export interface Seat {
+// สำหรับการแสดงผลที่นั่ง
+export interface Seats {
   id: string;
   status: string;
   price: number;
@@ -101,14 +108,13 @@ export interface Seat {
   };
 }
 
-export interface BillInfo {
-  data?: BookingInfo | null;
-  totalSelected?: SelectedSeat[];
-  totalPrice?: number;
-  lockSeats?: () => void;
-  step?: string;
+// สำหรับ SeatRow
+export interface SeatRowData {
+  row: string;
+  seats: Seats[];
 }
 
+// สำหรับ booking และ selected seat
 export interface SelectedSeat {
   id: string;
   seat_number: string;
@@ -119,21 +125,12 @@ export interface SelectedSeat {
   showtimeId?: string;
 }
 
-export interface Seat {
-  id: string;
-  row: string;
-  number: string;
-  status: string;
-  price: number;
-  seat_number?: string;
-  lockExpire?: number | null;
-  locked_by?: string;
-}
-
-// สำหรับ SeatRow
-export interface SeatRowData {
-  row: string;
-  seats: Seat[];
+export interface BillInfo {
+  data?: BookingInfo | null;
+  totalSelected?: SelectedSeat[];
+  totalPrice?: number;
+  lockSeats?: () => void;
+  step?: string;
 }
 
 export interface BookingInfo {
@@ -161,4 +158,17 @@ export interface BookingInfo {
     start_time: string;
     end_time: string;
   };
+}
+
+// สำหรับ internal state การจัดการที่นั่งแบบ real-time
+export interface Seat {
+  id: string;
+  row: string;
+  number: string;
+  status: string;
+  price: number;
+  seat_number?: string;
+  lockExpire?: number | null;
+  locked_by?: string | null;
+  seat: { id: string; seat_number: string; row: string; col: string };
 }

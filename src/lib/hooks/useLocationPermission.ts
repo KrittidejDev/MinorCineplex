@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 export interface Location {
   lat: number;
@@ -31,7 +31,7 @@ export const useLocationPermission = (): UseLocationPermissionReturn => {
   const [showModal, setShowModal] = useState(false);
 
   // Fallback: IP-based location
-  const fallbackLocation = async () => {
+  const fallbackLocation = useCallback(async () => {
     try {
       const res = await fetch("https://ipapi.co/json/");
       const data = await res.json();
@@ -42,10 +42,10 @@ export const useLocationPermission = (): UseLocationPermissionReturn => {
       setError("Cannot get location from IP fallback");
       setLoading(false);
     }
-  };
+  }, []);
 
   // Get current geolocation
-  const getLocation = (): Promise<void> => {
+  const getLocation = useCallback((): Promise<void> => {
     return new Promise<void>((resolve, reject) => {
       if (!navigator.geolocation) {
         setError("Geolocation not supported");
@@ -66,7 +66,6 @@ export const useLocationPermission = (): UseLocationPermissionReturn => {
           console.error("Geolocation error:", err);
           setLoading(false);
 
-          // ลบค่า permission เก่า
           localStorage.removeItem(STORAGE_KEYS.PERMISSION);
           localStorage.removeItem(STORAGE_KEYS.NEVER_TIMESTAMP);
           sessionStorage.removeItem(STORAGE_KEYS.PERMISSION);
@@ -98,7 +97,7 @@ export const useLocationPermission = (): UseLocationPermissionReturn => {
         { enableHighAccuracy: false, timeout: 20000, maximumAge: 0 }
       );
     });
-  };
+  }, [fallbackLocation]);
 
   // Check permission on mount
   useEffect(() => {
@@ -106,7 +105,6 @@ export const useLocationPermission = (): UseLocationPermissionReturn => {
     const sessionPermission = sessionStorage.getItem(STORAGE_KEYS.PERMISSION);
     const neverTimestamp = localStorage.getItem(STORAGE_KEYS.NEVER_TIMESTAMP);
 
-    // Handle "never" permission
     if (storedPermission === "never" && neverTimestamp) {
       const lastNever = parseInt(neverTimestamp, 10);
       const now = Date.now();
@@ -121,13 +119,11 @@ export const useLocationPermission = (): UseLocationPermissionReturn => {
       }
     }
 
-    // Already allowed
     if (storedPermission === "allow" || sessionPermission === "allow") {
       getLocation().catch(() => {});
       return;
     }
 
-    // Check Permissions API
     if (navigator.permissions) {
       navigator.permissions.query({ name: "geolocation" }).then((result) => {
         if (result.state === "granted") {
@@ -144,7 +140,7 @@ export const useLocationPermission = (): UseLocationPermissionReturn => {
       setShowModal(true);
       setLoading(false);
     }
-  }, []);
+  }, [getLocation]);
 
   const openModal = () => setShowModal(true);
 

@@ -4,7 +4,7 @@ export function RENDER_TIME_TH(timeRange: string): string {
   const convert = (timeStr: string) => {
     const match = timeStr.match(/(\d{1,2})[:.](\d{2})\s*(A\.M\.|P\.M\.|น\.)?/i);
     if (!match) return timeStr;
-    let [, hours, minutes, period] = match;
+    const [, hours, minutes, period] = match;
     let h = parseInt(hours, 10);
     const m = parseInt(minutes, 10);
 

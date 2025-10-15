@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import NavBarWidget from "@/components/Widgets/NavBarWidget";
 import ProfileBar from "@/components/Widgets/ProfileBar";
 import { useSession } from "next-auth/react";
@@ -28,7 +28,7 @@ const ProfilePage = () => {
   const [isSuccessAlert, setIsSuccessAlert] = useState(false);
   const id = session?.user?.id;
 
-  const fetchMe = async () => {
+  const fetchMe = useCallback(async () => {
     if (!id) return;
     try {
       const res = (await userService.GET_MY_PROFILE(id)) as response;
@@ -36,12 +36,13 @@ const ProfilePage = () => {
     } catch (err) {
       console.error("Fetch profile error:", err);
     }
-  };
+  }, [id]);
+
   useEffect(() => {
     if (id) {
       fetchMe();
     }
-  }, [id]);
+  }, [id, fetchMe]);
 
   const clearSuccessAlert = () => {
     setIsSuccessAlert(false);

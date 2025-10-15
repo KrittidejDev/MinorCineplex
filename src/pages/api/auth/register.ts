@@ -13,7 +13,8 @@ export default async function handler(
   try {
     const user = await registerUser(req.body);
 
-    const { password, ...userData } = user;
+    const { password: _password, ...userData } = user;
+    void _password; // ป้องกัน warning no-unused-vars
 
     res.status(201).json({ message: "Register successfully", userData });
   } catch (err: unknown) {

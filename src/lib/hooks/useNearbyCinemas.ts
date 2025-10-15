@@ -1,5 +1,5 @@
 import { CinemaType } from "@/types/cinema";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { userService } from "@/config/userServices";
 import { getProvinceName } from "@/lib/utils/province";
 
@@ -71,64 +71,75 @@ export const useNearbyCinemas = (
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchCinemas = async (filterVal: string = filter) => {
-    try {
-      setLoading(true);
+  const fetchCinemas = useCallback(
+    async (filterVal: string = filter) => {
+      try {
+        setLoading(true);
 
-      const res = (await userService.GET_CINEMAS()) as { cinema: CinemaType[] };
-      const data: CinemaType[] = res.cinema;
-
-      const cinemasWithDistance: CinemaWithDistance[] = data.map((c) => {
-        let distance: number | null = null;
-        if (userLocation && c.lat !== null && c.lng !== null) {
-          distance = Math.round(
-            haversineDistance(userLocation.lat, userLocation.lng, c.lat, c.lng)
-          );
-        }
-
-        const province = getProvinceName(c.address);
-
-        return {
-          ...c,
-          distance,
-          distance_text: distance !== null ? `${distance} km` : undefined,
-          distance_text_th: distance !== null ? `${distance} กม.` : undefined,
-          provinceTh: province.th,
-          provinceEn: province.en,
+        const res = (await userService.GET_CINEMAS()) as {
+          cinema: CinemaType[];
         };
-      });
+        const data: CinemaType[] = res.cinema;
 
-      if (filterVal === "2") {
-        if (!userLocation) {
-          setCinemas([]);
-          return;
+        const cinemasWithDistance: CinemaWithDistance[] = data.map((c) => {
+          let distance: number | null = null;
+          if (userLocation && c.lat !== null && c.lng !== null) {
+            distance = Math.round(
+              haversineDistance(
+                userLocation.lat,
+                userLocation.lng,
+                c.lat,
+                c.lng
+              )
+            );
+          }
+
+          const province = getProvinceName(c.address);
+
+          return {
+            ...c,
+            distance,
+            distance_text: distance !== null ? `${distance} km` : undefined,
+            distance_text_th: distance !== null ? `${distance} กม.` : undefined,
+            provinceTh: province.th,
+            provinceEn: province.en,
+          };
+        });
+
+        if (filterVal === "2") {
+          if (!userLocation) {
+            setCinemas([]);
+            return;
+          }
+          const nearest = cinemasWithDistance
+            .filter((c) => c.distance !== null)
+            .sort((a, b) => a.distance! - b.distance!)
+            .slice(0, 10);
+
+          setCinemas([
+            {
+              provinceTh: "ใกล้ฉัน",
+              provinceEn: "Nearest Cinemas",
+              cinemas: nearest,
+            },
+          ]);
+        } else {
+          const grouped = groupByProvince(cinemasWithDistance);
+          setCinemas(grouped);
         }
-        const nearest = cinemasWithDistance
-          .filter((c) => c.distance !== null)
-          .sort((a, b) => a.distance! - b.distance!)
-          .slice(0, 10);
-
-        setCinemas([
-          {
-            provinceTh: "ใกล้ฉัน",
-            provinceEn: "Nearest Cinemas",
-            cinemas: nearest,
-          },
-        ]);
-      } else {
-        const grouped = groupByProvince(cinemasWithDistance);
-        setCinemas(grouped);
+      } catch (err: unknown) {
+        if (err instanceof Error) setError(err.message);
+        else setError("Failed to load cinemas");
+      } finally {
+        setLoading(false);
       }
-    } catch (err: any) {
-      setError(err.message || "Failed to load cinemas");
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+    [filter, userLocation]
+  );
 
   useEffect(() => {
     fetchCinemas(filter);
-  }, [userLocation]);
+  }, [fetchCinemas, filter]);
 
   return { cinemas, loading, error, refetch: fetchCinemas };
 };

@@ -1,11 +1,37 @@
 import { useState, useCallback, useEffect, useRef } from "react";
-import { PaymentResult, QRCodeType } from "@/types/omise";
+import { PaymentResult, QRCodeType, Charge } from "@/types/omise";
 
 declare global {
   interface Window {
-    Omise: any;
-    OmiseCard: any;
+    Omise: {
+      setPublicKey: (key: string) => void;
+      createToken: (
+        type: "card",
+        cardData: Record<string, unknown>,
+        callback: (statusCode: number, response: OmiseTokenResponse) => void
+      ) => void;
+    };
+    OmiseCard: unknown;
   }
+}
+
+interface OmiseTokenResponse {
+  id?: string;
+  message?: string;
+  [key: string]: unknown;
+}
+
+interface OmiseQRCodeResponse {
+  chargeId: string;
+  qrCodeUrl: string;
+  error?: string;
+  charge?: Charge;
+  [key: string]: unknown;
+}
+
+interface OmiseChargeStatus {
+  status: "pending" | "successful" | "failed";
+  charge?: Charge;
 }
 
 interface UseOmisePaymentOptions {
@@ -19,10 +45,8 @@ export const useOmisePayment = (options: UseOmisePaymentOptions = {}) => {
   const [error, setError] = useState<string | null>(null);
   const [omiseLoaded, setOmiseLoaded] = useState(false);
 
-  // ใช้ number | null สำหรับ browser
   const pollingRef = useRef<number | null>(null);
 
-  // ป้องกัน polling ซ้ำ
   const stopPolling = useCallback(() => {
     if (pollingRef.current) {
       clearInterval(pollingRef.current);
@@ -30,7 +54,6 @@ export const useOmisePayment = (options: UseOmisePaymentOptions = {}) => {
     }
   }, []);
 
-  // โหลด Omise script
   useEffect(() => {
     if (typeof window === "undefined") return;
 
@@ -60,8 +83,8 @@ export const useOmisePayment = (options: UseOmisePaymentOptions = {}) => {
   const payWithCreditCard = useCallback(
     async (
       amount: number,
-      cardData: any,
-      metadata?: any
+      cardData: Record<string, unknown>,
+      metadata?: Record<string, unknown>
     ): Promise<PaymentResult> => {
       setLoading(true);
       setError(null);
@@ -70,15 +93,14 @@ export const useOmisePayment = (options: UseOmisePaymentOptions = {}) => {
           throw new Error("Omise.js not loaded");
 
         const token = await new Promise<string>((resolve, reject) => {
-          window.Omise.createToken(
-            "card",
-            cardData,
-            (statusCode: number, response: any) => {
-              if (statusCode === 200 && response.id) resolve(response.id);
-              else
-                reject(new Error(response.message || "Failed to create token"));
-            }
-          );
+          window.Omise.createToken("card", cardData, (statusCode, response) => {
+            const resp = response as OmiseTokenResponse;
+            if (statusCode === 200 && resp.id) resolve(resp.id);
+            else
+              reject(
+                new Error(String(resp.message || "Failed to create token"))
+              );
+          });
         });
 
         const res = await fetch("/api/omise/charge", {
@@ -87,30 +109,45 @@ export const useOmisePayment = (options: UseOmisePaymentOptions = {}) => {
           body: JSON.stringify({ amount: toSatang(amount), token, metadata }),
         });
 
-        const result = await res.json();
-        if (!res.ok) throw new Error(result.error || "Payment failed");
+        const result: OmiseQRCodeResponse = await res.json();
+        if (!res.ok) throw new Error(String(result?.error || "Payment failed"));
+
+        const charge: Charge = {
+          id: result.charge?.id || "",
+          object: result.charge?.object || "charge",
+          amount: result.charge?.amount || toSatang(amount),
+          currency: result.charge?.currency || "THB",
+          status: result.charge?.status || "successful",
+          paid: result.charge?.paid ?? true,
+          ...result.charge,
+        };
 
         const paymentResult: PaymentResult = {
           success: true,
-          chargeId: result.charge.id,
-          charge: result.charge,
+          chargeId: charge.id,
+          charge,
         };
 
         options.onSuccess?.(paymentResult);
         setLoading(false);
         return paymentResult;
-      } catch (err: any) {
-        setError(err.message || "Payment failed");
-        options.onError?.(err.message);
+      } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : String(err);
+        setError(msg);
+        options.onError?.(msg);
         setLoading(false);
-        return { success: false, error: err.message };
+        return { success: false, error: msg };
       }
     },
     [omiseLoaded, options]
   );
 
   const payWithQRCode = useCallback(
-    async (amount: number, type: QRCodeType = "promptpay", metadata?: any) => {
+    async (
+      amount: number,
+      type: QRCodeType = "promptpay",
+      metadata?: Record<string, unknown>
+    ) => {
       setLoading(true);
       setError(null);
       try {
@@ -120,18 +157,19 @@ export const useOmisePayment = (options: UseOmisePaymentOptions = {}) => {
           body: JSON.stringify({ amount: toSatang(amount), type, metadata }),
         });
 
-        const result = await res.json();
+        const result: OmiseQRCodeResponse = await res.json();
         if (!res.ok)
-          throw new Error(result.error || `Server error: ${res.status}`);
+          throw new Error(
+            String(result?.error || `Server error: ${res.status}`)
+          );
 
-        // เริ่ม polling status
         if (!pollingRef.current) {
           pollingRef.current = window.setInterval(async () => {
             try {
               const statusRes = await fetch(
                 `/api/omise/charge-status?chargeId=${result.chargeId}`
               );
-              const statusData = await statusRes.json();
+              const statusData = (await statusRes.json()) as OmiseChargeStatus;
 
               options.onPollingUpdate?.(statusData.status);
 
@@ -142,10 +180,20 @@ export const useOmisePayment = (options: UseOmisePaymentOptions = {}) => {
                 stopPolling();
 
                 if (statusData.status === "successful") {
+                  const charge: Charge = {
+                    id: statusData.charge?.id || result.chargeId,
+                    object: statusData.charge?.object || "charge",
+                    amount: statusData.charge?.amount || toSatang(amount),
+                    currency: statusData.charge?.currency || "THB",
+                    status: statusData.charge?.status || "successful",
+                    paid: statusData.charge?.paid ?? true,
+                    ...statusData.charge,
+                  };
+
                   options.onSuccess?.({
                     success: true,
-                    chargeId: statusData.charge.id,
-                    charge: statusData.charge,
+                    chargeId: charge.id,
+                    charge,
                   });
                 } else {
                   const errMsg = `Payment ${statusData.status}`;
@@ -153,7 +201,7 @@ export const useOmisePayment = (options: UseOmisePaymentOptions = {}) => {
                   options.onError?.(errMsg);
                 }
               }
-            } catch (err) {
+            } catch (err: unknown) {
               console.error("Polling error:", err);
             }
           }, 3000);
@@ -165,9 +213,10 @@ export const useOmisePayment = (options: UseOmisePaymentOptions = {}) => {
           qrCodeUrl: result.qrCodeUrl,
           chargeId: result.chargeId,
         };
-      } catch (err: any) {
-        setError(err.message || "Failed to create QR code");
-        options.onError?.(err.message);
+      } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : String(err);
+        setError(msg);
+        options.onError?.(msg);
         setLoading(false);
         return { success: false };
       }

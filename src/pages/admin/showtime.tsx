@@ -12,7 +12,10 @@ import {
   CinemaFromAPI,
   TimeSlotBasicInfo,
 } from "@/types/adminShowtime";
-import { validateShowtimeFormData, validateShowtimeDateTime } from "@/lib/utils/showtimeValidation";
+import {
+  validateShowtimeFormData,
+  validateShowtimeDateTime,
+} from "@/lib/utils/showtimeValidation";
 
 export default function AdminShowtime() {
   const [query, setQuery] = useState<ShowtimeQuery>({
@@ -30,7 +33,7 @@ export default function AdminShowtime() {
     date: "",
     price: "",
   });
-  const [data, setData] = useState([]);
+  const [data, setData] = useState<ShowtimeData[]>([]);
   const [movies, setMovies] = useState<SelectOption[]>([]);
   const [cinemas, setCinemas] = useState<SelectCinemaOption[]>([]);
   const [timeSlots, setTimeSlots] = useState<SelectOption[]>([]);
@@ -41,7 +44,7 @@ export default function AdminShowtime() {
   // Fetch Showtime Data
   const getShowtime = useCallback(async () => {
     try {
-      const { data } = await axios.get(`http://localhost:3000/api/showtimes`, {
+      const { data } = await axios.get(`/api/showtimes`, {
         params: {
           movie: query.movie,
           cinema: query.cinema,
@@ -69,6 +72,7 @@ export default function AdminShowtime() {
       return data.totalPages;
     } catch (error) {
       console.log(error);
+      return 1;
     }
   }, [query, page]);
 
@@ -87,9 +91,9 @@ export default function AdminShowtime() {
   const fetchAll = async () => {
     try {
       const [resMovies, resCinemas, resTimeSlots] = await Promise.all([
-        axios.get(`http://localhost:3000/api/movies`),
-        axios.get(`http://localhost:3000/api/cinemas?type=dropdown`),
-        axios.get(`http://localhost:3000/api/time-slots`),
+        axios.get(`/api/movies`),
+        axios.get(`/api/cinemas?type=dropdown`),
+        axios.get(`/api/time-slots`),
       ]);
       setMovies(
         resMovies.data.movie.map((item: MovieBasicInfo) => ({
@@ -123,7 +127,6 @@ export default function AdminShowtime() {
   ): Promise<boolean> => {
     event.preventDefault();
 
-
     const formValidation = validateShowtimeFormData(formData);
     if (!formValidation.isValid) {
       alert(formValidation.errorMessage);
@@ -135,14 +138,14 @@ export default function AdminShowtime() {
       formData.time_slot_id,
       timeSlots
     );
-    
+
     if (!dateTimeValidation.isValid) {
       alert(dateTimeValidation.errorMessage);
       return false;
     }
 
     try {
-      const response = await axios.post(`http://localhost:3000/api/showtimes`, {
+      const response = await axios.post(`/api/showtimes`, {
         movie_id: formData.movie_id,
         hall_id: formData.hall_id,
         time_slot_id: formData.time_slot_id,
@@ -174,7 +177,6 @@ export default function AdminShowtime() {
   };
 
   const handleUpdateShowtime = async (id: string): Promise<boolean> => {
-
     const formValidation = validateShowtimeFormData(formData);
     if (!formValidation.isValid) {
       alert(formValidation.errorMessage);
@@ -186,23 +188,20 @@ export default function AdminShowtime() {
       formData.time_slot_id,
       timeSlots
     );
-    
+
     if (!dateTimeValidation.isValid) {
       alert(dateTimeValidation.errorMessage);
       return false;
     }
 
     try {
-      const response = await axios.put(
-        `http://localhost:3000/api/showtimes/${id}`,
-        {
-          movie_id: formData.movie_id,
-          hall_id: formData.hall_id,
-          time_slot_id: formData.time_slot_id,
-          date: formData.date,
-          price: parseFloat(formData.price) || 0,
-        }
-      );
+      const response = await axios.put(`/api/showtimes/${id}`, {
+        movie_id: formData.movie_id,
+        hall_id: formData.hall_id,
+        time_slot_id: formData.time_slot_id,
+        date: formData.date,
+        price: parseFloat(formData.price) || 0,
+      });
       if (response.status === 200) {
         alert("Showtime updated successfully!");
         const newTotalPages = await getShowtime();
@@ -225,13 +224,10 @@ export default function AdminShowtime() {
     }
   };
 
-  // Delete Showtime
   const handleDeleteShowtime = async (id: string) => {
     if (window.confirm("Are you sure you want to delete this showtime?")) {
       try {
-        const reponse = await axios.delete(
-          `http://localhost:3000/api/showtimes/${id}`
-        );
+        const reponse = await axios.delete(`/api/showtimes/${id}`);
         if (reponse.status === 200) {
           console.log("Showtime deleted successfully");
           const newTotalPages = await getShowtime();
@@ -254,11 +250,12 @@ export default function AdminShowtime() {
   useEffect(() => {
     setPage(1);
     getShowtime();
-  }, [query]);
+  }, [query, getShowtime]);
 
   useEffect(() => {
     getShowtime();
-  }, [page]);
+  }, [page, getShowtime]);
+
   return (
     <div className="bg-white-wfff w-full">
       <div className="flex">

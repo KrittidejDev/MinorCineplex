@@ -3,7 +3,7 @@ import SeatAvailable from "@/components/Icons/SeatAvailable";
 import SeatBooked from "@/components/Icons/SeatBooked";
 import SeatReserved from "@/components/Icons/SeatReserved";
 import SeatSelected from "@/components/Icons/SeatSelected";
-import { SeatRowData, SelectedSeat, Seat } from "@/types/cinema";
+import { SeatRowData, SelectedSeat, Seats } from "@/types/cinema";
 import { ablyClient } from "@/lib/ably";
 import type { InboundMessage } from "ably";
 
@@ -18,7 +18,7 @@ interface SeatRowProps {
 interface AblySeatMessage {
   data: {
     seatId: string;
-    status: Seat["status"];
+    status: Seats["status"];
     locked_by?: string | null;
   };
 }
@@ -30,10 +30,21 @@ const SeatRow: React.FC<SeatRowProps> = ({
   showtimeId,
   userId,
 }) => {
-  const [localSeats, setLocalSeats] = useState<SeatRowData[]>(seatsData || []);
+  // state localSeats เพิ่ม locked_by ใน state เท่านั้น
+  const [localSeats, setLocalSeats] = useState<
+    (Seats & { locked_by?: string | null })[]
+  >([]);
 
   useEffect(() => {
-    if (seatsData) setLocalSeats(seatsData);
+    if (!seatsData) return;
+    // แปลง seatsData เป็น localSeats แบบมี locked_by
+    const mappedSeats = seatsData.flatMap((rowData) =>
+      rowData.seats.map((seat) => ({
+        ...seat,
+        locked_by: undefined,
+      }))
+    );
+    setLocalSeats(mappedSeats);
   }, [seatsData]);
 
   useEffect(() => {
@@ -41,20 +52,17 @@ const SeatRow: React.FC<SeatRowProps> = ({
     const channel = ablyClient.channels.get(`showtime:${showtimeId}`);
 
     const handleUpdate = (message: InboundMessage) => {
-      const msg = message as unknown as AblySeatMessage; // ✅ แปลง type ภายใน ไม่กระทบโฟลว์
+      const msg = message as unknown as AblySeatMessage;
       if (!msg?.data) return;
 
       const { seatId, status, locked_by } = msg.data;
 
       setLocalSeats((prev) =>
-        prev.map((row) => ({
-          ...row,
-          seats: row.seats.map((seat) =>
-            seat.id === seatId
-              ? { ...seat, status, locked_by: locked_by ?? undefined }
-              : seat
-          ),
-        }))
+        prev.map((seat) =>
+          seat.id === seatId
+            ? { ...seat, status, locked_by: locked_by ?? undefined }
+            : seat
+        )
       );
     };
 
@@ -62,20 +70,22 @@ const SeatRow: React.FC<SeatRowProps> = ({
     return () => channel.unsubscribe("update", handleUpdate);
   }, [showtimeId]);
 
-  const toSelectedSeat = (seat: Seat): SelectedSeat | null =>
-    seat.seat_number
-      ? {
-          id: seat.id,
-          seat_number: seat.seat_number,
-          row: seat.row || "",
-          status: seat.status,
-          price: seat.price || 0,
-          locked_by: userId,
-          showtimeId: showtimeId,
-        }
-      : null;
+  // แปลง Seat เป็น SelectedSeat
+  const toSelectedSeat = (
+    seat: Seats & { locked_by?: string | null }
+  ): SelectedSeat | null => {
+    return {
+      id: seat.id,
+      seat_number: seat.seat.seat_number,
+      row: seat.seat.row,
+      status: seat.status,
+      price: seat.price || 0,
+      locked_by: userId,
+      showtimeId: showtimeId,
+    };
+  };
 
-  const toggleSeat = (seat: Seat) => {
+  const toggleSeat = (seat: Seats & { locked_by?: string | null }) => {
     if (!showtimeId) return;
 
     const isLockedByOther =
@@ -94,16 +104,26 @@ const SeatRow: React.FC<SeatRowProps> = ({
     }
   };
 
+  // แปลง localSeats เป็นแถว row สำหรับ render
+  const rows = Array.from(
+    localSeats.reduce((map, seat) => {
+      const rowLabel = seat.seat.row;
+      if (!map.has(rowLabel)) map.set(rowLabel, []);
+      map.get(rowLabel)!.push(seat);
+      return map;
+    }, new Map<string, (Seats & { locked_by?: string | null })[]>())
+  );
+
   return (
     <div className="flex flex-col gap-4">
-      {localSeats.map((rowData) => (
-        <div key={rowData.row} className="flex items-center">
+      {rows.map(([rowLabel, seatsInRow]) => (
+        <div key={rowLabel} className="flex items-center">
           <span className="text-white font-bold w-6 text-center">
-            {rowData.row}
+            {rowLabel}
           </span>
 
           <div className="flex gap-4">
-            {rowData.seats.map((seat, index) => {
+            {seatsInRow.map((seat, index) => {
               const isSelected = selectedSeats.some((s) => s.id === seat.id);
               const isLockedByOther =
                 seat.status === "LOCKED" && seat.locked_by !== userId;
@@ -123,9 +143,7 @@ const SeatRow: React.FC<SeatRowProps> = ({
                       className={`w-[clamp(20px,5vw,40px)] h-[clamp(20px,5vw,40px)]
                         ${isLockedByOther ? "cursor-not-allowed opacity-50" : "cursor-pointer"}
                         ${index === 5 ? "ml-20" : ""}`}
-                      onClick={() =>
-                        !isLockedByOther ? toggleSeat(seat) : undefined
-                      }
+                      onClick={() => !isLockedByOther && toggleSeat(seat)}
                     />
                   </div>
                 </div>
@@ -134,7 +152,7 @@ const SeatRow: React.FC<SeatRowProps> = ({
           </div>
 
           <span className="text-white font-bold w-6 text-center">
-            {rowData.row}
+            {rowLabel}
           </span>
         </div>
       ))}

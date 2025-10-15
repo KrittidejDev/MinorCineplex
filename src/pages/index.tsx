@@ -118,13 +118,11 @@ export default function Home() {
         <div className="w-dvw flex justify-center relative mx-auto -mt-10">
           <FilterSearch onSearch={handleSearchMovies} />
         </div>
-        <div className="mt-20">
           <NowShowingComingSoon
             movies={movies}
             loading={loadingMovies}
             showAll={movies.length > 0 && searchActive}
           />
-        </div>
         <Coupon />
         <CinemaLocation data={dataCinemas} filterCinema={handleFilter} />
       </div>

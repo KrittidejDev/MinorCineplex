@@ -238,8 +238,8 @@ export default function SummaryBoxCard({
                           </h5>
                           <p className="text-gray-gedd text-xs mt-1 line-clamp-1">
                             {lang === 'en'
-                              ? `Valid until ${c.end_date ? new Date(c.end_date).toLocaleDateString() : 'N/A'}`
-                              : `ใช้ได้ถึง ${c.end_date ? new Date(c.end_date).toLocaleDateString() : 'N/A'}`}
+                              ? `Valid until ${c.expiresAt ? new Date(c.expiresAt).toLocaleDateString() : 'N/A'}`
+                              : `ใช้ได้ถึง ${c.expiresAt ? new Date(c.expiresAt).toLocaleDateString() : 'N/A'}`}
                           </p>
                         </div>
 

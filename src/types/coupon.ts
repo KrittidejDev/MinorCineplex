@@ -7,7 +7,7 @@ export interface CouponCardData {
   discription_en?: string; 
   discription_th?: string; 
   discount_value: number;
-  end_date: string | null;
+  expiresAt?: string | null;
   image?: string | null;
   is_collected?: boolean;
 }

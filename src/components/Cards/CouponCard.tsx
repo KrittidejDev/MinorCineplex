@@ -10,7 +10,7 @@ import { userService } from '@/config/userServices'
 interface CouponCardProps {
   coupon: Pick<
     CouponCardData,
-    'id' | 'code' |  'expiresAt' | 'title_en' | 'image'
+    'id' | 'code' |  'end_date' | 'title_en' | 'image'
   >
 }
 
@@ -113,8 +113,8 @@ const CouponCard = ({ coupon }: CouponCardProps) => {
             <div className="flex gap-5">
               <p className="text-sm text-[#8B93B0]">Valid until</p>
               <p className="text-sm text-[#8B93B0]">
-                {coupon.expiresAt
-                  ? new Date(coupon.expiresAt).toLocaleDateString('en-US', {
+                {coupon.end_date
+                  ? new Date(coupon.end_date).toLocaleDateString('en-US', {
                       day: '2-digit',
                       month: 'short',
                       year: 'numeric',

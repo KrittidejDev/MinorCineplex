@@ -186,23 +186,23 @@ const MovieInfoWidget: React.FC<MoviesDetailWidgetProps> = ({ movie }) => {
               </div>
             </div>
           )}
-
-          {/* รอบฉาย */}
-          {activeTab === "รอบฉาย" && (
-            <div className="mt-10">
-              <div className="flex flex-col lg:flex-row gap-5 items-center justify-center px-4">
-                <div className="w-full lg:w-[895px]">
-                  <InputSearch />
-                </div>
-                <div className="w-full lg:w-[285px]">
-                  <CitySelection />
-                </div>
+        </div>
+        {/* รอบฉาย */}
+        {activeTab === "รอบฉาย" && (
+          <div className="mt-10">
+            <div className="flex flex-col lg:flex-row gap-5 items-center justify-center px-4">
+              <div className="w-full lg:w-[895px]">
+                <InputSearch />
               </div>
-
-              <div className="mt-5">
-                <DateSelectionBarWidget onSelectDate={setSelectedDate} />
+              <div className="w-full lg:w-[285px]">
+                <CitySelection />
               </div>
+            </div>
 
+            <div className="mt-5">
+              <DateSelectionBarWidget onSelectDate={setSelectedDate} />
+            </div>
+            <div className="max-w-[1200px] mx-auto">
               <div className="w-full my-10">
                 {loading ? (
                   <div className="flex justify-center items-center py-20">
@@ -249,8 +249,8 @@ const MovieInfoWidget: React.FC<MoviesDetailWidgetProps> = ({ movie }) => {
                 )}
               </div>
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
       {/* Mobile Size */}
@@ -270,9 +270,10 @@ const MovieInfoWidget: React.FC<MoviesDetailWidgetProps> = ({ movie }) => {
             rating={movie.rating || undefined}
             genre={movie.genre || undefined}
           />
-
-          <div className="mt-10">
-            <DateSelectionBarWidget onSelectDate={setSelectedDate} />
+        </div>
+        <div className="mt-10">
+          <DateSelectionBarWidget onSelectDate={setSelectedDate} />
+          <div className="px-4 py-10">
             <div className="flex flex-col lg:flex-row gap-5 items-center justify-center mt-5">
               <div className="w-full">
                 <InputSearch />

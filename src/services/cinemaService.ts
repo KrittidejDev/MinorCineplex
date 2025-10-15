@@ -1,5 +1,6 @@
-import { CinemaDetail, HallDetail } from "@/types/cinema";
+import { CinemaDetail } from "@/types/cinema";
 import * as cinemaRepo from "../repositories/cinemaRepository";
+import { MovieWithHalls, HallWithTimeslots } from "@/types/movie";
 
 export const getCinemas = async () => {
   const cinema = await cinemaRepo.getAll();
@@ -87,7 +88,7 @@ export const getCinemasDetail = async (
           };
         }
 
-        let hall = acc[s.movie.id].halls.find((h: any) => h.id === s.hall.id);
+        let hall = acc[s.movie.id].halls.find((h: HallWithTimeslots) => h.id === s.hall.id);
         if (!hall) {
           hall = {
             ...s.hall,
@@ -106,7 +107,7 @@ export const getCinemasDetail = async (
 
         return acc;
       },
-      {} as Record<string, any>
+      {} as Record<string, MovieWithHalls>
     )
   );
 

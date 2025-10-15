@@ -1,4 +1,3 @@
-import { showtime } from "./../generated/prisma/index.d";
 export interface Actor {
   id: string;
   name: string;
@@ -35,4 +34,38 @@ export interface MovieCardData {
   release_date?: Date | null;
   rating?: string | null;
   genre?: string | null;
+}
+
+export interface MovieWithHalls {
+  id: string;
+  title: string;
+  duration_min: number;
+  poster_url?: string;
+  description?: string;
+  genre?: string;
+  rating?: string;
+  halls: HallWithTimeslots[];
+}
+
+export interface HallWithTimeslots {
+  id: string;
+  name: string;
+  seat_count?: number;
+  timeslots: TimeslotData[];
+}
+
+export interface TimeslotData {
+  showtime_id: string;
+  name: string;
+  price: number;
+  date: string;
+  seats: ShowtimeSeatData[];
+}
+
+export interface ShowtimeSeatData {
+  id: string;
+  seat_id: string;
+  showtime_id: string;
+  status: string;
+  price: number;
 }

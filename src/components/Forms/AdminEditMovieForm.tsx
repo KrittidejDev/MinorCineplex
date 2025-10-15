@@ -6,7 +6,7 @@ import AdminInputTextField from "../Inputs/AdminInputTextField";
 import AdminInputTextArea from "../Inputs/AdminInputTextArea";
 import AdminDropdownInput from "../Inputs/AdminDropdownInput ";
 import { APIMovie } from "@/types/movie";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 
 interface EditMovieFormProps {
   movie: APIMovie | null;
@@ -121,9 +121,14 @@ function AdminEditMovieForm({
       } else {
         alert("แก้ไขภาพยนตร์ไม่สำเร็จ");
       }
-    } catch (err: any) {
-      console.error("Error updating movie:", err.response?.data || err);
-      alert("มีข้อผิดพลาดในการบันทึกข้อมูล");
+    } catch (err: unknown) {
+      if (err instanceof AxiosError) {
+        console.error("Error updating movie:", err.response?.data || err);
+        alert("มีข้อผิดพลาดในการบันทึกข้อมูล");
+      } else {
+        console.error("Error updating movie:", err);
+        alert("มีข้อผิดพลาดในการบันทึกข้อมูล");
+      }
     } finally {
       setLoading(false);
     }

@@ -10,6 +10,7 @@ import { useParams, useRouter } from "next/navigation";
 import axios from "axios";
 import { APIMovie } from "@/types/movie";
 import ShowTime from "@/components/Widgets/ShowTime";
+import { CinemaByProvince } from "@/components/Widgets/CinemaLocation";
 
 type TimeSlot = {
   id: string;
@@ -45,7 +46,7 @@ function MovieInfo() {
   const [movie, setMovie] = useState<APIMovie | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<string>("1");
-  const [dataCinemas, setDataCinemas] = useState<any[]>([]);
+  const [dataCinemas, setDataCinemas] = useState<CinemaByProvince[]>([]);
   const [movieloading, setMovieLoading] = useState(true);
   const {
     location,

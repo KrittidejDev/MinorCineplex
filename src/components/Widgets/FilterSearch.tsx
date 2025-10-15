@@ -20,7 +20,7 @@ interface FilterSearchProps {
   className?: string;
 }
 
-interface FilterData {
+export interface FilterData {
   title?: string;
   genre?: string;
   language?: string;

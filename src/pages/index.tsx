@@ -10,6 +10,7 @@ import dynamic from "next/dynamic";
 import FilterSearch from "@/components/Widgets/FilterSearch";
 import axios from "axios";
 import { APIMovie } from "@/types/movie";
+import { useSearchParams } from "next/navigation";
 
 const CurtainIntro = dynamic(
   () => import("@/components/Widgets/CurtainIntro"),
@@ -34,6 +35,37 @@ export default function Home() {
   } = useLocationPermission();
 
   const { cinemas, loading, refetch } = useNearbyCinemas(location, filter);
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const filters = {
+      title: searchParams.get("title") || "",
+      genre: searchParams.get("genre") || "",
+      language: searchParams.get("language") || "",
+      releaseDate: searchParams.get("releaseDate") || "",
+    };
+
+    const hasFilters = Object.values(filters).some((v) => v !== "");
+    if (hasFilters) {
+      handleSearchMovies(filters);
+    } else {
+      fetchAllMovies();
+    }
+  }, [searchParams]);
+
+  const fetchAllMovies = async () => {
+    try {
+      setLoadingMovies(true);
+      setSearchActive(false);
+      const res = await axios.get<{ movie: APIMovie[] }>("/api/movies");
+      setMovies(res.data.movie);
+    } catch (err) {
+      console.error("Failed to fetch movies", err);
+      setMovies([]);
+    } finally {
+      setLoadingMovies(false);
+    }
+  };
 
   useEffect(() => {
     const lastShown = localStorage.getItem("curtain_last_shown");
@@ -48,22 +80,6 @@ export default function Home() {
   useEffect(() => {
     setDataCinemas(cinemas);
   }, [cinemas]);
-
-  useEffect(() => {
-    const fetchMovies = async () => {
-      try {
-        setLoadingMovies(true);
-        const res = await axios.get<{ movie: APIMovie[] }>("/api/movies");
-        setMovies(res.data.movie);
-      } catch (err) {
-        console.error("Failed to fetch movies", err);
-        setMovies([]);
-      } finally {
-        setLoadingMovies(false);
-      }
-    };
-    fetchMovies();
-  }, []);
 
   const handleSearchMovies = async (filters: {
     title?: string;
@@ -118,11 +134,11 @@ export default function Home() {
         <div className="w-dvw flex justify-center relative mx-auto -mt-10">
           <FilterSearch onSearch={handleSearchMovies} />
         </div>
-          <NowShowingComingSoon
-            movies={movies}
-            loading={loadingMovies}
-            showAll={movies.length > 0 && searchActive}
-          />
+        <NowShowingComingSoon
+          movies={movies}
+          loading={loadingMovies}
+          showAll={movies.length > 0 && searchActive}
+        />
         <Coupon />
         <CinemaLocation data={dataCinemas} filterCinema={handleFilter} />
       </div>

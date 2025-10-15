@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { SearchLight, ExpandDownLight, DateTodayLight } from "../Icons/Icons";
 import { Input } from "../ui/input";
+import { useRouter } from "next/router";
 import {
   Select,
   SelectContent,
@@ -52,6 +53,7 @@ const FilterSearch: React.FC<FilterSearchProps> = ({
   onSearch,
   className = "",
 }) => {
+  const router = useRouter();
   const [filters, setFilters] = useState<FilterData>({
     title: "",
     language: "",
@@ -65,47 +67,47 @@ const FilterSearch: React.FC<FilterSearchProps> = ({
   const [genreOptions, setGenreOptions] = useState<FilterOption[]>([]);
 
   useEffect(() => {
-  const fetchMovies = async () => {
-    try {
-      const response = await fetch("/api/movies");
-      const data = await response.json();
+    const fetchMovies = async () => {
+      try {
+        const response = await fetch("/api/movies");
+        const data = await response.json();
 
-      if (data.movie) {
-        const movieList = data.movie as Movie[];
-        setMovies(movieList);
+        if (data.movie) {
+          const movieList = data.movie as Movie[];
+          setMovies(movieList);
 
-        const movieOpts = movieList.map((m) => ({
-          value: m.id,
-          label: m.title,
-        }));
-        setMovieOptions(movieOpts);
+          const movieOpts = movieList.map((m) => ({
+            value: m.id,
+            label: m.title,
+          }));
+          setMovieOptions(movieOpts);
 
-        const allGenres: string[] = movieList.flatMap((m) => {
-          if (!m.genre) return [];
-          if (Array.isArray(m.genre)) return m.genre;
+          const allGenres: string[] = movieList.flatMap((m) => {
+            if (!m.genre) return [];
+            if (Array.isArray(m.genre)) return m.genre;
 
-          return m.genre
-            .split(/[,|]/)
-            .map((g) => g.trim())
-            .filter((g) => g !== "");
-        });
+            return m.genre
+              .split(/[,|]/)
+              .map((g) => g.trim())
+              .filter((g) => g !== "");
+          });
 
-        const uniqueGenres = Array.from(new Set(allGenres));
+          const uniqueGenres = Array.from(new Set(allGenres));
 
-        const genreOpts = uniqueGenres.map((g) => ({
-          value: g.toLowerCase(),
-          label: g,
-        }));
+          const genreOpts = uniqueGenres.map((g) => ({
+            value: g.toLowerCase(),
+            label: g,
+          }));
 
-        setGenreOptions(genreOpts);
+          setGenreOptions(genreOpts);
+        }
+      } catch (error) {
+        console.error("Error fetching movies:", error);
       }
-    } catch (error) {
-      console.error("Error fetching movies:", error);
-    }
-  };
+    };
 
-  fetchMovies();
-}, []);
+    fetchMovies();
+  }, []);
 
   const handleInputChange = (field: keyof FilterData, value: string) => {
     setFilters((prev) => ({
@@ -116,6 +118,12 @@ const FilterSearch: React.FC<FilterSearchProps> = ({
 
   const handleSearch = () => {
     if (onSearch) onSearch(filters);
+    const params = new URLSearchParams();
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value) params.append(key, value);
+
+      router.push(`/?${params.toString()}`);
+    });
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {

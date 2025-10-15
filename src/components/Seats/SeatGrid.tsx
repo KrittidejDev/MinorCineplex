@@ -1,6 +1,6 @@
 // SeatGrid.tsx
 import SeatRow from "./SeatRow";
-import { SeatRowData, SelectedSeat, Seats } from "@/types/cinema";
+import { SeatRowData, SelectedSeat, Seat } from "@/types/cinema";
 
 interface SeatGridProps {
   groupedSeats: Record<
@@ -30,8 +30,11 @@ const SeatGrid: React.FC<SeatGridProps> = ({
   const seatsData: SeatRowData[] = Object.keys(groupedSeats).map((row) => ({
     row,
     seats: groupedSeats[row].map(
-      (s): Seats => ({
+      (s): Seat => ({
         id: s.id,
+        row: s.row,
+        number: s.seat_number || s.id, // ใส่ number ให้ตรงกับ type
+        seat_number: s.seat_number || s.id,
         status: s.status,
         price: s.price,
         seat: {

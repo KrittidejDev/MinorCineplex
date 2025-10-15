@@ -3,7 +3,7 @@ import SeatAvailable from "@/components/Icons/SeatAvailable";
 import SeatBooked from "@/components/Icons/SeatBooked";
 import SeatReserved from "@/components/Icons/SeatReserved";
 import SeatSelected from "@/components/Icons/SeatSelected";
-import { SeatRowData, SelectedSeat, Seats } from "@/types/cinema";
+import { SeatRowData, SelectedSeat, Seat } from "@/types/cinema";
 import { ablyClient } from "@/lib/ably";
 import type { InboundMessage } from "ably";
 
@@ -18,7 +18,7 @@ interface SeatRowProps {
 interface AblySeatMessage {
   data: {
     seatId: string;
-    status: Seats["status"];
+    status: string;
     locked_by?: string | null;
   };
 }
@@ -32,7 +32,7 @@ const SeatRow: React.FC<SeatRowProps> = ({
 }) => {
   // state localSeats เพิ่ม locked_by ใน state เท่านั้น
   const [localSeats, setLocalSeats] = useState<
-    (Seats & { locked_by?: string | null })[]
+    (Seat & { locked_by?: string | null })[]
   >([]);
 
   useEffect(() => {
@@ -72,12 +72,12 @@ const SeatRow: React.FC<SeatRowProps> = ({
 
   // แปลง Seat เป็น SelectedSeat
   const toSelectedSeat = (
-    seat: Seats & { locked_by?: string | null }
-  ): SelectedSeat | null => {
+    seat: Seat & { locked_by?: string | null }
+  ): SelectedSeat => {
     return {
       id: seat.id,
-      seat_number: seat.seat.seat_number,
-      row: seat.seat.row,
+      seat_number: seat.seat_number,
+      row: seat.row,
       status: seat.status,
       price: seat.price || 0,
       locked_by: userId,
@@ -85,7 +85,7 @@ const SeatRow: React.FC<SeatRowProps> = ({
     };
   };
 
-  const toggleSeat = (seat: Seats & { locked_by?: string | null }) => {
+  const toggleSeat = (seat: Seat & { locked_by?: string | null }) => {
     if (!showtimeId) return;
 
     const isLockedByOther =
@@ -93,7 +93,6 @@ const SeatRow: React.FC<SeatRowProps> = ({
     if (isLockedByOther || seat.status === "BOOKED") return;
 
     const selectedSeat = toSelectedSeat(seat);
-    if (!selectedSeat) return;
 
     const isSelected = selectedSeats.some((s) => s.id === seat.id);
 
@@ -104,15 +103,16 @@ const SeatRow: React.FC<SeatRowProps> = ({
     }
   };
 
-  // แปลง localSeats เป็นแถว row สำหรับ render
-  const rows = Array.from(
-    localSeats.reduce((map, seat) => {
-      const rowLabel = seat.seat.row;
-      if (!map.has(rowLabel)) map.set(rowLabel, []);
-      map.get(rowLabel)!.push(seat);
-      return map;
-    }, new Map<string, (Seats & { locked_by?: string | null })[]>())
-  );
+  // แปลง localSeats เป็นแถว row สำหรับ render แบบ type-safe
+  const seatMap = new Map<string, (Seat & { locked_by?: string | null })[]>();
+  localSeats.forEach((seat) => {
+    const rowLabel = seat.row;
+    if (!seatMap.has(rowLabel)) seatMap.set(rowLabel, []);
+    seatMap.get(rowLabel)!.push(seat);
+  });
+
+  const rows: [string, (Seat & { locked_by?: string | null })[]][] =
+    Array.from(seatMap);
 
   return (
     <div className="flex flex-col gap-4">

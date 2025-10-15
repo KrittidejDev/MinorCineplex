@@ -32,7 +32,7 @@ export const Stepper: React.FC<StepperProps> = ({ step }) => {
         status={getStatus(2)}
       />
       <div
-        className={`absolute top-[22px] right-[50px] w-[132px] mx-auto h-[1px] z-1 ${step === "3" ? "bg-blue-bbee" : "bg-gray-g63f"}`}
+        className={`absolute top-[22px] right-[50px] w-[132px] mx-auto h-[1px] ${step === "3" ? "bg-blue-bbee" : "bg-gray-g63f"}`}
       />
       <Step
         label="Payment"

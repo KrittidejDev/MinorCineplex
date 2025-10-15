@@ -6,7 +6,7 @@ const NavAndFooter = ({ children }: { children: ReactNode }) => {
   return (
     <div className="bg-blue-b flex flex-col min-h-[100dvh]">
       <NavBarWidget />
-      <div className="flex-1">{children}</div>
+      <div className="flex flex-col items-center ">{children}</div>
       <FooterWidget />
     </div>
   );

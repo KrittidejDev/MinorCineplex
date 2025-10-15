@@ -26,7 +26,7 @@ export default function NowShowingComingSoon({
 
   let moviesToDisplay;
 
-  if (showAll) {
+   if (showAll) {
     moviesToDisplay = movies;
   } else {
     const today = new Date();

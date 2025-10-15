@@ -13,6 +13,7 @@ const LogoMFooter: React.FC<LogoMFooterProps> = ({
 }) => {
   return (
     <svg
+      color={color}
       width={width}
       height={height}
       viewBox="0 0 188 85"

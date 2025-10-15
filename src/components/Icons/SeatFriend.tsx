@@ -13,6 +13,7 @@ const SeatFriend: React.FC<SeatFriendProps> = ({
 }) => {
   return (
     <svg
+      color={color}
       width={width}
       height={height}
       viewBox="0 0 40 40"

@@ -30,7 +30,7 @@ const timeSlotActions = [
       <AdminTimeSlotsWidget />
     </div>
 
-    <div>
+    {/* <div>
                 <TableCard
                     columns={timeSlotColumns}
                     actions={timeSlotColumns}
@@ -46,7 +46,7 @@ const timeSlotActions = [
             <AdminCreateNewTimeSlotForm
                 isShowModal={isShowCreateModal}
                 onClose={() => setIsShowCreateModal(false)}
-            />
+            /> */}
   </div>
 );
 }

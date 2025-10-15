@@ -192,8 +192,6 @@ const PaymentForm = forwardRef<PaymentFormHandles, PaymentFormProps>(
       onValidChange?.(paymentMethod === "credit_card" ? cardValid : qrValid);
     }, [errors, watchedValues, paymentMethod, qrPaid, onValidChange]);
 
-    console.log("countdown", countdown);
-
     return (
       <div className="flex flex-1 flex-col gap-4">
         <div className="flex gap-4">

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { ReactElement, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
 import NavAndFooter from "@/components/MainLayout/NavAndFooter";
@@ -12,6 +12,9 @@ import { CouponCardData, CouponsData } from "@/types/coupon";
 import PaymentForm, {
   PaymentFormHandles,
 } from "@/components/Forms/PaymentForm";
+import ModalEmpty from "@/components/Modals/ModalEmpty";
+import { Button } from "@/components/ui/button";
+import { toast } from "react-toastify";
 
 const BookingSeat = () => {
   const router = useRouter();
@@ -30,12 +33,16 @@ const BookingSeat = () => {
   const [paymentMethod, setPaymentMethod] = useState<
     "credit_card" | "qr_code" | undefined
   >(undefined);
+  const [_isShowModal, _setIsShowmodal] = useState<boolean>(false);
+  const [_renderModal, _setRenderModal] = useState<ReactElement | null>();
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const paymentRef = useRef<PaymentFormHandles>(null);
   const countdownActive = useRef(false);
   const channelRef = useRef<any>(null);
   const isUnlocking = useRef(false);
   const isNavigating = useRef(false);
+  const countdownInterval = useRef<NodeJS.Timeout | null>(null);
 
   const totalPrice = selectedSeats.reduce(
     (sum, seat) => sum + (seat.price || 0),
@@ -43,8 +50,45 @@ const BookingSeat = () => {
   );
 
   const handlePaymentClick = () => {
+    _setRenderModal(
+      <div className="p-6 bg-gray-g63f flex flex-col items-center rounded-2xl gap-y-4">
+        <div className="text-f-20 text-white">Confirm booking</div>
+        <div className="text-fr-14 text-gray-gedd">
+          Confirm booking and payment?
+        </div>
+        <div className="flex gap-x-4">
+          <Button
+            className="btn-base white-outline-normal"
+            onClick={_handleCloseModal}
+            disabled={isProcessing}
+          >
+            Cancel
+          </Button>
+          <Button
+            className="btn-base blue-normal"
+            onClick={handleConfirmPayment}
+            disabled={isProcessing}
+          >
+            {isProcessing ? "Processing..." : "Confirm"}
+          </Button>
+        </div>
+      </div>
+    );
+    _setIsShowmodal(true);
+  };
+
+  const handleConfirmPayment = (): void => {
     paymentRef.current?.submitPayment();
   };
+
+  const _handleCloseModal = () => {
+    if (!isProcessing) {
+      _setRenderModal(null);
+      _setIsShowmodal(false);
+    }
+  };
+
+  console.log("Booking Info", bookingInfo);
 
   useEffect(() => {
     if (!id || Array.isArray(id)) return;
@@ -128,8 +172,9 @@ const BookingSeat = () => {
     const interval = setInterval(() => {
       setCountdown((prev) => {
         if (prev <= 1) {
+          clearInterval(countdownInterval.current!);
+          countdownInterval.current = null;
           releaseSeats(true);
-          countdownActive.current = false;
           return 0;
         }
         return prev - 1;
@@ -235,7 +280,7 @@ const BookingSeat = () => {
       setStep("3");
     } catch (err) {
       console.error(err);
-      alert("ล็อกเก้าอี้ไม่สำเร็จ");
+      toast.error("ล็อกเก้าอี้ไม่สำเร็จ");
     }
   };
 
@@ -307,7 +352,9 @@ const BookingSeat = () => {
       setStep("2");
 
       if (showAlert) {
-        alert("เวลาชำระเงินหมด เก้าอี้ถูกปลดล็อกแล้ว");
+        toast.error(
+          "เวลาชำระเงินหมด เก้าอี้ถูกปลดล็อกแล้ว กรุณาเลือกเก้าอี้ใหม่"
+        );
       }
     } catch (err) {
       console.error(err);
@@ -341,31 +388,44 @@ const BookingSeat = () => {
   };
 
   const handlePayment = async () => {
-    if (!selectedSeats.length) return;
+    console.log("confirm payment", selectedSeats);
 
-    const invalidSeats = selectedSeats.filter(
-      (seat) =>
-        bookingInfo?.seats
-          .flatMap((row) => row.seats)
-          .find((s) => s.id === seat.id)?.locked_by !== session?.user?.id
-    );
-
-    if (invalidSeats.length > 0) {
-      alert("Some seats are locked by another user or expired.");
+    if (!bookingInfo?.id || selectedSeats.length === 0) {
+      toast.error("Invalid booking information");
       return;
     }
 
+    setIsProcessing(true);
+
     try {
+      // Set flag to prevent unlock on navigation
       isUnlocking.current = true;
 
-      await userService.POST_PAYMENT({
-        userId: session?.user?.id || "guest",
-        seats: selectedSeats.map((s) => s.id),
-        couponId: selectedCoupon?.id,
+      // Call API to confirm payment and create booking
+      const response = await fetch("/api/payments/confirm", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          showtimeId: bookingInfo.id,
+          seats: selectedSeats.map((seat) => seat.id),
+          totalPrice: totalPrice,
+          couponId: selectedCoupon?.id || null,
+        }),
       });
 
-      alert("ชำระเงินสำเร็จ!");
+      const data = await response.json();
 
+      if (!response.ok) {
+        isUnlocking.current = false;
+        setIsProcessing(false);
+        throw new Error(data.error || "Payment failed");
+      }
+
+      toast.success("ชำระเงินสำเร็จ!");
+
+      // Update local state to show seats as booked
       setBookingInfo((prev) => {
         if (!prev) return prev;
         return {
@@ -387,12 +447,19 @@ const BookingSeat = () => {
         };
       });
 
+      // Clear selected seats to prevent unlock on navigation
       setSelectedSeats([]);
-      isUnlocking.current = false;
+
+      // Keep isUnlocking flag true to prevent cleanup
+      // isUnlocking.current will remain true
+
+      // Redirect to success page
+      router.push(`/booking/${data.bookingId}/success`);
     } catch (err) {
       console.error(err);
-      alert("ชำระเงินไม่สำเร็จ");
+      toast.error(err instanceof Error ? err.message : "ชำระเงินไม่สำเร็จ");
       isUnlocking.current = false;
+      setIsProcessing(false);
     }
   };
 
@@ -412,6 +479,7 @@ const BookingSeat = () => {
             data={bookingInfo}
             selectedSeats={selectedSeats}
             onSelectSeat={setSelectedSeats}
+            userId={session?.user?.id}
           />
         )}
         {step === "3" && (
@@ -446,6 +514,9 @@ const BookingSeat = () => {
           />
         </div>
       </div>
+      <ModalEmpty isShowModal={_isShowModal} onClose={_handleCloseModal}>
+        {_renderModal}
+      </ModalEmpty>
     </NavAndFooter>
   );
 };

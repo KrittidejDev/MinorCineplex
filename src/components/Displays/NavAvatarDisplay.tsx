@@ -87,14 +87,14 @@ export const AvatarDisplay: React.FC<AvatarDisplayProps> = ({
               Dashboard
             </button>
           )}
-          <Link href="/profiles/bookingHistory">
+          <Link href="/profiles/booking-history">
             <button className={btnProfileStyle}>
               {/* <UserBooking history /> */}
               Booking history
             </button>
           </Link>
 
-          <Link href="/profiles/myCoupon">
+          <Link href="/profiles/my-coupon">
             <button className={btnProfileStyle}>My Coupons</button>
           </Link>
 
@@ -105,7 +105,7 @@ export const AvatarDisplay: React.FC<AvatarDisplayProps> = ({
             </button>
           </Link>
 
-          <Link href="/profiles/resetPassword">
+          <Link href="/profiles/reset-password">
             <button className={btnProfileStyle}>
               {/* <ResetPasswordIcon /> */}
               Reset password

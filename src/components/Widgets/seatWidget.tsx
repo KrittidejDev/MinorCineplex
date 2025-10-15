@@ -9,12 +9,14 @@ interface SeatWidgetProps {
   data?: BookingInfo | null;
   selectedSeats: SelectedSeat[];
   onSelectSeat: (seatIds: SelectedSeat[]) => void;
+  userId?: string;
 }
 
 const SeatWidget: React.FC<SeatWidgetProps> = ({
   data,
   selectedSeats,
   onSelectSeat,
+  userId,
 }) => {
   const [seatsData, setSeatsData] = useState<SeatRowData[]>(data?.seats || []);
 
@@ -25,19 +27,19 @@ const SeatWidget: React.FC<SeatWidgetProps> = ({
   useEffect(() => {
     if (!data?.id) return;
     const channel = ablyClient.channels.get(`showtime:${data.id}`);
+
     const handleUpdate = (msg: any) => {
-      const { seatId, status, lockedBy, lockExpire } = msg.data;
+      const { seatId, status, locked_by } = msg.data;
       setSeatsData((prev) =>
         prev.map((row) => ({
           ...row,
           seats: row.seats.map((seat) =>
-            seat.id === seatId
-              ? { ...seat, status, lockedBy, lockExpire }
-              : seat
+            seat.id === seatId ? { ...seat, status, locked_by } : seat
           ),
         }))
       );
     };
+
     channel.subscribe("update", handleUpdate);
     return () => channel.unsubscribe("update", handleUpdate);
   }, [data?.id]);
@@ -49,6 +51,8 @@ const SeatWidget: React.FC<SeatWidgetProps> = ({
         seatsData={seatsData}
         selectedSeats={selectedSeats}
         onSelectSeat={onSelectSeat}
+        showtimeId={data?.id}
+        userId={userId}
       />
       <SeatInfo price={data?.price} />
     </div>

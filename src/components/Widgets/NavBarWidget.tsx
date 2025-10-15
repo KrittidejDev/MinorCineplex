@@ -38,7 +38,7 @@ const NavBarWidget = () => {
   }, [status, fetchMe]);
 
   return (
-    <div className="w-full py-4 px-20 flex items-center justify-between bg-black/20 z-10">
+    <div className="w-full py-4 px-4 md:px-20 flex items-center justify-between bg-black/20 z-10">
       <Link href={"/"} className="w-7 h-8 sm:w-[42px] sm:h-[48px]">
         <LogoM className="w-full h-full" />
       </Link>

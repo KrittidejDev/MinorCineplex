@@ -11,7 +11,6 @@ import { Button } from '../ui/button'
 import { BillInfo, SelectedSeat } from '@/types/cinema'
 import { CouponCardData } from '@/types/coupon'
 
-
 interface Props extends BillInfo {
   countdown?: string
   coupons?: CouponCardData[]
@@ -38,7 +37,6 @@ export default function SummaryBoxCard({
 }: Props) {
   const { i18n } = useTranslation()
   const lang = i18n.language
-  
 
   const [isCouponModalOpen, setCouponModalOpen] = useState(false)
 
@@ -208,7 +206,7 @@ export default function SummaryBoxCard({
                   return (
                     <div
                       key={c.id}
-                      className={`flex items-stretch border rounded-lg overflow-hidden transition-all duration-300 cursor-pointer
+                      className={`flex items-center border rounded-lg overflow-hidden transition-all duration-300 cursor-pointer
                   ${
                     isSelected
                       ? 'border-gray-g3b0 bg-gray-g3b0'
@@ -217,7 +215,7 @@ export default function SummaryBoxCard({
                       onClick={() => onSelectCoupon && onSelectCoupon(c)}
                     >
                       {/* รูป */}
-                      <div className="w-24 h-auto flex-shrink-0 relative">
+                      <div className="w-24 sm:w-[174px] h-full flex-shrink-0 relative">
                         <Image
                           src={c.image || '/default-coupon.png'}
                           alt={c.title_en}
@@ -228,15 +226,17 @@ export default function SummaryBoxCard({
 
                       {/* ข้อมูลคูปอง */}
                       <div
-                        className={`flex flex-col justify-between p-3 flex-1 transition-colors ${
-                          isSelected ? 'bg-gray-g3b0' : 'bg-gray-gc1b'
-                        }`}
+                        className={`flex flex-col justify-between p-3 flex-1 transition-colors h-full
+                        ${isSelected ? 'bg-gray-g3b0' : 'bg-gray-gc1b'}
+                        sm:p-4 sm:text-sm
+                        md:p-6 md:text-base
+                        `}
                       >
                         <div>
-                          <h5 className="text-white-wfff font-semibold text-sm line-clamp-2">
+                          <h5 className="text-white-wfff font-semibold text-sm sm:text-base line-clamp-2">
                             {lang === 'en' ? c.title_en : c.title_th}
                           </h5>
-                          <p className="text-gray-gedd text-xs mt-1 line-clamp-1">
+                          <p className="text-gray-gedd text-xs mt-1 sm:text-sm line-clamp-1">
                             {lang === 'en'
                               ? `Valid until ${c.end_date ? new Date(c.end_date).toLocaleDateString() : 'N/A'}`
                               : `ใช้ได้ถึง ${c.end_date ? new Date(c.end_date).toLocaleDateString() : 'N/A'}`}
@@ -244,12 +244,12 @@ export default function SummaryBoxCard({
                         </div>
 
                         <div className="flex justify-between items-center mt-2">
-                          <span className="text-blue-bbee font-bold text-sm">
+                          <span className="text-blue-bbee font-bold text-sm sm:text-base">
                             -{c.discount_value}%{' '}
                             {lang === 'en' ? 'OFF' : 'ส่วนลด'}
                           </span>
                           <button
-                            className="text-blue-bbee text-xs hover:underline flex items-center gap-1"
+                            className="text-blue-bbee text-xs sm:text-sm hover:underline flex items-center gap-1"
                             onClick={(e) => {
                               e.stopPropagation()
                               window.open(`/coupons/${c.id}`, '_blank')

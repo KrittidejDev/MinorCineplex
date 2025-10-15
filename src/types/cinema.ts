@@ -115,7 +115,7 @@ export interface SelectedSeat {
   row: string;
   status: string;
   price: number;
-  lockExpire?: number | null;
+  locked_by?: string | null;
   showtimeId?: string;
 }
 

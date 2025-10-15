@@ -141,6 +141,7 @@ model showtime {
   movie        movie           @relation(fields: [movie_id], references: [id])
   time_slot    time_slot       @relation(fields: [time_slot_id], references: [id])
   seats        showtime_seat[]
+
   @@unique([movie_id, hall_id, time_slot_id, date])
 }
 
@@ -160,9 +161,9 @@ model showtime_seat {
 
 model user {
   id         String       @id @default(uuid())
-  username   String       @unique
-  email      String       @unique
-  phone      String       @unique
+  username   String       @unique(map: "user_username_idx")
+  email      String       @unique(map: "user_email_idx")
+  phone      String       @unique(map: "user_phone_idx")
   password   String
   role       user_role    @default(CUSTOMER)
   created_at DateTime     @default(now())
@@ -229,6 +230,7 @@ model UserCoupon {
   user         user      @relation(fields: [user_id], references: [id])
 
   @@unique([user_id, coupon_id])
+  @@unique([user_id, coupon_id], map: "usercoupon_user_id_coupon_id_idx")
 }
 
 model outbox {
@@ -248,6 +250,7 @@ model seats {
   locked_by   String?
   lock_expiry DateTime? @db.Timestamp(6)
 }
+
 
 enum booking_status {
   PAID

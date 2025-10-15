@@ -183,8 +183,8 @@ export default function SummaryBoxCard({
 
       {/* Coupon Modal */}
       {isCouponModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50">
-          <div className="relative bg-gray-g63f rounded-xl p-6 w-[95%] max-w-3xl shadow-2xl">
+        <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50 p-4">
+          <div className="relative bg-gray-g63f rounded-xl p-6 w-full max-w-[1200px] shadow-2xl">
             {/* ปุ่ม X */}
             <button
               onClick={() => setCouponModalOpen(false)}
@@ -199,19 +199,19 @@ export default function SummaryBoxCard({
             </h4>
 
             {/* รายการคูปอง */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[460px] overflow-y-auto pr-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[calc(100vh-250px)] overflow-y-auto pr-2">
               {coupons.length > 0 ? (
                 coupons.map((c) => {
                   const isSelected = selectedCoupon?.id === c.id
                   return (
                     <div
                       key={c.id}
-                      className={`flex items-center border rounded-lg overflow-hidden transition-all duration-300 cursor-pointer
-                  ${
-                    isSelected
-                      ? 'border-gray-g3b0 bg-gray-g3b0'
-                      : 'border-gray-gc1b bg-gray-g63f/30 hover:bg-gray-g63f/60'
-                  }`}
+                      className={`flex items-stretch border rounded-lg overflow-hidden transition-all duration-300 cursor-pointer h-24 sm:h-[174px]
+            ${
+              isSelected
+                ? 'border-gray-g3b0 bg-gray-g3b0'
+                : 'border-gray-gc1b bg-gray-g63f/30 hover:bg-gray-g63f/60'
+            }`}
                       onClick={() => onSelectCoupon && onSelectCoupon(c)}
                     >
                       {/* รูป */}
@@ -226,17 +226,16 @@ export default function SummaryBoxCard({
 
                       {/* ข้อมูลคูปอง */}
                       <div
-                        className={`flex flex-col justify-between p-3 flex-1 transition-colors h-full
-                        ${isSelected ? 'bg-gray-g3b0' : 'bg-gray-gc1b'}
-                        sm:p-4 sm:text-sm
-                        md:p-6 md:text-base
-                        `}
+                        className={`flex flex-col justify-between p-2 flex-1 transition-colors 
+                  ${isSelected ? 'bg-gray-g3b0' : 'bg-gray-gc1b'}
+                  sm:p-4
+                  `}
                       >
                         <div>
-                          <h5 className="text-white-wfff font-semibold text-sm sm:text-base line-clamp-2">
+                          <h5 className="text-white-wfff font-semibold text-xs sm:text-base line-clamp-2">
                             {lang === 'en' ? c.title_en : c.title_th}
                           </h5>
-                          <p className="text-gray-gedd text-xs mt-1 sm:text-sm line-clamp-1">
+                          <p className="text-gray-gedd text-[10px] mt-1 sm:text-sm line-clamp-1">
                             {lang === 'en'
                               ? `Valid until ${c.end_date ? new Date(c.end_date).toLocaleDateString() : 'N/A'}`
                               : `ใช้ได้ถึง ${c.end_date ? new Date(c.end_date).toLocaleDateString() : 'N/A'}`}
@@ -244,12 +243,12 @@ export default function SummaryBoxCard({
                         </div>
 
                         <div className="flex justify-between items-center mt-2">
-                          <span className="text-blue-bbee font-bold text-sm sm:text-base">
+                          <span className="text-blue-bbee font-bold text-xs sm:text-base">
                             -{c.discount_value}%{' '}
                             {lang === 'en' ? 'OFF' : 'ส่วนลด'}
                           </span>
                           <button
-                            className="text-blue-bbee text-xs sm:text-sm hover:underline flex items-center gap-1"
+                            className="text-blue-bbee text-[10px] sm:text-sm hover:underline flex items-center gap-1"
                             onClick={(e) => {
                               e.stopPropagation()
                               window.open(`/coupons/${c.id}`, '_blank')

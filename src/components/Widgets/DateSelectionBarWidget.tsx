@@ -39,7 +39,7 @@ function DateSelectionBarWidget({ onSelectDate }: DateSelectionBarWidgetProps) {
 
   return (
     <div className="w-full h-fit bg-gray-gc1b flex justify-center items-center px-4 py-4">
-      <div className="max-w-[1200px] relative w-full flex items-center gap-2 hide-scrollbar">
+      <div className="relative w-full flex items-center gap-2 hide-scrollbar">
         {showPrev && (
           <button
             onClick={() => scrollBy(-200)}

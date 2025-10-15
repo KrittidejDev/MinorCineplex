@@ -124,7 +124,7 @@ const handleSelectShowtime = (showtimeId: string) => {
       <NavAndFooterWithBanner>
         <div>
 
-          <div className="flex justify-center relative lg:-mt-10">
+          <div className="w-dvw flex justify-center relative mx-auto -mt-10">
             <FilterSearch />
           </div>
 

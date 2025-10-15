@@ -15,7 +15,7 @@ export const Stepper: React.FC<StepperProps> = ({ step }) => {
   };
 
   return (
-    <div className="flex justify-center items-center gap-6 relative w-fit">
+    <div className="flex justify-center items-center md:gap-6 relative w-fit">
       <div className="absolute top-[22px] left-[50px] w-[132px] mx-auto h-[1px] bg-blue-bbee z-1" />
       <Step
         label="Select showtime"

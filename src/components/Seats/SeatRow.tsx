@@ -115,14 +115,14 @@ const SeatRow: React.FC<SeatRowProps> = ({
     Array.from(seatMap);
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-[14px] md:gap-4">
       {rows.map(([rowLabel, seatsInRow]) => (
         <div key={rowLabel} className="flex items-center">
-          <span className="text-white font-bold w-6 text-center">
+          <span className="text-white font-bold w-6 text-center text-[7.47px] md:text-fm-16">
             {rowLabel}
           </span>
 
-          <div className="flex gap-4">
+          <div className="flex gap-3 md:gap-4">
             {seatsInRow.map((seat, index) => {
               const isSelected = selectedSeats.some((s) => s.id === seat.id);
               const isLockedByOther =
@@ -142,7 +142,7 @@ const SeatRow: React.FC<SeatRowProps> = ({
                     <SeatIcon
                       className={`w-[clamp(20px,5vw,40px)] h-[clamp(20px,5vw,40px)]
                         ${isLockedByOther ? "cursor-not-allowed opacity-50" : "cursor-pointer"}
-                        ${index === 5 ? "ml-20" : ""}`}
+                        ${index === 5 ? "ml-4 md:ml-20" : ""}`}
                       onClick={() => !isLockedByOther && toggleSeat(seat)}
                     />
                   </div>
@@ -151,7 +151,7 @@ const SeatRow: React.FC<SeatRowProps> = ({
             })}
           </div>
 
-          <span className="text-white font-bold w-6 text-center">
+          <span className="text-white font-bold w-6 text-center text-[7.47px] md:text-fm-16">
             {rowLabel}
           </span>
         </div>

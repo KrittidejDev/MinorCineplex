@@ -101,7 +101,7 @@ model director {
 model language {
   id         String           @id @default(uuid())
   name       String           @unique
-  code       String           @unique // เช่น 'th', 'en', 'zh'
+  code       String           @unique
   created_at DateTime         @default(now())
   updated_at DateTime         @updatedAt
   name_en    String?

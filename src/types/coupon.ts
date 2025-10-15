@@ -4,6 +4,8 @@ export interface CouponCardData {
   code: string;
   title_en: string;
   title_th: string;
+  discription_en?: string; 
+  discription_th?: string; 
   discount_value: number;
   expiresAt?: string | null;
   image?: string | null;

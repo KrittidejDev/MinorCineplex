@@ -400,10 +400,11 @@ const BookingSeat = () => {
 
   return (
     <NavAndFooter>
-      <div className="w-full flex flex-col justify-center items-center p-4 bg-gray-gc1b">
+      <div className="w-dvw flex flex-col justify-center items-center p-4 bg-gray-gc1b">
         <Stepper step={step} />
       </div>
-      <div className="flex justify-center p-20 gap-x-24 flex-wrap">
+
+      <div className="w-full flex justify-center py-10 md:p-20 md:gap-x-24 flex-wrap">
         {step === "1" && (
           <SeatWidget
             data={bookingInfo}
@@ -447,6 +448,7 @@ const BookingSeat = () => {
           />
         </div>
       </div>
+
       <ModalEmpty isShowModal={_isShowModal} onClose={_handleCloseModal}>
         {_renderModal}
       </ModalEmpty>

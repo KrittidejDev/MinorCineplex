@@ -183,8 +183,8 @@ export default function SummaryBoxCard({
 
       {/* Coupon Modal */}
       {isCouponModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50">
-          <div className="relative bg-gray-g63f rounded-xl p-6 w-[95%] max-w-3xl shadow-2xl">
+        <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50 p-4">
+          <div className="relative bg-gray-g63f rounded-xl p-6 w-full max-w-[1200px] shadow-2xl">
             {/* ปุ่ม X */}
             <button
               onClick={() => setCouponModalOpen(false)}
@@ -199,7 +199,7 @@ export default function SummaryBoxCard({
             </h4>
 
             {/* รายการคูปอง */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[460px] overflow-y-auto pr-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[calc(100vh-250px)] overflow-y-auto pr-2">
               {coupons.length > 0 ? (
                 coupons.map((c) => {
                   const isSelected = selectedCoupon?.id === c.id;
@@ -249,7 +249,7 @@ export default function SummaryBoxCard({
                             {lang === "en" ? "OFF" : "ส่วนลด"}
                           </span>
                           <button
-                            className="text-blue-bbee text-xs sm:text-sm hover:underline flex items-center gap-1"
+                            className="text-blue-bbee text-[10px] sm:text-sm hover:underline flex items-center gap-1"
                             onClick={(e) => {
                               e.stopPropagation();
                               window.open(`/coupons/${c.id}`, "_blank");

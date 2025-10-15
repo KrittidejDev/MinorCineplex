@@ -8,5 +8,3 @@ const LocationIconBlue = () => {
   );
 };
 export default LocationIconBlue;
-
-

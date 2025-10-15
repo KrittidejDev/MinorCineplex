@@ -15,6 +15,7 @@ const SeatBooked: React.FC<SeatBookedProps> = ({
 }) => {
   return (
     <svg
+      color={color}
       className={className}
       width={width}
       height={height}

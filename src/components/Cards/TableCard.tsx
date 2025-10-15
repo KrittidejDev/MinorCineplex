@@ -1,8 +1,6 @@
-import AddRoundLight from "../Icons/AddRoundLight"
 import Eye from "../Icons/Eye"
 import EditLight from "../Icons/EditLight"
 import Trash from "../Icons/Trash"
-import { Button } from "../ui/button"
 import { ReactNode } from "react"
 
 interface TableColumn{
@@ -24,15 +22,9 @@ interface TableCardProps {
     data: Record<string, unknown>[]
     headerPaddingClass?: string
     actionsHeaderPaddingClass?: string
-    total?: number
-    pageSize?: number
 }
 
-export default function TableCard({ columns, actions, data, headerPaddingClass = "px-5 py-7.5", actionsHeaderPaddingClass = "px-5 py-7.5", total, pageSize }: TableCardProps) {
-    const from = data.length > 0 ? 1 : 0;
-    const to = data.length;
-    const totalResults = total ?? data.length;
-
+export default function TableCard({ columns, actions, data, headerPaddingClass = "px-5 py-7.5", actionsHeaderPaddingClass = "px-5 py-7.5"}: TableCardProps) {
     return(
         <div className="flax flex-col gap-10 px-[70px]">
             <div className="border border-blue-bbee rounded-t-[4px] overflow-hidden">

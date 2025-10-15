@@ -13,6 +13,7 @@ const StarLight: React.FC<StarLightProps> = ({
 }) => {
   return (
     <svg
+      color={color}
       width={width}
       height={height}
       viewBox="0 0 24 24"

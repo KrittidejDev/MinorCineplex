@@ -34,7 +34,6 @@ import DateSelection from "@/components/ui/dateselection";
 
 import ShowTime from "@/components/Widgets/ShowTime";
 import ShowtimeMovie from "@/components/Widgets/ShowtimeMovie";
-import CinemaDetallWidget from "@/components/Widgets/CinemaDetallWidget";
 import ReviewCard from "@/components/Cards/ReviewCard";
 
 import {
@@ -680,7 +679,7 @@ const AllWidget = () => {
       </div>
 
       {/* Showtime Selection Preview */}
-      <div className="mt-20 w-full max-w-4xl px-4">
+      {/* <div className="mt-20 w-full max-w-4xl px-4">
         <h2 className="text-2xl font-bold mb-6 text-center">
           Showtime Selection
         </h2>
@@ -713,7 +712,7 @@ const AllWidget = () => {
             }}
           />
         </div>
-      </div>
+      </div> */}
       {/* ShowtimeMovie Preview */}
       <div className="mt-20 w-full max-w-6xl px-4">
         <h2 className="text-2xl font-bold mb-6 text-center">Showtime Movie</h2>
@@ -761,7 +760,7 @@ const AllWidget = () => {
       <div className="mt-20">
         <h2 className="text-2xl font-bold mb-6 text-center">Summary Box</h2>
         <div className="flex gap-5">
-          <SummaryBoxCard />
+          <SummaryBoxCard canPay={true} />
         </div>
       </div>
 

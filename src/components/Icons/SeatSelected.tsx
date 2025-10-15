@@ -17,6 +17,7 @@ const SeatSelected: React.FC<SeatSelectedProps> = ({
 }) => {
   return (
     <svg
+      color={color}
       className={className}
       width={width}
       height={height}

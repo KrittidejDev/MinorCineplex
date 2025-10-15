@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import MoviesDetailWidget from "@/components/Widgets/MovieDetailWidget";
 import DateSelectionBarWidget from "@/components/Widgets/DateSelectionBarWidget";
 import InputSearch from "@/components/Inputs/InputSearch";
@@ -60,7 +60,6 @@ type MovieShowtimeDetail = {
 
 const MoviesDetail: React.FC = () => {
   const params = useParams();
-  const router = useRouter();
   const movie_id = params?.id as string | undefined;
 
   const [movieData, setMovieData] = useState<MovieShowtimeDetail | null>(null);

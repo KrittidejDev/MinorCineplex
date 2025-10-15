@@ -13,6 +13,7 @@ const CopyLight: React.FC<CopyLightProps> = ({
 }) => {
   return (
     <svg
+      color={color}
       width={width}
       height={height}
       viewBox="0 0 24 24"

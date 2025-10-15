@@ -13,7 +13,6 @@ interface Movies {
 }
 
 function MovieCardInfo({
-  id,
   title,
   poster_url,
   release_date,

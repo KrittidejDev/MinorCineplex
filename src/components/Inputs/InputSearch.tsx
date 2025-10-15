@@ -28,7 +28,6 @@ const InputSearch = ({
   require,
   errors,
   disabled,
-  text,
   type = "text",
   ...props
 }: InputSearchProps) => {

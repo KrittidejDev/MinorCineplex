@@ -56,7 +56,7 @@ const CouponDetail = () => {
   // useEffect ดึงข้อมูลเมื่อ router.query.id พร้อม
   useEffect(() => {
     if (!id) return
-    const couponId = Array.isArray(id) ? id[0] : id // ใช้ string UUID ตรง ๆ
+    const couponId = Array.isArray(id) ? id[0] : id
     fetchCoupon(couponId).catch(console.error)
   }, [id, fetchCoupon])
 
@@ -73,7 +73,7 @@ const CouponDetail = () => {
 
     try {
       setLoading(true)
-      await userService.COLLECT_COUPON(coupon.id) // UUID string
+      await userService.COLLECT_COUPON(coupon.id)
       setCollected(true)
     } catch (err) {
       console.error(err)
@@ -118,36 +118,40 @@ const CouponDetail = () => {
 
   return (
     <NavAndFooter>
-      <div className="flex flex-col lg:flex-row items-center lg:items-start w-full min-h-screen px-4 sm:px-8 lg:px-130 py-6 lg:py-30 gap-5">
+      <div className="flex flex-col lg:flex-row items-start justify-center w-full min-h-screen px-4 sm:px-6 lg:px-8 py-6 lg:py-12 gap-6 lg:gap-8 lg:max-w-[1200px]">
         {/* Left Side - Image */}
-        <div className="flex justify-center lg:justify-start w-full lg:w-[387px]">
+        <div className="w-full lg:w-[387px] xl:w-[387px] lg:flex-shrink-0">
           <HoverCard3D>
             <Image
               src={coupon.image || '/default-image.svg'}
               alt={coupon.title_en}
               width={387}
               height={387}
-              className="rounded-t-[8px] w-full h-auto"
+              className="rounded-lg w-full h-auto"
               priority
             />
           </HoverCard3D>
         </div>
 
         {/* Right Side - Content */}
-        <div className="w-full lg:w-2/3 bg-[#070C1B] rounded-[6px] p-6 sm:p-10 lg:p-13 flex flex-col gap-6">
+        <div className="w-full  bg-[#070C1B] rounded-lg p-5 sm:p-6 lg:p-10 xl:p-12 flex flex-col gap-5 lg:gap-6 lg:items-start">
+          {/* Title & Date */}
           <div>
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-3">
+            <h1 className="text-xl sm:text-2xl lg:text-2xl xl:text-3xl font-bold text-white mb-3 lg:mb-4 leading-tight">
               {coupon.title_en}
             </h1>
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-5">
-              <p className="text-[#8B93B0] text-sm sm:text-base">Valid until</p>
-              <p className="text-white text-sm sm:text-base">{formattedEndDate}</p>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4">
+              <p className="text-[#8B93B0] text-sm lg:text-base">Valid until</p>
+              <p className="text-white text-sm lg:text-base">{formattedEndDate}</p>
             </div>
           </div>
 
+          {/* Button */}
           <Button
-            className={`btn-base lg:w-[237px] lg:h-[48px] ${
-              collected ? 'blue-disabled' : 'blue-normal'
+            className={`w-full sm:w-auto sm:min-w-[200px] h-12 text-base font-semibold rounded-lg transition-all ${
+              collected 
+                ? 'bg-gray-600 text-gray-300 cursor-not-allowed' 
+                : 'bg-blue-600 hover:bg-blue-700 text-white'
             }`}
             onClick={!collected && !loading ? handleGetCoupon : undefined}
             disabled={collected || loading}
@@ -155,19 +159,29 @@ const CouponDetail = () => {
             {loading ? 'Collecting...' : collected ? 'Coupon Saved' : 'Get coupon'}
           </Button>
 
-          <div className="text-white text-sm sm:text-base space-y-2">
-            <p>{coupon.discription_en || '—'}</p>
-            <p>📅 Sales Period: Jan 4 – Mar 31, 2025</p>
-            <p>🎟 Redemption Period: Jan 4 – Jun 30, 2025</p>
+          {/* Description */}
+          <div className="text-white text-sm sm:text-base space-y-3">
+            <p className="leading-relaxed">{coupon.discription_en || '—'}</p>
+            <div className="space-y-2">
+              <p className="flex items-start gap-2">
+                <span className="flex-shrink-0">📅</span>
+                <span>Sales Period: Jan 4 – Mar 31, 2025</span>
+              </p>
+              <p className="flex items-start gap-2">
+                <span className="flex-shrink-0">🎟</span>
+                <span>Redemption Period: Jan 4 – Jun 30, 2025</span>
+              </p>
+            </div>
           </div>
 
+          {/* Terms & Conditions */}
           <div className="text-white text-sm sm:text-base">
-            <p className="mt-3 font-semibold">Terms & Conditions</p>
-            <ul className="list-disc list-inside space-y-1">
-              <li>Valid for a minimum purchase of 400 THB.</li>
-              <li>Applicable for Deluxe and Premium seats.</li>
-              <li>Cannot be combined with other offers or exchanged for cash.</li>
-              <li>Non-refundable and non-transferable.</li>
+            <p className="font-semibold mb-3 text-base sm:text-lg">Terms & Conditions</p>
+            <ul className="space-y-2 pl-5">
+              <li className="list-disc leading-relaxed">Valid for a minimum purchase of 400 THB.</li>
+              <li className="list-disc leading-relaxed">Applicable for Deluxe and Premium seats.</li>
+              <li className="list-disc leading-relaxed">Cannot be combined with other offers or exchanged for cash.</li>
+              <li className="list-disc leading-relaxed">Non-refundable and non-transferable.</li>
             </ul>
           </div>
         </div>

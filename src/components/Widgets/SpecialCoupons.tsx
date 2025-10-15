@@ -89,7 +89,6 @@ const SpecialCoupons = () => {
                     id: coupon.id,
                     title_en: coupon.title_en,
                     code: coupon.code,
-                    discount: coupon.discount_value,
                     expiresAt: coupon.end_date,
                     image: coupon.image,
                   }}

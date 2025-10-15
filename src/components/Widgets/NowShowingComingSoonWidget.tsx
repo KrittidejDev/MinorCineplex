@@ -91,7 +91,7 @@ export default function NowShowingComingSoon({
             <div
               key={movie.id}
               className="cursor-pointer"
-              onClick={() => router.push(`/movies/${movie.id}`)}
+              onClick={() => router.push(`/movies/${movie.id}/movie-info`)}
             >
               <MovieCard
                 id={movie.id}

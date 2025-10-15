@@ -30,7 +30,13 @@ export default function NowShowingComingSoon({
     moviesToDisplay = movies;
   } else {
     const nowShowingMovies = movies
-      .filter((m) => m.release_date && new Date(m.release_date) <= today)
+      .filter(
+        (m) =>
+          m.release_date &&
+          new Date(m.release_date) <= today &&
+          m.showtimes &&
+          m.showtimes.some((st) => new Date(st) >= today)
+      )
       .slice(0, 4);
 
     const comingSoonMovies = movies
@@ -67,13 +73,12 @@ export default function NowShowingComingSoon({
               >
                 Coming soon
               </button>
-              
             </div>
             <Link href="/movies" passHref>
-                <Button className="btn-base-transparent-underline-normal text-sm hover:underline cursor-pointer">
-                  View all
-                </Button>
-              </Link>
+              <Button className="btn-base-transparent-underline-normal text-sm hover:underline cursor-pointer">
+                View all
+              </Button>
+            </Link>
           </div>
         )}
 

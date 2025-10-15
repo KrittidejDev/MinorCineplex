@@ -13,7 +13,6 @@ import { APIMovie } from "@/types/movie";
 import { useSearchParams } from "next/navigation";
 import { CinemaByProvince } from "@/components/Widgets/CinemaLocation";
 
-
 const CurtainIntro = dynamic(
   () => import("@/components/Widgets/CurtainIntro"),
   { ssr: false }
@@ -68,6 +67,8 @@ export default function Home() {
       setLoadingMovies(false);
     }
   };
+
+  console.log("movie data", movies);
 
   useEffect(() => {
     const lastShown = localStorage.getItem("curtain_last_shown");

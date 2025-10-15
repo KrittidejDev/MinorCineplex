@@ -1,3 +1,4 @@
+import { showtime } from "./../generated/prisma/index.d";
 export interface Actor {
   id: string;
   name: string;
@@ -24,6 +25,7 @@ export interface APIMovie {
   release_date?: Date | null;
   actors?: Actor[];
   directors?: Director[];
+  showtimes?: string[];
 }
 
 export interface MovieCardData {

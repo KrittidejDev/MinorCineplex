@@ -1,6 +1,6 @@
 import * as movieRepo from "../repositories/movieRepository";
 import { prisma } from "@/lib/prisma";
-import { APIMovie, Actor, Director } from "@/types/movie";
+import { APIMovie } from "@/types/movie";
 
 export interface MovieFilters {
   id?: string;
@@ -20,11 +20,11 @@ export const getMovies = async (
   }
 
   if (filters?.genre) {
-    where.genre = { equals: filters.genre, mode: "insensitive" }; // ถ้า DB เป็น string
+    where.genre = { equals: filters.genre, mode: "insensitive" };
   }
 
   if (filters?.language) {
-    where.language = { equals: filters.language, mode: "insensitive" }; // ถ้า DB เป็น string
+    where.language = { equals: filters.language, mode: "insensitive" };
   }
 
   if (filters?.releaseDate) {
@@ -46,6 +46,7 @@ export const getMovies = async (
     include: {
       actors: { include: { actor: true } },
       directors: { include: { director: true } },
+      showtimes: { include: { time_slot: true } }, // <-- ดึง time_slot
     },
     orderBy: { release_date: "desc" },
   });
@@ -60,6 +61,12 @@ export const getMovies = async (
     genre: movie.genre || null,
     rating: movie.rating || null,
     release_date: movie.release_date || null,
+    showtimes:
+      movie.showtimes?.map((s) => {
+        // รวม date + time_slot.start_time เป็น Date
+        const dateStr = s.date.toISOString().split("T")[0]; // yyyy-mm-dd
+        return new Date(`${dateStr}T${s.time_slot.start_time}`);
+      }) || [],
     actors:
       movie.actors?.map((ma) => ({
         id: ma.actor.id,

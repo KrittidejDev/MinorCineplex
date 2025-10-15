@@ -14,6 +14,7 @@ import InputTextFeild from "../Inputs/InputTextFeild";
 interface PaymentFormProps {
   amount: number;
   metadata?: Record<string, any>;
+  countdown: string;
   onSuccess?: () => void;
   onValidChange?: (valid: boolean) => void;
   onPaymentMethodChange?: (method: "credit_card" | "qr_code") => void;
@@ -71,7 +72,14 @@ const formatExpiration = (value: string) => {
 
 const PaymentForm = forwardRef<PaymentFormHandles, PaymentFormProps>(
   (
-    { amount, metadata, onSuccess, onValidChange, onPaymentMethodChange },
+    {
+      amount,
+      metadata,
+      onSuccess,
+      onValidChange,
+      onPaymentMethodChange,
+      countdown,
+    },
     ref
   ) => {
     const {
@@ -274,6 +282,13 @@ const PaymentForm = forwardRef<PaymentFormHandles, PaymentFormProps>(
                 )}
               />
             </div>
+            <div>
+              data for test
+              <div> card number : 4242-4242-4242-4242</div>
+              <div> Card owner : John </div>
+              <div> Expiry date : 10/27 </div>
+              <div> cvc : 123 </div>
+            </div>
           </div>
         )}
 
@@ -292,14 +307,25 @@ const PaymentForm = forwardRef<PaymentFormHandles, PaymentFormProps>(
               </button>
             ) : (
               <div className="space-y-3">
-                <div className="rounded bg-gray-g63f p-10 flex justify-center">
+                <div className="rounded bg-gray-g63f p-10 flex flex-col items-center justify-center ">
+                  <div className="text-gray-g3b0 text-fr-14 mb-5">
+                    Time remaining :{" "}
+                    <span className="text-blue-bbee">{countdown}</span>
+                  </div>
                   <img
                     src={qrCodeUrl}
                     alt="QR Code"
-                    className="h-80 object-contain"
+                    className="h-80 object-contain mb-5"
                   />
+                  <div className="text-gray-gedd text-fr-16">
+                    Minor Cineplex Public limited company
+                  </div>
+                  <div className="text-f-20 text-white">THB {amount}</div>
                 </div>
-                <p className="text-center text-white">{paymentStatus}</p>
+
+                <p className="text-center text-gray-g3b0 text-fr-14">
+                  {paymentStatus}
+                </p>
               </div>
             )}
           </div>

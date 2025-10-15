@@ -1,11 +1,19 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import LocationIconBlue from "@/components/Icons/LocationIconBlue";
 import ExpandDownLight from "@/components/Icons/ExpandDownLight";
+import {
+  RUNDER_TIMESLOT,
+  ShowtimeButtonProps,
+} from "@/lib/utils/showtimeUtils";
 
 export type Showtime = {
-  id: string;
-  label: string;
-  disabled?: boolean;
+  id: string; // showtime_id
+  label: string; // start_time
+  start_time: string;
+  end_time: string;
+  availableSeats?: number;
+  totalSeats?: number;
 };
 
 export type ShowtimeGroup = {
@@ -21,6 +29,7 @@ interface ShowtimeByHall {
   cinemaName?: string;
   badges?: string[];
   collapsed?: boolean;
+  autoNavigate?: boolean;
 }
 
 export const ShowTime: React.FC<ShowtimeByHall> = ({
@@ -30,34 +39,41 @@ export const ShowTime: React.FC<ShowtimeByHall> = ({
   cinemaName,
   badges: propBadges,
   collapsed: propCollapsed,
+  autoNavigate = true,
 }) => {
-  const [selectedByHall, setSelectedByHall] = useState<
-    Record<string, string | null>
-  >({});
+  const router = useRouter();
+  const [now, setNow] = useState<Date>(new Date());
   const [allCollapsedInternal, setAllCollapsedInternal] =
     useState<boolean>(false);
   const listRef = useRef<HTMLDivElement>(null);
-  const groups = propGroups;
 
-  const onChange =
-    propOnChange ||
-    ((time, context) => {
-      console.log("Selected time:", time, "Hall:", context.hallId);
-    });
+  const groups = propGroups;
+  const onChange = propOnChange;
   const badges = propBadges;
   const collapsed = propCollapsed;
 
   const allCollapsed =
     typeof collapsed === "boolean" ? collapsed : allCollapsedInternal;
 
+  // Update current time every second
+  useEffect(() => {
+    const interval = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(interval);
+  }, []);
+
   const handleSelect = (hallId: string, time: Showtime) => {
-    if (time.disabled) return;
-    setSelectedByHall((prev) => {
-      const current = prev[hallId] ?? null;
-      const nextId = current === time.id ? null : time.id;
-      return { ...prev, [hallId]: nextId };
-    });
+    // ตรวจสอบว่า disabled หรือไม่
+    const { disabled } = RUNDER_TIMESLOT(time.start_time, time.end_time, now);
+
+    if (disabled) return;
+
+    // Callback
     onChange?.(time, { hallId });
+
+    // Auto navigate to booking page
+    if (autoNavigate && time.id) {
+      router.push(`/booking/${time.id}`);
+    }
   };
 
   // When expanding all, scroll the list into view
@@ -68,6 +84,9 @@ export const ShowTime: React.FC<ShowtimeByHall> = ({
     }
     prevAllRef.current = allCollapsed;
   }, [allCollapsed]);
+
+  const base =
+    "w-full max-w-32 flex flex-col justify-center items-center py-3 px-[41px] rounded-lg transition-colors";
 
   return (
     <div className={`flex flex-col ${className ?? ""}`}>
@@ -119,34 +138,43 @@ export const ShowTime: React.FC<ShowtimeByHall> = ({
             key={group.hallId}
             className="flex flex-col px-1 md:px-4 py-6 gap-4"
           >
-            <div className="text-white/90 font-semibold">{group.hallLabel}</div>
+            <div className="text-white/90 font-semibold text-f-24">
+              {group.hallLabel}
+            </div>
             <div
               id={`hall-${group.hallId}`}
               className="flex flex-wrap gap-3 sm:gap-4 md:gap-6 w-full justify-start"
             >
-              {group.times.map((time) => {
-                const isSelected =
-                  (selectedByHall[group.hallId] ?? null) === time.id;
-                const base =
-                  "min-w-[96px] sm:min-w-[112px] rounded-[8px] px-4 sm:px-5 md:px-6 py-2 sm:py-2.5 flex items-center justify-center text-fm-16 font-semibold transition-colors";
-                const stateClass = time.disabled
-                  ? "bg-gray-gc1b text-gray-gf7e/70 border border-gray-g63f cursor-not-allowed"
-                  : isSelected
-                    ? "bg-blue-bbee text-white"
-                    : "bg-blue-b9a8 text-white hover:brightness-110";
-                return (
-                  <button
-                    key={`${group.hallId}-${time.id}`}
-                    type="button"
-                    className={`${base} ${stateClass}`}
-                    onClick={() => handleSelect(group.hallId, time)}
-                    aria-pressed={isSelected}
-                    disabled={time.disabled}
-                  >
-                    {time.label}
-                  </button>
-                );
-              })}
+              {group.times
+                .slice()
+                .sort(
+                  (a, b) =>
+                    new Date(`1970-01-01T${a.start_time}`).getTime() -
+                    new Date(`1970-01-01T${b.start_time}`).getTime()
+                )
+                .map((time) => {
+                  // ใช้ RUNDER_TIMESLOT เหมือน ShowtimeSelection
+                  const {
+                    disabled,
+                    className: timeClassName,
+                  }: ShowtimeButtonProps = RUNDER_TIMESLOT(
+                    time.start_time,
+                    time.end_time,
+                    now
+                  );
+
+                  return (
+                    <button
+                      key={`${group.hallId}-${time.id}`}
+                      type="button"
+                      disabled={disabled}
+                      className={`${base} ${timeClassName}`}
+                      onClick={() => handleSelect(group.hallId, time)}
+                    >
+                      {time.start_time}
+                    </button>
+                  );
+                })}
             </div>
           </div>
         ))}

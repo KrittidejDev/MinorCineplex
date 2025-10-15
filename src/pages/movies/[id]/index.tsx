@@ -11,32 +11,51 @@ import CitySelection from "@/components/ui/cityselection";
 import axios from "axios";
 import { APIMovie } from "@/types/movie";
 
-
-type TimeSlot = {
+// Types สำหรับ API ใหม่
+type TimeSlotShowtime = {
+  showtime_id: string;
   id: string;
+  name: string;
   start_time: string;
   end_time: string;
-};
-
-type Showtime = {
-  id: string;
-  date: string;
   price: number;
-  movie: APIMovie;
-  time_slot: TimeSlot;
+  date: string;
+  available_seats: number;
+  total_seats: number;
 };
 
-type Hall = {
+type HallShowtime = {
   id: string;
   name: string;
-  showtimes: Showtime[];
+  seat_count?: number;
+  timeslots: TimeSlotShowtime[];
 };
 
-type Cinema = {
+type CinemaShowtime = {
   id: string;
   name: string;
-  name_en: string;
-  halls: Hall[];
+  name_en?: string;
+  address: string;
+  phone?: string;
+  province?: string;
+  province_en?: string;
+  halls: HallShowtime[];
+};
+
+type MovieShowtimeDetail = {
+  id: string;
+  title: string;
+  title_en?: string;
+  duration_min: number;
+  description?: string;
+  description_en?: string;
+  poster_url?: string;
+  trailer_url?: string;
+  genre?: string;
+  genre_en?: string;
+  rating?: string;
+  release_date?: string;
+  cinemas: CinemaShowtime[];
 };
 
 const MoviesDetail: React.FC = () => {
@@ -44,62 +63,60 @@ const MoviesDetail: React.FC = () => {
   const router = useRouter();
   const movie_id = params?.id as string | undefined;
 
-  const [data, setData] = useState<Cinema[]>([]);
+  const [movieData, setMovieData] = useState<MovieShowtimeDetail | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [loading, setLoading] = useState<boolean>(false);
 
-  const getCinemasByMovies = async (movieId: string, date?: Date) => {
+  // ดึงข้อมูลหนังและรอบฉายจาก API ใหม่
+  const getMovieShowtimes = async (movieId: string, date?: Date) => {
     if (!movieId) return;
+
+    setLoading(true);
     try {
-      const dateQuery = date ? `&date=${date.toISOString().split("T")[0]}` : "";
-      const res = await axios.get(
-        `/api/cinemas?movie_id=${movieId}${dateQuery}`
-      );
-      setData(res.data.cinema);
+      const dateQuery = date ? `?date=${date.toISOString().split("T")[0]}` : "";
+      const res = await axios.get(`/api/movie-showtime/${movieId}${dateQuery}`);
+      setMovieData(res.data.data);
     } catch (error: unknown) {
-      if (error instanceof Error) console.log("Error:", error.message);
+      if (error instanceof Error) {
+        console.log("Error:", error.message);
+      }
+      setMovieData(null);
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
-    if (movie_id) getCinemasByMovies(movie_id, selectedDate);
+    if (movie_id) {
+      getMovieShowtimes(movie_id, selectedDate);
+    }
   }, [movie_id, selectedDate]);
 
-  const handleSelectShowtime = (showtimeId: string) => {
-    router.push(
-      `/movies/${movie_id}/movie-booking/seat?showtime=${showtimeId}`
-    );
-  };
-
-  const [movie, setMovie] = useState<APIMovie | null>(null);
-
-  const getMovieById = async (movieId: string) => {
-    try {
-      const res = await axios.get(`/api/movies/${movieId}`);
-      setMovie(res.data.movie);
-    } catch (error) {
-      console.error("Error fetching movie:", error);
-    }
-  };
-
-  useEffect(() => {
-    if (movie_id) getMovieById(movie_id);
-  }, [movie_id]);
+  // แปลงข้อมูลสำหรับ MoviesDetailWidget
+  const movieForWidget: APIMovie | undefined = movieData
+    ? {
+        id: movieData.id,
+        title: movieData.title,
+        duration_min: movieData.duration_min,
+        description: movieData.description || null,
+        poster_url: movieData.poster_url || null,
+        trailer_url: movieData.trailer_url || null,
+        genre: movieData.genre || null,
+        rating: movieData.rating || null,
+        release_date: movieData.release_date
+          ? new Date(movieData.release_date)
+          : null,
+        actors: [],
+        directors: [],
+        created_at: new Date(),
+        updated_at: new Date(),
+      }
+    : undefined;
 
   return (
     <NavAndFooter>
       <div className="mb-12">
-        <MoviesDetailWidget
-          movie={
-            movie
-              ? {
-                  ...movie,
-                  release_date: movie.release_date
-                    ? new Date(movie.release_date)
-                    : null,
-                }
-              : undefined
-          }
-        />
+        <MoviesDetailWidget movie={movieForWidget} />
       </div>
 
       <DateSelectionBarWidget onSelectDate={(date) => setSelectedDate(date)} />
@@ -114,45 +131,51 @@ const MoviesDetail: React.FC = () => {
       </div>
 
       <div className="w-full max-w-[1200px] mx-auto my-10">
-        <div className="flex flex-col items-center gap-6 md:px-4">
-          {data.map((cinema: Cinema) => {
-            const groups = cinema.halls
-              .map((hall) => ({
-                hallId: hall.id,
-                hallLabel: hall.name,
-                times: hall.showtimes
-                  .filter(
-                    (showtime) =>
-                      new Date(showtime.date).toDateString() ===
-                      selectedDate.toDateString()
-                  )
-                  .map((showtime) => ({
-                    id: showtime.id,
-                    label: showtime.time_slot.start_time,
-                    disabled: false,
+        {loading ? (
+          <div className="flex justify-center items-center py-20">
+            <p className="text-gray-400">Loading...</p>
+          </div>
+        ) : movieData && movieData.cinemas.length > 0 ? (
+          <div className="flex flex-col items-center gap-6 md:px-4">
+            {movieData.cinemas.map((cinema) => {
+              const groups = cinema.halls
+                .map((hall) => ({
+                  hallId: hall.id,
+                  hallLabel: hall.name,
+                  times: hall.timeslots.map((timeslot) => ({
+                    id: timeslot.showtime_id,
+                    label: timeslot.start_time,
+                    start_time: timeslot.start_time,
+                    end_time: timeslot.end_time,
+                    availableSeats: timeslot.available_seats,
+                    totalSeats: timeslot.total_seats,
+                    disabled: timeslot.available_seats === 0,
                   })),
-              }))
-              .filter((group) => group.times.length > 0);
+                }))
+                .filter((group) => group.times.length > 0);
 
-            if (groups.length === 0) return null;
+              if (groups.length === 0) return null;
 
-            return (
-              <div
-                key={cinema.id}
-                className="w-full md:rounded-md bg-gray-gc1b p-4"
-              >
-                <ShowTime
-                  groups={groups}
-                  cinemaName={cinema.name_en}
-                  badges={["Hearing assistance", "Wheelchair access"]}
-                  onChange={(time) => {
-                    if (time) handleSelectShowtime(time.id);
-                  }}
-                />
-              </div>
-            );
-          })}
-        </div>
+              return (
+                <div
+                  key={cinema.id}
+                  className="w-full md:rounded-md bg-gray-gc1b p-4"
+                >
+                  <ShowTime
+                    groups={groups}
+                    cinemaName={cinema.name_en || cinema.name}
+                    badges={["Hearing assistance", "Wheelchair access"]}
+                    autoNavigate={true}
+                  />
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="flex justify-center items-center py-20">
+            <p className="text-gray-400">ไม่พบรอบฉายในวันที่เลือก</p>
+          </div>
+        )}
       </div>
     </NavAndFooter>
   );

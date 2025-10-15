@@ -13,7 +13,7 @@ export interface MovieFilters {
 export const getMovies = async (
   filters?: MovieFilters
 ): Promise<APIMovie[]> => {
-  const where: any = {};
+  const where: Record<string, unknown> = {};
 
   if (filters?.title) {
     where.title = { contains: filters.title, mode: "insensitive" };

@@ -21,7 +21,7 @@ interface TableAction{
 interface TableCardProps {
     columns: TableColumn[]
     actions: TableAction[]
-    data: any[]
+    data: Record<string, unknown>[]
     headerPaddingClass?: string
     actionsHeaderPaddingClass?: string
     total?: number
@@ -61,7 +61,7 @@ export default function TableCard({ columns, actions, data, headerPaddingClass =
                                         key={colIndex}
                                         className={`text-blue-bbee px-[30px] py-7.5 text-fr-14 text-${column.align || 'left'}`}
                                     >
-                                        {row[column.key]}
+                                        {row[column.key] as ReactNode}
                                     </td>
                                 ))}
                                 {actions && (

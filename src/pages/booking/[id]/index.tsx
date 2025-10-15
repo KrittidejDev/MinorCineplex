@@ -97,16 +97,17 @@ const BookingSeat = () => {
       try {
         const res = await userService.GET_SHOWTIME_BOOKING(id);
         setBookingInfo(res as BookingInfo);
-
-        const couponRes =
-          (await userService.GET_COUPON_COLLECTED()) as CouponsData;
-        setCoupons(couponRes?.coupons || []);
+        if (session?.user?.id) {
+          const couponRes =
+            (await userService.GET_COUPON_COLLECTED()) as CouponsData;
+          setCoupons(couponRes?.coupons || []);
+        }
       } catch (err) {
         console.error(err);
       }
     };
     fetchBookingInfo();
-  }, [id]);
+  }, [id, session?.user?.id]);
 
   // Ably real-time update
   useEffect(() => {

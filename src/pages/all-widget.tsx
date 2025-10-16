@@ -723,6 +723,8 @@ const AllWidget = () => {
               title: "Example Movie",
               genre: "Action, Adventure",
               poster_url: "/images/poster.png",
+              duration_min: 120,
+              description: "Example Description",
             }}
           />
         </div>

@@ -43,7 +43,6 @@ export const ShowTime: React.FC<ShowtimeByHall> = ({
   autoNavigate = true,
 }) => {
   const router = useRouter();
-  const [now, setNow] = useState<Date>(new Date());
   const [allCollapsedInternal, setAllCollapsedInternal] =
     useState<boolean>(false);
   const listRef = useRef<HTMLDivElement>(null);
@@ -55,12 +54,6 @@ export const ShowTime: React.FC<ShowtimeByHall> = ({
 
   const allCollapsed =
     typeof collapsed === "boolean" ? collapsed : allCollapsedInternal;
-
-  // Update current time every second
-  useEffect(() => {
-    const interval = setInterval(() => setNow(new Date()), 1000);
-    return () => clearInterval(interval);
-  }, []);
 
   const handleSelect = (hallId: string, time: Showtime) => {
     const { disabled } = RUNDER_TIMESLOT(time.start_time, time.end_time, new Date(time.date));

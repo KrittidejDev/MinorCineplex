@@ -87,7 +87,7 @@ const MoviesDetail: React.FC = () => {
 
   useEffect(() => {
     if (movie_id) {
-      getMovieShowtimes(movie_id, selectedDate);
+      getMovieShowtimes(movie_id as string, selectedDate);
     }
   }, [movie_id, selectedDate]);
 
@@ -112,6 +112,8 @@ const MoviesDetail: React.FC = () => {
       }
     : undefined;
 
+    console.log("movieData", movieData);
+    console.log("selectedDate", selectedDate);
   return (
     <NavAndFooter>
       <div className="mb-12">
@@ -145,6 +147,7 @@ const MoviesDetail: React.FC = () => {
                     id: timeslot.showtime_id,
                     label: timeslot.start_time,
                     start_time: timeslot.start_time,
+                    date: timeslot.date,
                     end_time: timeslot.end_time,
                     availableSeats: timeslot.available_seats,
                     totalSeats: timeslot.total_seats,

@@ -68,8 +68,6 @@ const MovieInfoWidget: React.FC<MoviesDetailWidgetProps> = ({ movie }) => {
       setLoading(false);
     }
   }, []);
-  console.log("selectedDate", movie?.id);
-  console.log("movieData", movieData);
   useEffect(() => {
     if (movie?.id) {
       getMovieShowtimes(movie.id, selectedDate);

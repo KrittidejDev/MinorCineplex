@@ -23,6 +23,7 @@ function AdminCreateNewMovieForm({
     duration: "",
     rating: "",
     trailer: "",
+    poster_url: "",
   });
 
   const [, setPosterFile] = useState<File | null>(null); // removed unused variable warning
@@ -36,13 +37,29 @@ function AdminCreateNewMovieForm({
     trailer: "",
   });
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setPosterFile(file);
-      setPosterPreview(URL.createObjectURL(file));
-    }
-  };
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const file = e.target.files?.[0];
+  if (!file) return;
+
+  setPosterFile(file);
+  setPosterPreview(URL.createObjectURL(file)); // preview ชั่วคราว
+
+  try {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const res = await axios.post("/api/file-upload", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+
+    // ใช้ Next.js Image ได้
+    setFormData((prev) => ({ ...prev, poster_url: res.data.url }));
+    setPosterPreview(res.data.url); // update preview ด้วย URL จริง
+  } catch (err) {
+    console.error("Upload poster failed:", err);
+    alert("ไม่สามารถอัปโหลด poster ได้");
+  }
+};
 
   const handleInputChange =
     (field: string) =>
@@ -83,11 +100,12 @@ function AdminCreateNewMovieForm({
     }
 
     const payload = {
-      ...formData,
-      duration: Number(formData.duration),
-      genre: selectedGenre,
-      rating: ratingValue,
-    };
+  ...formData,
+  duration: Number(formData.duration),
+  genre: selectedGenre,
+  rating: ratingValue,
+  poster_url: formData.poster_url,
+};
 
     try {
       const res = await axios.post("/api/movies", payload);

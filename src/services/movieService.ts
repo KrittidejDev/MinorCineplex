@@ -164,6 +164,7 @@ export async function createMovie(data: {
   genre: string;
   rating: string;
   trailer?: string;
+  poster_url?: string;
 }) {
   return prisma.movie.create({
     data: {
@@ -173,6 +174,7 @@ export async function createMovie(data: {
       genre: data.genre,
       rating: data.rating,
       trailer_url: data.trailer,
+      poster_url: data.poster_url,
     },
   });
 }

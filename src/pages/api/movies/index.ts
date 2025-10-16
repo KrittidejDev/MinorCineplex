@@ -34,7 +34,7 @@ export default async function handler(
 
   if (req.method === "POST") {
     try {
-      const { title, description, duration, genre, rating, trailer } = req.body;
+      const { title, description, duration, genre, rating, trailer, poster_url } = req.body;
 
       if (!title || !description || !duration || !genre || !rating) {
         return res.status(400).json({ error: "Missing required fields" });
@@ -45,8 +45,9 @@ export default async function handler(
         description,
         duration: Number(duration),
         genre,
-        rating,
+        rating: String(rating),
         trailer,
+        poster_url,
       });
 
       return res

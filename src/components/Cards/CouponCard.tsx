@@ -10,7 +10,7 @@ import { userService } from '@/config/userServices'
 interface CouponCardProps {
   coupon: Pick<
     CouponCardData,
-    'id' | 'code' |  'end_date' | 'title_en' | 'image'
+    'id' | 'code' | 'end_date' | 'title_en' | 'image'
   >
 }
 
@@ -86,33 +86,31 @@ const CouponCard = ({ coupon }: CouponCardProps) => {
 
   return (
     <HoverCard3D>
-      <div className="w-full min-h-[337px] max-lg:h-[477px] flex flex-col rounded-[8px] bg-[#070C1B] p-4 gap-4">
+      <div className="w-full min-w-[161px] max-w-[285px] flex flex-col rounded-[8px] bg-[#070C1B]">
         <div
-          className="h-[285px] w-full rounded-t-[8px] overflow-hidden cursor-pointer"
+          className="w-full aspect-square rounded-t-[8px] overflow-hidden cursor-pointer"
           onClick={handleClickCoupon}
         >
-          <div className="relative w-full h-full flex items-start justify-center">
-            <Image
-              src={coupon.image || ''}
-              alt={coupon.title_en}
-              width={285}
-              height={285}
-              className="rounded-t-[8px]"
-            />
-          </div>
+          <Image
+            src={coupon.image || ''}
+            alt={coupon.title_en}
+            width={285}
+            height={285}
+            className="w-full h-full object-cover rounded-t-[8px]"
+          />
         </div>
 
-        <div className="flex flex-col flex-1 items-center gap-y-9">
-          <div className="flex flex-col gap-3 items-start">
+        <div className="flex flex-col items-center gap-3 p-4">
+          <div className="flex flex-col gap-2 items-start w-full">
             <h4
-              className="headline-4 text-[#FFFFFF] font-bold text-xl line-clamp-2 hover:underline cursor-pointer"
+              className="text-[#FFFFFF] font-bold text-sm lg:text-xl line-clamp-2 hover:underline cursor-pointer w-full"
               onClick={handleClickCoupon}
             >
               {coupon.title_en}
             </h4>
-            <div className="flex gap-5">
-              <p className="text-sm text-[#8B93B0]">Valid until</p>
-              <p className="text-sm text-[#8B93B0]">
+            <div className="flex flex-col lg:flex-row gap-1 lg:gap-5 w-full text-xs lg:text-sm">
+              <p className="text-[#8B93B0]">Valid until</p>
+              <p className="text-[#8B93B0]">
                 {coupon.end_date
                   ? new Date(coupon.end_date).toLocaleDateString('en-US', {
                       day: '2-digit',
@@ -124,17 +122,17 @@ const CouponCard = ({ coupon }: CouponCardProps) => {
             </div>
           </div>
 
-          <div>
+          <div className="w-full mt-2">
             {collected ? (
               <Button
-                className="btn-base white-outline-normal lg:max-w-[237px] lg:h-[48px]"
+                className="btn-base white-outline-normal w-full h-10 lg:h-12 text-xs lg:text-base"
                 onClick={handleViewDetails}
               >
                 View details
               </Button>
             ) : (
               <Button
-                className="btn-base blue-normal lg:max-w-[237px] lg:h-[48px]"
+                className="btn-base blue-normal w-full h-10 lg:h-12 text-xs lg:text-base"
                 onClick={handleGetCoupon}
                 disabled={loading}
               >

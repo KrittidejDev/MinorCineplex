@@ -7,10 +7,17 @@ export default async function handler(
 ) {
   if (req.method === "GET") {
     try {
-      const { id, title, genre, language, releaseDate } = req.query;
+      const {
+        id,
+        title,
+        genre,
+        language,
+        releaseDate,
+        page = "1",
+        limit = "20",
+      } = req.query;
 
       const filters: MovieFilters = {};
-
       if (id) filters.id = Array.isArray(id) ? id[0] : id;
       if (title) filters.title = Array.isArray(title) ? title[0] : title;
       if (genre) filters.genre = Array.isArray(genre) ? genre[0] : genre;
@@ -21,7 +28,11 @@ export default async function handler(
           ? releaseDate[0]
           : releaseDate;
 
-      const movies = await getMovies(filters);
+      const skip =
+        (parseInt(page as string, 10) - 1) * parseInt(limit as string, 10);
+      const take = parseInt(limit as string, 10);
+
+      const movies = await getMovies(filters, { skip, take });
 
       return res.status(200).json({ movie: movies });
     } catch (error: unknown) {

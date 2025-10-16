@@ -7,8 +7,8 @@ import { useRouter } from "next/router";
 function AllMoviesWidget() {
   const [activeTab, setActiveTab] = useState("nowShowing");
   const [movies, setMovies] = useState<MovieCardData[]>([]);
-  const [, setLoading] = useState(true);
-  const [, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const router = useRouter();
 
@@ -25,6 +25,7 @@ function AllMoviesWidget() {
             : null,
           rating: movie.rating,
           genre: movie.genre,
+          showtimes: movie.showtimes ?? [],
         }));
         setMovies(Movies);
       } catch (err) {
@@ -39,68 +40,88 @@ function AllMoviesWidget() {
   }, []);
 
   const today = new Date();
-  const nowShowingMovies = movies.filter(
-    (m) => m.release_date && m.release_date <= today
+  const startOfToday = new Date(today.setHours(0, 0, 0, 0));
+  const endOfToday = new Date(today.setHours(23, 59, 59, 999));
+
+  // ✅ เฉพาะหนังที่มี showtime "ของวันนี้"
+  const nowShowingMovies = movies.filter((m) =>
+    m.showtimes?.some((s) => {
+      const showDate = new Date(s);
+      return showDate >= startOfToday && showDate <= endOfToday;
+    })
   );
 
+  // ✅ หนังที่ยังไม่ถึงวันฉาย
   const comingSoonMovies = movies.filter(
-    (m) => m.release_date && m.release_date > today
+    (m) => m.release_date && m.release_date > endOfToday
   );
 
   const moviesToDisplay =
     activeTab === "nowShowing" ? nowShowingMovies : comingSoonMovies;
 
-  return (
-    <>
-      <div className="w-screen">
-        <div className="w-screen bg-gray-gc1b py-10">
-          <div className="flex justify-center gap-6">
-            <button
-              onClick={() => setActiveTab("nowShowing")}
-              className={`font-bold text-f-24 py-1 cursor-pointer ${
-                activeTab === "nowShowing"
-                  ? "text-white-wfff border-b-2 border-gray-gf7e"
-                  : "text-gray-g3b0 border-b-2 border-transparent"
-              }`}
-            >
-              Now showing
-            </button>
-            <button
-              onClick={() => setActiveTab("comingSoon")}
-              className={`font-bold text-f-24 py-1 cursor-pointer ${
-                activeTab === "comingSoon"
-                  ? "text-white-wfff border-b-2 border-gray-gf7e"
-                  : "text-gray-g3b0 border-b-2 border-transparent"
-              }`}
-            >
-              Coming soon
-            </button>
-          </div>
-        </div>
+  if (loading)
+    return (
+      <div className="flex justify-center items-center py-20 text-white">
+        กำลังโหลด...
+      </div>
+    );
 
-        <div className="flex justify-center py-20 px-4">
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 max-w-[1200px] w-full">
-            {moviesToDisplay.map((movie) => (
-              <div
-                key={movie.id}
-                className="cursor-pointer"
-                onClick={() => router.push(`/movies/${movie.id}`)}
-              >
-                <MovieCard
-                  key={movie.id}
-                  id={movie.id}
-                  title={movie.title}
-                  poster_url={movie.poster_url}
-                  release_date={movie.release_date ?? undefined}
-                  rating={movie.rating}
-                  genre={movie.genre}
-                />
-              </div>
-            ))}
-          </div>
+  if (error)
+    return (
+      <div className="flex justify-center items-center py-20 text-red-500">
+        {error}
+      </div>
+    );
+
+  return (
+    <div className="w-screen">
+      <div className="w-screen bg-gray-gc1b py-10">
+        <div className="flex justify-center gap-6">
+          <button
+            onClick={() => setActiveTab("nowShowing")}
+            className={`font-bold text-f-24 py-1 cursor-pointer ${
+              activeTab === "nowShowing"
+                ? "text-white-wfff border-b-2 border-gray-gf7e"
+                : "text-gray-g3b0 border-b-2 border-transparent"
+            }`}
+          >
+            Now showing
+          </button>
+          <button
+            onClick={() => setActiveTab("comingSoon")}
+            className={`font-bold text-f-24 py-1 cursor-pointer ${
+              activeTab === "comingSoon"
+                ? "text-white-wfff border-b-2 border-gray-gf7e"
+                : "text-gray-g3b0 border-b-2 border-transparent"
+            }`}
+          >
+            Coming soon
+          </button>
         </div>
       </div>
-    </>
+
+      <div className="flex justify-center py-20 px-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 max-w-[1200px] w-full">
+          {moviesToDisplay.map((movie) => (
+            <div
+              key={movie.id}
+              className="cursor-pointer"
+              onClick={() => router.push(`/movies/${movie.id}/movie-info`)}
+            >
+              <MovieCard
+                key={movie.id}
+                id={movie.id}
+                title={movie.title}
+                poster_url={movie.poster_url}
+                release_date={movie.release_date ?? undefined}
+                rating={movie.rating}
+                genre={movie.genre}
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
   );
 }
 

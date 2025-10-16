@@ -37,7 +37,8 @@ model hall {
   cinema_id  String
   created_at DateTime   @default(now())
   updated_at DateTime   @updatedAt
-  cinema     cinema     @relation(fields: [cinema_id], references: [id])
+
+  cinema     cinema     @relation(fields: [cinema_id], references: [id], onDelete: Cascade)
   seats      seat[]
   showtimes  showtime[]
 
@@ -51,7 +52,7 @@ model seat {
   col            String
   hall_id        String
   booking_seats  booking_seat[]
-  hall           hall            @relation(fields: [hall_id], references: [id])
+  hall           hall            @relation(fields: [hall_id], references: [id], onDelete: Cascade)
   showtime_seats showtime_seat[]
 
   @@unique([seat_number, hall_id])
@@ -112,8 +113,8 @@ model movie_actor {
   id       String @id @default(uuid())
   movie_id String
   actor_id String
-  actor    actor  @relation(fields: [actor_id], references: [id])
-  movie    movie  @relation(fields: [movie_id], references: [id])
+  actor    actor  @relation(fields: [actor_id], references: [id], onDelete: Cascade)
+  movie    movie  @relation(fields: [movie_id], references: [id], onDelete: Cascade)
 
   @@unique([movie_id, actor_id])
 }
@@ -122,8 +123,8 @@ model movie_director {
   id          String   @id @default(uuid())
   movie_id    String
   director_id String
-  director    director @relation(fields: [director_id], references: [id])
-  movie       movie    @relation(fields: [movie_id], references: [id])
+  director    director @relation(fields: [director_id], references: [id], onDelete: Cascade)
+  movie       movie    @relation(fields: [movie_id], references: [id], onDelete: Cascade)
 
   @@unique([movie_id, director_id])
 }
@@ -132,8 +133,8 @@ model movie_language {
   id          String   @id @default(uuid())
   movie_id    String
   language_id String
-  language    language @relation(fields: [language_id], references: [id])
-  movie       movie    @relation(fields: [movie_id], references: [id])
+  language    language @relation(fields: [language_id], references: [id], onDelete: Cascade)
+  movie       movie    @relation(fields: [movie_id], references: [id], onDelete: Cascade)
 
   @@unique([movie_id, language_id])
 }
@@ -158,8 +159,8 @@ model showtime {
   created_at   DateTime        @default(now())
   updated_at   DateTime        @updatedAt
   bookings     booking[]
-  hall         hall            @relation(fields: [hall_id], references: [id])
-  movie        movie           @relation(fields: [movie_id], references: [id])
+  hall         hall            @relation(fields: [hall_id], references: [id], onDelete: Cascade)
+  movie        movie           @relation(fields: [movie_id], references: [id], onDelete: Cascade)
   time_slot    time_slot       @relation(fields: [time_slot_id], references: [id])
   seats        showtime_seat[]
 
@@ -174,8 +175,8 @@ model showtime_seat {
   price       Float?
   locked_at   DateTime?
   locked_by   String?
-  seat        seat      @relation(fields: [seat_id], references: [id])
-  showtime    showtime  @relation(fields: [showtime_id], references: [id])
+  seat        seat      @relation(fields: [seat_id], references: [id], onDelete: Cascade)
+  showtime    showtime  @relation(fields: [showtime_id], references: [id], onDelete: Cascade)
 
   @@unique([showtime_id, seat_id])
 }
@@ -203,7 +204,7 @@ model booking {
   total_price Float
   created_at  DateTime       @default(now())
   updated_at  DateTime       @updatedAt
-  showtime    showtime       @relation(fields: [showtime_id], references: [id])
+  showtime    showtime       @relation(fields: [showtime_id], references: [id], onDelete: Cascade)
   user        user           @relation(fields: [user_id], references: [id])
   seats       booking_seat[]
 }
@@ -213,8 +214,8 @@ model booking_seat {
   booking_id String
   seat_id    String
   price      Float
-  booking    booking @relation(fields: [booking_id], references: [id])
-  seat       seat    @relation(fields: [seat_id], references: [id])
+  booking    booking @relation(fields: [booking_id], references: [id], onDelete: Cascade)
+  seat       seat    @relation(fields: [seat_id], references: [id], onDelete: Cascade)
 
   @@unique([booking_id, seat_id])
 }

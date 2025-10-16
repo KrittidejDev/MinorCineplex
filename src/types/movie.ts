@@ -34,6 +34,7 @@ export interface MovieCardData {
   release_date?: Date | null;
   rating?: string | null;
   genre?: string | null;
+  showtimes?: string[];
 }
 
 export interface MovieWithHalls {

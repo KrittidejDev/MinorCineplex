@@ -51,6 +51,28 @@ function AdminCreateNewTimeSlotForm({ isShowModal, onClose }: AdminCreateNewTime
             <div className="bg-white w-[1200px] h-auto rounded-lg shadow-lg">
                 <div className=" px-30 py-12.5  w-auto  ">
                     <h2 className="text-f-56 font-bold mb-6 text-gray-g63f ">Create New Time Slot</h2>
+
+
+                    <div className="mb-4">
+                        <AdminInputTextField
+                            label="Time Slot Name"
+                            placeholder="Enter time slot name"
+                            value={formData.timeSlotName}
+                            onChange={handleInputChange("timeSlotName")}
+                            errors={errors.timeSlotName}
+                            require={true}
+                        />
+                    </div>
+                    <div className="mb-4">
+                        <AdminInputTextField
+                            label="Start Time"
+                            placeholder="Enter start time"
+                            value={formData.startTime}
+                            onChange={handleInputChange("startTime")}
+                            errors={errors.startTime}
+                            require={true}
+                        />
+                    </div>
                 </div>
             </div>
         </ModalEmpty>

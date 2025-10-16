@@ -7,15 +7,7 @@ export default async function handler(
 ) {
   if (req.method === "GET") {
     try {
-      const {
-        id,
-        title,
-        genre,
-        language,
-        releaseDate,
-        page = "1",
-        limit = "20",
-      } = req.query;
+      const { id, title, genre, language, releaseDate, page = "1" } = req.query;
 
       const filters: MovieFilters = {};
       if (id) filters.id = Array.isArray(id) ? id[0] : id;
@@ -28,18 +20,15 @@ export default async function handler(
           ? releaseDate[0]
           : releaseDate;
 
-      const skip =
-        (parseInt(page as string, 10) - 1) * parseInt(limit as string, 10);
-      const take = parseInt(limit as string, 10);
-
-      const movies = await getMovies(filters, { skip, take });
+      // ไม่จำกัด limit
+      const movies = await getMovies(filters);
 
       return res.status(200).json({ movie: movies });
     } catch (error: unknown) {
       console.error(error);
-      if (error instanceof Error)
-        return res.status(500).json({ error: error.message });
-      return res.status(500).json({ error: "Internal Server Error" });
+      if (error) console.error("Failed to fetch cinemas:", error);
+
+      return res.status(500).json({ error: error });
     }
   }
 

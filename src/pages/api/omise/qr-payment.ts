@@ -57,7 +57,7 @@ export default async function handler(
         amount,
         currency: "THB",
         source: source.id,
-        return_uri: `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/payment/callback`,
+        return_uri: `${process.env.NEXT_PUBLIC_BASE_URL}/payment/callback`,
         metadata: metadata || {},
       }),
     });

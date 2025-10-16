@@ -1,0 +1,31 @@
+import {
+  getCinemasByMovies,
+  getCinemas,
+  getCinemasForDropdown,
+} from "@/services/cinemaService";
+import type { NextApiRequest, NextApiResponse } from "next";
+
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  try {
+    const { movie_id } = req.query;
+    let cinema;
+    if (req.query.type === "dropdown") {
+      cinema = await getCinemasForDropdown();
+    } else if (!movie_id || movie_id === "" || typeof movie_id !== "string") {
+      cinema = await getCinemas();
+    } else {
+      cinema = await getCinemasByMovies(movie_id);
+    }
+
+    res.status(200).json({ cinema });
+  } catch (error: unknown) {
+    console.error(error);
+    if (error instanceof Error) {
+      return res.status(500).json({ error: error.message });
+    }
+  }
+  return res.status(500).json({ error: "Server Error" });
+}

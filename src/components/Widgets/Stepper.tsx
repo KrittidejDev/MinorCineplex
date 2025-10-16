@@ -1,0 +1,46 @@
+import React from "react";
+import { Step } from "./Step";
+import { Check } from "lucide-react";
+
+interface StepperProps {
+  step: string;
+}
+
+export const Stepper: React.FC<StepperProps> = ({ step }) => {
+  const currentStep = parseInt(step, 10);
+  const getStatus = (index: number) => {
+    if (index < currentStep) return "done";
+    if (index === currentStep) return "current";
+    return "default";
+  };
+
+  return (
+    <div className="flex justify-center items-center md:gap-6 relative w-fit">
+      <div className="absolute top-[22px] left-[50px] w-[132px] mx-auto h-[1px] bg-blue-bbee z-1" />
+      <Step
+        label="Select showtime"
+        number={
+          getStatus(1) === "done" ? <Check size={20} strokeWidth={2} /> : 1
+        }
+        status={getStatus(1)}
+      />
+      <Step
+        label="Select seat"
+        number={
+          getStatus(2) === "done" ? <Check size={20} strokeWidth={2} /> : 2
+        }
+        status={getStatus(2)}
+      />
+      <div
+        className={`absolute top-[22px] right-[50px] w-[132px] mx-auto h-[1px] ${step === "3" ? "bg-blue-bbee" : "bg-gray-g63f"}`}
+      />
+      <Step
+        label="Payment"
+        number={
+          getStatus(3) === "done" ? <Check size={20} strokeWidth={2} /> : 3
+        }
+        status={getStatus(3)}
+      />
+    </div>
+  );
+};

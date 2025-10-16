@@ -1,118 +1,109 @@
+import React, { useState } from "react";
 import MovieCard from "../Cards/MovieCard";
-import { useState } from "react";
+import { APIMovie } from "@/types/movie";
+import { useRouter } from "next/router";
+import { Button } from "../ui/button";
+import Link from "next/link";
 
-function NowShowingComingSoon() {
+interface NowShowingComingSoonProps {
+  movies: APIMovie[];
+  loading: boolean;
+  showAll?: boolean;
+}
+
+export default function NowShowingComingSoon({
+  movies,
+  loading,
+  showAll = false,
+}: NowShowingComingSoonProps) {
   const [activeTab, setActiveTab] = useState("nowShowing");
+  const router = useRouter();
 
-  const nowShowingMovies = [
-    {
-      title: "Django Unchained",
-      image:
-        "https://m.media-amazon.com/images/M/MV5BMjIyNTQ5NjQ1OV5BMl5BanBnXkFtZTcwODg1MDU4OA@@._V1_FMjpg_UX1000_.jpg",
-      date: "24 Jun 2024",
-      rating: 4.6,
-      genreTag1: "Comedy",
-      genreTag2: "Drama",
-      langTag: "EN",
-    },
-    {
-      title: "The Dark Knight",
-      image:
-        "https://m.media-amazon.com/images/M/MV5BMTMxNTMwODM0NF5BMl5BanBnXkFtZTcwODAyMTk2Mw@@._V1_.jpg",
-      date: "18 Jun 2024",
-      rating: 4.6,
-      genreTag1: "Action",
-      genreTag2: "Crime",
-      langTag: "TH",
-    },
-    {
-      title: "Interstellar",
-      image:
-        "https://m.media-amazon.com/images/M/MV5BYzdjMDAxZGItMjI2My00ODA1LTlkNzItOWFjMDU5ZDJlYWY3XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
-      date: "10 Jul 2024",
-      rating: 4.8,
-      genreTag1: "Sci-fi",
-      genreTag2: "Drama",
-      langTag: "TH/EN",
-    },
-    {
-      title: "Dune: Part Two",
-      image:
-        "https://m.media-amazon.com/images/M/MV5BNTc0YmQxMjEtODI5MC00NjFiLTlkMWUtOGQ5NjFmYWUyZGJhXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
-      date: "20 Jul 2024",
-      rating: 4.9,
-      genreTag1: "Action",
-      genreTag2: "Drama",
-      langTag: "TH/EN",
-    },
-  ];
+  if (loading) return <div className="text-center py-20">Loading...</div>;
+  if (!movies || movies.length === 0)
+    return <div className="text-center py-20">No movies found</div>;
 
-  const comingSoonMovies = [
-    {
-      title: "Django Unchained",
-      image:
-        "https://m.media-amazon.com/images/M/MV5BMjIyNTQ5NjQ1OV5BMl5BanBnXkFtZTcwODg1MDU4OA@@._V1_FMjpg_UX1000_.jpg",
-      date: "24 Jun 2024",
-      rating: 4.6,
-      genreTag1: "Comedy",
-      genreTag2: "Drama",
-      langTag: "EN",
-    },
-    {
-      title: "The Dark Knight",
-      image:
-        "https://m.media-amazon.com/images/M/MV5BMTMxNTMwODM0NF5BMl5BanBnXkFtZTcwODAyMTk2Mw@@._V1_.jpg",
-      date: "18 Jun 2024",
-      rating: 4.6,
-      genreTag1: "Action",
-      genreTag2: "Crime",
-      langTag: "TH",
-    },
-    {
-      title: "Interstellar",
-      image:
-        "https://m.media-amazon.com/images/M/MV5BYzdjMDAxZGItMjI2My00ODA1LTlkNzItOWFjMDU5ZDJlYWY3XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
-      date: "10 Jul 2024",
-      rating: 4.8,
-      genreTag1: "Sci-fi",
-      genreTag2: "Drama",
-      langTag: "TH/EN",
-    },
-    {
-      title: "Dune: Part Two",
-      image:
-        "https://m.media-amazon.com/images/M/MV5BNTc0YmQxMjEtODI5MC00NjFiLTlkMWUtOGQ5NjFmYWUyZGJhXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
-      date: "20 Jul 2024",
-      rating: 4.9,
-      genreTag1: "Action",
-      genreTag2: "Drama",
-      langTag: "TH/EN",
-    },
-  ];
+  let moviesToDisplay;
 
-  const moviesToDisplay = activeTab === "nowShowing" ? nowShowingMovies : comingSoonMovies
+  if (showAll) {
+    moviesToDisplay = movies;
+  } else {
+    const today = new Date();
+    const todayStr = today.toISOString().split("T")[0];
+
+    const nowShowingMovies = movies
+      .filter(
+        (m) =>
+          m.release_date &&
+          new Date(m.release_date) <= today &&
+          m.showtimes?.some(
+            (st) => new Date(st).toISOString().split("T")[0] === todayStr
+          )
+      )
+      .slice(0, 4);
+
+    const comingSoonMovies = movies
+      .filter((m) => m.release_date && new Date(m.release_date) > today)
+      .slice(0, 4);
+
+    moviesToDisplay =
+      activeTab === "nowShowing" ? nowShowingMovies : comingSoonMovies;
+  }
 
   return (
     <div className="w-screen flex justify-center py-20 px-4">
       <div className="flex flex-col gap-10">
-        <div className="flex gap-4">
-          <button onClick={() => setActiveTab("nowShowing")} className={`font-bold text-f-24 py-1 cursor-pointer ${activeTab === "nowShowing" ? "text-white-wfff border-b border-gray-gf7e" : "text-gray-g3b0 border-b border-transparent"}`}>
-            Now showing
-          </button>
-          <button onClick={() => setActiveTab("comingSoon")} className={`font-bold text-f-24 py-1 cursor-pointer ${activeTab === "comingSoon" ? "text-white-wfff border-b border-gray-gf7e" : "text-gray-g3b0 border-b border-transparent"}`}>
-            Coming soon
-          </button>
-        </div>
+        {!showAll && (
+          <div className="flex justify-between">
+            <div className="flex gap-4">
+              <button
+                onClick={() => setActiveTab("nowShowing")}
+                className={`font-bold text-f-24 py-1 cursor-pointer ${
+                  activeTab === "nowShowing"
+                    ? "text-white-wfff border-b border-gray-gf7e"
+                    : "text-gray-g3b0 border-b border-transparent"
+                }`}
+              >
+                Now showing
+              </button>
+              <button
+                onClick={() => setActiveTab("comingSoon")}
+                className={`font-bold text-f-24 py-1 cursor-pointer ${
+                  activeTab === "comingSoon"
+                    ? "text-white-wfff border-b border-gray-gf7e"
+                    : "text-gray-g3b0 border-b border-transparent"
+                }`}
+              >
+                Coming soon
+              </button>
+            </div>
+            <Link href="/movies" passHref>
+              <Button className="btn-base-transparent-underline-normal text-sm hover:underline cursor-pointer">
+                View all
+              </Button>
+            </Link>
+          </div>
+        )}
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
-          <MovieCard title="Django Unchained" image="https://m.media-amazon.com/images/M/MV5BMjIyNTQ5NjQ1OV5BMl5BanBnXkFtZTcwODg1MDU4OA@@._V1_FMjpg_UX1000_.jpg" date="24 Jun 2024" rating={4.6} genreTag1="Comedy" genreTag2="Drama" langTag="EN" />
-          <MovieCard title="The Dark Knight" image="https://m.media-amazon.com/images/M/MV5BMTMxNTMwODM0NF5BMl5BanBnXkFtZTcwODAyMTk2Mw@@._V1_.jpg" date="18 Jun 2024" rating={4.6} genreTag1="Action" genreTag2="Crime" langTag="TH" />
-          <MovieCard title="Interstellar" image="https://m.media-amazon.com/images/M/MV5BYzdjMDAxZGItMjI2My00ODA1LTlkNzItOWFjMDU5ZDJlYWY3XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg" date="24 Jun 2024" rating={4.6} genreTag1="Sci-fi" genreTag2="Drama" langTag="TH/EN" />
-          <MovieCard title="Dune: Part Two" image="https://m.media-amazon.com/images/M/MV5BNTc0YmQxMjEtODI5MC00NjFiLTlkMWUtOGQ5NjFmYWUyZGJhXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg" date="24 Jun 2024" rating={4.6} genreTag1="Action" genreTag2="Drama" langTag="TH/EN" />
+          {moviesToDisplay.map((movie) => (
+            <div
+              key={movie.id}
+              className="cursor-pointer"
+              onClick={() => router.push(`/movies/${movie.id}/movie-info`)}
+            >
+              <MovieCard
+                id={movie.id}
+                title={movie.title}
+                poster_url={movie.poster_url}
+                release_date={movie.release_date || undefined}
+                rating={movie.rating}
+                genre={movie.genre}
+              />
+            </div>
+          ))}
         </div>
       </div>
     </div>
   );
 }
-
-export default NowShowingComingSoon;

@@ -1,37 +1,71 @@
 import Tag from "../Widgets/Tag";
 import { Button } from "../ui/button";
+import Image from "next/image";
+import { APIMovie } from "@/types/movie";
+import Link from "next/link";
 
-interface MovieDetailProps {
-  title: string;
-  image: string;
-  date: string;
-  detail: string;
+interface MoviesDetailWidgetProps {
+  movie?: APIMovie;
 }
 
-function MoviesDetailWidget({title, image, date, detail}: MovieDetailProps) {
+function MoviesDetailWidget({ movie }: MoviesDetailWidgetProps) {
   return (
     <>
       <div className="w-screen flex justify-start lg:justify-center lg:mt-[60px]">
-        <div className="w-full lg:w-[1200px] lg:h-[600px] flex flex-col lg:flex-row">
-          <img src={image} alt={title} className="w-full h-full lg:w-[411px] rounded-md" />
-          <div className="flex flex-col flex-1 py-10 px-4 lg:p-[60px] bg-gray-gc1b/70 backdrop-blur-xl rounded-md">
+        <div className="w-full lg:w-[1200px] lg:h-[600px] flex flex-col lg:flex-row px-1 md:px4">
+          <div className="relative w-full h-[547px] lg:w-[411px] lg:h-[600px]">
+            {movie?.poster_url && (
+              <Image
+                src={movie?.poster_url ?? ""}
+                alt={movie?.title ?? ""}
+                fill
+                className="object-cover rounded-md"
+              />
+            )}
+          </div>
+
+          <div className="flex flex-col flex-1 py-10 px-4 lg:p-[50px] bg-gray-gc1b/70 backdrop-blur-xl rounded-md">
             <div className="flex flex-col gap-4">
-              <h2 className="text-f-36 text-white-wfff">{title}</h2>
+              <h2 className="text-f-36 text-white-wfff">
+                {movie?.title ?? ""}
+              </h2>
               <div className="w-fit flex flex-col lg:flex-row lg:items-center">
-                <div className="flex gap-2 border-r border-gray-gedd pr-2 lg:pr-5">
-                  <Tag name="Action" variant="genre" />
-                  <Tag name="Crime" variant="genre" />
-                  <Tag name="TH" variant="language" />
+                <div className="flex gap-2">
+                  <div className="flex gap-2 border-r border-gray-gedd pr-2 lg:pr-5">
+                    {movie?.genre
+                      ? movie.genre
+                          .split(",")
+                          .map((g) => (
+                            <Tag
+                              key={g.trim()}
+                              name={g.trim()}
+                              variant="genre"
+                            />
+                          ))
+                      : null}
+                  </div>
                 </div>
-                <p className="text-fr-16 text-gray-gedd mt-2 lg:mt-0 lg:pl-5">Release date: {date}</p>
+                <div className="pl-2 lg:pl-5 mt-2 lg:mt-0">
+                  <p>
+                    Release date:{" "}
+                    {movie?.release_date
+                      ? new Date(
+                          String(movie.release_date)
+                        ).toLocaleDateString()
+                      : "N/A"}
+                  </p>
+                </div>
               </div>
             </div>
+            <Link href={`/movies/${movie?.id}/movie-info`}>
             <div className="mt-6 mb-10 lg:my-12">
-            <Button className="btn-base blue-normal">Movie detail</Button>
+              <Button className="btn-base blue-normal">Movie detail</Button>
             </div>
-            <p className="text-fr-16 text-gray-gedd">
-              {detail}
-            </p>
+            </Link>
+            <p
+              className="text-fr-16 text-gray-gedd"
+              dangerouslySetInnerHTML={{ __html: movie?.description ?? "" }}
+            />
           </div>
         </div>
       </div>

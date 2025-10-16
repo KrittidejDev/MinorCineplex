@@ -12,16 +12,17 @@ export interface LoginParams {
 }
 export interface SignupParams {
   username: string;
+  phone: string;
   email: string;
   password: string;
 }
 export interface UpdateProfileParams {
   username?: string;
-  email?: string;
-  avatar?: string;
+  avatar_url?: string;
+  avatar_id?: string;
 }
 export interface ResetPasswordParams {
-  oldPassword: string;
+  id: string;
   newPassword: string;
 }
 
@@ -57,43 +58,58 @@ export const userService = {
       `${apiPath}/auth/register`,
       params
     ),
-  GET_MY_PROFILE: () => apiService.get(`${apiPath}/auth/me`),
+  GET_MY_PROFILE: (id: string) => apiService.get(`${apiPath}/users/${id}`),
   PUT_UPDATE_PROFILE: (id: string, params: UpdateProfileParams) =>
     apiService.put(`${apiPath}/users/${id}`, params),
-  RESET_PASSWORD: (id: string, params: ResetPasswordParams) =>
-    apiService.patch(`${apiPath}/users/${id}/password`, params),
+  RESET_PASSWORD: (params: ResetPasswordParams) =>
+    apiService.patch(`${apiPath}/auth/resetpassword`, params),
 
-  // Category
-  GET_CATEGORY: (query?: string) =>
-    apiService.get(`${apiPath}/categories${query ?? ""}`),
-  GET_CATEGORY_BY_ID: (id: string) =>
-    apiService.get(`${apiPath}/categories/${id}`),
-  POST_CREATE_CATEGORY: (params: CategoryParams) =>
-    apiService.post(`${apiPath}/categories`, params),
-  PUT_EDIT_CATEGORY: (id: string, params: CategoryParams) =>
-    apiService.put(`${apiPath}/categories/${id}`, params),
-  DELETE_CATEGORY: (id: string) =>
-    apiService.delete(`${apiPath}/categories/${id}`),
+  // seat booking
+  POST_LOCK_SEAT: (seatId: string, userId: string) =>
+    apiService.post(`${apiPath}/seats/${seatId}`, { userId }),
+  PATCH_UNLOCK_SEAT: (seatId: string) =>
+    apiService.patch(`${apiPath}/seats/${seatId}`),
 
-  // Article
-  GET_ARTICLE: (query?: string) =>
-    apiService.get(`${apiPath}/blogs${query ?? ""}`),
-  GET_ARTICLE_BY_ID: (id: string) => apiService.get(`${apiPath}/blogs/${id}`),
-  POST_CREATE_ARTICLE: (params: ArticleParams) =>
-    apiService.post(`${apiPath}/blogs`, params),
-  PUT_EDIT_ARTICLE: (id: string, params: ArticleParams) =>
-    apiService.put(`${apiPath}/blogs/${id}`, params),
-  DELETE_ARTICLE: (id: string) => apiService.delete(`${apiPath}/blogs/${id}`),
-
-  // Notification
-  GET_NOTIFICATION: () => apiService.get(`${apiPath}/notification`),
+  GET_SHOWTIME_BOOKING: (id: string, query?: string) =>
+    apiService.get(`${apiPath}/showtimes/${id}/booking${query ?? ""}`),
 
   // File
   POST_FILE_UPLOAD: (params: FileUploadParams) => {
     const formData = new FormData();
     formData.append("file", params.file);
-    return apiService.post_formdata(`${apiPath}/files/upload`, formData);
+    return apiService.post_formdata(`${apiPath}/file-upload`, formData);
   },
+
   DELETE_FILE: (fileId: string) =>
-    apiService.delete(`${apiPath}/files/delete/${fileId}`),
+    apiService.delete(`${apiPath}/file-upload?fileId=${fileId}`),
+
+  // Cinema
+  GET_CINEMAS: (query?: string) =>
+    apiService.get(`${apiPath}/cinemas${query ?? ""}`),
+  GET_CINEMA_BY_ID: (id: string, query?: string) =>
+    apiService.get(`${apiPath}/cinemas/detail/${id}${query ?? ""}`),
+
+  // Coupons
+  // GET สถานะ coupon ของ user
+
+  GET_COUPON: () => apiService.get(`${apiPath}/coupons`),
+
+  GET_COUPON_BY_ID: (id: string) => apiService.get(`${apiPath}/coupons/${id}`),
+  GET_COUPON_COLLECTED_BY_ID: (id: string) =>
+    apiService.get(`${apiPath}/coupons/${id}/collect`),
+
+  // POST รับคูปอง
+  COLLECT_COUPON: (id: string) =>
+    apiService.post(`${apiPath}/coupons/${id}/collect`),
+  // GET coupon ที่เก็บแล้ว
+  GET_COUPON_COLLECTED: () => apiService.get(`${apiPath}/coupons/collected`),
+
+  // Payment
+  POST_PAYMENT: (params: {
+    userId: string;
+    showtimeId: string;
+    seats: string[];
+    totalPrice: number;
+    couponId?: string | null;
+  }) => apiService.post(`${apiPath}/payments/confirm`, params),
 };

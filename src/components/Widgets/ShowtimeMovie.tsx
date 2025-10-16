@@ -1,166 +1,72 @@
-import React, { useState } from "react";
+import React from "react";
 import Tag from "@/components/Widgets/Tag";
-import ShowtimeSelection from "@/components/Widgets/ShowtimeSelection";
+import ShowtimeSelection, {
+  Showtime,
+} from "@/components/Widgets/ShowtimeSelection";
+import Image from "next/image";
+import Link from "next/link";
+import { HoverCard3D } from "../Displays/HoverCard3D";
 
-export type MovieData = {
+interface Hall {
   id: string;
-  title: string;
-  poster: string;
-  genreTags: string[];
-  languageTag: string;
-  movieDetailLink?: string;
-};
-
-export type ShowtimeData = {
-  groups: Array<{
-    hallId: string;
-    hallLabel: string;
-    times: Array<{
-      id: string;
-      label: string;
-      disabled?: boolean;
-    }>;
-  }>;
-};
-
-type ShowtimeTime = ShowtimeData["groups"][number]["times"][number];
-
-interface ShowtimeMovieProps {
-  movie?: MovieData;
-  showtimes?: ShowtimeData;
-  onTimeSelect?: (time: ShowtimeTime, context: { hallId: string }) => void;
-  className?: string;
+  name: string;
+  timeslots?: Showtime[];
 }
 
-// Default mock data
-const defaultMovie: MovieData = {
-  id: "movie1",
-  title: "The Dark Knight",
-  poster:
-    "https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcQkUywIUXDjHSQJIaNHYVs08osgBpF5Ot-xmB_omyEZeeRP9Xug",
-  genreTags: ["Action", "Crime"],
-  languageTag: "TH",
-  movieDetailLink: "#",
-};
+export interface ShowtimeMovieData {
+  id: string;
+  title: string;
+  poster_url?: string;
+  genre?: string;
+  halls?: Hall[];
+}
 
-const defaultShowtimes: ShowtimeData = {
-  groups: [
-    {
-      hallId: "h1",
-      hallLabel: "Hall 1",
-      times: [
-        { id: "t11", label: "11:30", disabled: true },
-        { id: "t12", label: "14:30" },
-        { id: "t13", label: "16:30" },
-        { id: "t14", label: "20:30" },
-        { id: "t15", label: "23:30" },
-      ],
-    },
-    {
-      hallId: "h3",
-      hallLabel: "Hall 3",
-      times: [
-        { id: "t31", label: "09:00", disabled: true },
-        { id: "t32", label: "12:00", disabled: true },
-        { id: "t33", label: "15:00" },
-        { id: "t34", label: "18:00" },
-        { id: "t35", label: "21:00" },
-      ],
-    },
-    {
-      hallId: "h6",
-      hallLabel: "Hall 6",
-      times: [
-        { id: "t61", label: "13:30" },
-        { id: "t62", label: "18:00" },
-        { id: "t63", label: "21:00" },
-      ],
-    },
-  ],
-};
+interface ShowtimeMovieProps {
+  data: ShowtimeMovieData;
+}
 
-export const ShowtimeMovie: React.FC<ShowtimeMovieProps> = ({
-  movie = defaultMovie,
-  showtimes = defaultShowtimes,
-  onTimeSelect,
-  className,
-}) => {
-  const [selectedTime, setSelectedTime] = useState<string | null>(null);
+export const ShowtimeMovie: React.FC<ShowtimeMovieProps> = ({ data }) => {
+  const genres = data?.genre?.split(",").map((g) => g.trim());
 
-  const handleTimeSelect = (
-    time: ShowtimeTime,
-    context: { hallId: string }
-  ) => {
-    setSelectedTime(time.id);
-    onTimeSelect?.(time, context);
-  };
+  console.log("booking data", data);
 
   return (
-    <div
-      className={`flex flex-col lg:flex-row gap-4 lg:gap-6 xl:gap-8 ${
-        className ?? ""
-      }`}
-    >
-      {/* Movie Info Section */}
-      <div className="flex-shrink-0 w-full lg:w-auto">
-        <div className="flex flex-col gap-3 sm:gap-4 lg:gap-4 xl:gap-6">
-          {/* Movie Poster */}
-          <div className="flex-shrink-0 w-20 sm:w-24 md:w-32 lg:w-40 xl:w-48 mx-auto lg:mx-0">
-            <div className="w-full aspect-[2/3] bg-gray-800 rounded-sm overflow-hidden">
-              <img
-                src={movie.poster}
-                alt={movie.title}
-                className="w-full h-full object-cover object-center"
-              />
-            </div>
-          </div>
-
-          {/* Movie Details */}
-          <div className="flex-1 min-w-0 text-center lg:text-left">
-            {/* Movie Title */}
-            <h2 className="text-white text-xl sm:text-2xl lg:text-3xl font-bold mb-4">
-              {movie.title}
-            </h2>
-
-            {/* Tags */}
-            <div className="flex flex-wrap gap-2 sm:gap-3 mb-4 justify-center lg:justify-start">
-              {movie.genreTags.map((tag, index) => (
-                <Tag key={index} name={tag} variant="genre" />
+    <div className="bg-gray-gc1b rounded-lg shadow-lg flex flex-col md:flex-row h-fit max-w-[1200px] mx-auto">
+      <div className="box-border flex md:flex-col p-6">
+        <div className="flex gap-x-6">
+          <HoverCard3D>
+            <Image
+              src={data?.poster_url || ""}
+              alt={data?.title}
+              className="h-[254px] w-full max-w-[174px] object-cover overflow-hidden rounded-lg"
+              width={274}
+              height={400}
+            />
+          </HoverCard3D>
+          <div className="w-[174px] box-border">
+            <div className="text-f-20 line-clamp-2 mb-2">{data?.title}</div>
+            <div className="flex flex-wrap gap-2 mb-2">
+              {genres?.map((genre, i) => (
+                <Tag key={i} name={genre} variant="genre" />
               ))}
-              <Tag name={movie.languageTag} variant="language" />
             </div>
-
-            {/* Movie Detail Link */}
-            {movie.movieDetailLink && (
-              <a
-                href={movie.movieDetailLink}
-                className="text-white underline hover:text-white/80 transition-colors text-sm"
+            <div className="font-bold text-fr-16 mt-6">
+              <Link
+                href={`/movies/${data?.id}/movie-info`}
+                className="transparent-underline-normal"
               >
                 Movie detail
-              </a>
-            )}
+              </Link>
+            </div>
           </div>
         </div>
       </div>
-
-      {/* Showtimes Section */}
-      <div className="flex-1 min-w-0">
-        <div className="flex flex-col gap-4 sm:gap-6 lg:gap-8">
-          {showtimes.groups.map((group) => (
-            <div
-              key={group.hallId}
-              className="flex flex-col gap-2 sm:gap-3 lg:gap-4"
-            >
-              <div className="text-white/90 font-semibold text-base sm:text-lg lg:text-xl">
-                {group.hallLabel}
-              </div>
-              <ShowtimeSelection
-                times={group.times}
-                onChange={(time: ShowtimeTime) =>
-                  handleTimeSelect(time, { hallId: group.hallId })
-                }
-                className="flex flex-wrap gap-1.5 sm:gap-2 md:gap-3 lg:gap-4"
-              />
+      <div className="flex flex-1 px-10 py-5 md:py-10">
+        <div className="flex flex-col flex-1 h-full overflow-y-auto gap-y-10 md:gap-y-15">
+          {data?.halls?.map((hall) => (
+            <div key={hall?.id}>
+              <div className="text-f-24 mb-4">{hall?.name}</div>
+              <ShowtimeSelection timeslot={hall?.timeslots} />
             </div>
           ))}
         </div>

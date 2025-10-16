@@ -5,19 +5,37 @@ export default withAuth(
   function middleware(req) {
     const token = req.nextauth.token;
 
-    if (req.nextUrl.pathname.startsWith("/dashboard")) {
-      if (token?.role !== "admin") {
+    // Protect admin
+    if (req.nextUrl.pathname.startsWith("/admin")) {
+      if (!token) {
+        return NextResponse.redirect(new URL("/auth/signin", req.url));
+      }
+
+      if (token?.role !== "ADMIN") {
+        return NextResponse.redirect(new URL("/", req.url));
+      }
+    }
+    if (req.nextUrl.pathname.startsWith("/profiles")) {
+      if (!token) {
         return NextResponse.redirect(new URL("/", req.url));
       }
     }
   },
   {
     callbacks: {
-      authorized: ({ token }) => !!token,
+      authorized: ({ token, req }) => {
+        if (
+          req.nextUrl.pathname.startsWith("/admin") ||
+          req.nextUrl.pathname.startsWith("/profiles")
+        ) {
+          return !!token;
+        }
+        return true;
+      },
     },
   }
 );
 
 export const config = {
-  matcher: ["/admin/:path*"],
+  matcher: ["/admin/:path*", "/profiles/:path*"],
 };

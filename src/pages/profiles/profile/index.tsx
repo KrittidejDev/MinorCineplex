@@ -1,57 +1,140 @@
-import React from 'react'
-import NavBarWidget from '@/components/Widgets/NavBarWidget'
-import ProfileBar from '@/components/Widgets/ProfileBar'
-import InputTextFeild from '@/components/Inputs/InputTextFeild'
-import ImageUploadButton from '@/components/Inputs/InputPictureProfile'
-import { Button } from '@/components/ui/button'
+import React, { useState, useEffect, useCallback } from "react";
+import NavBarWidget from "@/components/Widgets/NavBarWidget";
+import ProfileBar from "@/components/Widgets/ProfileBar";
+import { useSession } from "next-auth/react";
+import ProfileForm, { ProfileFormValues } from "@/components/Forms/ProfileForm";
+import { UpdateProfileParams, userService } from "@/config/userServices";
+import { AxiosError } from "axios";
+import { UseFormSetError } from "react-hook-form";
+import { SuccessAlert } from "@/components/ui/alert";
+import { UserDataResponse } from "@/types/user";
 
-const Index = () => {
-  return (
-    <div className="bg-blue-b flex flex-col min-h-[100dvh]">
-      <NavBarWidget />
-
-      <div className="flex-1">
-        <div
-          className="
-            flex flex-col md:flex-row 
-            items-start justify-start 
-            pt-10 md:pt-20 
-            px-5 md:px-10 lg:px-100 
-            h-full gap-6 md:gap-10
-          "
-        >
-          {/* ProfileBar */}
-          <div className="w-full md:w-1/4 lg:w-1/5">
-            <ProfileBar />
-          </div>
-
-          {/* Content */}
-          <div className="flex flex-col items-start justify-start gap-y-11 w-full md:w-3/4 lg:w-4/5 px-0 md:px-0 lg:px-22">
-            <div className="text-f-20 sm:text-f-24 md:text-f-28 lg:text-f-36">
-              Profile
-            </div>
-
-            <div className="text-[#8B93B0] text-sm sm:text-base">
-              Keep your personal details private. Information you add here is
-              visible to anyone who can view your profile
-            </div>
-
-            <div>
-              <ImageUploadButton />
-            </div>
-
-            <div className="flex flex-col gap-y-5 w-full ">
-              <InputTextFeild label="Name" placeholder="Placeholder Text" className='w-[45%]' />
-              <InputTextFeild label="Email" placeholder="Placeholder Text" className='w-[45%]' />
-              <Button className="btn-base white-outline-normal w-[12.5%]">
-                Save
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
+interface response {
+  status: number;
+  docs: UserDataResponse;
 }
 
-export default Index
+interface FileUploadResponse {
+  url: string;
+  public_id: string;
+  originalname: string;
+  size: number;
+}
+
+const ProfilePage = () => {
+  const { data: session } = useSession();
+  const [userData, setUserData] = useState<UserDataResponse | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isSuccessAlert, setIsSuccessAlert] = useState(false);
+  const id = session?.user?.id;
+
+  const fetchMe = useCallback(async () => {
+    if (!id) return;
+    try {
+      const res = (await userService.GET_MY_PROFILE(id)) as response;
+      setUserData(res.docs);
+    } catch (err) {
+      console.error("Fetch profile error:", err);
+    }
+  }, [id]);
+
+  useEffect(() => {
+    if (id) {
+      fetchMe();
+    }
+  }, [id, fetchMe]);
+
+  const clearSuccessAlert = () => {
+    setIsSuccessAlert(false);
+  };
+
+  const handleSaveProfile = async (
+    data: ProfileFormValues,
+    setError: UseFormSetError<ProfileFormValues>
+  ) => {
+    if (!session?.user?.id) return;
+    try {
+      let avatarUrl = null;
+      let publicId = null;
+      const oldPublicId = userData?.avatar_id as string | null;
+
+      if (selectedFile) {
+        //Upload รูปภาพ
+        const uploadResponse = (await userService.POST_FILE_UPLOAD({
+          file: selectedFile,
+        })) as FileUploadResponse;
+        avatarUrl = uploadResponse.url;
+        publicId = uploadResponse.public_id;
+      }
+      //Update Profile
+      const formData: UpdateProfileParams = {
+        username: data.username,
+        ...(avatarUrl && { avatar_url: avatarUrl }),
+        ...(publicId && { avatar_id: publicId }),
+      };
+      await userService.PUT_UPDATE_PROFILE(session.user.id, formData);
+      if (selectedFile && oldPublicId) {
+        //Delete รูปภาพเก่า
+        try {
+          await userService.DELETE_FILE(oldPublicId);
+        } catch (error) {
+          console.log("Failed to delete old avatar:", error);
+        }
+      }
+      window.location.reload();
+      setIsSuccessAlert(true);
+    } catch (error: unknown) {
+      if (error instanceof AxiosError && error.response) {
+        const message =
+          error.response?.data?.message ||
+          error.response?.data?.error ||
+          error.message;
+        if (message.includes("Username")) {
+          setError("username", { type: "server", message });
+        }
+      }
+      console.log("Save failed:", error);
+    }
+  };
+
+  return (
+    <div className="bg-blue-b flex flex-col">
+      <NavBarWidget />
+      <div
+        className="w-full flex flex-col md:flex-row max-w-[1129px] items-start gap-6 md:gap-12 top-21 transition-all duration-500 ease-in-out 
+    py-10 md:pl-20 md:py-15 xl:pl-56"
+      >
+        {/* ProfileBar */}
+        <div className="w-full md:min-w-[240px] md:max-w-[257px]">
+          <ProfileBar />
+        </div>
+
+        {/* Content */}
+        <div className="flex flex-col px-4 gap-6 md:gap-12 justify-start items-start w-full max-w-[380px] md:min-w-[450px] md:max-w-[711px]">
+          <div className="text-f-36 text-white">Profile</div>
+
+          <div className="text-[#8B93B0] text-sm sm:text-base">
+            Keep your personal details private. Information you add here is
+            visible to anyone who can view your profile
+          </div>
+          <ProfileForm
+            userData={userData as UserDataResponse}
+            onFileSelect={setSelectedFile}
+            onSave={handleSaveProfile}
+          />
+        </div>
+      </div>
+      <div className="absolute bottom-5 right-5">
+        {isSuccessAlert && (
+          <SuccessAlert
+            header="Profile updated successfully"
+            text="Your profile has been updated successfully"
+            onClick={clearSuccessAlert}
+          />
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default ProfilePage;

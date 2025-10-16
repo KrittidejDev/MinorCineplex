@@ -234,7 +234,7 @@ body {
 
 .white-outline-normal:active {
   background-color: #565F7E;
-  border: none;
+  
 }
 
 .white-outline-disabled {
@@ -247,7 +247,7 @@ body {
 
 .white-outline-disabled:active {
   background-color: hsla(223, 82%, 62%, 0.2);
-  border: none;
+ 
 }
 
 /* Gray Button States - hsla(227,19%,62%,1) */
@@ -341,7 +341,7 @@ body {
 /* Custom Step */
 
 .stp-default {
-  @apply flex justify-center items-center w-11 h-11 rounded-full bg-[#21263F] text-white border border-white;
+  @apply flex justify-center items-center w-11 h-11 rounded-full bg-gray-gc1b text-white border border-[#21263F];
 }
 
 .stp-current {
@@ -357,6 +357,10 @@ body {
   -webkit-line-clamp: 2; /* จำนวนบรรทัดที่จะแสดง */
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
 }
 
 /* .container-modal {

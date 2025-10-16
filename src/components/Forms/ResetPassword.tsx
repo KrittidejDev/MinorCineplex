@@ -2,35 +2,27 @@ import InputPassword from "../Inputs/InputPassword";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Button } from "../ui/button";
-import * as yup from "yup";
-type FormValues = {
+import { resetPasswordSchema } from "../../lib/validate/authRegister";
+export type FormValues = {
   newPassword: string;
   confirmPassword: string;
 };
 
-type SignUpFormProps = {
-  onSubmit?: (values: FormValues) => void;
+type ResetPasswordProps = {
+  onSubmit?: (values: FormValues, reset: () => void) => void;
+  align?: "center" | "left";
+  isLoading?: boolean;
 };
 
-const ResetPassword = ({ onSubmit }: SignUpFormProps) => {
-  const schema = yup.object().shape({
-    newPassword: yup
-      .string()
-      .required("New password is required")
-      .min(8, "Password must be at least 8 characters"),
-    confirmPassword: yup
-      .string()
-      .required("Confirm password is required")
-      .min(8, "Password must be at least 8 characters"),
-  });
-
+const ResetPassword = ({ onSubmit, align, isLoading }: ResetPasswordProps) => {
   const {
     control,
     watch,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<FormValues>({
-    resolver: yupResolver(schema),
+    resolver: yupResolver(resetPasswordSchema),
   });
 
   const { newPassword, confirmPassword } = watch();
@@ -38,8 +30,10 @@ const ResetPassword = ({ onSubmit }: SignUpFormProps) => {
 
   return (
     <form
-      onSubmit={handleSubmit(onSubmit ?? (() => {}))}
-      className="max-w-[380px] flex flex-col items-center gap-10"
+      onSubmit={handleSubmit((values) => {
+        onSubmit?.(values, () => reset());
+      })}
+      className={`w-full flex flex-col ${align === "center" ? "items-center justify-center gap-10" : "items-start justify-start gap-6"}`}
     >
       <h2 className="text-f-36 text-center text-white">Reset Password</h2>
       <div className="w-full flex flex-col gap-4">
@@ -76,12 +70,12 @@ const ResetPassword = ({ onSubmit }: SignUpFormProps) => {
           />
         </div>
       </div>
-      <div className="w-full">
+      <div className="w-full flex">
         <Button
-          disabled={isEmpty}
-          className="btn-base blue-normal w-full h-12 flex rounded-b-sm justify-center items-center"
+          disabled={isEmpty || isLoading}
+          className={`${align === "center" ? "btn-base blue-normal" : "btn-base white-outline-normal"} w-full max-w-[182px] h-12 flex rounded-b-sm justify-center items-center`}
         >
-          Reset Password
+          {isLoading ? "Loading..." : "Reset Password"}
         </Button>
       </div>
     </form>

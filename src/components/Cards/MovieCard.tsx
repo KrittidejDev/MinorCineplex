@@ -1,50 +1,65 @@
 import StarFill from "../Icons/StarFill";
 import Tag from "../Widgets/Tag";
-import Link from "next/link";
+import Image from "next/image";
+import { HoverCard3D } from "../Displays/HoverCard3D";
 
-interface MovieCardProps {
+interface Movies {
+  id: string;
   title: string;
-  image: string;
-  date: string;
-  rating: number;
-  genreTag1: string;
-  genreTag2: string;
-  langTag: string;
+  poster_url?: string | null;
+  release_date?: Date | null;
+  rating?: string | null;
+  genre?: string | null;
 }
 
-function MovieCard({
-  title,
-  image,
-  date,
-  rating,
-  genreTag1,
-  genreTag2,
-  langTag,
-}: MovieCardProps) {
+function MovieCard({ title, poster_url, release_date, rating, genre }: Movies) {
+  const genres = genre ? genre.split(",").map((g) => g.trim()) : [];
+
   return (
-    <div className="w-[161px] h-fit md:w-[285px] md:h-[526px] flex flex-col cursor-pointer">
-      <Link href="/movies/1" passHref>
-      <div className="h-[235px] md:h-[416px] bg-white-wfff">
-        <img src={image} alt={title} className="rounded-sm" />
+    <div className="w-[161px] h-fit md:w-[285px] md:h-[526px] md:mb-12 lg:mb-17 flex flex-col">
+      <div className="h-[235px] md:h-[416px] rounded-sm ">
+        <HoverCard3D>
+          <div className="relative h-[235px] md:h-[416px]">
+            {" "}
+            <Image
+              src={poster_url || "/fallback-poster.jpg"}
+              alt={title}
+              fill
+              sizes="(max-width: 768px) 161px, 285px"
+              className="rounded-sm object-cover "
+            />
+          </div>
+        </HoverCard3D>
       </div>
       <div className="flex flex-col flex-1">
         <div className="flex justify-between mt-4">
-          <p className="fr-14 text-gray-g3b0">{date}</p>
+          <p className="fr-14 text-gray-g3b0">
+            {release_date
+              ? new Date(release_date).toLocaleDateString("en-GB", {
+                  day: "2-digit",
+                  month: "short",
+                  year: "numeric",
+                })
+              : "-"}
+          </p>
           <div className="flex items-center gap-[2px]">
-            <StarFill width={16} height={16} color={"#4E7BEE"} />
-            <p className="font-medium fr-14 text-gray-g3b0">{rating}</p>
+            <div className="text-blue-bbee">
+              <StarFill width={16} height={16} />
+            </div>
+            <p className="font-medium fr-14 text-gray-g3b0">{rating || "-"}</p>
           </div>
         </div>
         <div className="flex flex-col flex-1 justify-between">
-          <h4 className="font-bold text-xl">{title}</h4>
+          <h4 className="font-bold text-xl line-clamp-2 min-h-[56px]">
+            {title}
+          </h4>
           <div className="flex flex-wrap gap-2 mt-4">
-            <Tag name={genreTag1} variant="genre" />
-            <Tag name={genreTag2} variant="genre" />
-            <Tag name={langTag} variant="language" />
+            {genres.map((g) => (
+              <Tag key={g} name={g} variant="genre" />
+            ))}
           </div>
         </div>
       </div>
-      </Link>
     </div>
   );
 }

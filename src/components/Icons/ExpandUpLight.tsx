@@ -13,13 +13,14 @@ const ExpandUpLight: React.FC<ExpandUpLightProps> = ({
 }) => {
   return (
     <svg
+      color={color}
       width={width}
       height={height}
       viewBox="0 0 24 24"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <path d="M18 15L12 9L6 15" stroke={color} />
+      <path d="M18 15L12 9L6 15" stroke="currentColor" />
     </svg>
   );
 };

@@ -1,68 +1,72 @@
-import { useState } from "react";
+import {
+  RUNDER_TIMESLOT,
+  ShowtimeButtonProps,
+} from "@/lib/utils/showtimeUtils";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 
-type Showtime = {
-    id: string;
-    label: string;
-    disabled?: boolean;
-};
-
-interface ShowtimeSelection {
-    times?: Showtime[];
-    onChange?: (time: Showtime | null) => void;
-    className?: string;
+export interface Showtime {
+  id: string;
+  showtime_id?: string;
+  start_time: string;
+  end_time: string;
+  label?: string;
 }
 
-const defaultTimes: Showtime[] = [
-    { id: "t1", label: "11:30", disabled: true },
-    { id: "t2", label: "11:30" },
-    { id: "t3", label: "11:30" },
-];
+interface ShowtimeSelectionProps {
+  timeslot?: Showtime[];
+}
 
-export const ShowtimeSelection: React.FC<ShowtimeSelection> = ({
-    times = defaultTimes,
-    onChange,
-    className,
+export const ShowtimeSelection: React.FC<ShowtimeSelectionProps> = ({
+  timeslot,
 }) => {
-    const [selectedId, setSelectedId] = useState<string | null>(null);
+  const router = useRouter();
+  const [now, setNow] = useState<Date>(new Date());
 
-    const handleSelect = (time: Showtime) => {
-        if (time.disabled) return;
-        const nextId = time.id === selectedId ? null : time.id;
-        setSelectedId(nextId);
-        onChange?.(nextId ? time : null);
-    };
+  useEffect(() => {
+    const interval = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(interval);
+  }, []);
 
-    return (
-        <div
-            className={`flex flex-wrap gap-3 sm:gap-4 md:gap-6 ${className ?? ""}`}
-        >
-            {times.map((time) => {
-                const isSelected = selectedId === time.id;
-                const base =
-                    "rounded-[8px] px-4 sm:px-5 md:px-6 py-2 sm:py-2.5 flex items-center justify-center text-fm-16 font-semibold transition-colors";
-                const stateClass = time.disabled
-                    ? "bg-gray-gc1b text-gray-gf7e/70 border border-gray-g63f cursor-not-allowed"
-                    : isSelected
-                        ? "bg-blue-bbee text-white"
-                        : "bg-blue-b9a8 text-white hover:brightness-110";
+  const handleSelect = (ts: Showtime) => {
+    router.push({
+      pathname: `/booking/${ts?.showtime_id}`,
+    });
+  };
 
-                return (
-                    <button
-                        key={time.id}
-                        type="button"
-                        className={`${base} ${stateClass}`}
-                        onClick={() => handleSelect(time)}
-                        aria-pressed={isSelected}
-                        disabled={time.disabled}
-                    >
-                        {time.label}
-                    </button>
-                );
-            })}
-        </div>
-    );
+  const base =
+    "w-full max-w-32 flex flex-col justify-center items-center py-3 px-[41px] rounded-lg transition-colors";
+
+  return (
+    <div className="flex flex-wrap gap-3 sm:gap-4 md:gap-6">
+      {timeslot
+        ?.slice()
+        .sort(
+          (a, b) =>
+            new Date(`1970-01-01T${a.start_time}`).getTime() -
+            new Date(`1970-01-01T${b.start_time}`).getTime()
+        )
+        .map((e) => {
+          const { disabled, className }: ShowtimeButtonProps = RUNDER_TIMESLOT(
+            e.start_time,
+            e.end_time,
+            now
+          );
+
+          return (
+            <button
+              key={e.id}
+              type="button"
+              disabled={disabled}
+              className={`${base} ${className}`}
+              onClick={() => handleSelect(e)}
+            >
+              {e.start_time}
+            </button>
+          );
+        })}
+    </div>
+  );
 };
 
 export default ShowtimeSelection;
-
-

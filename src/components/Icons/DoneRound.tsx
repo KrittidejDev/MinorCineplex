@@ -15,6 +15,7 @@ const DoneRound: React.FC<DoneRoundProps> = ({
 }) => {
   return (
     <svg
+      color={color}
       width={width}
       height={height}
       viewBox="0 0 24 24"
@@ -23,7 +24,7 @@ const DoneRound: React.FC<DoneRoundProps> = ({
     >
       <path
         d="M5 14L8.23309 16.4248C8.66178 16.7463 9.26772 16.6728 9.60705 16.2581L18 6"
-        stroke={color}
+        stroke="currentColor"
         strokeWidth = {strokeWidth}
         strokeLinecap="round"
       />

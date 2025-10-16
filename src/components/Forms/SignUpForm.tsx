@@ -1,56 +1,45 @@
 import InputPassword from "../Inputs/InputPassword";
 import InputTextFeild from "../Inputs/InputTextFeild";
+import { UseFormSetError } from "react-hook-form";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Button } from "../ui/button";
-import * as yup from "yup";
+import { signupFormSchema } from "../../lib/validate/authRegister";
 import Link from "next/link";
 
-type FormValues = {
-  userName: string;
-  phoneNumber: string;
+export type FormValues = {
+  username: string;
+  phone: string;
   email: string;
   password: string;
   confirmPassword: string;
 };
 
 type SignUpFormProps = {
-  onSubmit?: (values: FormValues) => void;
+  onSubmit?: (
+    values: FormValues,
+    setError: UseFormSetError<FormValues>
+  ) => void;
 };
 
 const SignUpForm = ({ onSubmit }: SignUpFormProps) => {
-  const schema = yup.object().shape({
-    userName: yup.string().required("Name is required"),
-    phoneNumber: yup.string().required("Phone Number is required"),
-    email: yup
-      .string()
-      .required("Email is required")
-      .matches(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, "Invalid email format"),
-    password: yup
-      .string()
-      .required("Password is required")
-      .min(8, "Password must be at least 8 characters"),
-    confirmPassword: yup
-      .string()
-      .required("Password is required")
-      .min(8, "Password must be at least 8 characters"),
-  });
 
   const {
     control,
     watch,
     handleSubmit,
-    formState: { errors },
+    formState: { errors,isSubmitting },
+    setError,
   } = useForm<FormValues>({
-    resolver: yupResolver(schema),
+    resolver: yupResolver(signupFormSchema),
   });
 
-  const { userName, email, password } = watch();
-  const isEmpty = !userName || !email || !password;
+  const { username, email, password } = watch();
+  const isEmpty = !username || !email || !password;
 
   return (
     <form
-      onSubmit={handleSubmit(onSubmit ?? (() => {}))}
+      onSubmit={handleSubmit((values) => onSubmit?.(values, setError))}
       className="max-w-[380px] flex flex-col items-center gap-10"
     >
       <h2 className="text-f-36 text-center text-white">Register</h2>
@@ -62,24 +51,10 @@ const SignUpForm = ({ onSubmit }: SignUpFormProps) => {
               {...field}
               label={"Username"}
               placeholder="Username"
-              errors={errors.userName?.message}
+              errors={errors.username?.message}
             />
           )}
-          name="userName"
-          defaultValue=""
-        />
-
-        <Controller
-          control={control}
-          render={({ field }) => (
-            <InputTextFeild
-              {...field}
-              label={"Phone Number"}
-              placeholder="Phone Number"
-              errors={errors.phoneNumber?.message}
-            />
-          )}
-          name="phoneNumber"
+          name="username"
           defaultValue=""
         />
 
@@ -100,6 +75,21 @@ const SignUpForm = ({ onSubmit }: SignUpFormProps) => {
         <Controller
           control={control}
           render={({ field }) => (
+            <InputTextFeild
+              {...field}
+              label={"Phone Number"}
+              placeholder="Phone Number"
+              maxLength={15}
+              errors={errors.phone?.message}
+            />
+          )}
+          name="phone"
+          defaultValue=""
+        />
+
+        <Controller
+          control={control}
+          render={({ field }) => (
             <InputPassword
               {...field}
               type={"password"}
@@ -111,7 +101,7 @@ const SignUpForm = ({ onSubmit }: SignUpFormProps) => {
           name="password"
           defaultValue=""
         />
-        
+
         <Controller
           control={control}
           render={({ field }) => (
@@ -130,10 +120,10 @@ const SignUpForm = ({ onSubmit }: SignUpFormProps) => {
 
       <div className="w-full">
         <Button
-          disabled={isEmpty}
+          disabled={isEmpty || isSubmitting}
           className="btn-base blue-normal w-full h-12 flex rounded-b-sm justify-center items-center"
         >
-          Register
+          {isSubmitting ? "Loading..." : "Register"}
         </Button>
       </div>
       <div>

@@ -1,5 +1,4 @@
 import React, { ReactNode } from "react";
-import CloseRoundLight from "../Icons/CloseRoundLight";
 
 interface ModalEmptyProps {
   children: ReactNode;
@@ -8,12 +7,7 @@ interface ModalEmptyProps {
   isCloseBtn?: boolean;
 }
 
-const ModalEmpty = ({
-  children,
-  isShowModal,
-  onClose,
-  isCloseBtn = true,
-}: ModalEmptyProps) => {
+const ModalEmpty = ({ children, isShowModal, onClose }: ModalEmptyProps) => {
   return (
     <div
       className={`fixed inset-0 bg-black/50 flex items-center justify-center z-50 ${
@@ -21,15 +15,10 @@ const ModalEmpty = ({
       }`}
       onClick={onClose}
     >
-      <div className="relative z-[60] p-6 rounded-2xl">
-        {isCloseBtn && (
-          <div
-            className="absolute top-2 right-2 cursor-pointer"
-            onClick={onClose}
-          >
-            <CloseRoundLight />
-          </div>
-        )}
+      <div
+        className="relative z-[60] p-6 rounded-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
         {children}
       </div>
     </div>

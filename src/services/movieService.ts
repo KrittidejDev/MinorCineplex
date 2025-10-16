@@ -9,8 +9,14 @@ export interface MovieFilters {
   releaseDate?: string;
 }
 
+export interface Pagination {
+  skip?: number;
+  take?: number;
+}
+
 export const getMovies = async (
-  filters?: MovieFilters
+  filters?: MovieFilters,
+  pagination?: Pagination
 ): Promise<APIMovie[]> => {
   const where: {
     id?: string;
@@ -70,6 +76,9 @@ export const getMovies = async (
       },
     },
     orderBy: { release_date: "desc" },
+    // ไม่ใช้ pagination
+    skip: 0,
+    take: undefined,
   });
 
   return movies.map((movie) => ({
@@ -104,6 +113,50 @@ export const getMovies = async (
   }));
 };
 
+export async function getMovieById(id: string): Promise<APIMovie | null> {
+  const dbMovie = await prisma.movie.findUnique({
+    where: { id },
+    include: {
+      actors: { include: { actor: true } },
+      directors: { include: { director: true } },
+      showtimes: { include: { time_slot: true } },
+    },
+  });
+
+  if (!dbMovie) return null;
+
+  return {
+    id: dbMovie.id,
+    title: dbMovie.title,
+    duration_min: dbMovie.duration_min,
+    description: dbMovie.description,
+    poster_url: dbMovie.poster_url,
+    trailer_url: dbMovie.trailer_url,
+    genre: dbMovie.genre,
+    rating: dbMovie.rating,
+    created_at: dbMovie.created_at,
+    updated_at: dbMovie.updated_at,
+    release_date: dbMovie.release_date,
+    showtimes:
+      dbMovie.showtimes?.map((s) => {
+        const dateStr = s.date.toISOString().split("T")[0];
+        return new Date(`${dateStr}T${s.time_slot.start_time}`).toISOString();
+      }) ?? [],
+    actors:
+      dbMovie.actors?.map((ma) => ({
+        id: ma.actor.id,
+        name: ma.actor.name,
+        imageUrl: ma.actor.image_url ?? undefined,
+      })) ?? [],
+    directors:
+      dbMovie.directors?.map((md) => ({
+        id: md.director.id,
+        name: md.director.name,
+        imageUrl: md.director.image_url ?? undefined,
+      })) ?? [],
+  };
+}
+
 export async function createMovie(data: {
   title: string;
   description: string;
@@ -122,4 +175,25 @@ export async function createMovie(data: {
       trailer_url: data.trailer,
     },
   });
+}
+
+export async function updateMovie(id: string, data: Partial<APIMovie>) {
+  const { actors, directors, showtimes, ...rest } = data;
+
+  return prisma.movie.update({
+    where: { id },
+    data: {
+      ...rest,
+      actors: actors
+        ? { set: actors.map((actor) => ({ id: actor.id })) }
+        : undefined,
+      directors: directors
+        ? { set: directors.map((director) => ({ id: director.id })) }
+        : undefined,
+    },
+  });
+}
+
+export async function deleteMovie(id: string) {
+  return prisma.movie.delete({ where: { id } });
 }

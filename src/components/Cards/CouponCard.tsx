@@ -86,12 +86,12 @@ const CouponCard = ({ coupon }: CouponCardProps) => {
 
   return (
     <HoverCard3D>
-      <div className="w-[161px] md:w-[285px] h-[337px] lg:w-[285px] lg:h-[477px] flex flex-col rounded-[8px] bg-[#070C1B]">
+      <div className="w-full min-h-[337px] max-lg:h-[477px] flex flex-col rounded-[8px] bg-[#070C1B] p-4 gap-4">
         <div
           className="h-[285px] w-full rounded-t-[8px] overflow-hidden cursor-pointer"
           onClick={handleClickCoupon}
         >
-          <div className="relative w-full h-full">
+          <div className="relative w-full h-full flex items-start justify-center">
             <Image
               src={coupon.image || ''}
               alt={coupon.title_en}
@@ -102,8 +102,8 @@ const CouponCard = ({ coupon }: CouponCardProps) => {
           </div>
         </div>
 
-        <div className="flex flex-col flex-1 items-center gap-y-9 p-4">
-          <div className="flex flex-col mt-3 gap-3 items-start">
+        <div className="flex flex-col flex-1 items-center gap-y-9">
+          <div className="flex flex-col gap-3 items-start">
             <h4
               className="headline-4 text-[#FFFFFF] font-bold text-xl line-clamp-2 hover:underline cursor-pointer"
               onClick={handleClickCoupon}
@@ -127,14 +127,14 @@ const CouponCard = ({ coupon }: CouponCardProps) => {
           <div>
             {collected ? (
               <Button
-                className="btn-base white-outline-normal lg:w-[237px] lg:h-[48px]"
+                className="btn-base white-outline-normal lg:max-w-[237px] lg:h-[48px]"
                 onClick={handleViewDetails}
               >
                 View details
               </Button>
             ) : (
               <Button
-                className="btn-base blue-normal lg:w-[237px] lg:h-[48px]"
+                className="btn-base blue-normal lg:max-w-[237px] lg:h-[48px]"
                 onClick={handleGetCoupon}
                 disabled={loading}
               >

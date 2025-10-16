@@ -62,7 +62,7 @@ const SeatWidget: React.FC<SeatWidgetProps> = ({
   }, [data?.id]);
 
   return (
-    <div className="w-dvw flex flex-col max-w-[343px] md:max-w-[672px] items-center gap-y-7 md:gap-y-15">
+    <div className="flex-1 flex flex-col px-4 md:px-6 md:max-w-[672px] items-center gap-y-7 md:gap-y-15">
       <ScreenBar />
       <SeatRow
         seatsData={seatsData}

@@ -141,8 +141,7 @@ const SeatRow: React.FC<SeatRowProps> = ({
                   <div className="flex flex-col items-center">
                     <SeatIcon
                       className={`w-[clamp(20px,5vw,40px)] h-[clamp(20px,5vw,40px)]
-                        ${isLockedByOther ? "cursor-not-allowed opacity-50" : "cursor-pointer"}
-                        ${index === 5 ? "ml-4 md:ml-20" : ""}`}
+                        ${isLockedByOther ? "cursor-not-allowed opacity-50" : "cursor-pointer"} ${index === 5 ? "ml-2 sm:ml-4 md:ml-12" : ""}`}
                       onClick={() => !isLockedByOther && toggleSeat(seat)}
                     />
                   </div>

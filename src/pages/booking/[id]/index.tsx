@@ -404,7 +404,7 @@ const BookingSeat = () => {
         <Stepper step={step} />
       </div>
 
-      <div className="w-full flex justify-center py-10 md:p-20 md:gap-x-24 flex-wrap">
+      <div className="w-full flex flex-1 justify-center  py-10 md:p-20 md:gap-x-24 flex-wrap gap-y-5">
         {step === "1" && (
           <SeatWidget
             data={bookingInfo}
@@ -428,7 +428,7 @@ const BookingSeat = () => {
             countdown={formatTime(countdown)}
           />
         )}
-        <div className="flex flex-col gap-6 mt-10">
+        <div className="flex flex-1 lg:max-w-[305px]">
           <SummaryBoxCard
             step={step}
             data={bookingInfo}

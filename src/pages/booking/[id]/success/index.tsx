@@ -111,7 +111,7 @@ const BookingSuccessPage = () => {
   if (loading) {
     return (
       <NavAndFooter>
-        <div className="flex justify-center items-center min-h-screen bg-gray-gc1b">
+        <div className="flex justify-center items-center min-h-screen ">
           <div className="text-white text-xl">กำลังโหลด...</div>
         </div>
       </NavAndFooter>

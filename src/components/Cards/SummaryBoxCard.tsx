@@ -33,7 +33,7 @@ export default function SummaryBoxCard({
   selectedCoupon,
   onSelectCoupon,
   onPayment,
-  paymentMethod = "credit_card", // ✅ default
+  paymentMethod = "credit_card",
 }: Props) {
   const { i18n } = useTranslation();
   const lang = i18n.language;
@@ -41,7 +41,7 @@ export default function SummaryBoxCard({
   const [isCouponModalOpen, setCouponModalOpen] = useState(false);
 
   return (
-    <div className="w-full max-w-full lg:max-w-[305px] h-fit bg-gray-gc1b rounded-lg">
+    <div className="w-full min-w-[305px] h-fit bg-gray-gc1b rounded-lg">
       {/* Movie Info */}
       <div className="p-4">
         {step === "2" && countdown && (

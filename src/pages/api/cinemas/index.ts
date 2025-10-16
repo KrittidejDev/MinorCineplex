@@ -1,4 +1,8 @@
-import { getCinemasByMovies, getCinemas,getCinemasForDropdown } from "@/services/cinemaService";
+import {
+  getCinemasByMovies,
+  getCinemas,
+  getCinemasForDropdown,
+} from "@/services/cinemaService";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
@@ -10,12 +14,9 @@ export default async function handler(
     let cinema;
     if (req.query.type === "dropdown") {
       cinema = await getCinemasForDropdown();
-    }
-    // ถ้าไม่ส่ง movie_id หรือเป็นค่าว่าง ให้ query ทั้งหมด
-    else if (!movie_id || movie_id === "" || typeof movie_id !== "string") {
-      cinema = await getCinemas(); // เรียก function ใหม่ที่ query ทั้งหมด
+    } else if (!movie_id || movie_id === "" || typeof movie_id !== "string") {
+      cinema = await getCinemas();
     } else {
-      // ถ้ามี movie_id ให้ filter ตาม movie_id
       cinema = await getCinemasByMovies(movie_id);
     }
 

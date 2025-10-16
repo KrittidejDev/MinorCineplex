@@ -55,6 +55,7 @@ export interface HallDetail {
 export interface ShowtimeMovieData {
   id: string;
   title: string;
+  duration_min: number;
   poster_url?: string;
   genre?: string;
   description?: string;

@@ -9,6 +9,7 @@ import {
 
 export type Showtime = {
   id: string; // showtime_id
+  date: string;
   label: string; // start_time
   start_time: string;
   end_time: string;
@@ -62,14 +63,10 @@ export const ShowTime: React.FC<ShowtimeByHall> = ({
   }, []);
 
   const handleSelect = (hallId: string, time: Showtime) => {
-    // ตรวจสอบว่า disabled หรือไม่
-    const { disabled } = RUNDER_TIMESLOT(time.start_time, time.end_time, now);
-
+    const { disabled } = RUNDER_TIMESLOT(time.start_time, time.end_time, new Date(time.date));
     if (disabled) return;
-
     // Callback
     onChange?.(time, { hallId });
-
     // Auto navigate to booking page
     if (autoNavigate && time.id) {
       router.push(`/booking/${time.id}`);
@@ -160,7 +157,7 @@ export const ShowTime: React.FC<ShowtimeByHall> = ({
                   }: ShowtimeButtonProps = RUNDER_TIMESLOT(
                     time.start_time,
                     time.end_time,
-                    now
+                    new Date(time.date),
                   );
 
                   return (

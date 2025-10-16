@@ -13,22 +13,22 @@ interface Hall {
   timeslots?: Showtime[];
 }
 
-export interface ShowtimeMovieData {
+export interface ShowtimeMovieDataProps {
   id: string;
   title: string;
+  duration_min: number;
+  description: string;
   poster_url?: string;
   genre?: string;
   halls?: Hall[];
 }
 
 interface ShowtimeMovieProps {
-  data: ShowtimeMovieData;
+  data: ShowtimeMovieDataProps;
 }
 
 export const ShowtimeMovie: React.FC<ShowtimeMovieProps> = ({ data }) => {
   const genres = data?.genre?.split(",").map((g) => g.trim());
-
-  console.log("booking data", data);
 
   return (
     <div className="bg-gray-gc1b rounded-lg shadow-lg flex flex-col md:flex-row h-fit max-w-[1200px] mx-auto">

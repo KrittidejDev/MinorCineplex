@@ -1,11 +1,11 @@
 import React, { useEffect, useState, useCallback } from "react";
-import ShowtimeMovie, { ShowtimeMovieData } from "./ShowtimeMovie";
+import ShowtimeMovie, { ShowtimeMovieDataProps } from "./ShowtimeMovie";
 import DateSelectionBarWidget from "./DateSelectionBarWidget";
 import Image from "next/image";
 import NavAndFooter from "../MainLayout/NavAndFooter";
 import { useParams } from "next/navigation";
 import { userService } from "@/config/userServices";
-import { CinemaDetail } from "@/types/cinema";
+import { CinemaDetail, ShowtimeMovieData } from "@/types/cinema";
 import { useTranslation } from "react-i18next";
 import { RENDER_TIME_TH } from "@/lib/utils/dateTimeFormat";
 import { HoverCard3D } from "../Displays/HoverCard3D";
@@ -45,7 +45,6 @@ const CinemaDetallWidget: React.FC = () => {
   const handleSelectDate = (date: Date) => {
     fetchCinema(date);
   };
-
   return (
     <NavAndFooter>
       <Image
@@ -140,7 +139,7 @@ const CinemaDetallWidget: React.FC = () => {
           <div className="space-y-6 py-10 md:py-20">
             {cinemaData?.movies?.map((movie: ShowtimeMovieData) => (
               <div key={movie.id}>
-                <ShowtimeMovie data={movie} />
+                <ShowtimeMovie data={movie as ShowtimeMovieDataProps} />
               </div>
             ))}
           </div>

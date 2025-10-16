@@ -64,6 +64,7 @@ const formatDate = useCallback((isoDate?: string | null) => {
         {/* Grid */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:flex gap-5 justify-center">
           {coupons.map((coupon) => (
+            <div className="w-full max-w-[380px] py-4" key={coupon.id}>
             <CouponCard
               key={coupon.id}
               coupon={{
@@ -74,6 +75,7 @@ const formatDate = useCallback((isoDate?: string | null) => {
                 image: coupon.image,
               }}
             />
+            </div>
           ))}
         </div>
       </div>

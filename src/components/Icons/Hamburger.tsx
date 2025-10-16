@@ -4,12 +4,14 @@ interface HamburgerProps {
   width?: string | number;
   height?: string | number;
   color?: string;
+  onClick?: () => void;
 }
 
 const Hamburger: React.FC<HamburgerProps> = ({
   width = "24",
   height = "24",
   color = "#FFF",
+  onClick,
 }) => {
   return (
     <svg
@@ -19,6 +21,7 @@ const Hamburger: React.FC<HamburgerProps> = ({
       viewBox="0 0 24 24"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      onClick={onClick}
     >
       <path d="M4 6L20 6" stroke="currentColor" strokeLinecap="round" />
       <path d="M4 12L20 12" stroke="currentColor" strokeLinecap="round" />

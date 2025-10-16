@@ -1,11 +1,12 @@
 import Link from "next/link";
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { AvatarDisplay } from "../Displays/NavAvatarDisplay";
 import LogoM from "../Icons/LogoM";
 import Hamburger from "../Icons/Hamburger";
-import { signOut, useSession } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 import { userService } from "@/config/userServices";
 import { UserDataResponse } from "@/types/user";
+import NavbarMenu from "./NavbarMenu";
 
 interface response {
   status: number;
@@ -37,16 +38,39 @@ const NavBarWidget = () => {
     }
   }, [status, fetchMe]);
 
+  const [_isOpen, _setIsOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
+      ) {
+        _setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const _handleOpen = () => {
+    _setIsOpen((prev) => !prev);
+  };
   return (
-    <div className="w-full py-4 px-4 md:px-20 flex items-center justify-between bg-black/20 z-10">
+    <div
+      ref={containerRef}
+      className="w-full py-4 px-4 md:px-20 flex items-center justify-between bg-black/20 z-10"
+    >
       <Link href={"/"} className="w-7 h-8 sm:w-[42px] sm:h-[48px]">
         <LogoM className="w-full h-full" />
       </Link>
-      <div className="hidden md:flex">
+      <div className="hidden md:flex cursor-pointer">
         {status === "authenticated" ? (
           <AvatarDisplay
-            onLogOut={signOut}
             data={userData as UserDataResponse}
+            _isOpen={_isOpen}
+            _handleOpen={_handleOpen}
           />
         ) : (
           <div>
@@ -61,9 +85,16 @@ const NavBarWidget = () => {
           </div>
         )}
       </div>
-      <div className="flex md:hidden">
-        <Hamburger />
+      <div className="flex md:hidden cursor-pointer">
+        <Hamburger onClick={_handleOpen} />
       </div>
+      {_isOpen && (
+        <NavbarMenu
+          className="z-50"
+          data={userData as UserDataResponse}
+          onLogOut={signOut}
+        />
+      )}
     </div>
   );
 };

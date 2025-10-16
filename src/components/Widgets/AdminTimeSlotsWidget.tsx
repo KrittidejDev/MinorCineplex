@@ -31,11 +31,11 @@ const timeSlotActions = [
 ]
     return (
         <div className="flex flex-col gap-10">
-            <div className="flex justify-between items-center px-15 mt-20">
-                <h1 className="text-f-56 text-gray-g63f">Time Slots</h1>
+            <div className="flex items-center justify-between mt-20 mx-[70px]">
+                <h1 className="text-gray-g63f text-f-56 font-bold">Time Slots</h1>
                 <Button
                     className="btn-base blue-normal text-fm-16 font-bold gap-2.5 h-12 w-[135px] rounded-[4px]"
-                    
+                    onClick={() => setIsShowCreateModal(true)}
                 >
                     <AddRoundLight width={24} height={40}  />
                     Add Time Slot

@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 
 export interface Showtime {
   id: string;
+  date: string;
   showtime_id?: string;
   start_time: string;
   end_time: string;
@@ -27,8 +28,8 @@ export const ShowtimeSelection: React.FC<ShowtimeSelectionProps> = ({
     const interval = setInterval(() => setNow(new Date()), 1000);
     return () => clearInterval(interval);
   }, []);
-
   const handleSelect = (ts: Showtime) => {
+    console.log(ts);
     router.push({
       pathname: `/booking/${ts?.showtime_id}`,
     });
@@ -50,7 +51,7 @@ export const ShowtimeSelection: React.FC<ShowtimeSelectionProps> = ({
           const { disabled, className }: ShowtimeButtonProps = RUNDER_TIMESLOT(
             e.start_time,
             e.end_time,
-            now
+            new Date(e.date)
           );
 
           return (

@@ -250,11 +250,11 @@ export default function AdminShowtime() {
   useEffect(() => {
     setPage(1);
     getShowtime();
-  }, [query, getShowtime]);
+  }, [query]);
 
   useEffect(() => {
     getShowtime();
-  }, [page, getShowtime]);
+  }, [page]);
 
   return (
     <div className="bg-white-wfff w-full">

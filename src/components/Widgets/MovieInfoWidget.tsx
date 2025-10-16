@@ -18,6 +18,7 @@ interface MoviesDetailWidgetProps {
 
 type TimeSlotShowtime = {
   showtime_id: string;
+  date: string;
   start_time: string;
   end_time: string;
   available_seats: number;
@@ -67,16 +68,13 @@ const MovieInfoWidget: React.FC<MoviesDetailWidgetProps> = ({ movie }) => {
       setLoading(false);
     }
   }, []);
-
   useEffect(() => {
     if (movie?.id) {
       getMovieShowtimes(movie.id, selectedDate);
     }
-  }, [movie?.id, selectedDate, getMovieShowtimes]);
-
+  }, [movie?.id, selectedDate]);
   // --- Move this check after all hooks ---
   if (!movie) return <p>ไม่พบข้อมูลหนัง</p>;
-
   return (
     <>
       {/* Desktop Size */}
@@ -219,6 +217,7 @@ const MovieInfoWidget: React.FC<MoviesDetailWidgetProps> = ({ movie }) => {
                         times: hall.timeslots.map((timeslot) => ({
                           id: timeslot.showtime_id,
                           label: timeslot.start_time,
+                          date: timeslot.date,
                           start_time: timeslot.start_time,
                           end_time: timeslot.end_time,
                           availableSeats: timeslot.available_seats,
@@ -299,6 +298,7 @@ const MovieInfoWidget: React.FC<MoviesDetailWidgetProps> = ({ movie }) => {
                       times: hall.timeslots.map((timeslot) => ({
                         id: timeslot.showtime_id,
                         label: timeslot.start_time,
+                        date: timeslot.date,
                         start_time: timeslot.start_time,
                         end_time: timeslot.end_time,
                         availableSeats: timeslot.available_seats,

@@ -55,7 +55,7 @@ const CinemaDetallWidget: React.FC = () => {
       />
 
       <div className="w-dvw flex-1 flex flex-col items-center box-border">
-        <div className="w-full max-w-[1200px] md:my-[43px] flex flex-col items-center z-20 bg-gray-gc1b/70 md:rounded-lg p-4 lg:p-0">
+        <div className="w-full max-w-[1200px] md:my-[43px] flex flex-col items-center z-5 bg-gray-gc1b/70 md:rounded-lg p-4 lg:p-0">
           <div className="flex w-full mb-6 md:mb-0">
             <div className="flex flex-1 md:max-w-[274px] box-border overflow-hidden object-cover object-center rounded-sm md:rounded-none">
               <HoverCard3D>

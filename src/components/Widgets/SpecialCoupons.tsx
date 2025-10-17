@@ -63,7 +63,7 @@ const SpecialCoupons = () => {
         {categories.map(category => (
           <button
             key={category}
-            className={`headline-3 px-2 py-1 whitespace-nowrap transition-colors duration-200 ${
+            className={`headline-3 px-2 py-1 whitespace-nowrap transition-colors duration-200 cursor-pointer  ${
               category === selectedCategory
                 ? 'border-b-2 border-[#8B93B0] text-white'
                 : 'text-[#8B93B0] hover:text-white'

@@ -12,7 +12,7 @@ export default function App({
     <SessionProvider session={session}>
       <AuthProvider>
         <ToastContainer
-          position="top-right"
+          position="bottom-right"
           autoClose={3000}
           hideProgressBar={false}
           newestOnTop

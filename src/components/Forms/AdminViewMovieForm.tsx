@@ -160,7 +160,7 @@ function AdminViewMovieForm({
                 <div className="flex justify-end gap-2 mt-10">
                   <Button
                     type="button"
-                    className="w-[120px] btn-base blue-normal text-fr-16"
+                    className="w-[120px] btn-base blue-normal  cursor-pointer text-fr-16"
                     onClick={onClose}
                   >
                     Close

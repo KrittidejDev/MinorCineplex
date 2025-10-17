@@ -59,7 +59,7 @@ function MoviesDetailWidget({ movie }: MoviesDetailWidgetProps) {
             </div>
             <Link href={`/movies/${movie?.id}/movie-info`}>
             <div className="mt-6 mb-10 lg:my-12">
-              <Button className="btn-base blue-normal">Movie detail</Button>
+              <Button className="btn-base blue-normal cursor-pointer">Movie detail</Button>
             </div>
             </Link>
             <p

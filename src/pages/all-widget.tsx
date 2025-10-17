@@ -64,7 +64,7 @@ const AllWidget = () => {
         <div className="flex flex-row gap-50 justify-center items-center py-10">
           {/* Column 1: Blue Buttons */}
           <div className="flex flex-col gap-10">
-            <Button className="btn-base blue-normal">
+            <Button className="btn-base blue-normal cursor-pointer">
               btn-base blue-normal
             </Button>
 

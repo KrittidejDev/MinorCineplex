@@ -93,7 +93,7 @@ export default function AdminBannerWidget() {
       <div className="flex items-center justify-between mt-20 mx-[70px]">
         <h1 className="text-gray-g63f text-f-56 font-bold">Banners</h1>
         <Button
-          className="btn-base blue-normal text-fm-16 font-bold gap-2.5 h-12 w-[135px] rounded-[4px]"
+          className="btn-base blue-normal cursor-pointer text-fm-16 font-bold gap-2.5 h-12 w-[135px] rounded-[4px]"
           onClick={handleOpen}
         >
           <div className="text-white">

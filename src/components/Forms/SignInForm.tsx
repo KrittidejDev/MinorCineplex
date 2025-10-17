@@ -89,7 +89,7 @@ const SignInForm = ({ onSubmit }: SignUpFormProps) => {
       <div className="w-full">
         <Button
           disabled={isEmpty || isSubmitting}
-          className="btn-base blue-normal w-full h-12 flex rounded-b-sm justify-center items-center"
+          className="btn-base blue-normal cursor-pointer w-full h-12 flex rounded-b-sm justify-center items-center"
         >
           {isSubmitting ? "Loading..." : "Login"}
         </Button>

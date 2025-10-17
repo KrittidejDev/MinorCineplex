@@ -6,6 +6,7 @@ import { CouponCardData } from '@/types/coupon'
 import { HoverCard3D } from '../Displays/HoverCard3D'
 import { useSession } from 'next-auth/react'
 import { userService } from '@/config/userServices'
+import { toast } from 'react-toastify'
 
 interface CouponCardProps {
   coupon: Pick<
@@ -38,7 +39,6 @@ const CouponCard = ({ coupon }: CouponCardProps) => {
         const response = (await userService.GET_COUPON_COLLECTED_BY_ID(
           coupon.id
         )) as CouponStatusResponse
-        console.log('res', response)
         const isCollected = response?.collected
         setCollected(!!isCollected)
       } catch (err) {
@@ -55,7 +55,12 @@ const CouponCard = ({ coupon }: CouponCardProps) => {
 
   const handleGetCoupon = async () => {
     if (!session?.user?.id) {
-      alert('Please login to collect coupon')
+      toast.warning(
+        <div>
+          <strong>Please login</strong>
+          <div>to collect coupon 🧾</div>
+        </div>
+      )
       return
     }
 
@@ -64,6 +69,12 @@ const CouponCard = ({ coupon }: CouponCardProps) => {
     try {
       await userService.COLLECT_COUPON(coupon.id)
       setCollected(true)
+      toast.success(
+        <div>
+          <strong>Coupon Claimed!</strong>
+          <div>{`You can find it in the "My Coupons" menu`}</div>
+        </div>
+      )
     } catch (err) {
       console.error(err)
       const error = err as {
@@ -73,8 +84,8 @@ const CouponCard = ({ coupon }: CouponCardProps) => {
       const errorMessage =
         error?.response?.data?.error ||
         error?.message ||
-        'Failed to collect coupon'
-      alert(errorMessage)
+        'Failed to collect coupon ❌'
+      toast.error(errorMessage)
     } finally {
       setLoading(false)
     }
@@ -132,7 +143,7 @@ const CouponCard = ({ coupon }: CouponCardProps) => {
               </Button>
             ) : (
               <Button
-                className="btn-base blue-normal w-full h-10 lg:h-12 text-xs lg:text-base"
+                className="btn-base blue-normal w-full h-10 lg:h-12 text-xs lg:text-base cursor-pointer"
                 onClick={handleGetCoupon}
                 disabled={loading}
               >

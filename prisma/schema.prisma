@@ -10,6 +10,7 @@ datasource db {
 
 model cinema {
   id                String   @id @default(uuid())
+  slug              String   @default("") 
   name              String   @unique
   address           String
   phone             String?
@@ -18,8 +19,6 @@ model cinema {
   lat               Float?
   lng               Float?
   icon_url          String?
-  opening_hours     String?
-  transportation    String?
   created_at        DateTime @default(now())
   updated_at        DateTime @updatedAt
   name_en           String?

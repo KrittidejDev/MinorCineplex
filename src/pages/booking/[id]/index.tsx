@@ -168,7 +168,7 @@ const BookingSeat = () => {
             Cancel
           </Button>
           <Button
-            className="btn-base blue-normal"
+            className="btn-base blue-normal cursor-pointer"
             onClick={handleConfirmPayment}
             disabled={isProcessing}
           >

@@ -8,7 +8,7 @@ import { APICoupon } from '@/types/coupon'
 import { userService } from '@/config/userServices'
 import { useSession } from 'next-auth/react'
 import { HoverCard3D } from '@/components/Displays/HoverCard3D'
-
+import { toast } from 'react-toastify'
 interface CouponStatusResponse {
   coupon: APICoupon
   is_collected: boolean
@@ -38,7 +38,9 @@ const CouponDetail = () => {
   const fetchCoupon = useCallback(async (couponId: string) => {
     try {
       setLoading(true)
-      const res = (await userService.GET_COUPON_BY_ID(couponId)) as CouponStatusResponse
+      const res = (await userService.GET_COUPON_BY_ID(
+        couponId
+      )) as CouponStatusResponse
       if (res?.coupon) {
         setCoupon(res.coupon)
         setCollected(Boolean(res.is_collected))
@@ -63,11 +65,16 @@ const CouponDetail = () => {
   // Handle กดเก็บคูปอง
   const handleGetCoupon = useCallback(async () => {
     if (!session?.user?.id) {
-      alert('Please login to collect coupon')
+      toast.warning(
+        <div>
+          <strong>Please login</strong>
+          <div>to collect coupon 🧾</div>
+        </div>
+      )
       return
     }
     if (!coupon) {
-      alert('Coupon not found')
+      toast.warning('Coupon not found')
       return
     }
 
@@ -75,12 +82,23 @@ const CouponDetail = () => {
       setLoading(true)
       await userService.COLLECT_COUPON(coupon.id)
       setCollected(true)
+      toast.success(
+        <div>
+          <strong>Coupon Claimed!</strong>
+          <div>{`You can find it in the "My Coupons" menu`}</div>
+        </div>
+      )
     } catch (err) {
       console.error(err)
-      const error = err as { response?: { data?: { error?: string } }; message?: string }
+      const error = err as {
+        response?: { data?: { error?: string } }
+        message?: string
+      }
       const errorMessage =
-        error?.response?.data?.error || error?.message || 'Failed to collect coupon'
-      alert(errorMessage)
+        error?.response?.data?.error ||
+        error?.message ||
+        'Failed to collect coupon'
+      toast.error(errorMessage)
     } finally {
       setLoading(false)
     }
@@ -142,21 +160,27 @@ const CouponDetail = () => {
             </h1>
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4">
               <p className="text-[#8B93B0] text-sm lg:text-base">Valid until</p>
-              <p className="text-white text-sm lg:text-base">{formattedEndDate}</p>
+              <p className="text-white text-sm lg:text-base">
+                {formattedEndDate}
+              </p>
             </div>
           </div>
 
           {/* Button */}
           <Button
-            className={`w-full sm:w-auto sm:min-w-[200px] h-12 text-base font-semibold rounded-lg transition-all ${
-              collected 
-                ? 'bg-gray-600 text-gray-300 cursor-not-allowed' 
+            className={`w-full sm:w-auto sm:min-w-[200px] cursor-pointer h-12 text-base font-semibold rounded-lg transition-all ${
+              collected
+                ? 'bg-gray-600 text-gray-300 cursor-not-allowed'
                 : 'bg-blue-600 hover:bg-blue-700 text-white'
             }`}
             onClick={!collected && !loading ? handleGetCoupon : undefined}
             disabled={collected || loading}
           >
-            {loading ? 'Collecting...' : collected ? 'Coupon Saved' : 'Get coupon'}
+            {loading
+              ? 'Collecting...'
+              : collected
+                ? 'Coupon Saved'
+                : 'Get coupon'}
           </Button>
 
           {/* Description */}
@@ -176,12 +200,22 @@ const CouponDetail = () => {
 
           {/* Terms & Conditions */}
           <div className="text-white text-sm sm:text-base">
-            <p className="font-semibold mb-3 text-base sm:text-lg">Terms & Conditions</p>
+            <p className="font-semibold mb-3 text-base sm:text-lg">
+              Terms & Conditions
+            </p>
             <ul className="space-y-2 pl-5">
-              <li className="list-disc leading-relaxed">Valid for a minimum purchase of 400 THB.</li>
-              <li className="list-disc leading-relaxed">Applicable for Deluxe and Premium seats.</li>
-              <li className="list-disc leading-relaxed">Cannot be combined with other offers or exchanged for cash.</li>
-              <li className="list-disc leading-relaxed">Non-refundable and non-transferable.</li>
+              <li className="list-disc leading-relaxed">
+                Valid for a minimum purchase of 400 THB.
+              </li>
+              <li className="list-disc leading-relaxed">
+                Applicable for Deluxe and Premium seats.
+              </li>
+              <li className="list-disc leading-relaxed">
+                Cannot be combined with other offers or exchanged for cash.
+              </li>
+              <li className="list-disc leading-relaxed">
+                Non-refundable and non-transferable.
+              </li>
             </ul>
           </div>
         </div>

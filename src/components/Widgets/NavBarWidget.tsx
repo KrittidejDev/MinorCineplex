@@ -60,9 +60,9 @@ const NavBarWidget = () => {
   return (
     <div
       ref={containerRef}
-      className="w-full py-4 px-4 md:px-20 flex items-center justify-between bg-black/20 z-10"
+      className="w-full py-4 px-4 md:px-20 flex items-center justify-between bg-black/20 z-10 "
     >
-      <Link href={"/"} className="w-7 h-8 sm:w-[42px] sm:h-[48px]">
+      <Link href={"/"} className="w-7 h-8 sm:w-[42px] sm:h-[48px] cursor-pointer">
         <LogoM className="w-full h-full" />
       </Link>
       <div className="hidden md:flex cursor-pointer">
@@ -75,7 +75,7 @@ const NavBarWidget = () => {
         ) : (
           <div>
             <Link href={"/auth/login"}>
-              <button className="btn-base py-3! hover:underline">Login</button>
+              <button className="btn-base py-3! hover:underline ">Login</button>
             </Link>
             <Link href={"/auth/signup"}>
               <button className="btn-base white-outline-normal py-3!">
@@ -90,7 +90,7 @@ const NavBarWidget = () => {
       </div>
       {_isOpen && (
         <NavbarMenu
-          className="z-50"
+          className="z-50 "
           data={userData as UserDataResponse}
           onLogOut={signOut}
         />

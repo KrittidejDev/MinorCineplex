@@ -119,7 +119,7 @@ export default function SummaryBoxCard({
               <span>{lang === "en" ? "Coupon" : "คูปอง"}</span>
               <Button
                 onClick={() => setCouponModalOpen(true)}
-                className="p-2 rounded bg-gray-g3b0 text-white text-sm"
+                className="p-2 rounded bg-gray-g3b0 text-white text-sm cursor-pointer"
               >
                 {selectedCoupon
                   ? `${selectedCoupon.code} - ${selectedCoupon.discount_value}%`
@@ -172,7 +172,7 @@ export default function SummaryBoxCard({
 
           {/* Payment Button */}
           <Button
-            className="btn-base blue-normal"
+            className="btn-base blue-normal cursor-pointer"
             onClick={onPayment}
             disabled={!canPay}
           >
@@ -188,7 +188,7 @@ export default function SummaryBoxCard({
             {/* ปุ่ม X */}
             <button
               onClick={() => setCouponModalOpen(false)}
-              className="absolute top-3 right-3 text-gray-gedd hover:text-white transition"
+              className="absolute top-3 right-3 text-gray-gedd hover:text-white transition cursor-pointer"
             >
               ✕
             </button>
@@ -276,7 +276,7 @@ export default function SummaryBoxCard({
               <Button
                 disabled={!selectedCoupon}
                 onClick={() => setCouponModalOpen(false)}
-                className={`px-6 py-2 rounded-lg font-semibold transition ${
+                className={`px-6 py-2 rounded-lg font-semibold transition cursor-pointer ${
                   selectedCoupon
                     ? "bg-blue-bbee text-white hover:bg-blue-bbee/90"
                     : "bg-gray-g3b0 text-gray-gedd cursor-not-allowed"

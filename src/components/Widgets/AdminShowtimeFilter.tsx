@@ -99,7 +99,7 @@ const AdminShowtimeFilter = ({
         </div>
         <div className="flex items-center gap-2">
           <button
-            className="h-12 flex items-center justify-center btn-base blue-normal text-fm-16"
+            className="h-12 flex items-center justify-center btn-base blue-normal cursor-pointer text-fm-16"
             onClick={clearQuery}
           >
             Clear

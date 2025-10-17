@@ -19,40 +19,38 @@ export default function NowShowingComingSoon({
   const [activeTab, setActiveTab] = useState("nowShowing");
   const router = useRouter();
 
-  if (loading) return <div className="text-center py-20">Loading...</div>;
-  if (!movies || movies.length === 0)
-    return <div className="text-center py-20">No movies found</div>;
+  const today = new Date();
+  const todayStr = today.toISOString().split("T")[0];
 
-  let moviesToDisplay;
+  let moviesToDisplay: APIMovie[] = [];
 
-  if (showAll) {
-    moviesToDisplay = movies;
-  } else {
-    const today = new Date();
-    const todayStr = today.toISOString().split("T")[0];
+  if (!loading && movies && movies.length > 0) {
+    if (showAll) {
+      moviesToDisplay = movies;
+    } else {
+      const nowShowingMovies = movies
+        .filter(
+          (m) =>
+            m.release_date &&
+            new Date(m.release_date) <= today &&
+            m.showtimes?.some(
+              (st) => new Date(st).toISOString().split("T")[0] === todayStr
+            )
+        )
+        .slice(0, 4);
 
-    const nowShowingMovies = movies
-      .filter(
-        (m) =>
-          m.release_date &&
-          new Date(m.release_date) <= today &&
-          m.showtimes?.some(
-            (st) => new Date(st).toISOString().split("T")[0] === todayStr
-          )
-      )
-      .slice(0, 4);
+      const comingSoonMovies = movies
+        .filter((m) => m.release_date && new Date(m.release_date) > today)
+        .slice(0, 4);
 
-    const comingSoonMovies = movies
-      .filter((m) => m.release_date && new Date(m.release_date) > today)
-      .slice(0, 4);
-
-    moviesToDisplay =
-      activeTab === "nowShowing" ? nowShowingMovies : comingSoonMovies;
+      moviesToDisplay =
+        activeTab === "nowShowing" ? nowShowingMovies : comingSoonMovies;
+    }
   }
 
   return (
     <div className="w-screen flex justify-center py-20 px-4">
-      <div className="flex flex-col gap-10">
+      <div className="w-full max-w-[1200px] flex flex-col gap-10">
         {!showAll && (
           <div className="flex justify-between">
             <div className="flex gap-4">
@@ -85,24 +83,31 @@ export default function NowShowingComingSoon({
           </div>
         )}
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
-          {moviesToDisplay.map((movie) => (
-            <div
-              key={movie.id}
-              className="cursor-pointer"
-              onClick={() => router.push(`/movies/${movie.id}/movie-info`)}
-            >
-              <MovieCard
-                id={movie.id}
-                title={movie.title}
-                poster_url={movie.poster_url}
-                release_date={movie.release_date || undefined}
-                rating={movie.rating}
-                genre={movie.genre}
-              />
-            </div>
-          ))}
-        </div>
+        {/* waiting for loading spinner */}
+        {loading ? (
+          <div className="text-center py-20">Loading...</div>
+        ) : moviesToDisplay.length === 0 ? (
+          <div className="text-center py-20">No movies found</div>
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+            {moviesToDisplay.map((movie) => (
+              <div
+                key={movie.id}
+                className="cursor-pointer"
+                onClick={() => router.push(`/movies/${movie.id}/movie-info`)}
+              >
+                <MovieCard
+                  id={movie.id}
+                  title={movie.title}
+                  poster_url={movie.poster_url}
+                  release_date={movie.release_date || undefined}
+                  rating={movie.rating}
+                  genre={movie.genre}
+                />
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

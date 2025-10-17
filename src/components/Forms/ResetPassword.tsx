@@ -73,7 +73,7 @@ const ResetPassword = ({ onSubmit, align, isLoading }: ResetPasswordProps) => {
       <div className="w-full flex">
         <Button
           disabled={isEmpty || isLoading}
-          className={`${align === "center" ? "btn-base blue-normal" : "btn-base white-outline-normal"} w-full max-w-[182px] h-12 flex rounded-b-sm justify-center items-center`}
+          className={`${align === "center" ? "btn-base blue-normal cursor-pointer" : "btn-base white-outline-normal"} w-full max-w-[182px] h-12 flex rounded-b-sm justify-center items-center`}
         >
           {isLoading ? "Loading..." : "Reset Password"}
         </Button>

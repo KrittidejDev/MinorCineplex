@@ -156,7 +156,7 @@ function AdminCreateNewMovieForm({
                         </p>
                       </div>
                       <div className="mt-3.5">
-                        <Button type="button" className="btn-base blue-normal">
+                        <Button type="button" className="btn-base blue-normal cursor-pointer">
                           Browse Files
                         </Button>
                       </div>
@@ -247,13 +247,13 @@ function AdminCreateNewMovieForm({
                   <Button
                     type="button"
                     onClick={onClose}
-                    className="w-[120px] btn-base blue-normal opacity-40 text-fr-16"
+                    className="w-[120px] btn-base blue-normal  cursor-pointer opacity-40 text-fr-16"
                   >
                     Cancel
                   </Button>
                   <Button
                     type="submit"
-                    className="w-[120px] btn-base blue-normal text-fr-16"
+                    className="w-[120px] btn-base blue-normal cursor-pointer text-fr-16"
                   >
                     Save
                   </Button>

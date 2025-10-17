@@ -16,10 +16,10 @@ export default async function handler(
   if (!userId) return res.status(401).json({ error: "Unauthorized" });
 
   try {
-    // 1️⃣ ดึง coupon ทั้งหมด (มี end_date ด้วย)
+    
     const coupons = await getCoupons();
 
-    // 2️⃣ map เช็คว่า user เก็บคูปองหรือยัง
+    
     const collectedCoupons = await Promise.all(
       coupons.map(async (c) => {
         const userCoupon = await prisma.userCoupon.findUnique({
@@ -34,9 +34,9 @@ export default async function handler(
 
         if (!userCoupon?.is_collected) return null;
 
-        // 3️⃣ return coupon พร้อม end_date
+       
         return {
-          ...c, // จะรวม field ของ coupon: end_date, title_en, image, etc.
+          ...c, 
           collected_at: userCoupon.collected_at,
         };
       })

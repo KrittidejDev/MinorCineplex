@@ -18,8 +18,6 @@ model cinema {
   lat               Float?
   lng               Float?
   icon_url          String?
-  opening_hours     String?
-  transportation    String?
   created_at        DateTime @default(now())
   updated_at        DateTime @updatedAt
   name_en           String?
@@ -27,6 +25,7 @@ model cinema {
   group_location_en String?
   province          String?
   province_en       String?
+  slug              String   @default("")
   halls             hall[]
 }
 
@@ -37,7 +36,6 @@ model hall {
   cinema_id  String
   created_at DateTime   @default(now())
   updated_at DateTime   @updatedAt
-
   cinema     cinema     @relation(fields: [cinema_id], references: [id], onDelete: Cascade)
   seats      seat[]
   showtimes  showtime[]

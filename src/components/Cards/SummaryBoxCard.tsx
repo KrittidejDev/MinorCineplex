@@ -10,12 +10,13 @@ import BookingInfo from "./BookingInfo";
 import { Button } from "../ui/button";
 import { BillInfo } from "@/types/cinema";
 import { CouponCardData } from "@/types/coupon";
+import { CloseRoundLight, ExpandRightLight } from "../Icons/Icons";
 
 interface Props extends BillInfo {
   countdown?: string;
   coupons?: CouponCardData[];
   selectedCoupon?: CouponCardData | null;
-  onSelectCoupon?: (coupon: CouponCardData) => void;
+  onSelectCoupon?: (coupon: CouponCardData | null) => void;
   onPayment?: () => void;
   canPay: boolean;
   paymentMethod?: "credit_card" | "qr_code";
@@ -39,7 +40,14 @@ export default function SummaryBoxCard({
   const lang = i18n.language;
 
   const [isCouponModalOpen, setCouponModalOpen] = useState(false);
-
+  console.log(selectedCoupon);
+  let totalPriceWithDiscount = 0;
+  if (selectedCoupon?.discount_type === "AMOUNT") {
+    totalPriceWithDiscount = totalPrice - selectedCoupon.discount_value;
+  } else if (selectedCoupon?.discount_type === "PERCENTAGE") {
+    totalPriceWithDiscount =
+      totalPrice * (1 - selectedCoupon.discount_value / 100);
+  }
   return (
     <div className="w-full min-w-[305px] h-fit bg-gray-gc1b rounded-lg">
       {/* Movie Info */}
@@ -105,7 +113,7 @@ export default function SummaryBoxCard({
       {step === "1" && totalSelected.length > 0 && (
         <BookingInfo
           totalSelected={totalSelected}
-          totalPrice={totalPrice}
+          totalPrice={totalPriceWithDiscount}
           lockSeats={lockSeats}
         />
       )}
@@ -115,18 +123,30 @@ export default function SummaryBoxCard({
         <div className="p-4 flex flex-col gap-4">
           {/* Coupon Button */}
           {coupons.length > 0 && (
-            <div className="flex justify-between items-center text-gray-gedd">
-              <span>{lang === "en" ? "Coupon" : "คูปอง"}</span>
-              <Button
-                onClick={() => setCouponModalOpen(true)}
-                className="p-2 rounded bg-gray-g3b0 text-white text-sm cursor-pointer"
-              >
-                {selectedCoupon
-                  ? `${selectedCoupon.code} - ${selectedCoupon.discount_value}%`
-                  : lang === "en"
-                    ? "Select Coupon"
-                    : "เลือกคูปอง"}
-              </Button>
+            <div className="flex flex-col justify-start items-start text-gray-gedd gap-2">
+              <div className="flex justify-between items-center w-full">
+                <span>{lang === "en" ? "Coupon" : "คูปอง"}</span>
+                <span
+                  className="text-blue-bbee cursor-pointer"
+                  onClick={() => setCouponModalOpen(true)}
+                >
+                  <ExpandRightLight width="16" height="16" color="#C8CEDD" />
+                </span>
+              </div>
+              <div className="w-full">
+                <Button className="p-2 rounded bg-gray-g63f text-gray-g3b0 text-sm w-full"
+                onClick={() => setCouponModalOpen(true)}>
+                  {selectedCoupon
+                    ? <span className="truncate">{selectedCoupon.title_en}</span>
+                    : lang === "en"
+                      ? "Select Coupon"
+                      : "เลือกคูปอง"}
+                {selectedCoupon && <span className="text-blue-bbee cursor-pointer"
+                onClick={() => onSelectCoupon && onSelectCoupon(null)}>
+                <CloseRoundLight width="16" height="16" color="#C8CEDD" />
+                </span>}
+                </Button>
+              </div>
             </div>
           )}
 
@@ -139,7 +159,10 @@ export default function SummaryBoxCard({
           {/* Discount */}
           <div className="flex justify-between text-white-wfff font-bold text-lg">
             <span>{lang === "en" ? "Discount" : "ส่วนลด"}</span>
-            <span>-{selectedCoupon?.discount_value || 0}%</span>
+            <span>
+              -{selectedCoupon?.discount_value || 0}{" "}
+              {selectedCoupon?.discount_type === "PERCENTAGE" ? "%" : "THB"}
+            </span>
           </div>
 
           {/* Payment Method */}
@@ -159,15 +182,7 @@ export default function SummaryBoxCard({
           {/* Total */}
           <div className="flex justify-between text-white-wfff font-bold text-lg">
             <span>{lang === "en" ? "Total" : "รวมทั้งหมด"}</span>
-            <span>
-              {new Intl.NumberFormat(lang === "en" ? "en-US" : "th-TH", {
-                style: "currency",
-                currency: "THB",
-              }).format(
-                totalPrice *
-                  (selectedCoupon ? 1 - selectedCoupon.discount_value / 100 : 1)
-              )}
-            </span>
+            <span>{Math.max(totalPriceWithDiscount, 0)}</span>
           </div>
 
           {/* Payment Button */}

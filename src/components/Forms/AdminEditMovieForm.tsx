@@ -28,7 +28,6 @@ function AdminEditMovieForm({
     trailer: "",
   });
 
-  // ใช้จริงผ่าน posterPreview → eslint ไม่เตือนอีก
   const [, setPosterFile] = useState<File | null>(null);
   const [posterPreview, setPosterPreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -40,9 +39,7 @@ function AdminEditMovieForm({
     trailer: "",
   });
 
-  const [selectedGenre, setSelectedGenre] = useState("");
-  // กำหนดไว้แต่ไม่ใช้จริง → ปิด eslint เตือน
-  const [, setSelectedRating] = useState("");
+  const [selectedGenre, setSelectedGenre] = useState<string[]>([]);
   const [, setLoading] = useState(false);
 
   useEffect(() => {
@@ -54,8 +51,10 @@ function AdminEditMovieForm({
         rating: movie.rating?.toString() || "",
         trailer: movie.trailer_url || "",
       });
-      setSelectedGenre(movie.genre?.toLowerCase() || "");
-      setSelectedRating(movie.rating?.toString() || "");
+
+      const genresArray = movie.genre ? movie.genre.split(",") : [];
+      setSelectedGenre(genresArray.map((g) => g.trim()));
+
       setPosterPreview(movie.poster_url || null);
     }
   }, [movie]);
@@ -110,7 +109,7 @@ function AdminEditMovieForm({
       description: formData.description,
       duration_min: Number(formData.duration),
       trailer_url: formData.trailer,
-      genre: selectedGenre,
+      genre: selectedGenre.join(","),
       rating: ratingValue.toString(),
     };
 
@@ -168,7 +167,10 @@ function AdminEditMovieForm({
                         </p>
                       </div>
                       <div className="mt-3.5">
-                        <Button type="button" className="btn-base blue-normal cursor-pointer">
+                        <Button
+                          type="button"
+                          className="btn-base blue-normal cursor-pointer"
+                        >
                           Browse Files
                         </Button>
                       </div>
@@ -226,10 +228,21 @@ function AdminEditMovieForm({
                       label="Genre"
                       placeholder="Action"
                       value={selectedGenre}
-                      onChange={(value) => setSelectedGenre(value)}
+                      onChange={(value: string | string[]) => {
+                        if (Array.isArray(value)) {
+                          setSelectedGenre(value);
+                        } else {
+                          setSelectedGenre([value]);
+                        }
+                      }}
                       options={genreOptions}
-                      errors={!selectedGenre ? "Genre is required" : undefined}
+                      errors={
+                        selectedGenre.length === 0
+                          ? "Genre is required"
+                          : undefined
+                      }
                       require={true}
+                      multiple={true}
                     />
                   </div>
                   <div className="flex flex-col flex-1">

@@ -161,7 +161,7 @@ export async function createMovie(data: {
   title: string;
   description: string;
   duration: number;
-  genre: string;
+  genre: string[];
   rating: string;
   trailer?: string;
   poster_url?: string;
@@ -171,7 +171,7 @@ export async function createMovie(data: {
       title: data.title,
       description: data.description,
       duration_min: data.duration,
-      genre: data.genre,
+      genre: data.genre.join(","),
       rating: data.rating,
       trailer_url: data.trailer,
       poster_url: data.poster_url,

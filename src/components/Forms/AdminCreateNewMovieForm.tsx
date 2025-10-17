@@ -26,7 +26,7 @@ function AdminCreateNewMovieForm({
     poster_url: "",
   });
 
-  const [, setPosterFile] = useState<File | null>(null); // removed unused variable warning
+  const [, setPosterFile] = useState<File | null>(null);
   const [posterPreview, setPosterPreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [errors, setErrors] = useState({
@@ -42,7 +42,7 @@ function AdminCreateNewMovieForm({
     if (!file) return;
 
     setPosterFile(file);
-    setPosterPreview(URL.createObjectURL(file)); // preview ชั่วคราว
+    setPosterPreview(URL.createObjectURL(file));
 
     try {
       const formData = new FormData();
@@ -52,9 +52,8 @@ function AdminCreateNewMovieForm({
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      // ใช้ Next.js Image ได้
       setFormData((prev) => ({ ...prev, poster_url: res.data.url }));
-      setPosterPreview(res.data.url); // update preview ด้วย URL จริง
+      setPosterPreview(res.data.url);
     } catch (err) {
       console.error("Upload poster failed:", err);
       alert("ไม่สามารถอัปโหลด poster ได้");
@@ -77,8 +76,8 @@ function AdminCreateNewMovieForm({
       }
     };
 
-  const [selectedGenre, setSelectedGenre] = useState("");
-  // removed selectedRating and loading warnings by safely omitting
+  const [selectedGenre, setSelectedGenre] = useState<string[]>([]);
+
   const genreOptions = [
     { value: "Action", label: "Action" },
     { value: "Comedy", label: "Comedy" },
@@ -102,7 +101,7 @@ function AdminCreateNewMovieForm({
     const payload = {
       ...formData,
       duration: Number(formData.duration),
-      genre: selectedGenre,
+      genre: selectedGenre.join(","),
       rating: ratingValue,
       poster_url: formData.poster_url,
     };
@@ -156,7 +155,10 @@ function AdminCreateNewMovieForm({
                         </p>
                       </div>
                       <div className="mt-3.5">
-                        <Button type="button" className="btn-base blue-normal cursor-pointer">
+                        <Button
+                          type="button"
+                          className="btn-base blue-normal cursor-pointer"
+                        >
                           Browse Files
                         </Button>
                       </div>
@@ -214,10 +216,21 @@ function AdminCreateNewMovieForm({
                       label="Genre"
                       placeholder="Action"
                       value={selectedGenre}
-                      onChange={(value: string) => setSelectedGenre(value)}
+                      onChange={(value: string | string[]) => {
+                        if (Array.isArray(value)) {
+                          setSelectedGenre(value);
+                        } else {
+                          setSelectedGenre([value]);
+                        }
+                      }}
                       options={genreOptions}
-                      errors={!selectedGenre ? "Genre is required" : undefined}
+                      errors={
+                        selectedGenre.length === 0
+                          ? "Genre is required"
+                          : undefined
+                      }
                       require={true}
+                      multiple={true}
                     />
                   </div>
                   <div className="flex flex-col flex-1">

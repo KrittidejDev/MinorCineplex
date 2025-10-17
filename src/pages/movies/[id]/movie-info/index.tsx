@@ -9,7 +9,6 @@ import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import axios from "axios";
 import { APIMovie } from "@/types/movie";
-import ShowTime from "@/components/Widgets/ShowTime";
 import { CinemaByProvince } from "@/components/Widgets/CinemaLocation";
 
 type TimeSlot = {

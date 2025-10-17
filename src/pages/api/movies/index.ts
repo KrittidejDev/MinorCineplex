@@ -44,7 +44,7 @@ export default async function handler(
         title,
         description,
         duration: Number(duration),
-        genre,
+        genre: Array.isArray(genre) ? genre : genre.split(","),
         rating: String(rating),
         trailer,
         poster_url,

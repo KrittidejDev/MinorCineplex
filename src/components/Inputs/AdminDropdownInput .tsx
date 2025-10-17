@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import ExpandDownLight from "../Icons/ExpandDownLight";
 
 type DropdownOption = {
@@ -8,8 +8,8 @@ type DropdownOption = {
 
 type AdminDropdownInputProps = {
   placeholder?: string;
-  value?: string;
-  onChange?: (value: string) => void;
+  value?: string | string[];
+  onChange?: (value: string | string[]) => void;
   options?: DropdownOption[];
   errors?: string;
   disabled?: boolean;
@@ -17,6 +17,7 @@ type AdminDropdownInputProps = {
   text?: string;
   require?: boolean;
   className?: string;
+  multiple?: boolean;
 };
 
 const AdminDropdownInput = ({
@@ -30,8 +31,21 @@ const AdminDropdownInput = ({
   text,
   require,
   className = "",
+  multiple = false,
 }: AdminDropdownInputProps) => {
   const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const baseClass =
     "w-full mt-1 p-3 border rounded-sm focus:outline-none placeholder:text-gray-g3b0 cursor-pointer";
@@ -39,15 +53,36 @@ const AdminDropdownInput = ({
     ? "border-red-r64b text-red-r64b placeholder-white-wfff"
     : "border-blue-bbee text-gray-g63f placeholder-gray-g63f";
 
-  const selectedOption = options.find((option) => option.value === value);
+  const selectedValues = multiple
+    ? Array.isArray(value)
+      ? value
+      : []
+    : typeof value === "string"
+      ? [value]
+      : [];
+
+  const selectedLabels = options
+    .filter((opt) => selectedValues.includes(opt.value))
+    .map((opt) => opt.label)
+    .join(", ");
 
   const handleSelect = (optionValue: string) => {
-    onChange?.(optionValue);
-    setIsOpen(false);
+    if (multiple) {
+      let newValues: string[];
+      if (selectedValues.includes(optionValue)) {
+        newValues = selectedValues.filter((v) => v !== optionValue);
+      } else {
+        newValues = [...selectedValues, optionValue];
+      }
+      onChange?.(newValues);
+    } else {
+      onChange?.(optionValue);
+      setIsOpen(false);
+    }
   };
 
   return (
-    <div className="flex flex-col relative">
+    <div className="flex flex-col relative"  ref={dropdownRef}>
       {label && (
         <div className="text-blue-bbee text-fr-16">
           {label} {require && <span className="text-red-r64b">*</span>}
@@ -61,8 +96,10 @@ const AdminDropdownInput = ({
           onClick={() => !disabled && setIsOpen(!isOpen)}
         >
           <div className="flex items-center justify-between">
-            <span className={value ? "text-gray-g63f" : "text-gray-g3b0"}>
-              {selectedOption ? selectedOption.label : placeholder}
+            <span
+              className={selectedLabels ? "text-gray-g63f" : "text-gray-g3b0"}
+            >
+              {selectedLabels || placeholder}
             </span>
             <ExpandDownLight
               width={20}
@@ -75,15 +112,28 @@ const AdminDropdownInput = ({
         {/* Dropdown Options */}
         {isOpen && !disabled && (
           <div className="absolute z-50 w-full mt-1 bg-white border border-blue-bbee rounded-sm shadow-lg max-h-60 overflow-y-auto">
-            {options.map((option) => (
-              <div
-                key={option.value}
-                className="px-3 py-2 hover:bg-gray-50 cursor-pointer text-gray-g63f text-fr-14"
-                onClick={() => handleSelect(option.value)}
-              >
-                {option.label}
-              </div>
-            ))}
+            {options.map((option) => {
+              const isSelected = selectedValues.includes(option.value); // <-- เพิ่ม: เช็คว่าตัวนี้ถูกเลือกแล้ว
+              return (
+                <div
+                  key={option.value}
+                  className={`flex items-center px-3 py-2 hover:bg-gray-50 cursor-pointer text-gray-g63f text-fr-14 ${
+                    isSelected ? "bg-blue-50" : ""
+                  }`}
+                  onClick={() => handleSelect(option.value)}
+                >
+                  {multiple && (
+                    <input
+                      type="checkbox"
+                      checked={isSelected}
+                      readOnly
+                      className="mr-2"
+                    />
+                  )}
+                  <span>{option.label}</span>
+                </div>
+              );
+            })}
           </div>
         )}
 

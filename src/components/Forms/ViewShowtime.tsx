@@ -47,7 +47,7 @@ const ViewShowtime = ({ isShowModal, onClose, data }: ViewShowtimeProps) => {
             <Button
               type="button"
               onClick={onClose}
-              className="btn-base blue-normal opacity-40 w-[120px]"
+              className="btn-base blue-normal cursor-pointer opacity-40 w-[120px]"
             >
               Back
             </Button>

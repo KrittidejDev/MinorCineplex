@@ -143,7 +143,7 @@ const CouponCard = ({ coupon }: CouponCardProps) => {
               </Button>
             ) : (
               <Button
-                className="btn-base blue-normal w-full h-10 lg:h-12 text-xs lg:text-base"
+                className="btn-base blue-normal w-full h-10 lg:h-12 text-xs lg:text-base cursor-pointer"
                 onClick={handleGetCoupon}
                 disabled={loading}
               >

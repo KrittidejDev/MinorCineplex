@@ -117,11 +117,11 @@ const CreateNewShowtimeForm = ({
             <Button
               type="button"
               onClick={onClose}
-              className="btn-base blue-normal opacity-40 w-[120px]"
+              className="btn-base blue-normal cursor-pointer opacity-40 w-[120px]"
             >
               Cancel
             </Button>
-            <Button type="submit" className="btn-base blue-normal w-[120px]">
+            <Button type="submit" className="btn-base blue-normal cursor-pointer w-[120px]">
               Create
             </Button>
           </div>

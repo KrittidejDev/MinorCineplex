@@ -16,7 +16,7 @@ const RegisterSuccess = () => {
       </div>
       <Button
         asChild
-        className="btn-base blue-normal w-full h-12 flex rounded-b-sm justify-center items-center"
+        className="btn-base blue-normal  cursor-pointer w-full h-12 flex rounded-b-sm justify-center items-center"
       >
         <Link href="/">
           <span className="text-fm-16">Back to home</span>

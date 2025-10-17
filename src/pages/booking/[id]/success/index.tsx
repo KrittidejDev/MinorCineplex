@@ -126,7 +126,7 @@ const BookingSuccessPage = () => {
             {error || "ไม่พบข้อมูลการจอง"}
           </div>
           <Button
-            className="btn-base blue-normal"
+            className="btn-base blue-normal cursor-pointer"
             onClick={() => router.push("/")}
           >
             กลับหน้าหลัก
@@ -306,7 +306,7 @@ const BookingSuccessPage = () => {
           {/* Actions */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button
-              className="btn-base blue-normal"
+              className="btn-base blue-normal cursor-pointer"
               onClick={() => router.push("/")}
             >
               กลับหน้าหลัก

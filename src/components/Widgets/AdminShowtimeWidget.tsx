@@ -134,7 +134,7 @@ const AdminShowtimeWidget = ({
           <h1 className="text-f-56 text-gray-g63f">Showtime</h1>
           <Button
             onClick={() => setIsShowCreateModal(true)}
-            className="btn-base blue-normal text-fm-16 font-bold px-4 py-3 gap-2.5"
+            className="btn-base blue-normal cursor-pointer text-fm-16 font-bold px-4 py-3 gap-2.5"
           >
             <AddRoundLight width={24} height={24} color={"#FFFFFF"} />
             Add Showtime

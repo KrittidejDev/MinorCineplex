@@ -67,7 +67,7 @@ function AdminCouponWidget() {
           <h1 className="font-bold text-f-56 text-gray-g63f">Coupon</h1>
 
           <Button
-            className="btn-base blue-normal text-fm-16 font-bold px-4 py-3 gap-2.5"
+            className="btn-base blue-normal cursor-pointer text-fm-16 font-bold px-4 py-3 gap-2.5"
             onClick={() => setIsShowCreateModal(true)}
           >
             <AddRoundLight width={24} height={24} color={"#FFFFFF"} />

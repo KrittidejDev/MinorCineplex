@@ -188,7 +188,7 @@ export default function SummaryBoxCard({
             {/* ปุ่ม X */}
             <button
               onClick={() => setCouponModalOpen(false)}
-              className="absolute top-3 right-3 text-gray-gedd hover:text-white transition"
+              className="absolute top-3 right-3 text-gray-gedd hover:text-white transition cursor-pointer"
             >
               ✕
             </button>

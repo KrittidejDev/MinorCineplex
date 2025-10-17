@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { SearchLight, ExpandDownLight, DateTodayLight } from "../Icons/Icons";
 import { Input } from "../ui/input";
-import { useRouter } from "next/router";
+
 import {
   Select,
   SelectContent,
@@ -17,6 +17,8 @@ interface FilterOption {
 
 interface FilterSearchProps {
   onSearch?: (filters: FilterData) => void;
+  query: FilterData;
+  setQuery: (query: FilterData) => void;
   className?: string;
 }
 
@@ -24,7 +26,6 @@ export interface FilterData {
   title?: string;
   genre?: string;
   language?: string;
-  city?: string;
   releaseDate?: string;
 }
 
@@ -40,27 +41,12 @@ const languageOptions: FilterOption[] = [
   { value: "en", label: "English" },
 ];
 
-const cityOptions: FilterOption[] = [
-  { value: "bangkok", label: "Bangkok" },
-  { value: "chiang-mai", label: "Chiang Mai" },
-  { value: "phuket", label: "Phuket" },
-  { value: "pattaya", label: "Pattaya" },
-  { value: "khon-kaen", label: "Khon Kaen" },
-  { value: "udon-thani", label: "Udon Thani" },
-];
-
 const FilterSearch: React.FC<FilterSearchProps> = ({
   onSearch,
+  query,
+  setQuery,
   className = "",
 }) => {
-  const router = useRouter();
-  const [filters, setFilters] = useState<FilterData>({
-    title: "",
-    language: "",
-    genre: "",
-    city: "",
-    releaseDate: "",
-  });
 
   const [, setMovies] = useState<Movie[]>([]);
   const [movieOptions, setMovieOptions] = useState<FilterOption[]>([]);
@@ -92,11 +78,12 @@ const FilterSearch: React.FC<FilterSearchProps> = ({
               .filter((g) => g !== "");
           });
 
-          const uniqueGenres = Array.from(new Set(allGenres));
-
+          const uniqueGenres = Array.from(
+            new Set(allGenres.map(g => g.toLowerCase()))
+          );
           const genreOpts = uniqueGenres.map((g) => ({
-            value: g.toLowerCase(),
-            label: g,
+            value: g,
+            label: g.charAt(0).toUpperCase() + g.slice(1),
           }));
 
           setGenreOptions(genreOpts);
@@ -110,20 +97,14 @@ const FilterSearch: React.FC<FilterSearchProps> = ({
   }, []);
 
   const handleInputChange = (field: keyof FilterData, value: string) => {
-    setFilters((prev) => ({
-      ...prev,
+    setQuery({
+      ...query,
       [field]: value,
-    }));
+    });
   };
 
   const handleSearch = () => {
-    if (onSearch) onSearch(filters);
-    const params = new URLSearchParams();
-    Object.entries(filters).forEach(([key, value]) => {
-      if (value) params.append(key, value);
-
-      router.push(`/?${params.toString()}`);
-    });
+    if (onSearch) onSearch(query);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -137,7 +118,7 @@ const FilterSearch: React.FC<FilterSearchProps> = ({
         <div className="w-full lg:w-48">
           <Select
             value={
-              movieOptions.find((m) => m.label === filters.title)?.value || ""
+              movieOptions.find((m) => m.label === query?.title)?.value || ""
             }
             onValueChange={(value) => {
               const movie = movieOptions.find((m) => m.value === value);
@@ -168,7 +149,7 @@ const FilterSearch: React.FC<FilterSearchProps> = ({
         <div className="flex gap-2 lg:contents">
           <div className="w-39 lg:w-48">
             <Select
-              value={filters.language}
+              value={query?.language || ""}
               onValueChange={(value) => handleInputChange("language", value)}
             >
               <SelectTrigger className="bg-gray-g63f border-gray-gf7e text-white rounded-sm h-12 focus:border-gray-g3b0 focus:ring-0 w-full relative cursor-pointer">
@@ -193,7 +174,7 @@ const FilterSearch: React.FC<FilterSearchProps> = ({
 
           <div className="w-39 lg:w-48">
             <Select
-              value={filters.genre}
+              value={query?.genre || ""}
               onValueChange={(value) => handleInputChange("genre", value)}
             >
               <SelectTrigger className="bg-gray-g63f border-gray-gf7e text-white rounded-sm h-12 focus:border-gray-g3b0 focus:ring-0 w-full relative cursor-pointer">
@@ -223,40 +204,14 @@ const FilterSearch: React.FC<FilterSearchProps> = ({
           </div>
         </div>
 
-        {/* City + Release Date */}
         <div className="flex gap-2 lg:contents">
-          <div className="w-39 lg:w-48">
-            <Select
-              value={filters.city}
-              onValueChange={(value) => handleInputChange("city", value)}
-            >
-              <SelectTrigger className="bg-gray-g63f border-gray-gf7e text-white rounded-sm h-12 focus:border-gray-g3b0 focus:ring-0 w-full relative cursor-pointer">
-                <SelectValue placeholder="City" />
-                <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                  <ExpandDownLight width="16" height="16" color="#8B93B0" />
-                </div>
-              </SelectTrigger>
-              <SelectContent className="bg-gray-g63f border-gray-gf7e">
-                {cityOptions.map((option) => (
-                  <SelectItem
-                    key={option.value}
-                    value={option.value}
-                    className="text-white hover:bg-gray-gf7e focus:bg-gray-gf7e cursor-pointer"
-                  >
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
           {/* Release Date */}
           <div className="w-39 lg:w-48">
             <div className="relative">
               <Input
                 type="text"
                 placeholder="Release Date"
-                value={filters.releaseDate}
+                value={query?.releaseDate || ""}
                 onChange={(e) =>
                   handleInputChange("releaseDate", e.target.value)
                 }

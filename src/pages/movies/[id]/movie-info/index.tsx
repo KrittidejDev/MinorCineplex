@@ -1,12 +1,11 @@
 import NavAndFooterWithBanner from "@/components/MainLayout/NavAndFooterWithBanner";
-import FilterSearch from "@/components/Widgets/FilterSearch";
 import MovieInfoWidget from "@/components/Widgets/MovieInfoWidget";
 import CinemaLocation from "@/components/Widgets/CinemaLocation";
 import { useLocationPermission } from "@/lib/hooks/useLocationPermission";
 import LocationPermissionModal from "@/components/Modals/LocationPermissionModal";
 import { useNearbyCinemas } from "@/lib/hooks/useNearbyCinemas";
 import { useState, useEffect } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import axios from "axios";
 import { APIMovie } from "@/types/movie";
 import { CinemaByProvince } from "@/components/Widgets/CinemaLocation";
@@ -40,7 +39,6 @@ type Cinema = {
 
 function MovieInfo() {
   const params = useParams();
-  const router = useRouter();
   const movieId = params?.id;
   const [movie, setMovie] = useState<APIMovie | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -59,7 +57,6 @@ function MovieInfo() {
 
   const { cinemas, loading, refetch } = useNearbyCinemas(location, filter);
   const [data, setData] = useState<Cinema[]>([]);
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
   useEffect(() => {
     if (!movieId) return;
@@ -97,12 +94,9 @@ function MovieInfo() {
   };
 
   useEffect(() => {
-    if (movieId) getCinemasByMovies(movieId as string, selectedDate);
-  }, [movieId, selectedDate]);
+    if (movieId) getCinemasByMovies(movieId as string);
+  }, [movieId]);
 
-  const handleSelectShowtime = (showtimeId: string) => {
-    router.push(`/movies/${movieId}/movie-booking/seat?showtime=${showtimeId}`);
-  };
 
   const handleFilter = (value: string) => {
     setFilter(value);
@@ -122,15 +116,13 @@ function MovieInfo() {
       <NavAndFooterWithBanner>
         <div>
           <div className="w-dvw flex justify-center relative mx-auto -mt-10">
-            <FilterSearch />
           </div>
 
-          <div className="mt-10">
-            <MovieInfoWidget movie={movie} />
+          <div>
+            <MovieInfoWidget movie={movie}/>
           </div>
         </div>
         <CinemaLocation data={dataCinemas} filterCinema={handleFilter} />
-
         <LocationPermissionModal
           isOpen={showModal}
           onAllowSession={allowSession}

@@ -7,7 +7,7 @@ import LocationPermissionModal from "@/components/Modals/LocationPermissionModal
 import { useLocationPermission } from "@/lib/hooks/useLocationPermission";
 import { useNearbyCinemas } from "@/lib/hooks/useNearbyCinemas";
 import dynamic from "next/dynamic";
-import FilterSearch from "@/components/Widgets/FilterSearch";
+import FilterSearch, { FilterData } from "@/components/Widgets/FilterSearch";
 import axios from "axios";
 import { APIMovie } from "@/types/movie";
 import { useSearchParams } from "next/navigation";
@@ -20,6 +20,14 @@ const CurtainIntro = dynamic(
 
 export default function Home() {
   const [filter, setFilter] = useState<string>("1");
+  const [query, setQuery] = useState<FilterData>(
+   {
+    title: "",
+    genre: "",
+    language: "",
+    releaseDate: "",
+   }
+  );
   const [dataCinemas, setDataCinemas] = useState<CinemaByProvince[]>([]);
   const [showCurtain, setShowCurtain] = useState(false);
   const [movies, setMovies] = useState<APIMovie[]>([]);
@@ -121,7 +129,7 @@ export default function Home() {
     }
     refetch(value);
   };
-
+  
   return (
     <NavAndFooterWithBanner>
       {showCurtain && (
@@ -133,11 +141,16 @@ export default function Home() {
       )}
       <div className="flex-1 max-w-[1200px]">
         <div className="w-dvw flex justify-center relative mx-auto -mt-10">
-          <FilterSearch onSearch={handleSearchMovies} />
+          <FilterSearch 
+          onSearch={handleSearchMovies} 
+          query={query}
+          setQuery={setQuery}
+          />
         </div>
         <NowShowingComingSoon
           movies={movies}
           loading={loadingMovies}
+          query={query}
           showAll={movies.length > 0 && searchActive}
         />
         <Coupon />

@@ -10,7 +10,6 @@ datasource db {
 
 model cinema {
   id                String   @id @default(uuid())
-  slug              String   @default("") 
   name              String   @unique
   address           String
   phone             String?

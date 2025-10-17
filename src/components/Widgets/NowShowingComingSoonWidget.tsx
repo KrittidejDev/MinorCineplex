@@ -4,17 +4,21 @@ import { APIMovie } from "@/types/movie";
 import { useRouter } from "next/router";
 import { Button } from "../ui/button";
 import Link from "next/link";
+import { FilterData } from "./FilterSearch";
 
 interface NowShowingComingSoonProps {
   movies: APIMovie[];
+  query: FilterData;
   loading: boolean;
   showAll?: boolean;
+
 }
 
 export default function NowShowingComingSoon({
   movies,
   loading,
   showAll = false,
+  query,
 }: NowShowingComingSoonProps) {
   const [activeTab, setActiveTab] = useState("nowShowing");
   const router = useRouter();

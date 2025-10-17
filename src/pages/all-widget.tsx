@@ -666,7 +666,7 @@ const AllWidget = () => {
         </form>
       </div>
 
-      {/* Filter Search */}
+      {/* Filter Search
       <div className="mt-20 w-full max-w-6xl px-4">
         <h2 className="text-2xl font-bold mb-6 text-center">Filter Search</h2>
         <div className="flex justify-center">
@@ -676,7 +676,7 @@ const AllWidget = () => {
             }}
           />
         </div>
-      </div>
+      </div> */}
 
       {/* Showtime Selection Preview */}
       {/* <div className="mt-20 w-full max-w-4xl px-4">

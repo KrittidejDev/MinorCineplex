@@ -51,7 +51,7 @@ const CinemaDetallWidget: React.FC = () => {
         src="/images/cover-cinema.png"
         alt="Cinema Interior"
         fill
-        className="hidden md:flex object-cover object-center w-full z-0 max-h-[583px] overflow-hidden"
+        className="hidden md:flex object-cover object-center w-full z-0 max-h-[583px] overflow-hidden "
       />
 
       <div className="w-dvw flex-1 flex flex-col items-center box-border">

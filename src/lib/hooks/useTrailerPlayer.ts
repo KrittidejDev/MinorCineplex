@@ -2,6 +2,12 @@
 
 import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 
+declare global {
+  interface Window {
+    YT?: unknown;
+  }
+}
+
 export function useTrailerPlayer(url?: string | null, enablePIP = true) {
   const trailerRef = useRef<HTMLDivElement>(null);
   const fullIframeRef = useRef<HTMLIFrameElement>(null);
@@ -14,7 +20,7 @@ export function useTrailerPlayer(url?: string | null, enablePIP = true) {
 
   // โหลด YouTube API
   useEffect(() => {
-    if ((window as any).YT) return;
+    if (window.YT) return;
     const script = document.createElement("script");
     script.src = "https://www.youtube.com/iframe_api";
     script.async = true;
@@ -63,7 +69,9 @@ export function useTrailerPlayer(url?: string | null, enablePIP = true) {
         ) {
           videoTimeRef.current = data.info.currentTime;
         }
-      } catch {}
+      } catch {
+        // ignore malformed message
+      }
     };
     window.addEventListener("message", handleMessage);
     return () => window.removeEventListener("message", handleMessage);

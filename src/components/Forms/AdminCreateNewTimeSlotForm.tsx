@@ -2,6 +2,7 @@ import ModalEmpty from "../Modals/ModalEmpty"
 import AdminInputTextField from "../Inputs/AdminInputTextField"
 import AdminInputTextArea from "../Inputs/AdminInputTextArea"
 import TimeLight from "../Icons/TimeLight"
+import AdminTimeInput from "../Inputs/AdminTimeInput"
 import { useState } from "react"
 
 interface AdminCreateNewTimeSlotFormProps {
@@ -70,24 +71,21 @@ function AdminCreateNewTimeSlotForm({ isShowModal, onClose }: AdminCreateNewTime
 
                     <div className="flex gap-4 mb-10">
                         <div className="flex-1">
-                            <AdminInputTextField
+                            <AdminTimeInput
                                 label="Start Time"
-                                type="time"
                                 value={formData.startTime}
                                 onChange={(e) => handleInputChange('startTime')(e)}
                                 require={true}
-                                icon={<TimeLight />}
-
+                                errors={errors.startTime}
                             />
                         </div>
                         <div className="flex-1">
-                            <AdminInputTextField
+                            <AdminTimeInput
                                 label="End Time"
-                                type="time"
                                 value={formData.endTime}
                                 onChange={(e) => handleInputChange('endTime')(e)}
                                 require={true}
-                                icon={<TimeLight />}
+                                errors={errors.endTime}
                             />
                         </div>
                     </div>

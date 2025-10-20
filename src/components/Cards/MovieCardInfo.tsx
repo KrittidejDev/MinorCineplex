@@ -9,7 +9,17 @@ interface Movies {
   poster_url?: string | null;
   release_date?: Date | null;
   rating?: string | null;
-  genre?: string | null;
+  genres: (
+    | {
+        genre: {
+          id: string;
+          name: string;
+          slug: string;
+          translations?: { en?: { name: string }; th?: { name: string } };
+        };
+      }
+    | { language: { id: string; name: string; code: string } }
+  )[];
 }
 
 function MovieCardInfo({
@@ -17,10 +27,8 @@ function MovieCardInfo({
   poster_url,
   release_date,
   rating,
-  genre,
+  genres,
 }: Movies) {
-  const genres = genre ? genre.split(",").map((g) => g.trim()) : [];
-
   return (
     <div className="w-[345px] h-fit flex gap-5">
       <div className="w-full">
@@ -55,9 +63,28 @@ function MovieCardInfo({
           </div>
         </div>
         <div className="w-fit flex flex-col gap-2 mt-4">
-          {genres.map((g) => (
-            <Tag key={g} name={g} variant="genre" />
-          ))}
+          {genres?.map((g, i) => {
+            let tagName = "";
+            let variant: "genre" | "language" = "genre";
+
+            if ("genre" in g && g.genre) {
+              tagName =
+                g.genre.translations?.en?.name ||
+                g.genre.name ||
+                "Unknown Genre";
+              variant = "genre";
+            } else if ("language" in g && g.language) {
+              tagName =
+                g.language.name || g.language.code || "Unknown Language";
+              variant = "language";
+            }
+
+            return (
+              <div key={i}>
+                <Tag name={tagName} variant={variant} />
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>

@@ -1,11 +1,11 @@
 import { useTranslation } from "react-i18next";
 import LocationIconBlue from "../Icons/LocationIconBlue";
 import Link from "next/link";
-import { CinemaType } from "@/types/cinema";
+import { CinemaWithDistance } from "@/types/cinema"; // เปลี่ยนจาก CinemaType เป็น CinemaWithDistance
 
 type CinemaCardProps = {
   filter: string;
-  cinema: CinemaType;
+  cinema: CinemaWithDistance; // เปลี่ยนจาก CinemaType เป็น CinemaWithDistance
 };
 
 const CinemaCard = ({ filter, cinema }: CinemaCardProps) => {

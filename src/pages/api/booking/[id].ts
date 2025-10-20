@@ -45,7 +45,7 @@ export default async function handler(
         },
         seats: {
           include: {
-            seat: true,
+            // seat: true,
           },
         },
       },

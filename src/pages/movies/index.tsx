@@ -1,11 +1,11 @@
-import NavAndFooter from "@/components/MainLayout/NavAndFooter";
+import NavAndFooterWithBanner from "@/components/MainLayout/NavAndFooterWithBanner";
 import AllMoviesWidget from "@/components/Widgets/AllMoviesWidget";
 
 function AllMovies() {
   return (
-    <NavAndFooter>
+    <NavAndFooterWithBanner>
       <AllMoviesWidget />
-    </NavAndFooter>
+    </NavAndFooterWithBanner>
   );
 }
 

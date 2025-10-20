@@ -8,11 +8,12 @@ import TimeFill from "../Icons/TimeFill";
 import Shop from "../Icons/Shop";
 import BookingInfo from "./BookingInfo";
 import { Button } from "../ui/button";
-import { BillInfo } from "@/types/cinema";
+import { BillInfo, SummaryData } from "@/types/cinema";
 import { CouponCardData } from "@/types/coupon";
 import { CloseRoundLight, ExpandRightLight } from "../Icons/Icons";
 
 interface Props extends BillInfo {
+  data: SummaryData;
   countdown?: string;
   coupons?: CouponCardData[];
   selectedCoupon?: CouponCardData | null;
@@ -20,6 +21,7 @@ interface Props extends BillInfo {
   onPayment?: () => void;
   canPay: boolean;
   paymentMethod?: "credit_card" | "qr_code";
+  step?: "1" | "2";
 }
 
 export default function SummaryBoxCard({
@@ -134,17 +136,25 @@ export default function SummaryBoxCard({
                 </span>
               </div>
               <div className="w-full">
-                <Button className="p-2 rounded bg-gray-g63f text-gray-g3b0 text-sm w-full"
-                onClick={() => setCouponModalOpen(true)}>
-                  {selectedCoupon
-                    ? <span className="truncate">{selectedCoupon.title_en}</span>
-                    : lang === "en"
-                      ? "Select Coupon"
-                      : "เลือกคูปอง"}
-                {selectedCoupon && <span className="text-blue-bbee cursor-pointer"
-                onClick={() => onSelectCoupon && onSelectCoupon(null)}>
-                <CloseRoundLight width="16" height="16" color="#C8CEDD" />
-                </span>}
+                <Button
+                  className="p-2 rounded bg-gray-g63f text-gray-g3b0 text-sm w-full"
+                  onClick={() => setCouponModalOpen(true)}
+                >
+                  {selectedCoupon ? (
+                    <span className="truncate">{selectedCoupon.title_en}</span>
+                  ) : lang === "en" ? (
+                    "Select Coupon"
+                  ) : (
+                    "เลือกคูปอง"
+                  )}
+                  {selectedCoupon && (
+                    <span
+                      className="text-blue-bbee cursor-pointer"
+                      onClick={() => onSelectCoupon && onSelectCoupon(null)}
+                    >
+                      <CloseRoundLight width="16" height="16" color="#C8CEDD" />
+                    </span>
+                  )}
                 </Button>
               </div>
             </div>

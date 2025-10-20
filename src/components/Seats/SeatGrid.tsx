@@ -1,4 +1,3 @@
-// SeatGrid.tsx
 import SeatRow from "./SeatRow";
 import { SeatRowData, SelectedSeat, Seat } from "@/types/cinema";
 
@@ -33,7 +32,7 @@ const SeatGrid: React.FC<SeatGridProps> = ({
       (s): Seat => ({
         id: s.id,
         row: s.row,
-        number: s.seat_number || s.id, // ใส่ number ให้ตรงกับ type
+        number: s.seat_number || s.id,
         seat_number: s.seat_number || s.id,
         status: s.status,
         price: s.price,

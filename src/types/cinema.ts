@@ -1,97 +1,72 @@
+export interface CinemaDTO {
+  id: string;
+  slug: string;
+  name: string;
+  translations?: Record<string, string> | null;
+  address: string;
+  phone?: string | null;
+  city?: string | null;
+  city_en?: string | null;
+  group?: string | null;
+  group_en?: string | null;
+  lat?: number | null;
+  lng?: number | null;
+  icon_url?: string | null;
+}
+
+export interface CinemaFilters {
+  city?: string;
+  group?: string;
+  name?: string;
+}
+
+export interface Pagination {
+  page?: number;
+  limit?: number;
+}
+
 export interface CinemaType {
   id: string;
   name: string;
-  name_en?: string | null;
-  address: string;
-  lat: number | null;
-  lng: number | null;
-  icon_url?: string | null;
-  distance?: number | null;
+  address?: string;
+  phone?: string;
+  lat?: number | null;
+  lng?: number | null;
+  provinceEn?: string;
+  provinceTh?: string;
+}
+
+export interface CinemaWithDistance extends CinemaType {
+  distance?: number | null; // Optional และรองรับ null
   distance_text?: string;
   distance_text_th?: string;
 }
 
-export interface ShowtimeDetail {
+export interface CinemaByProvince {
+  provinceEn?: string;
+  provinceTh?: string;
+  cinemas: CinemaWithDistance[]; // ใช้ CinemaWithDistance
+}
+
+export interface UseNearbyCinemasReturn {
+  cinemas: CinemaByProvince[];
+  loading: boolean;
+  error: string | null;
+  refetch: (filter?: string) => void;
+}
+
+export interface SelectedSeat {
   id: string;
-  movie: {
-    id: string;
-    title: string;
-    duration_min: number;
-    poster_url?: string;
-    description?: string;
-  };
-  time_slot: {
-    id: string;
-    name: string;
-    start_time: string;
-    end_time: string;
-  };
-  date: string;
+  seat_number: string;
   price: number;
-  seats: {
-    id: string;
-    status: string;
-    price: number;
-    seat_id: string;
-    showtime_id: string;
-  }[];
-}
-
-// Interface สำหรับ hall
-export interface HallDetail {
-  id: string;
-  name: string;
-  seat_count?: number | null;
-  seats: {
-    id: string;
-    seat_number: string;
-    row: string;
-    col: string;
-    hall_id: string;
-  }[];
-  showtimes: ShowtimeDetail[];
-}
-
-export interface ShowtimeMovieData {
-  id: string;
-  title: string;
-  duration_min: number;
-  poster_url?: string;
-  genre?: string;
-  description?: string;
-  halls?: {
-    id: string;
-    name: string;
-    timeslots: {
-      id: string;
-      start_time: string;
-      end_time: string;
-    }[];
-  }[];
-}
-
-// Interface สำหรับ cinema
-export interface CinemaDetail {
-  id: string;
-  name: string;
-  name_en?: string;
-  address: string;
-  phone?: string;
-  description?: string;
-  description_en?: string;
-  opening_hours?: string;
-  transportation?: string;
-  icon_url?: string;
-  halls: HallDetail[];
-  movies?: ShowtimeMovieData[];
-  showtimesByDay: {
-    date: string; // YYYY-MM-DD
-    halls: HallDetail[];
-  }[];
+  row: string;
 }
 
 export interface Seat {
   id: string;
+  row: string;
+  number: string;
+  seat_number: string;
   status: string;
   price: number;
   seat: {
@@ -102,65 +77,83 @@ export interface Seat {
   };
 }
 
-export interface BillInfo {
-  data?: BookingInfo | null;
-  totalSelected?: SelectedSeat[];
-  totalPrice?: number;
-  lockSeats?: () => void;
-  step?: string;
-}
-
-export interface SelectedSeat {
-  id: string;
-  seat_number: string;
-  row: string;
-  status: string;
-  price: number;
-  locked_by?: string | null;
-  showtimeId?: string;
-}
-
-export interface Seat {
-  id: string;
-  row: string;
-  number: string;
-  status: string;
-  price: number;
-  seat_number: string;
-  lockExpire?: number | null;
-  locked_by?: string;
-  seat: { id: string; seat_number: string; row: string; col: string };
-}
-
-// สำหรับ SeatRow
 export interface SeatRowData {
   row: string;
   seats: Seat[];
 }
 
 export interface BookingInfo {
+  id: string; // ID ของรอบฉาย (showtime)
+  price: number; // ราคาตั๋ว
+  seats: SeatRowData[]; // ข้อมูลที่นั่ง
+}
+
+export interface PendingSeat {
   id: string;
-  date: string;
+  seat_number: string;
+  row: string;
+  status: string;
   price: number;
-  seats: SeatRowData[];
+  locked_by?: string;
+  showtimeId?: string;
+}
+
+export interface BillInfo {
+  totalSelected: SelectedSeat[];
+  lockSeats: () => void;
+  totalPrice?: number;
+}
+
+export interface SummaryData {
+  movie: {
+    poster_url: string;
+    title: string;
+    genre: string;
+  };
   hall: {
-    id: string;
-    name: string;
     cinema: {
+      name: string;
+    };
+    name: string;
+  };
+  date: string | Date;
+  time_slot: {
+    start_time: string;
+  };
+}
+
+export interface ShowtimeMovieData {
+  id: string;
+  title: string;
+  description?: string;
+  poster_url?: string;
+  genre?: string;
+  duration_min?: number;
+  rating?: string;
+  halls: {
+    hall: {
       id: string;
       name: string;
     };
-  };
-  movie: {
-    id: string;
-    title: string;
-    poster_url?: string;
-    rating?: string;
-    genre?: string;
-    duration_min: number;
-  };
-  time_slot?: {
-    start_time: string;
-    end_time: string;
-  };
+    showtimes: {
+      id: string;
+      date: Date;
+      price: number;
+      available_seats: number;
+      time_slot: {
+        id: string;
+        start_time: string;
+        end_time: string;
+      };
+    }[];
+  }[];
+}
+
+export interface CinemaDetail extends CinemaDTO {
+  name_en?: string;
+  description?: string;
+  description_en?: string;
+  opening_hours?: string;
+  transportation?: string;
+  movies?: ShowtimeMovieData[];
 }

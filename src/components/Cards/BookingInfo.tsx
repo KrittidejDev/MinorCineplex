@@ -38,7 +38,10 @@ const BookingInfo = ({ totalSelected, lockSeats }: BillInfo) => {
         <p className="text-gray-gedd text-fr-16">Total</p>
         <p className="text-white text-fr-16">{totalPrice.toLocaleString()} ฿</p>
       </div>
-      <Button className="btn-base blue-normal cursor-pointer" onClick={lockSeats}>
+      <Button
+        className="btn-base blue-normal cursor-pointer"
+        onClick={lockSeats}
+      >
         Next
       </Button>
     </div>

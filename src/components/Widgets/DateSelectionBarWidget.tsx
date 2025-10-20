@@ -59,7 +59,7 @@ function DateSelectionBarWidget({ onSelectDate }: DateSelectionBarWidgetProps) {
                 day={index === 0 ? "Today" : format(date, "EEE")}
                 date={format(date, "dd MMM yyyy")}
                 isActive={activeDate === index}
-                onSelect={() => { 
+                onSelect={() => {
                   setActiveDate(index);
                   onSelectDate(date);
                 }}

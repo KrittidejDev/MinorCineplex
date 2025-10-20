@@ -762,7 +762,7 @@ const AllWidget = () => {
       <div className="mt-20">
         <h2 className="text-2xl font-bold mb-6 text-center">Summary Box</h2>
         <div className="flex gap-5">
-          <SummaryBoxCard canPay={true} />
+          {/* <SummaryBoxCard canPay={true} /> */}
         </div>
       </div>
 

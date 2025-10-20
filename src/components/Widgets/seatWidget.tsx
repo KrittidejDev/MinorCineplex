@@ -36,7 +36,6 @@ const SeatWidget: React.FC<SeatWidgetProps> = ({
     const channel = ablyClient.channels.get(`showtime:${data.id}`);
 
     const handleUpdate = (msg: InboundMessage) => {
-      // msg.data เป็น any หรือ object จริง ๆ ต้อง cast
       const payload = msg.data as AblySeatUpdateMessage;
       const { seatId, status, locked_by } = payload;
 
@@ -48,7 +47,6 @@ const SeatWidget: React.FC<SeatWidgetProps> = ({
               ? {
                   ...seat,
                   status,
-                  // แปลง null เป็น undefined
                   locked_by: locked_by ?? undefined,
                 }
               : seat

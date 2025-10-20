@@ -1,31 +1,27 @@
-import {
-  getCinemasByMovies,
-  getCinemas,
-  getCinemasForDropdown,
-} from "@/services/cinemaService";
 import type { NextApiRequest, NextApiResponse } from "next";
+import { cinemaService } from "@/services/cinemaService";
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
   try {
-    const { movie_id } = req.query;
-    let cinema;
-    if (req.query.type === "dropdown") {
-      cinema = await getCinemasForDropdown();
-    } else if (!movie_id || movie_id === "" || typeof movie_id !== "string") {
-      cinema = await getCinemas();
-    } else {
-      cinema = await getCinemasByMovies(movie_id);
+    if (req.method === "GET") {
+      const { city, group, name, page, limit } = req.query;
+
+      const result = await cinemaService.getCinemas(
+        { city: city as string, group: group as string, name: name as string },
+        { page: Number(page) || 1, limit: Number(limit) || 1000 }
+      );
+
+      return res.status(200).json(result);
     }
 
-    res.status(200).json({ cinema });
+    return res.status(405).json({ message: "Method Not Allowed" });
   } catch (error: unknown) {
     console.error(error);
-    if (error instanceof Error) {
-      return res.status(500).json({ error: error.message });
-    }
+    const message =
+      error instanceof Error ? error.message : "เกิดข้อผิดพลาดที่ไม่คาดคิด";
+    return res.status(500).json({ message });
   }
-  return res.status(500).json({ error: "Server Error" });
 }

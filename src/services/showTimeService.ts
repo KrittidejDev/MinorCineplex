@@ -1,4 +1,4 @@
-import * as showTimeRepo from "../repositories/showTImeRepository";
+import * as showTimeRepo from "../repositories/movieShowtImeRepository";
 
 interface ShowTimeData {
   id: string;

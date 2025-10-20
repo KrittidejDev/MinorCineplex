@@ -10,7 +10,7 @@ import { useTranslation } from "react-i18next";
 import { RENDER_TIME_TH } from "@/lib/utils/dateTimeFormat";
 import { HoverCard3D } from "../Displays/HoverCard3D";
 
-const CinemaDetallWidget: React.FC = () => {
+const CinemaDetailWidget: React.FC = () => {
   const { i18n } = useTranslation();
   const params = useParams();
   const id = params?.id as string | undefined;
@@ -45,6 +45,7 @@ const CinemaDetallWidget: React.FC = () => {
   const handleSelectDate = (date: Date) => {
     fetchCinema(date);
   };
+
   return (
     <NavAndFooter>
       <Image
@@ -137,10 +138,8 @@ const CinemaDetallWidget: React.FC = () => {
         </section>
         <section className="w-dvw py-4 sm:px-0">
           <div className="space-y-6 py-10 md:py-20">
-            {cinemaData?.movies?.map((movie: ShowtimeMovieData) => (
-              <div key={movie.id}>
-                <ShowtimeMovie data={movie as ShowtimeMovieDataProps} />
-              </div>
+            {cinemaData?.movies?.map((movie) => (
+              <div key={movie.id}>{/* <ShowtimeMovie data={movie} /> */}</div>
             ))}
           </div>
         </section>
@@ -149,4 +148,4 @@ const CinemaDetallWidget: React.FC = () => {
   );
 };
 
-export default CinemaDetallWidget;
+export default CinemaDetailWidget;

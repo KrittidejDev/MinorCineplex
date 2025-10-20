@@ -1,4 +1,7 @@
-import { getShowTimesForAdmin, createShowTime } from "@/services/showTimeService";
+import {
+  getShowTimesForAdmin,
+  createShowTime,
+} from "@/services/showTimeService";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
@@ -24,10 +27,9 @@ export default async function handler(
         date: dateString,
         page: pageNumber,
       });
-      
+
       const totalPages = Math.ceil(total / limitNumber);
-      
-      
+
       res
         .status(200)
         .json({ showTimes, total, totalPages, currentPage: pageNumber });
@@ -39,7 +41,6 @@ export default async function handler(
     }
   }
   if (req.method === "POST") {
-    console.log("req.body", req.body);
     const { movie_id, hall_id, time_slot_id, date, price } = req.body;
     if (!movie_id || !hall_id || !time_slot_id || !date || !price) {
       return res.status(400).json({

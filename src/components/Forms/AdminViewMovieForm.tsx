@@ -6,10 +6,10 @@ import { Button } from "../ui/button";
 import AdminInputTextField from "../Inputs/AdminInputTextField";
 import AdminInputTextArea from "../Inputs/AdminInputTextArea";
 import AdminDropdownInput from "../Inputs/AdminDropdownInput ";
-import { APIMovie } from "@/types/movie";
+import { MovieDTO } from "@/types/movie";
 
 interface ViewMovieFormProps {
-  movie: APIMovie | null;
+  movie: MovieDTO | null;
   isShowModal: boolean;
   onClose: () => void;
 }
@@ -32,15 +32,15 @@ function AdminViewMovieForm({
 
   useEffect(() => {
     if (movie) {
-      setFormData({
-        title: movie.title || "",
-        description: movie.description || "",
-        duration: movie.duration_min?.toString() || "",
-        rating: movie.rating?.toString() || "",
-        trailer: movie.trailer_url || "",
-      });
+      // setFormData({
+      //   title: movie.title || "",
+      //   description: movie.description || "",
+      //   duration: movie.duration_min?.toString() || "",
+      //   rating: movie.rating?.toString() || "",
+      //   trailer: movie.trailer_url || "",
+      // });
 
-      setSelectedGenre(movie.genre?.toLowerCase() || "");
+      // setSelectedGenre(movie.genre?.toLowerCase() || "");
       setPosterPreview(movie.poster_url || null);
     }
   }, [movie]);

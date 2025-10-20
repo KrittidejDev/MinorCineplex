@@ -5,7 +5,7 @@ import Image from "next/image";
 import { Button } from "../ui/button";
 import AddRoundLight from "../Icons/AddRoundLight";
 import TableCard from "../Cards/TableCard";
-import { APIMovie } from "@/types/movie";
+import { MovieDTO } from "@/types/movie";
 import AdminCreateNewMovieForm from "../Forms/AdminCreateNewMovieForm";
 import AdminViewMovieForm from "../Forms/AdminViewMovieForm";
 import AdminEditMovieForm from "../Forms/AdminEditMovieForm";
@@ -13,9 +13,9 @@ import AdminSearchBar from "../Inputs/AdminSearchBar";
 
 function AdminMovieWidget() {
   const [isShowCreateModal, setIsShowCreateModal] = useState(false);
-  const [viewMovie, setViewMovie] = useState<APIMovie | null>(null);
-  const [editMovie, setEditMovie] = useState<APIMovie | null>(null);
-  const [movies, setMovies] = useState<APIMovie[]>([]);
+  const [viewMovie, setViewMovie] = useState<MovieDTO | null>(null);
+  const [editMovie, setEditMovie] = useState<MovieDTO | null>(null);
+  const [movies, setMovies] = useState<MovieDTO[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -25,7 +25,7 @@ function AdminMovieWidget() {
       setLoading(true);
       const res = await fetch("/api/movies");
       if (!res.ok) throw new Error("Failed to fetch movies");
-      const data: { movie: APIMovie[] } = await res.json();
+      const data: { movie: MovieDTO[] } = await res.json();
       setMovies(Array.isArray(data.movie) ? data.movie : []);
     } catch (err) {
       console.error(err);

@@ -429,7 +429,7 @@ const BookingSeat = () => {
           />
         )}
         <div className="flex flex-1 lg:max-w-[305px]">
-          <SummaryBoxCard
+          {/* <SummaryBoxCard
             step={step}
             data={bookingInfo}
             lockSeats={lockSeats}
@@ -445,7 +445,7 @@ const BookingSeat = () => {
             onPayment={handlePaymentClick}
             canPay={canPay}
             paymentMethod={paymentMethod}
-          />
+          /> */}
         </div>
       </div>
 

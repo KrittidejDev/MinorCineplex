@@ -23,7 +23,6 @@ const NavBarWidget = () => {
     if (!id) return;
     try {
       const res = (await userService.GET_MY_PROFILE(id)) as response;
-      console.log("My Profile:", res);
       if (res.status === 200) {
         setUserData(res.docs);
       }
@@ -62,7 +61,10 @@ const NavBarWidget = () => {
       ref={containerRef}
       className="w-full py-4 px-4 md:px-20 flex items-center justify-between bg-black/20 z-10 "
     >
-      <Link href={"/"} className="w-7 h-8 sm:w-[42px] sm:h-[48px] cursor-pointer">
+      <Link
+        href={"/"}
+        className="w-7 h-8 sm:w-[42px] sm:h-[48px] cursor-pointer"
+      >
         <LogoM className="w-full h-full" />
       </Link>
       <div className="hidden md:flex cursor-pointer">

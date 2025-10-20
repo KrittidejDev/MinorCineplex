@@ -9,6 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import { MovieStatus } from "@/types/enums";
 
 interface FilterOption {
   value: string;
@@ -27,6 +28,7 @@ export interface FilterData {
   genre?: string;
   language?: string;
   releaseDate?: string;
+  status?: MovieStatus;
 }
 
 interface Movie {
@@ -47,7 +49,6 @@ const FilterSearch: React.FC<FilterSearchProps> = ({
   setQuery,
   className = "",
 }) => {
-
   const [, setMovies] = useState<Movie[]>([]);
   const [movieOptions, setMovieOptions] = useState<FilterOption[]>([]);
   const [genreOptions, setGenreOptions] = useState<FilterOption[]>([]);
@@ -79,7 +80,7 @@ const FilterSearch: React.FC<FilterSearchProps> = ({
           });
 
           const uniqueGenres = Array.from(
-            new Set(allGenres.map(g => g.toLowerCase()))
+            new Set(allGenres.map((g) => g.toLowerCase()))
           );
           const genreOpts = uniqueGenres.map((g) => ({
             value: g,

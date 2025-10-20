@@ -23,20 +23,66 @@ function AdminCreateNewTimeSlotForm({ isShowModal, onClose }: AdminCreateNewTime
         endTime: "",
         hallUsedIn: "",
     })
-    const handleInputChange = (field: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        setFormData(prev => ({
-            ...prev,
-            [field]: e.target.value
-        }))
+    const handleCancel = () => {
+        setFormData({
+            timeSlotName: "",
+            startTime: "",
+            endTime: "",
+            hallUsedIn: "",
+        })
+        setErrors({
+            timeSlotName: "",
+            startTime: "",
+            endTime: "",
+            hallUsedIn: "",
+        })
+        onClose()
+    }
 
-        if (errors[field as keyof typeof errors]) {
+    const validateTimeRange = (startTime: string, endTime: string) => {
+        if (!startTime || !endTime) return ""
+        
+        const start = new Date(`2000-01-01T${startTime}`)
+        const end = new Date(`2000-01-01T${endTime}`)
+        
+        if (end <= start) {
+            return "End time must be later than start time"
+        }
+        return ""
+    }
+
+
+    const handleInputChange = (field: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const newValue = e.target.value
+    setFormData(prev => ({
+        ...prev,
+        [field]: newValue
+    }))
+
+    // Clear existing error for this field
+    if (errors[field as keyof typeof errors]) {
+        setErrors(prev => ({
+            ...prev,
+            [field]: ""
+        }))
+    }
+
+    // Validate time range when either start or end time changes
+    if (field === 'startTime' || field === 'endTime') {
+        const startTime = field === 'startTime' ? newValue : formData.startTime
+        const endTime = field === 'endTime' ? newValue : formData.endTime
+        
+        if (startTime && endTime) {
+            const timeError = validateTimeRange(startTime, endTime)
             setErrors(prev => ({
                 ...prev,
-                [field]: ""
+                endTime: timeError
             }))
         }
     }
+}
     const handleSave = () => {
+        const timeRangeError = validateTimeRange(formData.startTime, formData.endTime)
         const newErrors = {
             timeSlotName: !formData.timeSlotName ? "Time slot name is required" : "",
             startTime: !formData.startTime ? "Start time is required" : "",
@@ -97,7 +143,7 @@ function AdminCreateNewTimeSlotForm({ isShowModal, onClose }: AdminCreateNewTime
 
                     <div className="flex justify-end space-x-3">
                         <button
-                            onClick={onClose}
+                            onClick={handleCancel}
                             className="px-11 py-3 bg-blue-bbee text-fr-16 text-white-wfff rounded-md hover:bg-gray-g3b0 opacity-40"
                         >
                             Cancel

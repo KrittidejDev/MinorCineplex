@@ -23,12 +23,12 @@ const AdminTimeInput = ({
     className = "",
     ...props
 }: AdminTimeInputProps) => {
-    const baseClass = "w-full mt-1 p-3 pr-10 border rounded-sm focus:outline-none placeholder:text-gray-g3b0 [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:right-1 [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:h-full ";
+    const baseClass = "w-full mt-1 p-3 pr-12 border rounded-sm focus:outline-none placeholder:text-gray-g3b0 [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:right-1 [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:h-full ";
     const errorClass = errors
         ? "border-red-r64b text-red-r64b placeholder-white-wfff"
         : "border-blue-bbee text-gray-g63f placeholder-gray-g63f";
 
-    // ฟังก์ชันแปลง 24-hour เป็น 12-hour format
+    
     const formatTimeTo12Hour = (time24: string) => {
         if (!time24) return "";
         const [hours, minutes] = time24.split(":");
@@ -68,9 +68,9 @@ const AdminTimeInput = ({
                         disabled={disabled}
                         className={`${baseClass} ${errorClass} ${className}`}
                     />
-                    {/* Overlay text showing 12-hour format */}
+                    
                     <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none bg-white px-1">
-                        <span className={`text-fr-14 font-medium ${errors ? "text-red-r64b" : value ? "text-blue-bbee" : "text-gray-400"}`}>
+                        <span className={`text-fr-16  ${errors ? "text-red-r64b" : value ? "text-blue-bbee" : "text-gray-g3b0"}`}>
                             {displayTime}
                         </span>
                     </div>

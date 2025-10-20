@@ -106,7 +106,7 @@ function AdminCreateNewTimeSlotForm({ isShowModal, onClose }: AdminCreateNewTime
                             label="Time Slot Name"
                             type="text"
                             value={formData.timeSlotName}
-                            onChange={(e) => handleInputChange(e.target.value)}
+                            onChange={ handleInputChange(`timeSlotName`)}
                             placeholder="e.g.,Morning Slot"
 
 

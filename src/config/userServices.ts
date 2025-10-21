@@ -112,4 +112,8 @@ export const userService = {
     totalPrice: number;
     couponId?: string | null;
   }) => apiService.post(`${apiPath}/payments/confirm`, params),
+// Filter Genre
+  GET_FILTER_GENRE: () => apiService.get(`${apiPath}/filter/genre`),
 };
+
+

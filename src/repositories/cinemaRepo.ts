@@ -51,4 +51,12 @@ export const cinemaRepo = {
     });
     return cinema as CinemaDTO | null;
   },
+  async findCinemasForAdmin(): Promise<CinemaDTO[]> {
+    const cinemas = await prisma.cinema.findMany({
+      include: {
+        halls: true,
+      },
+    });
+    return cinemas as unknown as CinemaDTO[];
+  },
 };

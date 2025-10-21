@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { SearchLight, ExpandDownLight, DateTodayLight } from "../Icons/Icons";
 import { Input } from "../ui/input";
+import axios from "axios";
 
 import {
   Select,
@@ -10,10 +11,13 @@ import {
   SelectValue,
 } from "../ui/select";
 import { MovieStatus } from "@/types/enums";
+import { userService } from "@/config/userServices";
+
 
 interface FilterOption {
-  value: string;
-  label: string;
+  id?: string;
+  value?: string;
+  name: string;
 }
 
 interface FilterSearchProps {
@@ -21,13 +25,14 @@ interface FilterSearchProps {
   query: FilterData;
   setQuery: (query: FilterData) => void;
   className?: string;
+  movies: Movie[];
 }
 
 export interface FilterData {
   title?: string;
   genre?: string;
   language?: string;
-  releaseDate?: string;
+  release_date?: string;
   status?: MovieStatus;
 }
 
@@ -39,8 +44,8 @@ interface Movie {
 }
 
 const languageOptions: FilterOption[] = [
-  { value: "th", label: "ไทย" },
-  { value: "en", label: "English" },
+  { value: "th", name: "TH" },
+  { value: "en", name: "EN" },
 ];
 
 const FilterSearch: React.FC<FilterSearchProps> = ({
@@ -48,53 +53,17 @@ const FilterSearch: React.FC<FilterSearchProps> = ({
   query,
   setQuery,
   className = "",
+  movies,
 }) => {
-  const [, setMovies] = useState<Movie[]>([]);
-  const [movieOptions, setMovieOptions] = useState<FilterOption[]>([]);
   const [genreOptions, setGenreOptions] = useState<FilterOption[]>([]);
 
+  const fetchGenres = async () => {
+    const response = await userService.GET_FILTER_GENRE();
+    setGenreOptions(response as FilterOption[]);
+  };
+
   useEffect(() => {
-    const fetchMovies = async () => {
-      try {
-        const response = await fetch("/api/movies");
-        const data = await response.json();
-
-        if (data.movie) {
-          const movieList = data.movie as Movie[];
-          setMovies(movieList);
-
-          const movieOpts = movieList.map((m) => ({
-            value: m.id,
-            label: m.title,
-          }));
-          setMovieOptions(movieOpts);
-
-          const allGenres: string[] = movieList.flatMap((m) => {
-            if (!m.genre) return [];
-            if (Array.isArray(m.genre)) return m.genre;
-
-            return m.genre
-              .split(/[,|]/)
-              .map((g) => g.trim())
-              .filter((g) => g !== "");
-          });
-
-          const uniqueGenres = Array.from(
-            new Set(allGenres.map((g) => g.toLowerCase()))
-          );
-          const genreOpts = uniqueGenres.map((g) => ({
-            value: g,
-            label: g.charAt(0).toUpperCase() + g.slice(1),
-          }));
-
-          setGenreOptions(genreOpts);
-        }
-      } catch (error) {
-        console.error("Error fetching movies:", error);
-      }
-    };
-
-    fetchMovies();
+    fetchGenres();
   }, []);
 
   const handleInputChange = (field: keyof FilterData, value: string) => {
@@ -111,7 +80,6 @@ const FilterSearch: React.FC<FilterSearchProps> = ({
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") handleSearch();
   };
-
   return (
     <div className={`bg-gray-g63f rounded-lg p-4 ${className}`}>
       <div className="flex flex-col lg:flex-row gap-4 items-center max-w-xs mx-auto lg:max-w-none lg:mx-0">
@@ -119,11 +87,11 @@ const FilterSearch: React.FC<FilterSearchProps> = ({
         <div className="w-full lg:w-48">
           <Select
             value={
-              movieOptions.find((m) => m.label === query?.title)?.value || ""
+              movies.find((m) => m.title === query?.title)?.id || ""
             }
             onValueChange={(value) => {
-              const movie = movieOptions.find((m) => m.value === value);
-              handleInputChange("title", movie?.label || "");
+              const movie = movies.find((m) => m.id === value);
+              handleInputChange("title", movie?.title || "");
             }}
           >
             <SelectTrigger className="bg-gray-g63f border-gray-gf7e text-white rounded-sm h-12 focus:border-gray-g3b0 focus:ring-0 w-full relative cursor-pointer">
@@ -133,13 +101,13 @@ const FilterSearch: React.FC<FilterSearchProps> = ({
               </div>
             </SelectTrigger>
             <SelectContent className="bg-gray-g63f border-gray-gf7e">
-              {movieOptions.map((option) => (
+              {movies?.map((option) => (
                 <SelectItem
-                  key={option.value}
-                  value={option.value}
+                  key={option.id}
+                  value={option.id}
                   className="text-white hover:bg-gray-gf7e focus:bg-gray-gf7e cursor-pointer"
                 >
-                  {option.label}
+                  {option.title}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -163,10 +131,10 @@ const FilterSearch: React.FC<FilterSearchProps> = ({
                 {languageOptions.map((option) => (
                   <SelectItem
                     key={option.value}
-                    value={option.value}
+                    value={option.value || ""}
                     className="text-white hover:bg-gray-gf7e focus:bg-gray-gf7e cursor-pointer"
                   >
-                    {option.label}
+                    {option.name}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -186,13 +154,13 @@ const FilterSearch: React.FC<FilterSearchProps> = ({
               </SelectTrigger>
               <SelectContent className="bg-gray-g63f border-gray-gf7e">
                 {genreOptions.length > 0 ? (
-                  genreOptions.map((option) => (
+                  genreOptions.map((genre) => (
                     <SelectItem
-                      key={option.value}
-                      value={option.value}
+                      key={genre.id}
+                      value={genre.name}
                       className="text-white hover:bg-gray-gf7e focus:bg-gray-gf7e cursor-pointer"
                     >
-                      {option.label}
+                      {genre.name}
                     </SelectItem>
                   ))
                 ) : (
@@ -212,9 +180,9 @@ const FilterSearch: React.FC<FilterSearchProps> = ({
               <Input
                 type="text"
                 placeholder="Release Date"
-                value={query?.releaseDate || ""}
+                value={query?.release_date || ""}
                 onChange={(e) =>
-                  handleInputChange("releaseDate", e.target.value)
+                  handleInputChange("release_date", e.target.value)
                 }
                 onKeyPress={handleKeyPress}
                 className="bg-gray-g63f border-gray-gf7e text-white placeholder-gray-g3b0 rounded-sm h-9 pl-4 pr-12 focus:border-gray-g3b0 focus:ring-0 w-full cursor-pointer"
@@ -225,8 +193,8 @@ const FilterSearch: React.FC<FilterSearchProps> = ({
                 onChange={(e) => {
                   if (e.target.value) {
                     const date = new Date(e.target.value);
-                    const formattedDate = date.toLocaleDateString("en-GB");
-                    handleInputChange("releaseDate", formattedDate);
+                    const isoString = date.toISOString();
+                    handleInputChange("release_date", isoString);
                   }
                 }}
               />

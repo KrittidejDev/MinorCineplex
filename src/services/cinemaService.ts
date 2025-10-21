@@ -16,4 +16,7 @@ export const cinemaService = {
   async getCinemaById(id: string): Promise<CinemaDTO | null> {
     return cinemaRepo.findCinemaById(id);
   },
+  async getCinemasForAdmin(): Promise<CinemaDTO[]> {
+    return cinemaRepo.findCinemasForAdmin();
+  },
 };

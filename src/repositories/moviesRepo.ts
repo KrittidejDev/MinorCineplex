@@ -285,4 +285,8 @@ export const moviesRepo = {
       throw new Error("Failed to update movie status");
     }
   },
+  async findMoviesForAdmin(): Promise<MovieDTO[]> {
+    const movies = await prisma.movie.findMany();
+    return movies as unknown as MovieDTO[];
+  },
 };

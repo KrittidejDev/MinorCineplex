@@ -1,3 +1,4 @@
+//components/CouponCard.tsx
 import React, { useState, useEffect } from 'react'
 import { Button } from '../ui/button'
 import { useRouter } from 'next/router'
@@ -11,17 +12,14 @@ import { toast } from 'react-toastify'
 interface CouponCardProps {
   coupon: Pick<
     CouponCardData,
-    'id' | 'code' | 'end_date' | 'title_en' | 'image'
+    'id' | 'code' | 'end_date' | 'translations' | 'image_url'
   >
 }
 
-// 🔹 Define response types
 interface CouponStatusResponse {
   coupon: CouponCardData
   collected?: boolean
-  data?: {
-    collected?: boolean
-  }
+  data?: { collected?: boolean }
 }
 
 const CouponCard = ({ coupon }: CouponCardProps) => {
@@ -30,7 +28,8 @@ const CouponCard = ({ coupon }: CouponCardProps) => {
   const [collected, setCollected] = useState(false)
   const [loading, setLoading] = useState(false)
 
-  // 🔹 Fetch latest coupon status ของ user
+  const titleEn = coupon.translations?.en?.name || 'No title'
+
   useEffect(() => {
     if (!session?.user?.id) return
 
@@ -39,8 +38,7 @@ const CouponCard = ({ coupon }: CouponCardProps) => {
         const response = (await userService.GET_COUPON_COLLECTED_BY_ID(
           coupon.id
         )) as CouponStatusResponse
-        const isCollected = response?.collected
-        setCollected(!!isCollected)
+        setCollected(!!response?.collected)
       } catch (err) {
         console.error('Failed to fetch user coupon status', err)
       }
@@ -65,7 +63,6 @@ const CouponCard = ({ coupon }: CouponCardProps) => {
     }
 
     setLoading(true)
-
     try {
       await userService.COLLECT_COUPON(coupon.id)
       setCollected(true)
@@ -103,8 +100,8 @@ const CouponCard = ({ coupon }: CouponCardProps) => {
           onClick={handleClickCoupon}
         >
           <Image
-            src={coupon.image || ''}
-            alt={coupon.title_en}
+            src={coupon.image_url || ''}
+            alt={titleEn}
             width={285}
             height={285}
             className="w-full h-full object-cover rounded-t-[8px]"
@@ -117,7 +114,7 @@ const CouponCard = ({ coupon }: CouponCardProps) => {
               className="text-[#FFFFFF] font-bold text-sm lg:text-xl line-clamp-2 hover:underline cursor-pointer w-full"
               onClick={handleClickCoupon}
             >
-              {coupon.title_en}
+              {titleEn}
             </h4>
             <div className="flex flex-col lg:flex-row gap-1 lg:gap-5 w-full text-xs lg:text-sm">
               <p className="text-[#8B93B0]">Valid until</p>

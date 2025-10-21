@@ -1,5 +1,4 @@
-//repositories/couponRepository.ts
-import { PrismaClient } from "@/generated/prisma";
+import { PrismaClient, Prisma } from "@/generated/prisma";
 import { CreateCouponInput } from "@/types/coupon";
 
 const prisma = new PrismaClient();
@@ -11,35 +10,38 @@ function parseDate(value?: Date | string | null): Date {
   return d;
 }
 
+// แปลง GiftDetails ให้เป็น Prisma.JsonValue
+function toJsonValue<T>(obj?: T): Prisma.InputJsonValue | undefined {
+  if (!obj) return undefined;
+  return obj as unknown as Prisma.InputJsonValue;
+}
+
 export const getMany = () => prisma.coupon.findMany();
 
 export const getById = (id: string) =>
   prisma.coupon.findUnique({ where: { id } });
 
 export const create = async (data: CreateCouponInput) => {
-  const allowedTypes = ["AMOUNT", "PERCENT", "SPACIAL"];
-
-  // ถ้า data.discount_type ไม่มี หรือไม่ตรงกับ allowedTypes → ใช้ default "AMOUNT"
-  const discountType = allowedTypes.includes(String(data.discount_type))
-    ? data.discount_type!
-    : "AMOUNT";
-
   return prisma.coupon.create({
     data: {
-      code: data.code,
-      title_en: data.title_en ?? "",
-      title_th: data.title_th ?? "",
-      discription_en: data.discription_en ?? "",
-      discription_th: data.discription_th ?? "",
-      discount_type: discountType,
-      discount_value: data.discount_value,
+      slug: data.slug,
+      code: data.code ?? undefined,
+      translations: toJsonValue(data.translations),
+      discount_type: data.discount_type,
+      discount_value: data.discount_value ?? undefined,
+      buy_quantity: data.buy_quantity ?? undefined,
+      get_quantity: data.get_quantity ?? undefined,
+      gift_type: data.gift_type ?? undefined,
+      gift_details: toJsonValue(data.gift_details),
+      status: data.status ?? "ACTIVE",
+      image_url: data.image_url ?? undefined,
       start_date: parseDate(data.start_date),
       end_date: parseDate(data.end_date),
-      status: data.status ?? "ACTIVE",
-      image: data.image ?? null,
-      min_amount: data.min_amount ?? null,
-      max_discount: data.max_discount ?? null,
-      usage_limit: data.usage_limit ?? null,
+      min_amount: data.min_amount ?? undefined,
+      max_discount: data.max_discount ?? undefined,
+      usage_limit: data.usage_limit ?? undefined,
+      cinema_id: data.cinema_id ?? undefined,
+      movie_id: data.movie_id ?? undefined,
     },
   });
 };
@@ -48,20 +50,24 @@ export const update = async (id: string, data: Partial<CreateCouponInput>) => {
   return prisma.coupon.update({
     where: { id },
     data: {
+      slug: data.slug ?? undefined,
       code: data.code ?? undefined,
-      title_en: data.title_en ?? undefined,
-      title_th: data.title_th ?? undefined,
-      discription_en: data.discription_en ?? undefined,
-      discription_th: data.discription_th ?? undefined,
+      translations: toJsonValue(data.translations),
       discount_type: data.discount_type ?? undefined,
       discount_value: data.discount_value ?? undefined,
+      buy_quantity: data.buy_quantity ?? undefined,
+      get_quantity: data.get_quantity ?? undefined,
+      gift_type: data.gift_type ?? undefined,
+      gift_details: toJsonValue(data.gift_details),
+      status: data.status ?? undefined,
+      image_url: data.image_url ?? undefined,
       start_date: data.start_date ? parseDate(data.start_date) : undefined,
       end_date: data.end_date ? parseDate(data.end_date) : undefined,
-      status: data.status ?? undefined,
-      image: data.image ?? undefined,
       min_amount: data.min_amount ?? undefined,
       max_discount: data.max_discount ?? undefined,
       usage_limit: data.usage_limit ?? undefined,
+      cinema_id: data.cinema_id ?? undefined,
+      movie_id: data.movie_id ?? undefined,
     },
   });
 };

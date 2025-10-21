@@ -29,14 +29,6 @@ export default function NowShowingComingSoon({
     setActiveTab(query.status || MovieStatus.NOW_SHOWING);
   }, [query.status]);
 
-  const moviesToDisplay = movies
-    .filter((m) =>
-      activeTab === MovieStatus.NOW_SHOWING
-        ? m.status === MovieStatus.NOW_SHOWING
-        : m.status === MovieStatus.COMING_SOON
-    )
-    .slice(0, 4);
-
   const handleTab = (tab: MovieStatus) => {
     setActiveTab(tab);
     onTabClick(tab);
@@ -77,11 +69,11 @@ export default function NowShowingComingSoon({
 
         {loading ? (
           <div className="text-center py-20">Loading...</div>
-        ) : moviesToDisplay.length === 0 ? (
+        ) : movies.length === 0 ? (
           <div className="text-center py-20">No movies found</div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
-            {moviesToDisplay.map((movie) => (
+            {movies.slice(0, 4).map((movie) => (
               <div
                 key={movie.id}
                 className="cursor-pointer"

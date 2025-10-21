@@ -53,7 +53,6 @@ export default function Home() {
       setSearchActive(
         !!filters && Object.values(filters).some((v) => v !== "")
       );
-
       const searchParamsObj = new URLSearchParams();
       if (filters) {
         if (filters.title) searchParamsObj.append("title", filters.title);
@@ -64,10 +63,8 @@ export default function Home() {
           searchParamsObj.append("releaseDate", filters.releaseDate);
         if (filters.status) searchParamsObj.append("status", filters.status);
       }
-
       const queryString = searchParamsObj.toString();
       const url = queryString ? `/api/movies?${queryString}` : "/api/movies";
-
       const res = await axios.get<MovieAPIRespons>(url);
       setMovies(res.data.data);
     } catch (err) {

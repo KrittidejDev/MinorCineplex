@@ -89,7 +89,7 @@ function MovieInfo() {
   return (
     <NavAndFooterWithBanner>
       <div>
-        <div className="w-dvw flex justify-center relative mx-auto -mt-10"></div>
+        <div className="w-dvw flex justify-center relative mx-auto mt-10"></div>
         <div>
           <MovieInfoWidget
             movie={movie}

@@ -1,15 +1,9 @@
-import { CinemaType } from "@/types/cinema";
+import { CinemaByProvince, CinemaDTO, CinemaType } from "@/types/cinema";
 import CinemaCard from "../Cards/CinemaCard";
 import DoneRound from "../Icons/DoneRound";
 import { useState } from "react";
 import { useTranslation } from "next-i18next";
 import InfiniteScroll from "react-infinite-scroll-component";
-
-export interface CinemaByProvince {
-  provinceEn?: string;
-  provinceTh?: string;
-  cinemas: CinemaType[];
-}
 
 interface CinemaLocationProps {
   data: CinemaByProvince[];

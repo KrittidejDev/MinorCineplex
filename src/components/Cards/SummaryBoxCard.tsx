@@ -1,27 +1,27 @@
-import Image from 'next/image'
-import { useState } from 'react'
-import { useTranslation } from 'react-i18next'
-import Tag from '../Widgets/Tag'
-import PinFill from '../Icons/PinFill'
-import DateRangeFill from '../Icons/DateRangeFill'
-import TimeFill from '../Icons/TimeFill'
-import Shop from '../Icons/Shop'
-import BookingInfo from './BookingInfo'
-import { Button } from '../ui/button'
-import { BillInfo, SummaryData } from '@/types/cinema'
-import { CouponCardData } from '@/types/coupon'
-import { CloseRoundLight, ExpandRightLight } from '../Icons/Icons'
+import Image from "next/image";
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import Tag from "../Widgets/Tag";
+import PinFill from "../Icons/PinFill";
+import DateRangeFill from "../Icons/DateRangeFill";
+import TimeFill from "../Icons/TimeFill";
+import Shop from "../Icons/Shop";
+import BookingInfo from "./BookingInfo";
+import { Button } from "../ui/button";
+import { BillInfo, BookingInfo as BookingData } from "@/types/cinema";
+import { CouponCardData } from "@/types/coupon";
+import { CloseRoundLight, ExpandRightLight } from "../Icons/Icons";
 
 interface Props extends BillInfo {
-  data: SummaryData
-  countdown?: string
-  coupons?: CouponCardData[]
-  selectedCoupon?: CouponCardData | null
-  onSelectCoupon?: (coupon: CouponCardData | null) => void
-  onPayment?: () => void
-  canPay: boolean
-  paymentMethod?: 'credit_card' | 'qr_code'
-  step?: '1' | '2'
+  data?: BookingData;
+  countdown?: string;
+  coupons?: CouponCardData[];
+  selectedCoupon?: CouponCardData | null;
+  onSelectCoupon?: (coupon: CouponCardData | null) => void;
+  onPayment?: () => void;
+  canPay: boolean;
+  paymentMethod?: "credit_card" | "qr_code";
+  step?: "1" | "2";
 }
 
 export default function SummaryBoxCard({
@@ -64,23 +64,39 @@ export default function SummaryBoxCard({
         )}
 
         <div className="flex gap-4 items-center">
-          <Image
-            src={data?.movie?.poster_url || '/default-poster.jpg'}
-            alt={
-              data?.movie?.title ||
-              (lang === 'en' ? 'Movie Poster' : 'โปสเตอร์หนัง')
-            }
-            width={82}
-            height={120}
-            className="object-cover rounded-md"
-          />
+          {data?.movie?.poster_url && (
+            <Image
+              src={data?.movie?.poster_url}
+              alt={
+                data?.movie?.title ||
+                (lang === "en" ? "Movie Poster" : "โปสเตอร์หนัง")
+              }
+              width={82}
+              height={120}
+              className="object-cover rounded-md"
+            />
+          )}
           <div className="flex flex-col gap-2">
             <h4 className="font-bold text-xl text-white-wfff line-clamp-2">
               {data?.movie?.title}
             </h4>
             <div className="hidden sm:flex flex-wrap gap-2">
-              {data?.movie?.genre?.split(',').map((e, i) => (
-                <Tag key={i} name={e} variant="genre" />
+              {data?.movie?.genres?.map((e, i) => {
+                console.log("E data", e);
+                return (
+                  <Tag
+                    key={i}
+                    name={
+                      lang === "en"
+                        ? e?.genre?.translations?.en?.name
+                        : e?.genre?.translations?.th?.name
+                    }
+                    variant="genre"
+                  />
+                );
+              })}
+              {data?.movie?.languages?.map((e, i) => (
+                <Tag key={i} name={e?.language?.name} variant="genre" />
               ))}
             </div>
           </div>
@@ -89,8 +105,12 @@ export default function SummaryBoxCard({
         {/* Cinema Info */}
         <div className="flex flex-col gap-2 mt-6">
           <div className="flex items-center gap-4">
-            <PinFill width={16} height={16} color={'#565F7E'} />
-            <p className="text-gray-gedd">{data?.hall?.cinema?.name}</p>
+            <PinFill width={16} height={16} color={"#565F7E"} />
+            <p className="text-gray-gedd">
+              {lang === "en"
+                ? data?.cinema?.translations?.en?.name
+                : data?.cinema?.translations?.th?.name}
+            </p>
           </div>
           <div className="flex items-center gap-4">
             <DateRangeFill width={16} height={16} color={'#565F7E'} />
@@ -103,8 +123,8 @@ export default function SummaryBoxCard({
             </p>
           </div>
           <div className="flex items-center gap-4">
-            <TimeFill width={16} height={16} color={'#565F7E'} />
-            <p className="text-gray-gedd">{data?.time_slot?.start_time}</p>
+            <TimeFill width={16} height={16} color={"#565F7E"} />
+            <p className="text-gray-gedd">{data?.time_slot?.name}</p>
           </div>
           <div className="flex items-center gap-4">
             <Shop width={16} height={16} color={'#565F7E'} />
@@ -219,7 +239,6 @@ export default function SummaryBoxCard({
       {isCouponModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50 p-4">
           <div className="relative bg-gray-g63f rounded-xl p-6 w-full max-w-[1200px] shadow-2xl">
-            {/* ปุ่ม X */}
             <button
               onClick={() => setCouponModalOpen(false)}
               className="absolute top-3 right-3 text-gray-gedd hover:text-white transition cursor-pointer"
@@ -227,12 +246,10 @@ export default function SummaryBoxCard({
               ✕
             </button>
 
-            {/* หัวข้อ */}
             <h4 className="text-white-wfff font-bold mb-6 text-center text-lg">
               {lang === 'en' ? 'Select Coupon' : 'เลือกคูปอง'}
             </h4>
 
-            {/* รายการคูปอง */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[calc(100vh-250px)] overflow-y-auto pr-2">
               {coupons.length > 0 ? (
                 coupons.map((c) => {
@@ -258,7 +275,6 @@ export default function SummaryBoxCard({
                         />
                       </div>
 
-                      {/* ข้อมูลคูปอง */}
                       <div
                         className={`flex flex-col justify-between p-3 flex-1 transition-colors h-full
                         ${isSelected ? 'bg-gray-g3b0' : 'bg-gray-gc1b'}
@@ -305,7 +321,6 @@ export default function SummaryBoxCard({
               )}
             </div>
 
-            {/* ปุ่ม Apply */}
             <div className="flex justify-end mt-6">
               <Button
                 disabled={!selectedCoupon}

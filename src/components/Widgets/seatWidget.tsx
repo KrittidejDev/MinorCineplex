@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import ScreenBar from "@/components/Seats/ScreenBar";
 import SeatInfo from "@/components/Seats/SeatInfo";
 import SeatRow from "@/components/Seats/SeatRow";
-import { BookingInfo, SelectedSeat, SeatRowData } from "@/types/cinema";
+import { BookingInfo, SelectedSeat, SeatRowData, Seat } from "@/types/cinema";
 import { ablyClient } from "@/lib/ably";
 import type { InboundMessage } from "ably";
 
@@ -19,25 +19,52 @@ interface AblySeatUpdateMessage {
   locked_by?: string | null;
 }
 
+const generateDefaultSeatsData = (): SeatRowData[] => {
+  const rows = ["A", "B", "C", "D", "E"];
+  return rows.map((row) => ({
+    row,
+    seats: Array.from({ length: 10 }, (_, i) => ({
+      id: `${row}${i + 1}`,
+      seat_number: `${row}${i + 1}`,
+      row,
+      col: (i + 1).toString(),
+      number: (i + 1).toString(),
+      status: "AVAILABLE" as const,
+      seat: {
+        id: `${row}${i + 1}`,
+        seat_number: `${row}${i + 1}`,
+        row,
+        col: (i + 1).toString(),
+      },
+    })),
+  }));
+};
+
 const SeatWidget: React.FC<SeatWidgetProps> = ({
   data,
   selectedSeats,
   onSelectSeat,
   userId,
 }) => {
-  const [seatsData, setSeatsData] = useState<SeatRowData[]>(data?.seats || []);
+  const [seatsData, setSeatsData] = useState<SeatRowData[]>(
+    data?.seats || generateDefaultSeatsData()
+  );
 
   useEffect(() => {
-    if (data?.seats) setSeatsData(data.seats);
+    if (data?.seats && data.seats.length > 0) setSeatsData(data.seats);
   }, [data?.seats]);
 
   useEffect(() => {
     if (!data?.id) return;
     const channel = ablyClient.channels.get(`showtime:${data.id}`);
+    console.log("show time id", data.id);
 
     const handleUpdate = (msg: InboundMessage) => {
       const payload = msg.data as AblySeatUpdateMessage;
       const { seatId, status, locked_by } = payload;
+
+      const isValidStatus = (s: string): s is Seat["status"] =>
+        ["AVAILABLE", "RESERVED", "BOOKED", "LOCKED"].includes(s);
 
       setSeatsData((prev) =>
         prev.map((row) => ({
@@ -46,7 +73,7 @@ const SeatWidget: React.FC<SeatWidgetProps> = ({
             seat.id === seatId
               ? {
                   ...seat,
-                  status,
+                  status: isValidStatus(status) ? status : seat.status,
                   locked_by: locked_by ?? undefined,
                 }
               : seat

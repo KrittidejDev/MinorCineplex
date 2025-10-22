@@ -50,6 +50,7 @@ export interface MovieAPIRespons {
 }
 
 export interface ShowtimeDTO {
+  slug?: string;
   cinema: {
     id: string;
     slug: string;

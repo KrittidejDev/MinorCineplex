@@ -7,6 +7,7 @@ import CitySelection from "../ui/cityselection";
 import DateSelectionBarWidget from "./DateSelectionBarWidget";
 import ShowTime from "./ShowTime";
 import { MovieDTO, ShowtimeDTO } from "@/types/movie";
+import { i18n } from "next-i18next";
 
 interface MoviesDetailWidgetProps {
   movie: MovieDTO;
@@ -146,18 +147,26 @@ const MovieInfoWidget: React.FC<MoviesDetailWidgetProps> = ({
               <div className="max-w-[1200px] mx-auto">
                 <div className="w-full my-10">
                   {showtimes.length > 0 ? (
-                    showtimes.map((data) => (
-                      <div
-                        key={data?.cinema?.id}
-                        className="w-full md:rounded-md bg-gray-gc1b p-4 mb-4"
-                      >
-                        <ShowTime
-                          data={data}
-                          badges={["Hearing assistance", "Wheelchair access"]}
-                          autoNavigate
-                        />
-                      </div>
-                    ))
+                    showtimes.map((data) => {
+                      const slug = (
+                        i18n?.language === "en"
+                          ? movie?.translations?.en?.title
+                          : movie?.translations?.th?.title
+                      )?.replace(/\s+/g, "");
+                      const newData = { ...data, slug };
+                      return (
+                        <div
+                          key={data?.cinema?.id}
+                          className="w-full md:rounded-md bg-gray-gc1b p-4 mb-4"
+                        >
+                          <ShowTime
+                            data={newData}
+                            badges={["Hearing assistance", "Wheelchair access"]}
+                            autoNavigate
+                          />
+                        </div>
+                      );
+                    })
                   ) : (
                     <div className="flex justify-center items-center py-20">
                       <p className="text-gray-400">ไม่พบรอบฉายในวันที่เลือก</p>
@@ -202,18 +211,26 @@ const MovieInfoWidget: React.FC<MoviesDetailWidgetProps> = ({
 
             <div className="w-full my-10">
               {showtimes.length > 0 ? (
-                showtimes.map((data) => (
-                  <div
-                    key={data.cinema.id}
-                    className="w-full md:rounded-md bg-gray-gc1b p-4 mb-4"
-                  >
-                    <ShowTime
-                      data={data}
-                      badges={["Hearing assistance", "Wheelchair access"]}
-                      autoNavigate
-                    />
-                  </div>
-                ))
+                showtimes.map((data) => {
+                  const slug = (
+                    i18n?.language === "en"
+                      ? movie?.translations?.en?.title
+                      : movie?.translations?.th?.title
+                  )?.replace(/\s+/g, "");
+                  const newData = { ...data, slug };
+                  return (
+                    <div
+                      key={data?.cinema?.id}
+                      className="w-full md:rounded-md bg-gray-gc1b p-4 mb-4"
+                    >
+                      <ShowTime
+                        data={newData}
+                        badges={["Hearing assistance", "Wheelchair access"]}
+                        autoNavigate
+                      />
+                    </div>
+                  );
+                })
               ) : (
                 <div className="flex justify-center items-center py-20">
                   <p className="text-gray-400">ไม่พบรอบฉายในวันที่เลือก</p>

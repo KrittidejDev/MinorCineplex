@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { sql } from "@/lib/db";
 import { ably } from "@/lib/ablyServer";
+import { SeatStatus, PrismaClient } from "@/generated/prisma";
+const prisma = new PrismaClient();
 
 type Data = { success: boolean; message?: string };
 
@@ -10,72 +11,79 @@ export default async function handler(
 ) {
   const { seatId } = req.query;
 
-  let userId = "guest";
-
   if (!seatId || Array.isArray(seatId)) {
     return res.status(400).json({ success: false, message: "Invalid seatId" });
   }
 
-  if (req.body?.userId) {
-    userId = req.body.userId;
-  }
+  const userId = req.body?.userId || "guest";
 
   try {
+    // ---------------- LOCK SEAT ----------------
     if (req.method === "POST") {
-      // LOCK
-      const result = await sql`
-        UPDATE showtime_seat
-        SET status = 'LOCKED', locked_by = ${userId}, locked_at = NOW()
-        WHERE id = ${seatId} AND status = 'AVAILABLE'
-        RETURNING *;
-      `;
+      const updated = await prisma.showtimeSeat.updateMany({
+        where: {
+          id: seatId as string,
+          status: SeatStatus.AVAILABLE,
+        },
+        data: {
+          status: SeatStatus.LOCKED,
+          locked_by_user_id: userId,
+          locked_until: new Date(Date.now() + 5 * 60 * 1000), // ล็อก 5 นาที
+        },
+      });
 
-      if (!result.length) {
+      if (updated.count === 0) {
         return res
           .status(400)
           .json({ success: false, message: "Seat not available" });
       }
 
-      await ably.channels
-        .get(`showtime:${result[0].showtime_id}`)
-        .publish("update", {
-          seatId,
-          status: "LOCKED",
-          locked_by: userId,
-        });
+      // ดึง showtime_id เพื่อส่ง event Ably
+      const seatData = await prisma.showtimeSeat.findUnique({
+        where: { id: seatId as string },
+        select: { showtime_id: true },
+      });
 
-      return res.json({ success: true });
-    }
-
-    if (req.method === "PATCH") {
-      // UNLOCK
-      const result = await sql`
-        UPDATE showtime_seat
-        SET status = 'AVAILABLE', locked_by = NULL, locked_at = NULL
-        WHERE id = ${seatId}
-        RETURNING *;
-      `;
-
-      if (!result.length) {
-        return res
-          .status(400)
-          .json({ success: false, message: "Seat not found" });
+      if (seatData?.showtime_id) {
+        await ably.channels
+          .get(`showtime:${seatData.showtime_id}`)
+          .publish("update", {
+            seatId,
+            status: SeatStatus.LOCKED,
+            locked_by_user_id: userId,
+          });
       }
 
+      return res.json({ success: true });
+    }
+
+    // ---------------- UNLOCK SEAT ----------------
+    if (req.method === "PATCH") {
+      const seat = await prisma.showtimeSeat.update({
+        where: { id: seatId as string },
+        data: {
+          status: SeatStatus.AVAILABLE,
+          locked_by_user_id: null,
+          locked_until: null,
+        },
+        select: { showtime_id: true },
+      });
+
       await ably.channels
-        .get(`showtime:${result[0].showtime_id}`)
+        .get(`showtime:${seat.showtime_id}`)
         .publish("update", {
           seatId,
-          status: "AVAILABLE",
+          status: SeatStatus.AVAILABLE,
         });
 
       return res.json({ success: true });
     }
 
+    // ---------------- INVALID METHOD ----------------
     res.setHeader("Allow", ["POST", "PATCH"]);
     return res.status(405).end(`Method ${req.method} Not Allowed`);
   } catch (err) {
-    console.error(err);
+    console.error("❌ API Error:", err);
     return res.status(500).json({ success: false, message: "Server error" });
   }
 }

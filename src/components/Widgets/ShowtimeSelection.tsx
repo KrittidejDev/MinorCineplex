@@ -11,6 +11,7 @@ export interface Showtime {
   showtime_id?: string;
   start_time: string;
   end_time: string;
+  slug?: string;
   label?: string;
 }
 
@@ -28,10 +29,11 @@ export const ShowtimeSelection: React.FC<ShowtimeSelectionProps> = ({
     const interval = setInterval(() => setNow(new Date()), 1000);
     return () => clearInterval(interval);
   }, []);
+
   const handleSelect = (ts: Showtime) => {
-    console.log(ts);
     router.push({
-      pathname: `/booking/${ts?.showtime_id}`,
+      pathname: `/booking/${ts.slug}`,
+      query: { id: ts.showtime_id },
     });
   };
 
@@ -53,7 +55,6 @@ export const ShowtimeSelection: React.FC<ShowtimeSelectionProps> = ({
             e.end_time,
             new Date(e.date)
           );
-
           return (
             <button
               key={e.id}

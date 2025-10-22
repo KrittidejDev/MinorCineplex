@@ -46,7 +46,7 @@ const SignInForm = ({ onSubmit }: SignUpFormProps) => {
     <form
       autoComplete="off"
       onSubmit={handleSubmit(onSubmit ?? (() => {}))}
-      className="max-w-[380px] flex flex-col items-center gap-10"
+      className="w-full flex flex-col items-center gap-10"
     >
       <h2 className="text-f-36 text-center text-white">Login</h2>
       <div className="w-full flex flex-col gap-4">

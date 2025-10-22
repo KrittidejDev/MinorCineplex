@@ -1,6 +1,6 @@
 import React, { ReactElement, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
-import { useSession } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import NavAndFooter from "@/components/MainLayout/NavAndFooter";
 import SummaryBoxCard from "@/components/Cards/SummaryBoxCard";
 import { Stepper } from "@/components/Widgets/Stepper";
@@ -15,7 +15,8 @@ import ModalEmpty from "@/components/Modals/ModalEmpty";
 import { Button } from "@/components/ui/button";
 import { toast } from "react-toastify";
 import { useSearchParams } from "next/navigation";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
+import SignInForm from "@/components/Forms/SignInForm";
 
 const BookingSeat: React.FC = () => {
   const router = useRouter();
@@ -37,6 +38,7 @@ const BookingSeat: React.FC = () => {
   >(undefined);
   const [_isShowModal, _setIsShowmodal] = useState<boolean>(false);
   const [_renderModal, _setRenderModal] = useState<ReactElement | null>(null);
+  const [showLoginModal, setShowLoginModal] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -52,6 +54,27 @@ const BookingSeat: React.FC = () => {
     (sum, seat) => sum + (seat.price || 0),
     0
   );
+
+  const handleLogin = async (value: { email: string; password: string }) => {
+    try {
+      const result = await signIn("credentials", {
+        redirect: false,
+        identifier: value.email,
+        password: value.password,
+      });
+      if (result?.ok) {
+        setShowLoginModal(false);
+        router.push(`/booking/${id}`);
+      } else {
+        toast.error("Login failed");
+        setShowLoginModal(false);
+      }
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        console.log("Login failed:", error);
+      }
+    }
+  };
 
   const fetchBookingData = async () => {
     if (!id) return;
@@ -158,6 +181,10 @@ const BookingSeat: React.FC = () => {
 
   // ----------------- Lock seats -----------------
   const lockSeats = async () => {
+    if (!session?.user) {
+      setShowLoginModal(true);
+      return;
+    }
     if (!selectedSeats.length) return;
     const userId = session?.user?.id;
     try {
@@ -388,6 +415,14 @@ const BookingSeat: React.FC = () => {
       </div>
       <ModalEmpty isShowModal={_isShowModal} onClose={_handleCloseModal}>
         {_renderModal}
+      </ModalEmpty>
+      <ModalEmpty
+        isShowModal={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+      >
+        <div className="px-20 py-10 bg-gray-g63f flex flex-col items-center rounded-2xl gap-10">
+          <SignInForm onSubmit={handleLogin} />
+        </div>
       </ModalEmpty>
     </NavAndFooter>
   );

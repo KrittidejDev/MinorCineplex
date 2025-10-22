@@ -47,6 +47,7 @@ const BookingSeat: React.FC = () => {
   const [_isShowModal, _setIsShowmodal] = useState<boolean>(false);
   const [_renderModal, _setRenderModal] = useState<ReactElement | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const paymentRef = useRef<PaymentFormHandles | null>(null);
   const countdownActive = useRef(false);
@@ -67,15 +68,18 @@ const BookingSeat: React.FC = () => {
   const fetchBookingData = async () => {
     if (!id) return;
     console.log("IDDDDD", id);
+    setIsLoading(true);
     const ac = new AbortController();
     try {
       const res = await axios.get(`/api/booking/showtimes/${id}`, {
         signal: ac.signal,
       });
       setBookingInfo(res.data as BookingInfo);
+      setIsLoading(false);
     } catch (err) {
       if (!axios.isCancel(err))
         console.error("Failed to fetch booking info:", err);
+      setIsLoading(false);
     }
     return () => {
       ac.abort();
@@ -370,11 +374,11 @@ const BookingSeat: React.FC = () => {
     };
 
     window.addEventListener("beforeunload", handleBeforeUnload);
-    (router.events as any).on("routeChangeStart", handleRouteChange as any);
+    router.events.on("routeChangeStart", handleRouteChange);
 
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
-      (router.events as any).off("routeChangeStart", handleRouteChange as any);
+      router.events.off("routeChangeStart", handleRouteChange);
 
       if (
         selectedSeats.length > 0 &&
@@ -420,20 +424,22 @@ const BookingSeat: React.FC = () => {
           />
         )}
         <div className="flex flex-1 lg:max-w-[305px]">
-          <SummaryBoxCard
-            step={step}
-            data={bookingInfo}
-            lockSeats={lockSeats}
-            totalSelected={selectedSeats}
-            totalPrice={totalPrice}
-            countdown={formatTime(countdown)}
-            coupons={coupons}
-            selectedCoupon={selectedCoupon}
-            onSelectCoupon={setSelectedCoupon}
-            onPayment={handlePaymentClick}
-            canPay={canPay}
-            paymentMethod={paymentMethod}
-          />
+          {!isLoading && bookingInfo && (
+            <SummaryBoxCard
+              step={step}
+              data={bookingInfo}
+              lockSeats={lockSeats}
+              totalSelected={selectedSeats}
+              totalPrice={totalPrice}
+              countdown={formatTime(countdown)}
+              coupons={coupons}
+              selectedCoupon={selectedCoupon}
+              onSelectCoupon={setSelectedCoupon}
+              onPayment={handlePaymentClick}
+              canPay={canPay}
+              paymentMethod={paymentMethod}
+            />
+          )}
         </div>
       </div>
       <ModalEmpty isShowModal={_isShowModal} onClose={_handleCloseModal}>

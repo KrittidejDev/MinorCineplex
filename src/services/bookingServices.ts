@@ -1,9 +1,31 @@
 // services/bookingServices.ts
 import { bookingRepository } from "@/repositories/bookingRepositories";
+import { CinemaDTO, HallDTO, Seat } from "@/types/cinema";
+import { MovieDTO } from "@/types/movie";
+import { SeatTemplate } from "@/types/type";
 
 interface SeatRow {
   row: string;
-  seats: any[];
+  seats: Seat[];
+}
+
+interface ShowTimeResponse {
+  id: string;
+  movie_id: string;
+  cinema_id: string;
+  hall_id: string;
+  date: Date;
+  time_slot_id: string;
+  price: number;
+}
+
+interface ShowtimeSeat {
+  id: string;
+  seat_template: SeatTemplate;
+  status: string;
+  price: number;
+  locked_by_user_id: string | null;
+  locked_until: Date | null;
 }
 
 interface ShowtimeData {
@@ -15,9 +37,9 @@ interface ShowtimeData {
   time_slot_id: string;
   price: number;
   seats: SeatRow[];
-  movie?: any;
-  cinema?: any;
-  hall?: any;
+  movie?: MovieDTO;
+  cinema?: CinemaDTO;
+  hall?: HallDTO;
 }
 
 class BookingService {
@@ -35,11 +57,12 @@ class BookingService {
     ]);
 
     return {
-      ...showtime,
+      ...(showtime as ShowTimeResponse),
+      date: showtime.date.toISOString(),
       seats,
-      movie,
-      cinema,
-      hall,
+      movie: movie as MovieDTO,
+      cinema: cinema as CinemaDTO,
+      hall: hall as HallDTO,
     };
   }
 
@@ -48,14 +71,14 @@ class BookingService {
 
     const showtimeSeats =
       await bookingRepository.getSeatsByShowtimeId(showtimeId);
-    const seatRows = this.transformSeatsToRows(showtimeSeats);
+    const seatRows = this.transformSeatsToRows(showtimeSeats as ShowtimeSeat[]);
 
     this.seatRowsCache[showtimeId] = seatRows;
     return seatRows;
   }
 
-  private transformSeatsToRows(showtimeSeats: any[]): SeatRow[] {
-    const seatsByRow = new Map<string, any[]>();
+  private transformSeatsToRows(showtimeSeats: ShowtimeSeat[]): SeatRow[] {
+    const seatsByRow = new Map<string, Seat[]>();
 
     showtimeSeats.forEach((s) => {
       const row = s.seat_template.row;
@@ -63,9 +86,10 @@ class BookingService {
       seatsByRow.get(row)!.push({
         id: s.id,
         seat_number: s.seat_template.seat_number,
+        number: s.seat_template.seat_number,
         row,
         col: s.seat_template.col,
-        status: s.status,
+        status: s.status as "AVAILABLE" | "RESERVED" | "BOOKED" | "LOCKED",
         price: s.price,
         lockedBy: s.locked_by_user_id ?? null,
         lockExpire: s.locked_until ? new Date(s.locked_until).getTime() : null,

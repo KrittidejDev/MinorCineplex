@@ -41,7 +41,7 @@ export default function AdminShowtime() {
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
 
-  // Fetch Showtime Data
+// Fetch Showtime Data
   const getShowtime = useCallback(async () => {
     try {
       const { data } = await axios.get(`/api/admin/showtimes`, {
@@ -96,8 +96,7 @@ export default function AdminShowtime() {
     setPage(1);
   }, [query]);
 
-  console.log("data", data);
-
+  // Clear Form Data
   const clearFormData = () => {
     setFormData({
       movie_id: "",
@@ -109,12 +108,12 @@ export default function AdminShowtime() {
     });
   };
 
-  // Fetch Data For Query
+// Fetch All Data For Query
   const fetchAll = async () => {
     try {
       const [resMovies, resCinemas, resTimeSlots] = await Promise.all([
         axios.get(`/api/admin/movies`),
-        axios.get(`/api/admin/cinemas`),
+        axios.get(`/api/admin/cinemas?type=dropdown`),
         axios.get(`/api/admin/time-slots`),
       ]);
       setMovies(
@@ -148,11 +147,11 @@ export default function AdminShowtime() {
     fetchAll();
   }, []);
 
+  // Handle Create Showtime
   const handleCreateShowtime = async (
     event: React.FormEvent<HTMLFormElement>
   ): Promise<boolean> => {
     event.preventDefault();
-
     const formValidation = validateShowtimeFormData(formData);
     if (!formValidation.isValid) {
       alert(formValidation.errorMessage);
@@ -202,6 +201,7 @@ export default function AdminShowtime() {
     }
   };
 
+  // Handle Update Showtime
   const handleUpdateShowtime = async (id: string): Promise<boolean> => {
     const formValidation = validateShowtimeFormData(formData);
     if (!formValidation.isValid) {
@@ -250,6 +250,7 @@ export default function AdminShowtime() {
     }
   };
 
+  // Handle Delete Showtime
   const handleDeleteShowtime = async (id: string) => {
     if (window.confirm("Are you sure you want to delete this showtime?")) {
       try {
@@ -268,7 +269,6 @@ export default function AdminShowtime() {
       }
     }
   };
-console.log("query", query);
   return (
     <div className="bg-white-wfff w-full">
       <div className="flex">

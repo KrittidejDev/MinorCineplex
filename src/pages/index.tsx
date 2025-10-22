@@ -55,9 +55,9 @@ export default function Home() {
       );
       const searchParamsObj = new URLSearchParams();
       if (filters) {
-        if (filters.title) searchParamsObj.append("title", filters.title);
-        if (filters.genre) searchParamsObj.append("genre", filters.genre);
-        if (filters.language)
+        if (filters.title && filters.title !== "all-movies") searchParamsObj.append("title", filters.title);
+        if (filters.genre && filters.genre !== "all-genres") searchParamsObj.append("genre", filters.genre);
+        if (filters.language && filters.language !== "all-languages")
           searchParamsObj.append("language", filters.language);
         if (filters.release_date)
           searchParamsObj.append("release_date", filters.release_date);

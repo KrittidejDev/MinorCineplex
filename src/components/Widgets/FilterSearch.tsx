@@ -12,7 +12,6 @@ import {
 import { MovieStatus } from "@/types/enums";
 import { userService } from "@/config/userServices";
 
-
 interface FilterOption {
   id?: string;
   value?: string;
@@ -43,6 +42,7 @@ interface Movie {
 }
 
 const languageOptions: FilterOption[] = [
+  { value: "all-languages", name: "All Languages" },
   { value: "th", name: "TH" },
   { value: "en", name: "EN" },
 ];
@@ -79,18 +79,26 @@ const FilterSearch: React.FC<FilterSearchProps> = ({
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") handleSearch();
   };
+
   return (
     <div className={`bg-gray-g63f rounded-lg p-4 ${className}`}>
-      <div className="flex flex-col lg:flex-row gap-4 items-center max-w-xs mx-auto lg:max-w-none lg:mx-0">
+      <div className="flex flex-col lg:flex-row gap-10 items-center max-w-xs mx-auto lg:max-w-none lg:mx-0">
         {/* Movie Dropdown */}
-        <div className="w-full lg:w-48">
+        <div className="w-full lg:max-w-70">
           <Select
             value={
-              movies.find((m) => m.title === query?.title)?.id || ""
+              query?.title
+                ? movies.find((m) => m.title === query.title)?.id ||
+                  "all-movies"
+                : "all-movies"
             }
             onValueChange={(value) => {
-              const movie = movies.find((m) => m.id === value);
-              handleInputChange("title", movie?.title || "");
+              if (value === "all-movies") {
+                handleInputChange("title", "");
+              } else {
+                const movie = movies.find((m) => m.id === value);
+                handleInputChange("title", movie?.title || "");
+              }
             }}
           >
             <SelectTrigger className="bg-gray-g63f border-gray-gf7e text-white rounded-sm h-12 focus:border-gray-g3b0 focus:ring-0 w-full relative cursor-pointer">
@@ -100,6 +108,12 @@ const FilterSearch: React.FC<FilterSearchProps> = ({
               </div>
             </SelectTrigger>
             <SelectContent className="bg-gray-g63f border-gray-gf7e">
+              <SelectItem
+                value="all-movies"
+                className="text-white hover:bg-gray-gf7e focus:bg-gray-gf7e cursor-pointer"
+              >
+                All Movies
+              </SelectItem>
               {movies?.map((option) => (
                 <SelectItem
                   key={option.id}
@@ -115,7 +129,7 @@ const FilterSearch: React.FC<FilterSearchProps> = ({
 
         {/* Language + Genre */}
         <div className="flex gap-2 lg:contents">
-          <div className="w-39 lg:w-48">
+          <div className="w-39 lg:max-w-70">
             <Select
               value={query?.language || ""}
               onValueChange={(value) => handleInputChange("language", value)}
@@ -152,6 +166,12 @@ const FilterSearch: React.FC<FilterSearchProps> = ({
                 </div>
               </SelectTrigger>
               <SelectContent className="bg-gray-g63f border-gray-gf7e">
+                <SelectItem
+                  value="all-genres"
+                  className="text-white hover:bg-gray-gf7e focus:bg-gray-gf7e cursor-pointer"
+                >
+                  All Genres
+                </SelectItem>
                 {genreOptions.length > 0 ? (
                   genreOptions.map((genre) => (
                     <SelectItem
@@ -169,38 +189,6 @@ const FilterSearch: React.FC<FilterSearchProps> = ({
                 )}
               </SelectContent>
             </Select>
-          </div>
-        </div>
-
-        <div className="flex gap-2 lg:contents">
-          {/* Release Date */}
-          <div className="w-39 lg:w-48">
-            <div className="relative">
-              <Input
-                type="text"
-                placeholder="Release Date"
-                value={query?.release_date || ""}
-                onChange={(e) =>
-                  handleInputChange("release_date", e.target.value)
-                }
-                onKeyPress={handleKeyPress}
-                className="bg-gray-g63f border-gray-gf7e text-white placeholder-gray-g3b0 rounded-sm h-9 pl-4 pr-12 focus:border-gray-g3b0 focus:ring-0 w-full cursor-pointer"
-              />
-              <input
-                type="date"
-                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                onChange={(e) => {
-                  if (e.target.value) {
-                    const date = new Date(e.target.value);
-                    const isoString = date.toISOString();
-                    handleInputChange("release_date", isoString);
-                  }
-                }}
-              />
-              <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                <DateTodayLight width="16" height="16" color="#8B93B0" />
-              </div>
-            </div>
           </div>
         </div>
 

@@ -56,12 +56,12 @@ const NavbarWithBannerWidget = () => {
             </div>
           </CarouselItem>
         </CarouselContent>
-        <div className="absolute top-1/2 -translate-y-1/2 left-20">
-          <CarouselPrevious />
+        {/* <div className="absolute top-1/2 -translate-y-1/2 left-20">
+          <CarouselPrevious className="bg-transparent text-white/50 border-white/50" />
         </div>
         <div className="absolute top-1/2 -translate-y-1/2 right-20">
           <CarouselNext />
-        </div>
+        </div> */}
       </Carousel>
     </div>
   );

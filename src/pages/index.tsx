@@ -42,6 +42,7 @@ export default function Home() {
     allowSession,
     allowOnce,
     neverAllow,
+    loading: locationLoading,
   } = useLocationPermission();
 
   const { cinemas, refetch } = useNearbyCinemas(location, filter);
@@ -101,6 +102,12 @@ export default function Home() {
       localStorage.setItem("curtain_last_shown", now.toString());
     }
   }, []);
+
+  useEffect(() => {
+    if (!location && !locationLoading && !showModal) {
+      openModal();
+    }
+  }, [location, locationLoading, showModal, openModal]);
 
   useEffect(() => {
     setDataCinemas(cinemas);

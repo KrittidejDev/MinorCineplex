@@ -28,7 +28,7 @@ const NavbarWithBannerWidget = () => {
                 src="/images/banner.png"
                 alt="banner"
                 fill
-                className="object-cover"
+                className="object-cover "
                 priority
               />
             </div>
@@ -39,7 +39,7 @@ const NavbarWithBannerWidget = () => {
                 src="/images/cinema.webp"
                 alt="banner"
                 fill
-                className="object-cover"
+                className="object-cover "
                 loading="lazy"
               />
             </div>
@@ -47,7 +47,7 @@ const NavbarWithBannerWidget = () => {
           <CarouselItem>
             <div className="relative w-full h-[400px]">
               <Image
-              src="/images/cover-cinema.png"
+                src="/images/cover-cinema.png"
                 alt="banner"
                 fill
                 className="object-cover"

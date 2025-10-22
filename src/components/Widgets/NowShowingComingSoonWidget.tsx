@@ -35,7 +35,7 @@ export default function NowShowingComingSoon({
   };
 
   return (
-    <div className="w-screen flex justify-center py-20 px-4">
+    <div className="w-screen flex justify-center py-10  px-4">
       <div className="w-full max-w-[1200px] flex flex-col gap-10">
         <div className="flex justify-between items-center">
           <div className="flex gap-4">

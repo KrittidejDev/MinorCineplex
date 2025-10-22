@@ -1,5 +1,19 @@
 import { moviesRepo } from "@/repositories/moviesRepo";
 import { MovieDTO, MovieFilters, Pagination, ShowtimeDTO } from "@/types/movie";
+import { MovieStatus } from "@/generated/prisma";
+
+function generateSlug(title: string) {
+  return title
+    .toLowerCase()
+    .trim()
+    .replace(/[\s\W-]+/g, "-");
+}
+
+function parseMovieStatus(status?: string): MovieStatus {
+  if (status === MovieStatus.NOW_SHOWING) return MovieStatus.NOW_SHOWING;
+  if (status === MovieStatus.ENDED) return MovieStatus.ENDED;
+  return MovieStatus.COMING_SOON;
+}
 
 export const moviesService = {
   async getMovies(
@@ -27,5 +41,56 @@ export const moviesService = {
   },
   async getMoviesForAdmin(): Promise<MovieDTO[]> {
     return moviesRepo.findMoviesForAdmin();
+  },
+  async createMovieForAdmin(movieData: Omit<MovieDTO, "id">): Promise<MovieDTO> {
+    try {
+      const slug = generateSlug(movieData.title);
+      
+      const genres = movieData.genres
+        .map((g) => ("genre" in g ? {
+          genre: {
+            id: g.genre.id,
+            name: g.genre.name,
+            slug: g.genre.slug,
+            translations: g.genre.translations,
+          },
+        } : undefined))
+        .filter(Boolean) as typeof movieData.genres;
+
+      const languages = movieData.languages
+        .map((l) => ("language" in l ? {
+          language: {
+            id: l.language.id,
+            name: l.language.name,
+            code: l.language.code,
+          },
+        } : undefined))
+        .filter(Boolean) as typeof movieData.languages;
+
+      const actors = (movieData.actors || []).map(a => ({
+        actor: { id: a.actor.id, name: a.actor.name },
+      }));
+
+      const directors = (movieData.directors || []).map(d => ({
+        director: { id: d.director.id, name: d.director.name },
+      }));
+
+      const payload: Omit<MovieDTO, "id"> & { slug: string; status: MovieStatus } = {
+        ...movieData,
+        slug,
+        status: parseMovieStatus(movieData.status),
+        genres,
+        languages,
+        actors,
+        directors,
+      };
+
+      const createdMovie = await moviesRepo.createMovieForAdmin(payload);
+      return createdMovie;
+
+    } catch (error) {
+      console.error("Error creating movie:", error);
+      throw new Error("ไม่สามารถสร้างภาพยนตร์ได้");
+    }
   },
 };

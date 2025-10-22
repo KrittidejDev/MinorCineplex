@@ -1,4 +1,5 @@
 import { PrismaClient, Prisma } from "@/generated/prisma";
+import { CinemaFromAPI } from "@/types/adminShowtime";
 import {
   CinemaDTO,
   CinemaFilters,
@@ -255,4 +256,18 @@ export const cinemaRepo = {
 
     return result;
   },
+  async getCinemasForDropdown(): Promise<CinemaFromAPI[]> {
+    const cinemas = await prisma.cinema.findMany({
+      include: {
+        halls: {
+          select: {
+            id: true,
+            name: true,
+          }
+        }
+      }
+    });
+    return cinemas;
+  },
 };
+

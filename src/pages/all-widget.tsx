@@ -33,7 +33,6 @@ import {
 import DateSelection from "@/components/ui/dateselection";
 
 import ShowTime from "@/components/Widgets/ShowTime";
-import ShowtimeMovie from "@/components/Widgets/ShowtimeMovie";
 import ReviewCard from "@/components/Cards/ReviewCard";
 
 import {
@@ -42,10 +41,7 @@ import {
   BookingStatusCompleted,
   BookingStatusCanceled,
 } from "@/components/ui/bookingstatus";
-import SummaryBoxCard from "@/components/Cards/SummaryBoxCard";
-
 import AdminSidebar from "@/components/ui/adminsidebar";
-import FilterSearch from "@/components/Widgets/FilterSearch";
 
 const AllWidget = () => {
   // State for radio buttons
@@ -714,7 +710,7 @@ const AllWidget = () => {
         </div>
       </div> */}
       {/* ShowtimeMovie Preview */}
-      <div className="mt-20 w-full max-w-6xl px-4">
+      {/* <div className="mt-20 w-full max-w-6xl px-4">
         <h2 className="text-2xl font-bold mb-6 text-center">Showtime Movie</h2>
         <div className="w-full">
           <ShowtimeMovie
@@ -728,7 +724,7 @@ const AllWidget = () => {
             }}
           />
         </div>
-      </div>
+      </div> */}
 
       {/* Showtime Preview */}
       <div className="mt-20 w-full max-w-4xl px-4">

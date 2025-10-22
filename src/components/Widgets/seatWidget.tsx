@@ -57,8 +57,6 @@ const SeatWidget: React.FC<SeatWidgetProps> = ({
   useEffect(() => {
     if (!data?.id) return;
     const channel = ablyClient.channels.get(`showtime:${data.id}`);
-    console.log("show time id", data.id);
-
     const handleUpdate = (msg: InboundMessage) => {
       const payload = msg.data as AblySeatUpdateMessage;
       const { seatId, status, locked_by } = payload;

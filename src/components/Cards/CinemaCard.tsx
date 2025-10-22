@@ -1,11 +1,11 @@
 import { useTranslation } from "react-i18next";
 import LocationIconBlue from "../Icons/LocationIconBlue";
 import Link from "next/link";
-import { CinemaWithDistance } from "@/types/cinema"; // เปลี่ยนจาก CinemaType เป็น CinemaWithDistance
+import { CinemaDTO, CinemaWithDistance } from "@/types/cinema"; // เปลี่ยนจาก CinemaType เป็น CinemaWithDistance
 
 type CinemaCardProps = {
   filter: string;
-  cinema: CinemaWithDistance; // เปลี่ยนจาก CinemaType เป็น CinemaWithDistance
+  cinema: CinemaDTO; // เปลี่ยนจาก CinemaType เป็น CinemaWithDistance
 };
 
 const CinemaCard = ({ filter, cinema }: CinemaCardProps) => {
@@ -15,7 +15,7 @@ const CinemaCard = ({ filter, cinema }: CinemaCardProps) => {
     i18n.language === "en" ? cinema?.distance_text : cinema?.distance_text_th;
 
   return (
-    <Link href={`/cinemas/${cinema.id}`} className="block">
+    <Link href={`/cinemas/${cinema.slug}`} className="block">
       <div className="w-full max-w-[590px] border border-gray-g63f p-4 rounded-sm hover:border-gray-gf7e transition-colors cursor-pointer">
         <div className="flex gap-4 items-center">
           <div className="size-[52px]">

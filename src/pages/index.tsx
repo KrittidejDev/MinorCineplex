@@ -10,9 +10,9 @@ import dynamic from "next/dynamic";
 import FilterSearch, { FilterData } from "@/components/Widgets/FilterSearch";
 import axios from "axios";
 import { useSearchParams } from "next/navigation";
-import { CinemaByProvince } from "@/components/Widgets/CinemaLocation";
 import { MovieAPIRespons, MovieDTO } from "@/types/movie";
 import { MovieStatus } from "@/types/enums";
+import { CinemaByProvince } from "@/types/cinema";
 
 const CurtainIntro = dynamic(
   () => import("@/components/Widgets/CurtainIntro"),

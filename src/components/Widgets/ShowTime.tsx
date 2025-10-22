@@ -33,7 +33,6 @@ export interface ShowTimeProps {
 
 export const ShowTime: React.FC<ShowTimeProps> = ({
   data,
-  onChange,
   className,
   badges,
   collapsed,
@@ -45,16 +44,17 @@ export const ShowTime: React.FC<ShowTimeProps> = ({
   const allCollapsed =
     typeof collapsed === "boolean" ? collapsed : allCollapsedInternal;
 
-  const handleSelect = (hallId: string, time: Showtime) => {
+  const handleSelect = (hall_slug: string, time: Showtime) => {
     const { disabled } = RUNDER_TIMESLOT(
       time.time_slot.start_time,
       time.time_slot.end_time,
       time.date
     );
+
+    const newSlug = `${data?.slug}-${hall_slug}`;
     if (disabled) return;
-    onChange?.(time, { hallId });
     if (autoNavigate && time.id) {
-      router.push(`/booking/${time.id}`);
+      router.push(`/booking/${newSlug}?id=${time.id}`);
     }
   };
 
@@ -149,7 +149,7 @@ export const ShowTime: React.FC<ShowTimeProps> = ({
                       type="button"
                       disabled={disabled}
                       className={`${base} ${timeClassName}`}
-                      onClick={() => handleSelect(hall.id, time)}
+                      onClick={() => handleSelect(hall.slug, time)}
                     >
                       {time.time_slot.name}
                     </button>

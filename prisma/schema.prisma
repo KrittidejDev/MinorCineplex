@@ -194,7 +194,7 @@ model MovieLanguage {
 // รอบเวลา: เก็บรอบเวลามาตรฐาน เช่น Morning (10:00-12:00)
 model TimeSlot {
   id         String     @id @default(uuid()) // รหัสเฉพาะ UUID สำหรับรอบเวลา
-  name       String     @unique // ชื่อรอบเวลา เช่น "Morning"
+  name       String     @unique // ชื่อรอบเวลา เช่น "10:00" ชื่อเดียวกับเวลาเริ่ม
   start_time String     // เวลาเริ่ม เช่น "10:00"
   end_time   String     // เวลาสิ้นสุด เช่น "12:00"
   created_at DateTime   @default(now()) // วันที่สร้าง
@@ -398,6 +398,7 @@ enum SeatStatus {
   AVAILABLE // ว่าง
   RESERVED  // ล็อกชั่วคราว
   BOOKED    // จองแล้ว
+  LOCKED
 }
 
 // Enum สำหรับสถานะการจอง

@@ -1,5 +1,5 @@
 import { cinemaRepo } from "@/repositories/cinemaRepo";
-import { CinemaDTO } from "@/types/cinema";
+import { CinemaDTO, MovieWithHalls } from "@/types/cinema";
 
 export const cinemaService = {
   async getCinemas(
@@ -15,5 +15,17 @@ export const cinemaService = {
 
   async getCinemaById(id: string): Promise<CinemaDTO | null> {
     return cinemaRepo.findCinemaById(id);
+  },
+
+  async getCinemaShowtimesBySlug(
+    slug: string,
+    date?: string
+  ): Promise<MovieWithHalls[] | null> {
+    const targetDate = date ? new Date(date) : new Date();
+    if (date && isNaN(targetDate.getTime())) {
+      throw new Error("รูปแบบวันที่ไม่ถูกต้อง");
+    }
+    targetDate.setHours(0, 0, 0, 0);
+    return cinemaRepo.findCinemaShowtimesBySlug(slug, targetDate);
   },
 };

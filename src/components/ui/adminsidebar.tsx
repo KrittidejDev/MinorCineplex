@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import LogoM from "../Icons/LogoM";
 import Dashboard from "../Icons/Dashboard";
 import Cinema from "../Icons/Cinema";
@@ -13,11 +13,11 @@ import Banner from "../Icons/Banner";
 import CouponLight from "../Icons/CouponLight";
 import SignOutSquareLight from "../Icons/SignOutSquareLight";
 import Link from "next/link";
-import router from "next/router";
 import { signOut } from "next-auth/react";
 
 function AdminSidebar() {
   const pathname = usePathname();
+  const router = useRouter();
 
   const tabs = [
     {
@@ -119,7 +119,7 @@ function AdminSidebar() {
       <button className="flex gap-3 py-3 px-4 mt-2 cursor-pointer">
         <SignOutSquareLight />
         <p className="font-bold text-gray-gedd"
-        onClick={() => signOut()}>Logout</p>
+        onClick={() => signOut({ callbackUrl: "/" })}>Logout</p>
       </button>
     </div>
   );

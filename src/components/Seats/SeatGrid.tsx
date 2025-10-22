@@ -32,9 +32,10 @@ const SeatGrid: React.FC<SeatGridProps> = ({
       (s): Seat => ({
         id: s.id,
         row: s.row,
+        col: s.col || "",
         number: s.seat_number || s.id,
         seat_number: s.seat_number || s.id,
-        status: s.status,
+        status: s.status as "AVAILABLE" | "RESERVED" | "BOOKED" | "LOCKED",
         price: s.price,
         seat: {
           id: s.id,

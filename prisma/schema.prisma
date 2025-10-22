@@ -395,9 +395,9 @@ enum MovieStatus {
 
 // Enum สำหรับสถานะที่นั่ง
 enum SeatStatus {
-  AVAILABLE // ว่าง
-  RESERVED  // ล็อกชั่วคราว
-  BOOKED    // จองแล้ว
+  AVAILABLE
+  RESERVED
+  BOOKED
   LOCKED
 }
 

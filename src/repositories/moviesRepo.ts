@@ -2,6 +2,7 @@ import { PrismaClient, Prisma } from "@/generated/prisma";
 import { MovieDTO, MovieFilters, Pagination, ShowtimeDTO } from "@/types/movie";
 import { startOfDay, format, endOfDay } from "date-fns";
 import { th } from "date-fns/locale";
+import { MovieStatus } from "@/generated/prisma";
 
 const prisma = new PrismaClient();
 
@@ -278,5 +279,95 @@ export const moviesRepo = {
   async findMoviesForAdmin(): Promise<MovieDTO[]> {
     const movies = await prisma.movie.findMany();
     return movies as unknown as MovieDTO[];
+  },
+  async createMovieForAdmin(
+    movieData: Omit<MovieDTO, "id" | "slug"> & {
+      slug: string;
+      status: MovieStatus;
+    }
+  ): Promise<MovieDTO> {
+    const createdMovie = await prisma.movie.create({
+      data: {
+        title: movieData.title,
+        slug: movieData.slug,
+        poster_url: movieData.poster_url,
+        trailer_url: movieData.trailer_url,
+        release_date: movieData.release_date,
+        duration_min: movieData.duration_min,
+        rating: movieData.rating,
+        status: (movieData.status as MovieStatus) || MovieStatus.COMING_SOON,
+        translations: movieData.translations as Prisma.JsonObject,
+        genres: {
+          create:
+            (movieData.genres as { genre: { id: string } }[])?.map((g) => ({
+              genre: { connect: { id: g.genre.id } },
+            })) || [],
+        },
+        languages: {
+          create:
+            (movieData.languages as { language: { id: string } }[])?.map(
+              (l) => ({
+                language: { connect: { id: l.language.id } },
+              })
+            ) || [],
+        },
+        actors: {
+          create:
+            (movieData.actors as { actor: { id: string } }[])?.map((a) => ({
+              actor: { connect: { id: a.actor.id } },
+            })) || [],
+        },
+        directors: {
+          create:
+            (movieData.directors as { director: { id: string } }[])?.map(
+              (d) => ({
+                director: { connect: { id: d.director.id } },
+              })
+            ) || [],
+        },
+      },
+      include: {
+        genres: { include: { genre: true } },
+        languages: { include: { language: true } },
+        actors: { include: { actor: true } },
+        directors: { include: { director: true } },
+      },
+    });
+
+    return {
+      id: createdMovie.id,
+      slug: createdMovie.slug,
+      title: createdMovie.title,
+      translations:
+        (createdMovie.translations as
+          | {
+              th?: { title: string; description: string };
+              en?: { title: string; description: string };
+            }
+          | undefined) ?? undefined,
+      duration_min: createdMovie.duration_min,
+      poster_url: createdMovie.poster_url ?? undefined,
+      trailer_url: createdMovie.trailer_url ?? undefined,
+      rating: createdMovie.rating ?? undefined,
+      release_date: createdMovie.release_date ?? undefined,
+      status: createdMovie.status as string,
+      genres: createdMovie.genres.map((g) => ({
+        genre: {
+          id: g.genre.id,
+          name: g.genre.name,
+          slug: g.genre.slug,
+          translations:
+            g.genre.translations && typeof g.genre.translations === "object"
+              ? (g.genre.translations as {
+                  en?: { name: string };
+                  th?: { name: string };
+                })
+              : undefined,
+        },
+      })),
+      languages: createdMovie.languages.map((l) => ({ language: l.language })),
+      actors: createdMovie.actors.map((a) => ({ actor: a.actor })),
+      directors: createdMovie.directors.map((d) => ({ director: d.director })),
+    };
   },
 };

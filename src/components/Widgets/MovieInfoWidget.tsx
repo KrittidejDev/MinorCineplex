@@ -30,11 +30,16 @@ const MovieInfoWidget: React.FC<MoviesDetailWidgetProps> = ({
     return { firstName, lastName: rest.join(" ") };
   };
 
+  const filterBtnStyle =
+    "bg-gray-g63f h-11 py-2 px-4 rounded-sm flex items-center";
+  const filterActiveStyle =
+    "bg-gray-gf7e h-11 py-1 px-4 rounded-sm flex items-center";
+
   return (
     <>
-      <div className="hidden md:block">
+      <div className="hidden md:block md:mt-6 z-10">
         <div className="max-w-[1200px] mx-auto">
-          <div className="flex justify-between">
+          <div className="flex justify-between gap-x-10 md:bg-gray-gc1b/70 px-6 py-4 rounded-2xl ">
             <MovieCard
               id={movie.id}
               title={movie.title}
@@ -49,12 +54,12 @@ const MovieInfoWidget: React.FC<MoviesDetailWidgetProps> = ({
           </div>
 
           {/* Tabs */}
-          <div className="flex gap-10 mt-10">
+          <div className="flex gap-10 mt-12">
             <button
-              className={`text-[20px] font-semibold cursor-pointer ${
+              className={`  ${
                 activeTab === "ข้อมูลภาพยนต์"
-                  ? "text-blue-bbee"
-                  : "text-white-wfff"
+                  ? filterActiveStyle
+                  : filterBtnStyle
               }`}
               onClick={() => setActiveTab("ข้อมูลภาพยนต์")}
             >
@@ -62,7 +67,7 @@ const MovieInfoWidget: React.FC<MoviesDetailWidgetProps> = ({
             </button>
             <button
               className={`text-[20px] font-semibold cursor-pointer ${
-                activeTab === "รอบฉาย" ? "text-blue-bbee" : "text-white-wfff"
+                activeTab === "รอบฉาย" ? filterActiveStyle : filterBtnStyle
               }`}
               onClick={() => setActiveTab("รอบฉาย")}
             >

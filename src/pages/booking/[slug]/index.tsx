@@ -1,5 +1,4 @@
 import React, { ReactElement, useEffect, useRef, useState } from "react";
-import type { RealtimeChannel, Message } from "ably";
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
 import NavAndFooter from "@/components/MainLayout/NavAndFooter";
@@ -15,16 +14,8 @@ import PaymentForm, {
 import ModalEmpty from "@/components/Modals/ModalEmpty";
 import { Button } from "@/components/ui/button";
 import { toast } from "react-toastify";
-import { ablyClient } from "@/lib/ably";
 import { useSearchParams } from "next/navigation";
 import axios from "axios";
-
-type SeatUpdateMessage = {
-  seatId: string;
-  status: "AVAILABLE" | "BOOKED" | "LOCKED" | "RESERVED";
-  lockedBy?: string | null;
-  lockExpire?: string | null;
-};
 
 const BookingSeat: React.FC = () => {
   const router = useRouter();
@@ -50,10 +41,7 @@ const BookingSeat: React.FC = () => {
 
   const paymentRef = useRef<PaymentFormHandles | null>(null);
   const countdownActive = useRef(false);
-  const channelRef = useRef<{
-    channel: RealtimeChannel;
-    handleUpdate: (msg: Message) => void;
-  } | null>(null);
+
   const isUnlocking = useRef(false);
   const isNavigating = useRef(false);
   const countdownInterval = useRef<number | null>(null);
@@ -213,6 +201,7 @@ const BookingSeat: React.FC = () => {
   };
 
   const handleConfirmPayment = (): void => paymentRef.current?.submitPayment();
+
   const _handleCloseModal = () => {
     if (!isProcessing) {
       _setRenderModal(null);
@@ -279,54 +268,7 @@ const BookingSeat: React.FC = () => {
     handlePayment();
   };
 
-  // ----------------- Effects -----------------
-
-  useEffect(() => {
-    if (!bookingInfo?.id || channelRef.current) return;
-    const channel = ablyClient.channels.get(`showtime:${bookingInfo.id}`);
-    const handleUpdate = (msg: Message) => {
-      const data = msg.data as SeatUpdateMessage;
-      const { seatId, status, lockedBy, lockExpire } = data;
-      setBookingInfo((prev) => {
-        if (!prev) return prev;
-        return {
-          ...prev,
-          seats: prev.seats.map((row) => ({
-            ...row,
-            seats: row.seats.map((seat) =>
-              seat.id === seatId
-                ? {
-                    ...seat,
-                    status,
-                    lockedBy: lockedBy ?? seat.lockedBy ?? null,
-                    lockExpire: lockExpire ? Number(lockExpire) : null,
-                  }
-                : seat
-            ),
-          })),
-        };
-      });
-    };
-    channel.subscribe("update", handleUpdate);
-    channelRef.current = { channel, handleUpdate };
-    return () => {
-      if (channelRef.current) {
-        try {
-          channelRef.current.channel.unsubscribe(
-            "update",
-            channelRef.current.handleUpdate
-          );
-        } catch (err) {
-          console.warn("Ably unsubscribe error:", err);
-        } finally {
-          channelRef.current = null;
-        }
-      }
-    };
-  }, [bookingInfo?.id]);
-
-  useEffect(() => {
-    if (step !== "2" || countdownActive.current) return;
+  const onCountdown = () => {
     countdownActive.current = true;
     countdownInterval.current = window.setInterval(() => {
       setCountdown((prev) => {
@@ -339,11 +281,16 @@ const BookingSeat: React.FC = () => {
         return prev - 1;
       });
     }, 1000) as unknown as number;
-
     return () => {
       if (countdownInterval.current) clearInterval(countdownInterval.current);
       countdownActive.current = false;
     };
+  };
+
+  useEffect(() => {
+    if (step === "2") {
+      onCountdown();
+    }
   }, [step]);
 
   useEffect(() => {
@@ -365,7 +312,6 @@ const BookingSeat: React.FC = () => {
       releaseSeatsAsync().finally(() => {
         isNavigating.current = false;
       });
-      // ไม่ throw error → Next.js จะดำเนิน route change ต่อ
     };
 
     window.addEventListener("beforeunload", handleBeforeUnload);
@@ -385,6 +331,8 @@ const BookingSeat: React.FC = () => {
       }
     };
   }, [selectedSeats, step, router]);
+
+  console.log("payment change", paymentMethod);
 
   // ----------------- JSX -----------------
   return (

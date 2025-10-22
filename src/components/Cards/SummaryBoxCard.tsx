@@ -131,7 +131,6 @@ export default function SummaryBoxCard({
         </div>
       </div>
 
-      {/* Step 1 Summary */}
       {step === "1" && totalSelected.length > 0 && (
         <BookingInfo
           totalSelected={totalSelected}
@@ -140,10 +139,8 @@ export default function SummaryBoxCard({
         />
       )}
 
-      {/* Step 2: Payment + Coupon */}
       {step === "2" && (
         <div className="p-4 flex flex-col gap-4">
-          {/* Coupon Button */}
           {coupons.length > 0 && (
             <div className="flex flex-col justify-start items-start text-gray-gedd gap-2">
               <div className="flex justify-between items-center w-full">
@@ -187,13 +184,11 @@ export default function SummaryBoxCard({
             </div>
           )}
 
-          {/* Selected Seat */}
           <div className="flex justify-between text-gray-gedd">
             <span>{lang === "en" ? "Selected Seat" : "ที่นั่งที่เลือก"}</span>
             <span>{totalSelected.map((s) => s.seat_number).join(", ")}</span>
           </div>
 
-          {/* Discount */}
           <div className="flex justify-between text-white-wfff font-bold text-lg">
             <span>{lang === "en" ? "Discount" : "ส่วนลด"}</span>
             <span>
@@ -202,7 +197,6 @@ export default function SummaryBoxCard({
             </span>
           </div>
 
-          {/* Payment Method */}
           <div className="flex justify-between text-gray-gedd">
             <span>{lang === "en" ? "Payment Method" : "วิธีชำระเงิน"}</span>
             <span className="capitalize text-white">
@@ -216,13 +210,11 @@ export default function SummaryBoxCard({
             </span>
           </div>
 
-          {/* Total */}
           <div className="flex justify-between text-white-wfff font-bold text-lg">
             <span>{lang === "en" ? "Total" : "รวมทั้งหมด"}</span>
             <span>{Math.max(totalPriceWithDiscount, 0)}</span>
           </div>
 
-          {/* Payment Button */}
           <Button
             className="btn-base blue-normal cursor-pointer"
             onClick={onPayment}
@@ -233,7 +225,6 @@ export default function SummaryBoxCard({
         </div>
       )}
 
-      {/* Coupon Modal */}
       {isCouponModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50 p-4">
           <div className="relative bg-gray-g63f rounded-xl p-6 w-full max-w-[1200px] shadow-2xl">

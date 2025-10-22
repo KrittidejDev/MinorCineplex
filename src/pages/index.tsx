@@ -25,7 +25,7 @@ export default function Home() {
     title: "",
     genre: "",
     language: "",
-    releaseDate: "",
+    release_date: "",
     status: MovieStatus.NOW_SHOWING,
   });
   const [dataCinemas, setDataCinemas] = useState<CinemaByProvince[]>([]);
@@ -59,8 +59,8 @@ export default function Home() {
         if (filters.genre) searchParamsObj.append("genre", filters.genre);
         if (filters.language)
           searchParamsObj.append("language", filters.language);
-        if (filters.releaseDate)
-          searchParamsObj.append("releaseDate", filters.releaseDate);
+        if (filters.release_date)
+          searchParamsObj.append("release_date", filters.release_date);
         if (filters.status) searchParamsObj.append("status", filters.status);
       }
       const queryString = searchParamsObj.toString();
@@ -80,7 +80,7 @@ export default function Home() {
       title: searchParams.get("title") || "",
       genre: searchParams.get("genre") || "",
       language: searchParams.get("language") || "",
-      releaseDate: searchParams.get("releaseDate") || "",
+      release_date: searchParams.get("release_date") || "",
       status:
         (searchParams.get("status") as MovieStatus) || MovieStatus.NOW_SHOWING,
     };
@@ -118,7 +118,6 @@ export default function Home() {
     setQuery(newQuery);
     fetchAllMovies(newQuery);
   };
-
   return (
     <NavAndFooterWithBanner>
       {showCurtain && (
@@ -133,6 +132,7 @@ export default function Home() {
           <FilterSearch
             onSearch={(filters) => fetchAllMovies(filters)}
             query={query}
+            movies={movies}
             setQuery={setQuery}
           />
         </div>

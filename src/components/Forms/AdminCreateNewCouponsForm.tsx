@@ -3,121 +3,147 @@ import ModalEmpty from '../Modals/ModalEmpty'
 import { Button } from '../ui/button'
 import axios from 'axios'
 import Image from 'next/image'
+import { CreateCouponInput, GiftDetails } from '@/types/coupon'
 
-interface CreateNewCouponFormProps {
+interface AdminCreateNewCouponFormProps {
   isShowModal: boolean
   onClose: () => void
 }
 
+// type-safe aliases
+type DiscountType = CreateCouponInput['discount_type']
+type GiftType = CreateCouponInput['gift_type']
+
 function AdminCreateNewCouponForm({
   isShowModal,
   onClose,
-}: CreateNewCouponFormProps) {
-  const [formData, setFormData] = useState({
+}: AdminCreateNewCouponFormProps) {
+  const [formData, setFormData] = useState<CreateCouponInput>({
+    slug: '',
     code: '',
-    title_en: '',
-    title_th: '',
-    discription_en: '',
-    discription_th: '',
-    discount_type: 'AMOUNT',
-    discount_value: '',
+    translations: {
+      en: { name: '', description: '' },
+      th: { name: '', description: '' },
+    },
+    discount_type: 'FIXED',
+    discount_value: null,
+    buy_quantity: undefined,
+    get_quantity: undefined,
+    gift_type: undefined,
+    gift_details: undefined,
     start_date: '',
     end_date: '',
-    status: 'Active',
-    min_amount: '',
-    max_discount: '',
-    usage_limit: '',
-    image: null as File | null,
+    status: 'ACTIVE',
+    min_amount: null,
+    max_discount: null,
+    usage_limit: null,
+    image_url: null,
   })
 
   const [loading, setLoading] = useState(false)
+  const [imageFile, setImageFile] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
 
-  const handleChange = (
-    field: string,
-    value: string | boolean | File | null
-  ) => {
+  // Type guards for gift_details
+  const isPopcornGift = (details: GiftDetails | undefined): details is { item: string; size?: string } =>
+    !!details && 'item' in details
+  const isCouponGift = (details: GiftDetails | undefined): details is { code: string } =>
+    !!details && 'code' in details
+  const isOtherGift = (details: GiftDetails | undefined): details is { other: string } =>
+    !!details && 'other' in details
+
+  const handleChange = <T extends keyof CreateCouponInput>(field: T, value: CreateCouponInput[T]) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
-    // สร้าง preview สำหรับไฟล์รูปภาพ
-    if (field === 'image' && value instanceof File) {
-      const previewURL = URL.createObjectURL(value)
-      setImagePreview(previewURL)
-    } else if (field === 'image' && value === null) {
-      setImagePreview(null)
+  }
+
+  const handleGiftTypeChange = (value: GiftType) => {
+    let defaultDetails: GiftDetails
+    switch (value) {
+      case 'POPCORN':
+        defaultDetails = { item: '', size: '' }
+        break
+      case 'COUPON_CODE':
+        defaultDetails = { code: '' }
+        break
+      case 'OTHER':
+        defaultDetails = { other: '' }
+        break
+      default:
+        handleChange('gift_type', undefined)
+        handleChange('gift_details', undefined)
+        return
     }
+
+    handleChange('gift_type', value)
+    handleChange('gift_details', defaultDetails)
   }
 
-  // ฟังก์ชันอัปโหลดไฟล์ไป /api/file-upload
+  const handleTranslationChange = (lang: 'en' | 'th', field: 'name' | 'description', value: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      translations: {
+        ...(prev.translations ?? { en: { name: '', description: '' }, th: { name: '', description: '' } }),
+        [lang]: { ...(prev.translations?.[lang] ?? { name: '', description: '' }), [field]: value },
+      },
+    }))
+  }
+
+  const handleImageSelect = (file: File | null) => {
+    setImageFile(file)
+    setImagePreview(file ? URL.createObjectURL(file) : null)
+  }
+
   const handleImageUpload = async (file: File): Promise<string> => {
-    const formData = new FormData()
-    formData.append('file', file)
-
-    const res = await axios.post('/api/file-upload', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    })
-
-    return res.data.url // ได้ url จาก Cloudinary
+    const form = new FormData()
+    form.append('file', file)
+    const res = await axios.post('/api/file-upload', form, { headers: { 'Content-Type': 'multipart/form-data' } })
+    return res.data.url
   }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-
-    if (
-      !formData.code ||
-      !formData.discount_value ||
-      !formData.start_date ||
-      !formData.end_date
-    ) {
+    if (!formData.slug || !formData.start_date || !formData.end_date) {
       alert('กรุณากรอกข้อมูลให้ครบถ้วน')
       return
     }
 
     setLoading(true)
     try {
-      let imageUrl = ''
-      if (formData.image) {
-        imageUrl = await handleImageUpload(formData.image)
-      }
+      let imageUrl = formData.image_url
+      if (imageFile) imageUrl = await handleImageUpload(imageFile)
 
-      const payload = {
-        code: formData.code,
-        title_en: formData.title_en,
-        title_th: formData.title_th,
-        discription_en: formData.discription_en,
-        discription_th: formData.discription_th,
-        discount_type: formData.discount_type,
-        discount_value: Number(formData.discount_value),
-        start_date: formData.start_date,
-        end_date: formData.end_date,
-        status: formData.status,
+      const payload: CreateCouponInput = {
+        ...formData,
+        image_url: imageUrl,
+        discount_value: formData.discount_value ? Number(formData.discount_value) : null,
         min_amount: formData.min_amount ? Number(formData.min_amount) : null,
-        max_discount: formData.max_discount
-          ? Number(formData.max_discount)
-          : null,
+        max_discount: formData.max_discount ? Number(formData.max_discount) : null,
         usage_limit: formData.usage_limit ? Number(formData.usage_limit) : null,
-        image: imageUrl,
       }
 
       const res = await axios.post('/api/coupons', payload)
-
       if (res.status === 201) {
         alert('✅ สร้างคูปองสำเร็จ!')
         onClose()
         setFormData({
+          slug: '',
           code: '',
-          title_en: '',
-          title_th: '',
-          discription_en: '',
-          discription_th: '',
-          discount_type: 'AMOUNT',
-          discount_value: '',
+          translations: { en: { name: '', description: '' }, th: { name: '', description: '' } },
+          discount_type: 'FIXED',
+          discount_value: null,
+          buy_quantity: undefined,
+          get_quantity: undefined,
+          gift_type: undefined,
+          gift_details: undefined,
           start_date: '',
           end_date: '',
-          status: 'Active',
-          min_amount: '',
-          max_discount: '',
-          usage_limit: '',
-          image: null,
+          status: 'ACTIVE',
+          min_amount: null,
+          max_discount: null,
+          usage_limit: null,
+          image_url: null,
         })
+        setImageFile(null)
         setImagePreview(null)
       }
     } catch (err) {
@@ -132,235 +158,209 @@ function AdminCreateNewCouponForm({
     <ModalEmpty isShowModal={isShowModal} onClose={onClose}>
       <div className="bg-white w-[900px] rounded-md shadow-lg py-10 px-14 overflow-y-auto max-h-[90vh]">
         <h1 className="text-3xl font-bold text-gray-800 mb-2">Create Coupon</h1>
-        <p className="text-gray-500 text-sm mb-8">
-          Fill in the details below to create a new promotional coupon.
-        </p>
+        <p className="text-gray-500 text-sm mb-8">Fill in the details below to create a new promotional coupon.</p>
 
         <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
           {/* Coupon Code + Discount */}
           <div className="grid grid-cols-2 gap-6">
             <div>
-              <label className="text-blue-700 text-sm font-semibold">
-                Coupon Code
-              </label>
+              <label className="text-blue-700 text-sm font-semibold">Coupon Code</label>
               <input
                 type="text"
                 placeholder="e.g SMR20PC"
-                value={formData.code}
+                value={formData.code ?? ''}
                 onChange={(e) => handleChange('code', e.target.value)}
                 className="w-full border border-blue-300 rounded-md p-3 mt-1 placeholder:text-gray-400 text-blue-700"
               />
             </div>
             <div>
-              <label className="text-blue-700 text-sm font-semibold">
-                Discount Value
-              </label>
+              <label className="text-blue-700 text-sm font-semibold">Discount Value</label>
               <input
                 type="number"
                 placeholder="e.g 500"
-                value={formData.discount_value}
-                onChange={(e) => handleChange('discount_value', e.target.value)}
+                value={formData.discount_value ?? ''}
+                onChange={(e) => handleChange('discount_value', Number(e.target.value))}
                 className="w-full border border-blue-300 rounded-md p-3 mt-1 placeholder:text-gray-400 text-blue-700"
               />
             </div>
             <div>
-              <label className="text-blue-700 text-sm font-semibold">
-                Discount type
-              </label>
+              <label className="text-blue-700 text-sm font-semibold">Discount type</label>
               <select
                 value={formData.discount_type}
-                onChange={(e) => handleChange('discount_type', e.target.value)}
-                className="w-full border border-blue-300 rounded-md p-3 mt-1 "
+                onChange={(e) => handleChange('discount_type', e.target.value as DiscountType)}
+                className="w-full border border-blue-300 rounded-md p-3 mt-1"
               >
-                <option value="AMOUNT">Amount</option>
-                <option value="PERCENT">Percent</option>
+                <option value="FIXED">Fixed</option>
+                <option value="PERCENTAGE">Percentage</option>
+                <option value="BUY_X_GET_Y">Buy X Get Y</option>
+                <option value="GIFT">Gift</option>
               </select>
             </div>
           </div>
 
-          {/* Title */}
+          {/* Dynamic Fields */}
+          {formData.discount_type === 'BUY_X_GET_Y' && (
+            <div className="grid grid-cols-2 gap-6">
+              <div>
+                <label className="text-blue-700 text-sm font-semibold">Buy Quantity</label>
+                <input
+                  type="number"
+                  value={formData.buy_quantity ?? ''}
+                  onChange={(e) => handleChange('buy_quantity', Number(e.target.value))}
+                  className="w-full border border-blue-300 rounded-md p-3 mt-1"
+                />
+              </div>
+              <div>
+                <label className="text-blue-700 text-sm font-semibold">Get Quantity</label>
+                <input
+                  type="number"
+                  value={formData.get_quantity ?? ''}
+                  onChange={(e) => handleChange('get_quantity', Number(e.target.value))}
+                  className="w-full border border-blue-300 rounded-md p-3 mt-1"
+                />
+              </div>
+            </div>
+          )}
+
+          {formData.discount_type === 'GIFT' && (
+            <div className="grid grid-cols-2 gap-6">
+              <div>
+                <label className="text-blue-700 text-sm font-semibold">Gift Type</label>
+                <select
+                  value={formData.gift_type ?? ''}
+                  onChange={(e) => handleGiftTypeChange(e.target.value as GiftType)}
+                  className="w-full border border-blue-300 rounded-md p-3 mt-1"
+                >
+                  <option value="">Select Gift Type</option>
+                  <option value="POPCORN">Popcorn</option>
+                  <option value="COUPON_CODE">Coupon Code</option>
+                  <option value="OTHER">Other</option>
+                </select>
+              </div>
+
+              {/* Dynamic Gift Details */}
+              {formData.gift_type === 'POPCORN' && isPopcornGift(formData.gift_details) && (
+                <>
+                  <div>
+                    <label className="text-blue-700 text-sm font-semibold">Item</label>
+                    <input
+                      type="text"
+                      value={formData.gift_details.item}
+                      onChange={(e) =>
+                        handleChange('gift_details', { ...formData.gift_details, item: e.target.value })
+                      }
+                      className="w-full border border-blue-300 rounded-md p-3 mt-1"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-blue-700 text-sm font-semibold">Size</label>
+                    <input
+                      type="text"
+                      value={formData.gift_details.size ?? ''}
+                      onChange={(e) =>
+                        handleChange('gift_details', { ...formData.gift_details, size: e.target.value })
+                      }
+                      className="w-full border border-blue-300 rounded-md p-3 mt-1"
+                    />
+                  </div>
+                </>
+              )}
+
+              {formData.gift_type === 'COUPON_CODE' && isCouponGift(formData.gift_details) && (
+                <div>
+                  <label className="text-blue-700 text-sm font-semibold">Code</label>
+                  <input
+                    type="text"
+                    value={formData.gift_details.code}
+                    onChange={(e) =>
+                      handleChange('gift_details', { ...formData.gift_details, code: e.target.value })
+                    }
+                    className="w-full border border-blue-300 rounded-md p-3 mt-1"
+                  />
+                </div>
+              )}
+
+              {formData.gift_type === 'OTHER' && isOtherGift(formData.gift_details) && (
+                <div>
+                  <label className="text-blue-700 text-sm font-semibold">Other Details</label>
+                  <input
+                    type="text"
+                    value={formData.gift_details.other}
+                    onChange={(e) =>
+                      handleChange('gift_details', { ...formData.gift_details, other: e.target.value })
+                    }
+                    className="w-full border border-blue-300 rounded-md p-3 mt-1"
+                  />
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Translations */}
           <div className="grid grid-cols-2 gap-6">
-            <div>
-              <label className="text-blue-700 text-sm font-semibold">
-                Title (EN)
-              </label>
-              <input
-                type="text"
-                placeholder="e.g. Summer Promotion"
-                value={formData.title_en}
-                onChange={(e) => handleChange('title_en', e.target.value)}
-                className="w-full border border-blue-300 rounded-md p-3 mt-1 placeholder:text-gray-400 text-blue-700"
-              />
-            </div>
-            <div>
-              <label className="text-blue-700 text-sm font-semibold">
-                Title (TH)
-              </label>
-              <input
-                type="text"
-                placeholder="เช่น โปรหน้าร้อน"
-                value={formData.title_th}
-                onChange={(e) => handleChange('title_th', e.target.value)}
-                className="w-full border border-blue-300 rounded-md p-3 mt-1 placeholder:text-gray-400 text-blue-700"
-              />
-            </div>
+            {(['en', 'th'] as const).map((lang) => (
+              <div key={lang}>
+                <label className="text-blue-700 text-sm font-semibold">Title ({lang.toUpperCase()})</label>
+                <input
+                  type="text"
+                  placeholder={`${lang.toUpperCase()} Title`}
+                  value={formData.translations?.[lang]?.name ?? ''}
+                  onChange={(e) => handleTranslationChange(lang, 'name', e.target.value)}
+                  className="w-full border border-blue-300 rounded-md p-3 mt-1 placeholder:text-gray-400 text-blue-700"
+                />
+                <label className="text-blue-700 text-sm font-semibold mt-2">Description ({lang.toUpperCase()})</label>
+                <textarea
+                  placeholder={`${lang.toUpperCase()} Description`}
+                  value={formData.translations?.[lang]?.description ?? ''}
+                  onChange={(e) => handleTranslationChange(lang, 'description', e.target.value)}
+                  className="w-full border border-blue-300 rounded-md p-3 mt-1 placeholder:text-gray-400 text-blue-700"
+                  rows={3}
+                />
+              </div>
+            ))}
           </div>
 
-          {/* Description */}
+          {/* Dates */}
           <div className="grid grid-cols-2 gap-6">
             <div>
-              <label className="text-blue-700 text-sm font-semibold">
-                Description (EN)
-              </label>
-              <textarea
-                placeholder="A brief description..."
-                value={formData.discription_en}
-                onChange={(e) => handleChange('discription_en', e.target.value)}
-                className="w-full border border-blue-300 rounded-md p-3 mt-1 placeholder:text-gray-400 text-blue-700"
-                rows={3}
-              />
-            </div>
-            <div>
-              <label className="text-blue-700 text-sm font-semibold">
-                Description (TH)
-              </label>
-              <textarea
-                placeholder="คำอธิบายโปรโมชั่น..."
-                value={formData.discription_th}
-                onChange={(e) => handleChange('discription_th', e.target.value)}
-                className="w-full border border-blue-300 rounded-md p-3 mt-1 placeholder:text-gray-400 text-blue-700"
-                rows={3}
-              />
-            </div>
-          </div>
-
-          {/* Date */}
-          <div className="grid grid-cols-2 gap-6">
-            <div>
-              <label className="text-blue-700 text-sm font-semibold">
-                Start Date
-              </label>
+              <label className="text-blue-700 text-sm font-semibold">Start Date</label>
               <input
                 type="date"
-                value={formData.start_date}
+                value={formData.start_date as string}
                 onChange={(e) => handleChange('start_date', e.target.value)}
                 className="w-full border border-blue-300 rounded-md p-3 mt-1 text-blue-700"
               />
             </div>
             <div>
-              <label className="text-blue-700 text-sm font-semibold">
-                End Date
-              </label>
+              <label className="text-blue-700 text-sm font-semibold">End Date</label>
               <input
                 type="date"
-                value={formData.end_date}
+                value={formData.end_date as string}
                 onChange={(e) => handleChange('end_date', e.target.value)}
                 className="w-full border border-blue-300 rounded-md p-3 mt-1 text-blue-700"
               />
             </div>
           </div>
 
-          {/* Optional fields */}
-          <div className="grid grid-cols-3 gap-6">
-            <input
-              type="number"
-              placeholder="Min Amount"
-              value={formData.min_amount}
-              onChange={(e) => handleChange('min_amount', e.target.value)}
-              className="w-full border border-blue-300 rounded-md p-3 mt-1 placeholder:text-gray-400 text-blue-700"
-            />
-            <input
-              type="number"
-              placeholder="Max Discount"
-              value={formData.max_discount}
-              onChange={(e) => handleChange('max_discount', e.target.value)}
-              className="w-full border border-blue-300 rounded-md p-3 mt-1 placeholder:text-gray-400 text-blue-700"
-            />
-            <input
-              type="number"
-              placeholder="Usage Limit"
-              value={formData.usage_limit}
-              onChange={(e) => handleChange('usage_limit', e.target.value)}
-              className="w-full border border-blue-300 rounded-md p-3 mt-1 placeholder:text-gray-400 text-blue-700" 
-            />
-          </div>
-
-          {/* Image upload + preview */}
+          {/* Image Upload */}
           <div>
-            <label className="font-semibold">Image</label>
+            <label className="text-blue-700 text-sm font-semibold">Image</label>
             <input
               type="file"
               accept="image/*"
-              onChange={(e) =>
-                handleChange('image', e.target.files?.[0] ?? null)
-              }
-              className="mt-2 "
+              onChange={(e) => handleImageSelect(e.target.files ? e.target.files[0] : null)}
+              className="block mt-1"
             />
             {imagePreview && (
-              <div className="mt-3 w-48 h-48 relative border rounded-md overflow-hidden">
-                <Image
-                  src={imagePreview}
-                  alt="Preview"
-                  fill
-                  style={{ objectFit: 'cover' }}
-                />
-                <button
-                  type="button"
-                  onClick={() => handleChange('image', null)}
-                  className="absolute top-1 right-1 bg-red-500 text-white text-xs px-2 py-1 rounded hover:bg-red-600"
-                >
-                  Remove
-                </button>
+              <div className="mt-2 w-[150px] h-[150px] relative">
+                <Image src={imagePreview} alt="Preview" fill className="object-cover rounded-md" />
               </div>
             )}
           </div>
 
-          {/* Status */}
-          <div className="flex items-center gap-3 mt-4">
-            <label className="text-blue-700 text-sm font-semibold">
-              Status
-            </label>
-            <div
-              onClick={() =>
-                handleChange(
-                  'status',
-                  formData.status === 'Active' ? 'inActive' : 'Active'
-                )
-              }
-              className={`w-12 h-6 rounded-full flex items-center cursor-pointer transition ${
-                formData.status === 'Active' ? 'bg-green-500' : 'bg-gray-400'
-              }`}
-            >
-              <div
-                className={`w-5 h-5 bg-white rounded-full shadow-md transform transition ${
-                  formData.status === 'Active'
-                    ? 'translate-x-6'
-                    : 'translate-x-1'
-                }`}
-              ></div>
-            </div>
-            <span className="text-sm text-gray-600">
-              {formData.status === 'Active' ? 'Available' : 'Unavailable'}
-            </span>
-          </div>
-
-          {/* Buttons */}
-          <div className="flex justify-end gap-3 mt-10">
-            <Button
-              type="button"
-              onClick={onClose}
-              className="btn-base blue-normal cursor-pointer opacity-40 w-[120px]"
-            >
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              className="btn-base blue-normal cursor-pointer w-[120px]"
-              disabled={loading}
-            >
-              {loading ? 'Saving...' : 'Save'}
-            </Button>
-          </div>
+          <Button type="submit" disabled={loading}>
+            {loading ? 'Saving...' : 'Save Coupon'}
+          </Button>
         </form>
       </div>
     </ModalEmpty>

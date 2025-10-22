@@ -37,8 +37,8 @@ const Login = () => {
         {isAlert && (
           <ErrorAlert
             onClick={() => setIsAlert(false)}
-            header="Invalid credentials"
-            text="Please try another email or password"
+            header="Your password is incorrect or this email doesn’t exist"
+            text="Please try another password or email"
           />
         )}
       </div>

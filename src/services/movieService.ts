@@ -25,4 +25,7 @@ export const moviesService = {
     const showtimes = await moviesRepo.findMovieShowtimes(slug, date);
     return showtimes;
   },
+  async getMoviesForAdmin(): Promise<MovieDTO[]> {
+    return moviesRepo.findMoviesForAdmin();
+  },
 };

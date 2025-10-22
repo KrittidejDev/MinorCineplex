@@ -33,7 +33,7 @@ function AdminMovieWidget() {
 
       setMovies(movieList);
     } catch (err) {
-      console.error("❌ Fetch movies error:", err);
+      console.error("Fetch movies error:", err);
       setError("ไม่สามารถโหลดข้อมูลหนังได้ (500)");
     } finally {
       setLoading(false);
@@ -64,7 +64,7 @@ function AdminMovieWidget() {
       />
     ),
     duration_min: `${movie.duration_min} mins`,
-    rating: movie.rating || "-",
+    rating: !movie.rating || movie.rating === "0" ? "-" : movie.rating,
   }));
 
   const movieColumns = [

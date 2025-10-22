@@ -107,7 +107,7 @@ function AdminCreateNewMovieForm({
     };
 
     try {
-      const res = await axios.post("/api/movies", payload);
+      const res = await axios.post("/api/admin/movies", payload);
 
       if (res.status === 201) {
         alert("เพิ่มภาพยนตร์สำเร็จ!");

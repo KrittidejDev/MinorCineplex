@@ -19,8 +19,11 @@ export default async function handler(
       "public, max-age=10, stale-while-revalidate=59"
     );
     return res.status(200).json(data);
-  } catch (err: any) {
-    console.error(err);
-    return res.status(500).json({ error: err.message });
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      console.error(err);
+      return res.status(500).json({ error: err.message });
+    }
+    return res.status(500).json({ error: "Unknown error occurred" });
   }
 }

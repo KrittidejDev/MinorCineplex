@@ -11,6 +11,7 @@ import { Button } from "../ui/button";
 import { BillInfo, BookingInfo as BookingData } from "@/types/cinema";
 import { CouponCardData } from "@/types/coupon";
 import { CloseRoundLight, ExpandRightLight } from "../Icons/Icons";
+import { Loader2 } from "lucide-react";
 
 interface Props extends BillInfo {
   data?: BookingData;
@@ -22,6 +23,7 @@ interface Props extends BillInfo {
   canPay: boolean;
   paymentMethod?: "credit_card" | "qr_code";
   step?: "1" | "2";
+  isLoading?: boolean;
 }
 
 export default function SummaryBoxCard({
@@ -37,6 +39,7 @@ export default function SummaryBoxCard({
   onSelectCoupon,
   onPayment,
   paymentMethod = 'credit_card',
+  isLoading = false,
 }: Props) {
   const { i18n } = useTranslation()
   const lang = i18n.language
@@ -51,7 +54,6 @@ export default function SummaryBoxCard({
   } else if (selectedCoupon?.discount_type === 'PERCENTAGE') {
     totalPriceWithDiscount = totalPrice * (1 - discountValue / 100)
   }
-
   return (
     <div className="w-full min-w-[305px] h-fit bg-gray-gc1b rounded-lg">
       {/* Movie Info */}

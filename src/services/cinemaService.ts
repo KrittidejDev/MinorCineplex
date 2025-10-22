@@ -1,4 +1,5 @@
 import { cinemaRepo } from "@/repositories/cinemaRepo";
+import { CinemaFromAPI } from "@/types/adminShowtime";
 import { CinemaDTO, MovieWithHalls } from "@/types/cinema";
 
 export const cinemaService = {
@@ -28,4 +29,9 @@ export const cinemaService = {
     targetDate.setHours(0, 0, 0, 0);
     return cinemaRepo.findCinemaShowtimesBySlug(slug, targetDate);
   },
+  async getCinemasForDropdown(): Promise<CinemaFromAPI[]> {
+    const cinemas = await cinemaRepo.getCinemasForDropdown();
+    return cinemas;
+  },
 };
+

@@ -7,12 +7,16 @@ export default async function handler(
 ) {
   try {
     if (req.method === "GET") {
-      const result = await cinemaService.getCinemasForAdmin();
-      return res.status(200).json(result);
+      if (req.query.type === "dropdown") {
+        const result = await cinemaService.getCinemasForDropdown();
+        return res.status(200).json(result);
+      }
+      return res.status(405).json({ error: "Method not allowed" });
     }
-    return res.status(405).json({ error: "Method not allowed" });
   } catch (error: unknown) {
-    console.error(error);
+    if (error instanceof Error) {
+      return res.status(500).json({ error: error.message });
+    }
     return res.status(500).json({ error: "Internal server error" });
   }
 }

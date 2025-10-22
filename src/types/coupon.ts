@@ -4,7 +4,7 @@
 export type GiftDetails =
   | { item: string; size?: string }        // สำหรับ POPCORN
   | { code: string }                        // สำหรับ COUPON_CODE
-  | Record<string, unknown>;                // สำหรับ OTHER
+  | { other: string };               // สำหรับ OTHER
 
 // ข้อมูลคูปองที่จะแสดงบน card
 export interface CouponCardData {

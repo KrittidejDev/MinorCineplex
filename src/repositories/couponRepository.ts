@@ -1,3 +1,4 @@
+//repositories/couponRepository.ts
 import { PrismaClient, Prisma } from "@/generated/prisma";
 import { CreateCouponInput } from "@/types/coupon";
 

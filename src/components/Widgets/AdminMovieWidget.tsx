@@ -23,13 +23,18 @@ function AdminMovieWidget() {
   const fetchMovies = async () => {
     try {
       setLoading(true);
-      const res = await fetch("/api/movies");
-      if (!res.ok) throw new Error("Failed to fetch movies");
-      const data: { movie: MovieDTO[] } = await res.json();
-      setMovies(Array.isArray(data.movie) ? data.movie : []);
+      const res = await fetch("/api/admin/movies");
+      if (!res.ok) throw new Error(`Fetch failed: ${res.status}`);
+      const data = await res.json();
+
+      const movieList = Array.isArray(data)
+        ? data
+        : data.movie || data.movies || [];
+
+      setMovies(movieList);
     } catch (err) {
-      console.error(err);
-      setError("ไม่สามารถโหลดข้อมูลหนังได้");
+      console.error("❌ Fetch movies error:", err);
+      setError("ไม่สามารถโหลดข้อมูลหนังได้ (500)");
     } finally {
       setLoading(false);
     }
@@ -42,7 +47,6 @@ function AdminMovieWidget() {
   const filteredMovies = useMemo(() => {
     if (!Array.isArray(movies)) return [];
     if (!searchTerm) return movies;
-
     return movies.filter((movie) =>
       movie.title.toLowerCase().includes(searchTerm.toLowerCase())
     );

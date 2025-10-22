@@ -374,6 +374,7 @@ enum SeatStatus {
   AVAILABLE
   RESERVED
   BOOKED
+  LOCKED
 }
 
 enum BookingStatus {

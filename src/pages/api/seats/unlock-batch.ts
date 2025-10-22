@@ -81,10 +81,6 @@ export default async function handler(
       });
     });
 
-    console.log(
-      `✅ Unlocked and broadcasted ${unlockedSeats.length} seats successfully`
-    );
-
     return res.json({ success: true, unlockedCount: unlockedSeats.length });
   } catch (err) {
     console.error("Unlock batch error:", err);

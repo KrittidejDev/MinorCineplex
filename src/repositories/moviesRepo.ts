@@ -269,16 +269,6 @@ export const moviesRepo = {
         },
       });
 
-      if (updatedMovies.count > 0) {
-        console.log(
-          `Updated ${updatedMovies.count} movies to NOW_SHOWING on ${format(
-            today,
-            "yyyy-MM-dd",
-            { locale: th }
-          )}`
-        );
-      }
-
       return updatedMovies.count;
     } catch (error) {
       console.error("Error updating movie status:", error);

@@ -17,7 +17,6 @@ const ProfileMyCoupons = () => {
         const res = (await userService.GET_COUPON_COLLECTED()) as {
           coupons: CouponCardData[];
         };
-        console.log("dada", res.coupons);
         if (isMounted.current) setCoupons(res.coupons);
       } catch (err) {
         console.error(err);

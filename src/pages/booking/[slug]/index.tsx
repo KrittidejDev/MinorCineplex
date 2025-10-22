@@ -66,7 +66,6 @@ const BookingSeat: React.FC = () => {
 
   const fetchBookingData = async () => {
     if (!id) return;
-    console.log("IDDDDD", id);
     const ac = new AbortController();
     try {
       const res = await axios.get(`/api/booking/showtimes/${id}`, {
@@ -386,8 +385,6 @@ const BookingSeat: React.FC = () => {
       }
     };
   }, [selectedSeats, step, router]);
-
-  console.log("bookingInfo", bookingInfo);
 
   // ----------------- JSX -----------------
   return (

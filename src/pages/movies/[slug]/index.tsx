@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import axios from "axios";
-import NavAndFooterWithBanner from "@/components/MainLayout/NavAndFooterWithBanner";
 import MovieInfoWidget from "@/components/Widgets/MovieInfoWidget";
 import CinemaLocation from "@/components/Widgets/CinemaLocation";
 import { useLocationPermission } from "@/lib/hooks/useLocationPermission";
@@ -9,6 +8,8 @@ import LocationPermissionModal from "@/components/Modals/LocationPermissionModal
 import { useNearbyCinemas } from "@/lib/hooks/useNearbyCinemas";
 import { MovieDTO, ShowtimeDTO } from "@/types/movie";
 import { format } from "date-fns";
+import NavAndFooter from "@/components/MainLayout/NavAndFooter";
+import Image from "next/image";
 
 function MovieInfo() {
   const params = useParams();
@@ -87,19 +88,20 @@ function MovieInfo() {
   if (!movie) return <p>ไม่พบข้อมูลหนัง</p>;
 
   return (
-    <NavAndFooterWithBanner>
-      <div>
-        <div className="w-dvw flex justify-center relative mx-auto mt-10"></div>
-        <div>
-          <MovieInfoWidget
-            movie={movie}
-            showtimes={showtimes}
-            selectedDate={selectedDate}
-            onSelectDate={(e) => onSelectedDate(e)}
-            showtimesLoading={showtimesLoading}
-          />
-        </div>
-      </div>
+    <NavAndFooter>
+      <Image
+        src="/images/cover-cinema.png"
+        alt="Cinema Interior"
+        fill
+        className="hidden md:flex object-cover object-center w-full z-0 max-h-[100vh] overflow-hidden "
+      />
+      <MovieInfoWidget
+        movie={movie}
+        showtimes={showtimes}
+        selectedDate={selectedDate}
+        onSelectDate={(e) => onSelectedDate(e)}
+        showtimesLoading={showtimesLoading}
+      />
       <CinemaLocation data={cinemas} filterCinema={handleFilter} />
       <LocationPermissionModal
         isOpen={showModal}
@@ -108,7 +110,7 @@ function MovieInfo() {
         onNeverAllow={neverAllow}
         onClose={closeModal}
       />
-    </NavAndFooterWithBanner>
+    </NavAndFooter>
   );
 }
 

@@ -13,7 +13,6 @@ export default async function handler(
   try {
     const data = await bookingService.getShowtimeDetail(id);
 
-    // Cache client 10 วินาที
     res.setHeader(
       "Cache-Control",
       "public, max-age=10, stale-while-revalidate=59"

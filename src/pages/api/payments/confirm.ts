@@ -44,7 +44,7 @@ export default async function handler(
     // ดึงข้อมูลเก้าอี้จาก DB
     const seatRecordsRaw: Record<string, unknown>[] = await sql`
       SELECT id, showtime_id, seat_id, status, price, locked_at, locked_by
-      FROM showtime_seat
+      FROM showtimeSeat
       WHERE showtime_id = ${showtimeId}
       AND id = ANY(${seats})
     `;

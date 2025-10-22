@@ -30,20 +30,23 @@ function MovieCard({
   genres,
 }: MovieCardProps) {
   return (
-    <div className="w-[161px] h-fit md:w-[285px] md:h-[526px] md:mb-12 lg:mb-17 flex flex-col">
-      <div className="h-[235px] md:h-[416px] rounded-sm ">
-        <HoverCard3D>
-          <div className="relative h-[235px] md:h-[416px]">
-            <Image
-              src={poster_url || "/fallback-poster.jpg"}
-              alt={title}
-              fill
-              sizes="(max-width: 768px) 161px, 285px"
-              className="rounded-sm object-cover "
-            />
-          </div>
-        </HoverCard3D>
-      </div>
+    <div className="w-[161px] h-fit md:w-[285px] md:h-[526px] md:mb-12 lg:mb-17 flex flex-col z-10">
+      <HoverCard3D>
+        <div
+          className="relative"
+          style={{
+            aspectRatio: "2 / 3",
+          }}
+        >
+          <Image
+            src={poster_url || "/fallback-poster.jpg"}
+            alt={title}
+            fill
+            sizes="(max-width: 768px) 161px, 285px"
+            className="rounded-sm object-cover "
+          />
+        </div>
+      </HoverCard3D>
       <div className="flex flex-col flex-1">
         <div className="flex justify-between mt-4">
           <p className="fr-14 text-gray-g3b0">

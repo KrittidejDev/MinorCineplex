@@ -19,7 +19,7 @@ const NavbarMenu = ({ data, onLogOut, className }: NavbarMenuProps) => {
     "flex items-center gap-x-2.5 py-3 px-4 w-full cursor-pointer hover:shadow-lg text-left text-b1 hover:scale-105 transition";
   return (
     <div
-      className={`absolute flex flex-col w-62 bg-gray-g63f top-18 right-0 rounded-lg shadow-lg overflow-hidden mx-4 ${className}`}
+      className={`absolute flex flex-col p-2 w-62 bg-gray-g63f top-18 right-0 rounded-lg shadow-lg overflow-hidden mx-4 ${className}`}
     >
       {data?.role === "ADMIN" && (
         <button className={btnProfileStyle} onClick={_handleClickAdmin}>

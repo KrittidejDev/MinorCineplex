@@ -16,7 +16,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "react-toastify";
 import { useSearchParams } from "next/navigation";
 import axios, { AxiosError } from "axios";
-import SignInForm from "@/components/Forms/SignInForm";
+import ModalLogin from "@/components/Widgets/ModalLogin";
 
 const BookingSeat: React.FC = () => {
   const router = useRouter();
@@ -65,6 +65,7 @@ const BookingSeat: React.FC = () => {
       if (result?.ok) {
         setShowLoginModal(false);
         router.push(`/booking/${id}`);
+        toast.success("Login successful");
       } else {
         toast.error("Login failed");
         setShowLoginModal(false);
@@ -416,14 +417,12 @@ const BookingSeat: React.FC = () => {
       <ModalEmpty isShowModal={_isShowModal} onClose={_handleCloseModal}>
         {_renderModal}
       </ModalEmpty>
-      <ModalEmpty
-        isShowModal={showLoginModal}
-        onClose={() => setShowLoginModal(false)}
-      >
-        <div className="px-20 py-10 bg-gray-g63f flex flex-col items-center rounded-2xl gap-10">
-          <SignInForm onSubmit={handleLogin} />
-        </div>
-      </ModalEmpty>
+
+      <ModalLogin
+        showLoginModal={showLoginModal}
+        setShowLoginModal={setShowLoginModal}
+        onLogin={handleLogin}
+      />
     </NavAndFooter>
   );
 };

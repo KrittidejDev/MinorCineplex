@@ -1,3 +1,4 @@
+//services/couponService.ts
 import * as couponRepo from "@/repositories/couponRepository";
 import { CreateCouponInput } from "@/types/coupon";
 import * as userCouponRepo from "@/repositories/userCouponRepository";

@@ -1,375 +1,399 @@
+
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
+  output   = "../src/generated/prisma" // ตำแหน่งที่ Prisma จะสร้างโค้ด client
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "postgresql" // ใช้ PostgreSQL เป็นฐานข้อมูล
+  url      = env("DATABASE_URL") // URL ฐานข้อมูลจากตัวแปรสภาพแวดล้อม
 }
 
+// โรงภาพยนตร์: เก็บข้อมูลพื้นฐานของโรงภาพยนตร์ เช่น ชื่อ, ที่อยู่, และตำแหน่ง
 model Cinema {
-  id           String     @id @default(uuid())
-  slug         String     @unique
-  name         String     @unique
-  translations Json?
-  address      String
-  phone        String?
-  city         String?
-  city_en      String?
-  group        String?
-  group_en     String?
-  lat          Float?
-  lng          Float?
-  icon_url     String?
-  created_at   DateTime   @default(now())
-  updated_at   DateTime   @updatedAt
-  coupons      Coupon[]
-  halls        Hall[]
-  showtimes    Showtime[]
+  id           String     @id @default(uuid()) // รหัสเฉพาะ UUID สำหรับโรงภาพยนตร์
+  slug         String     @unique // Slug สำหรับ URL เช่น "major-cineplex-rangsit"
+  name         String     @unique // ชื่อหลักของโรงภาพยนตร์ (ใช้เป็น fallback)
+  translations Json?      // การแปลชื่อและคำอธิบาย เช่น { "en": { "name": "", "description": "" }, "th": { ... } }
+  address      String     // ที่อยู่ของโรงภาพยนตร์
+  phone        String?    // เบอร์โทรศัพท์ (optional)
+  city         String?    // เมือง/จังหวัดของโรงภาพยนตร์
+  city_en      String?    // ชื่อเมืองภาษาอังกฤษ
+  group        String?    // กลุ่มโรงภาพยนตร์ เช่น "Major Cineplex"
+  group_en     String?    // ชื่อกลุ่มภาษาอังกฤษ
+  lat          Float?     // Latitude สำหรับตำแหน่งทางภูมิศาสตร์
+  lng          Float?     // Longitude สำหรับตำแหน่งทางภูมิศาสตร์
+  icon_url     String?    // URL รูปไอคอนของโรงภาพยนตร์ (optional)
+  created_at   DateTime   @default(now()) // วันที่สร้าง
+  updated_at   DateTime   @updatedAt // วันที่อัปเดตล่าสุด
+  coupons      Coupon[]   // คูปองที่ใช้ได้ในโรงภาพยนตร์นี้
+  halls        Hall[]     // ห้องฉายในโรงภาพยนตร์นี้
+  showtimes    Showtime[] // รอบฉายในโรงภาพยนตร์นี้
 
-  @@index([slug])
-  @@index([city])
+  @@index([slug]) // รองรับการค้นหาด้วย slug
+  @@index([city]) // รองรับการค้นหาด้วย city
 }
 
+// ห้องฉาย: เก็บข้อมูลห้องฉายในโรงภาพยนตร์
 model Hall {
-  id         String     @id @default(uuid())
-  slug       String     @unique
-  name       String
-  seat_count Int        @default(50)
-  cinema_id  String
-  created_at DateTime   @default(now())
-  updated_at DateTime   @updatedAt
-  cinema     Cinema     @relation(fields: [cinema_id], references: [id], onDelete: Cascade)
-  showtimes  Showtime[]
+  id           String     @id @default(uuid()) // รหัสเฉพาะ UUID สำหรับห้องฉาย
+  slug         String     @unique // Slug เช่น "hall-1-major-rangsit"
+  name         String     // ชื่อห้อง เช่น "Hall 1"
+  seat_count   Int        @default(50) // จำนวนที่นั่งทั้งหมดในห้อง
+  cinema_id    String     // รหัสโรงภาพยนตร์ที่ห้องนี้สังกัด
+  created_at   DateTime   @default(now()) // วันที่สร้าง
+  updated_at   DateTime   @updatedAt // วันที่อัปเดตล่าสุด
+  cinema       Cinema     @relation(fields: [cinema_id], references: [id], onDelete: Cascade) // ความสัมพันธ์กับ Cinema, ลบเมื่อลบ Cinema
+  showtimes    Showtime[] // รอบฉายในห้องนี้
 
-  @@unique([name, cinema_id])
-  @@index([slug])
-  @@index([cinema_id])
+  @@unique([name, cinema_id]) // ชื่อห้องต้องไม่ซ้ำในโรงเดียวกัน
+  @@index([slug]) // รองรับการค้นหาด้วย slug
+  @@index([cinema_id]) // รองรับการค้นหาด้วย cinema_id
 }
 
+// ผังที่นั่งมาตรฐาน: ใช้ร่วมกันทุกห้องฉาย
 model SeatTemplate {
-  id             String         @id @default(uuid())
-  seat_number    String         @unique
-  row            String
-  col            String
-  created_at     DateTime       @default(now())
-  updated_at     DateTime       @updatedAt
-  showtime_seats ShowtimeSeat[]
+  id             String         @id @default(uuid()) // รหัสเฉพาะ UUID สำหรับที่นั่ง
+  seat_number    String         @unique // รหัสที่นั่ง เช่น "A1"
+  row            String         // แถวที่นั่ง เช่น "A"
+  col            String         // คอลัมน์ที่นั่ง เช่น "1"
+  created_at     DateTime       @default(now()) // วันที่สร้าง
+  updated_at     DateTime       @updatedAt // วันที่อัปเดตล่าสุด
+  showtime_seats ShowtimeSeat[] // สถานะที่นั่งในรอบฉาย
 
-  @@index([seat_number])
+  @@index([seat_number]) // รองรับการค้นหาด้วย seat_number
 }
 
+// ประเภทภาพยนตร์: เก็บข้อมูลประเภท เช่น Action, Comedy
 model Genre {
-  id           String       @id @default(uuid())
-  slug         String       @unique
-  name         String       @unique
-  translations Json?
-  created_at   DateTime     @default(now())
-  updated_at   DateTime     @updatedAt
-  movies       MovieGenre[]
+  id           String       @id @default(uuid()) // รหัสเฉพาะ UUID สำหรับประเภท
+  slug         String       @unique // Slug เช่น "action"
+  name         String       @unique // ชื่อประเภท (ใช้เป็น fallback)
+  translations Json?        // การแปลชื่อ เช่น { "en": "Action", "th": "แอคชัน" }
+  created_at   DateTime     @default(now()) // วันที่สร้าง
+  updated_at   DateTime     @updatedAt // วันที่อัปเดตล่าสุด
+  movies       MovieGenre[] // ความสัมพันธ์กับภาพยนตร์
 
-  @@index([slug])
-  @@index([name])
+  @@index([slug]) // รองรับการค้นหาด้วย slug
+  @@index([name]) // รองรับการค้นหาด้วย name
 }
 
+// ภาพยนตร์: เก็บข้อมูลภาพยนตร์ เช่น ชื่อ, ความยาว, และสถานะ
 model Movie {
-  id           String          @id @default(uuid())
-  slug         String          @unique
-  title        String          @unique
-  translations Json?
-  duration_min Int
-  poster_url   String?
-  trailer_url  String?
-  rating       String?
-  release_date DateTime?
-  status       MovieStatus     @default(COMING_SOON)
-  created_at   DateTime        @default(now())
-  updated_at   DateTime        @updatedAt
-  coupons      Coupon[]
-  actors       MovieActor[]
-  directors    MovieDirector[]
-  genres       MovieGenre[]
-  languages    MovieLanguage[]
-  showtimes    Showtime[]
+  id             String          @id @default(uuid()) // รหัสเฉพาะ UUID สำหรับภาพยนตร์
+  slug           String          @unique // Slug เช่น "inception-2023"
+  title          String          @unique // ชื่อภาพยนตร์ (ใช้เป็น fallback)
+  translations   Json?           // การแปลชื่อและคำอธิบาย เช่น { "en": { "title": "", "description": "" }, "th": { ... } }
+  duration_min   Int             // ความยาวภาพยนตร์ (นาที)
+  poster_url     String?         // URL รูปโปสเตอร์ (optional)
+  trailer_url    String?         // URL รูปเทรลเลอร์ (optional)
+  rating         String?         // เรตติ้ง เช่น "PG-13" (optional)
+  release_date   DateTime?       // วันที่เข้าฉาย (optional)
+  status         MovieStatus     @default(COMING_SOON) // สถานะภาพยนตร์ เช่น NOW_SHOWING
+  created_at     DateTime        @default(now()) // วันที่สร้าง
+  updated_at     DateTime        @updatedAt // วันที่อัปเดตล่าสุด
+  coupons        Coupon[]        // คูปองที่ใช้ได้กับภาพยนตร์นี้
+  actors         MovieActor[]    // นักแสดงในภาพยนตร์
+  directors      MovieDirector[] // ผู้กำกับภาพยนตร์
+  genres         MovieGenre[]    // ประเภทของภาพยนตร์
+  languages      MovieLanguage[] // ภาษาของภาพยนตร์
+  showtimes      Showtime[]      // รอบฉายของภาพยนตร์
 
-  @@index([slug])
-  @@index([release_date])
-  @@index([status])
+  @@index([slug]) // รองรับการค้นหาด้วย slug
+  @@index([release_date]) // รองรับการค้นหาด้วย release_date
+  @@index([status]) // รองรับการค้นหาด้วย status
 }
 
+// ความสัมพันธ์ภาพยนตร์-ประเภท: รองรับความสัมพันธ์แบบ many-to-many
 model MovieGenre {
-  id         String   @id @default(uuid())
-  movie_id   String
-  genre_id   String
-  created_at DateTime @default(now())
-  genre      Genre    @relation(fields: [genre_id], references: [id], onDelete: Cascade)
-  movie      Movie    @relation(fields: [movie_id], references: [id], onDelete: Cascade)
+  id         String   @id @default(uuid()) // รหัสเฉพาะ UUID สำหรับความสัมพันธ์
+  movie_id   String   // รหัสภาพยนตร์
+  genre_id   String   // รหัสประเภท
+  created_at DateTime @default(now()) // วันที่สร้าง
+  genre      Genre    @relation(fields: [genre_id], references: [id], onDelete: Cascade) // ความสัมพันธ์กับ Genre, ลบเมื่อลบ Genre
+  movie      Movie    @relation(fields: [movie_id], references: [id], onDelete: Cascade) // ความสัมพันธ์กับ Movie, ลบเมื่อลบ Movie
 
-  @@unique([movie_id, genre_id])
-  @@index([movie_id])
-  @@index([genre_id])
+  @@unique([movie_id, genre_id]) // ป้องกันการซ้ำของคู่ movie_id และ genre_id
+  @@index([movie_id]) // รองรับการค้นหาด้วย movie_id
+  @@index([genre_id]) // รองรับการค้นหาด้วย genre_id
 }
 
+// นักแสดง: เก็บข้อมูลนักแสดง
 model Actor {
-  id         String       @id @default(uuid())
-  name       String       @unique
-  created_at DateTime     @default(now())
-  updated_at DateTime     @updatedAt
-  movies     MovieActor[]
+  id         String       @id @default(uuid()) // รหัสเฉพาะ UUID สำหรับนักแสดง
+  name       String       @unique // ชื่อนักแสดง (ต้องไม่ซ้ำ)
+  created_at DateTime     @default(now()) // วันที่สร้าง
+  updated_at DateTime     @updatedAt // วันที่อัปเดตล่าสุด
+  movies     MovieActor[] // ความสัมพันธ์กับภาพยนตร์
 
-  @@index([name])
+  @@index([name]) // รองรับการค้นหาด้วย name (exact และ partial match)
 }
 
+// ผู้กำกับ: เก็บข้อมูลผู้กำกับ
 model Director {
-  id         String          @id @default(uuid())
-  name       String          @unique
-  created_at DateTime        @default(now())
-  updated_at DateTime        @updatedAt
-  movies     MovieDirector[]
+  id         String          @id @default(uuid()) // รหัสเฉพาะ UUID สำหรับผู้กำกับ
+  name       String          @unique // ชื่อผู้กำกับ (ต้องไม่ซ้ำ)
+  created_at DateTime        @default(now()) // วันที่สร้าง
+  updated_at DateTime        @updatedAt // วันที่อัปเดตล่าสุด
+  movies     MovieDirector[] // ความสัมพันธ์กับภาพยนตร์
 
-  @@index([name])
+  @@index([name]) // รองรับการค้นหาด้วย name (exact และ partial match)
 }
 
+// ภาษา: เก็บข้อมูลภาษาของภาพยนตร์
 model Language {
-  id         String          @id @default(uuid())
-  name       String          @unique
-  code       String          @unique
-  created_at DateTime        @default(now())
-  updated_at DateTime        @updatedAt
-  movies     MovieLanguage[]
+  id         String          @id @default(uuid()) // รหัสเฉพาะ UUID สำหรับภาษา
+  name       String          @unique // ชื่อภาษา เช่น "Thai"
+  code       String          @unique // รหัสภาษา เช่น "th", "en"
+  created_at DateTime        @default(now()) // วันที่สร้าง
+  updated_at DateTime        @updatedAt // วันที่อัปเดตล่าสุด
+  movies     MovieLanguage[] // ความสัมพันธ์กับภาพยนตร์
 
-  @@index([code])
+  @@index([code]) // รองรับการค้นหาด้วย code
 }
 
+// ความสัมพันธ์ภาพยนตร์-นักแสดง: รองรับความสัมพันธ์แบบ many-to-many
 model MovieActor {
-  id       String @id @default(uuid())
-  movie_id String
-  actor_id String
-  actor    Actor  @relation(fields: [actor_id], references: [id], onDelete: Cascade)
-  movie    Movie  @relation(fields: [movie_id], references: [id], onDelete: Cascade)
+  id       String @id @default(uuid()) // รหัสเฉพาะ UUID สำหรับความสัมพันธ์
+  movie_id String // รหัสภาพยนตร์
+  actor_id String // รหัสนักแสดง
+  actor    Actor  @relation(fields: [actor_id], references: [id], onDelete: Cascade) // ความสัมพันธ์กับ Actor, ลบเมื่อลบ Actor
+  movie    Movie  @relation(fields: [movie_id], references: [id], onDelete: Cascade) // ความสัมพันธ์กับ Movie, ลบเมื่อลบ Movie
 
-  @@unique([movie_id, actor_id])
-  @@index([movie_id])
-  @@index([actor_id])
+  @@unique([movie_id, actor_id]) // ป้องกันการซ้ำของคู่ movie_id และ actor_id
+  @@index([movie_id]) // รองรับการค้นหาด้วย movie_id
+  @@index([actor_id]) // รองรับการค้นหาด้วย actor_id
 }
 
+// ความสัมพันธ์ภาพยนตร์-ผู้กำกับ: รองรับความสัมพันธ์แบบ many-to-many
 model MovieDirector {
-  id          String   @id @default(uuid())
-  movie_id    String
-  director_id String
-  director    Director @relation(fields: [director_id], references: [id], onDelete: Cascade)
-  movie       Movie    @relation(fields: [movie_id], references: [id], onDelete: Cascade)
+  id          String   @id @default(uuid()) // รหัสเฉพาะ UUID สำหรับความสัมพันธ์
+  movie_id    String   // รหัสภาพยนตร์
+  director_id String   // รหัสผู้กำกับ
+  director    Director @relation(fields: [director_id], references: [id], onDelete: Cascade) // ความสัมพันธ์กับ Director, ลบเมื่อลบ Director
+  movie       Movie    @relation(fields: [movie_id], references: [id], onDelete: Cascade) // ความสัมพันธ์กับ Movie, ลบเมื่อลบ Movie
 
-  @@unique([movie_id, director_id])
-  @@index([movie_id])
-  @@index([director_id])
+  @@unique([movie_id, director_id]) // ป้องกันการซ้ำของคู่ movie_id และ director_id
+  @@index([movie_id]) // รองรับการค้นหาด้วย movie_id
+  @@index([director_id]) // รองรับการค้นหาด้วย director_id
 }
 
+// ความสัมพันธ์ภาพยนตร์-ภาษา: รองรับความสัมพันธ์แบบ many-to-many
 model MovieLanguage {
-  id          String   @id @default(uuid())
-  movie_id    String
-  language_id String
-  language    Language @relation(fields: [language_id], references: [id], onDelete: Cascade)
-  movie       Movie    @relation(fields: [movie_id], references: [id], onDelete: Cascade)
+  id          String   @id @default(uuid()) // รหัสเฉพาะ UUID สำหรับความสัมพันธ์
+  movie_id    String   // รหัสภาพยนตร์
+  language_id String   // รหัสภาษา
+  language    Language @relation(fields: [language_id], references: [id], onDelete: Cascade) // ความสัมพันธ์กับ Language, ลบเมื่อลบ Language
+  movie       Movie    @relation(fields: [movie_id], references: [id], onDelete: Cascade) // ความสัมพันธ์กับ Movie, ลบเมื่อลบ Movie
 
-  @@unique([movie_id, language_id])
-  @@index([movie_id])
-  @@index([language_id])
+  @@unique([movie_id, language_id]) // ป้องกันการซ้ำของคู่ movie_id และ language_id
+  @@index([movie_id]) // รองรับการค้นหาด้วย movie_id
+  @@index([language_id]) // รองรับการค้นหาด้วย language_id
 }
 
+// รอบเวลา: เก็บรอบเวลามาตรฐาน เช่น Morning (10:00-12:00)
 model TimeSlot {
-  id         String     @id @default(uuid())
-  name       String     @unique
-  start_time String
-  end_time   String
-  created_at DateTime   @default(now())
-  updated_at DateTime   @updatedAt
-  showtimes  Showtime[]
+  id         String     @id @default(uuid()) // รหัสเฉพาะ UUID สำหรับรอบเวลา
+  name       String     @unique // ชื่อรอบเวลา เช่น "10:00" ชื่อเดียวกับเวลาเริ่ม
+  start_time String     // เวลาเริ่ม เช่น "10:00"
+  end_time   String     // เวลาสิ้นสุด เช่น "12:00"
+  created_at DateTime   @default(now()) // วันที่สร้าง
+  updated_at DateTime   @updatedAt // วันที่อัปเดตล่าสุด
+  showtimes  Showtime[] // รอบฉายที่ใช้รอบเวลานี้
 
-  @@index([name])
+  @@index([name]) // รองรับการค้นหาด้วย name
 }
 
+// รอบฉาย: เก็บข้อมูลรอบฉายเฉพาะ
 model Showtime {
-  id             String         @id @default(uuid())
-  movie_id       String
-  hall_id        String
-  cinema_id      String
-  time_slot_id   String
-  date           DateTime
-  price          Float          @default(200.0)
-  created_at     DateTime       @default(now())
-  updated_at     DateTime       @updatedAt
-  bookings       Booking[]
-  cinema         Cinema         @relation(fields: [cinema_id], references: [id], onDelete: Cascade)
-  hall           Hall           @relation(fields: [hall_id], references: [id], onDelete: Cascade)
-  movie          Movie          @relation(fields: [movie_id], references: [id], onDelete: Cascade)
-  time_slot      TimeSlot       @relation(fields: [time_slot_id], references: [id], onDelete: Cascade)
-  showtime_seats ShowtimeSeat[]
+  id             String         @id @default(uuid()) // รหัสเฉพาะ UUID สำหรับรอบฉาย
+  movie_id       String         // รหัสภาพยนตร์
+  hall_id        String         // รหัสห้องฉาย
+  cinema_id      String         // รหัสโรงภาพยนตร์
+  time_slot_id   String         // รหัสรอบเวลา
+  date           DateTime       // วันที่ฉาย เช่น "2025-10-18T00:00:00Z"
+  price          Float          @default(200.0) // ราคาตั๋วพื้นฐาน
+  created_at     DateTime       @default(now()) // วันที่สร้าง
+  updated_at     DateTime       @updatedAt // วันที่อัปเดตล่าสุด
+  bookings       Booking[]      // การจองในรอบฉายนี้
+  cinema         Cinema         @relation(fields: [cinema_id], references: [id], onDelete: Cascade) // ความสัมพันธ์กับ Cinema, ลบเมื่อลบ Cinema
+  hall           Hall           @relation(fields: [hall_id], references: [id], onDelete: Cascade) // ความสัมพันธ์กับ Hall, ลบเมื่อลบ Hall
+  movie          Movie          @relation(fields: [movie_id], references: [id], onDelete: Cascade) // ความสัมพันธ์กับ Movie, ลบเมื่อลบ Movie
+  time_slot      TimeSlot       @relation(fields: [time_slot_id], references: [id], onDelete: Cascade) // ความสัมพันธ์กับ TimeSlot, ลบเมื่อลบ TimeSlot
+  showtime_seats ShowtimeSeat[] // สถานะที่นั่งในรอบฉายนี้
 
-  @@unique([movie_id, hall_id, time_slot_id, date])
-  @@index([movie_id])
-  @@index([hall_id])
-  @@index([cinema_id])
-  @@index([date])
+  @@unique([movie_id, hall_id, time_slot_id, date]) // ป้องกันรอบฉายซ้ำ
+  @@index([movie_id]) // รองรับการค้นหาด้วย movie_id
+  @@index([hall_id]) // รองรับการค้นหาด้วย hall_id
+  @@index([cinema_id]) // รองรับการค้นหาด้วย cinema_id
+  @@index([date]) // รองรับการค้นหาด้วย date
 }
 
+// สถานะที่นั่งในรอบฉาย
 model ShowtimeSeat {
-  id                String        @id @default(uuid())
-  showtime_id       String
-  seat_template_id  String
-  status            SeatStatus    @default(AVAILABLE)
-  price             Float?
-  locked_until      DateTime?
-  locked_by_user_id String?
-  created_at        DateTime      @default(now())
-  updated_at        DateTime      @updatedAt
-  booking_seats     BookingSeat[]
-  user              User?         @relation(fields: [locked_by_user_id], references: [id])
-  seat_template     SeatTemplate  @relation(fields: [seat_template_id], references: [id], onDelete: Cascade)
-  showtime          Showtime      @relation(fields: [showtime_id], references: [id], onDelete: Cascade)
+  id                String        @id @default(uuid()) // รหัสเฉพาะ UUID สำหรับที่นั่งในรอบฉาย
+  showtime_id       String        // รหัสรอบฉาย
+  seat_template_id  String        // รหัสผังที่นั่ง
+  status            SeatStatus    @default(AVAILABLE) // สถานะที่นั่ง (AVAILABLE, RESERVED, BOOKED)
+  price             Float?        // ราคาเฉพาะที่นั่งนี้ (optional)
+  locked_until      DateTime?     // เวลาหมดอายุการล็อก (optional)
+  locked_by_user_id String?       // รหัสผู้ใช้ที่ล็อกที่นั่ง (optional)
+  created_at        DateTime      @default(now()) // วันที่สร้าง
+  updated_at        DateTime      @updatedAt // วันที่อัปเดตล่าสุด
+  booking_seats     BookingSeat[] // ที่นั่งที่ถูกจอง
+  user              User?         @relation(fields: [locked_by_user_id], references: [id], onDelete: SetNull) // ความสัมพันธ์กับ User, ตั้ง null เมื่อลบ User
+  seat_template     SeatTemplate  @relation(fields: [seat_template_id], references: [id], onDelete: Cascade) // ความสัมพันธ์กับ SeatTemplate, ลบเมื่อลบ SeatTemplate
+  showtime          Showtime      @relation(fields: [showtime_id], references: [id], onDelete: Cascade) // ความสัมพันธ์กับ Showtime, ลบเมื่อลบ Showtime
 
-  @@unique([showtime_id, seat_template_id])
-  @@index([showtime_id])
-  @@index([seat_template_id])
-  @@index([locked_by_user_id])
+  @@unique([showtime_id, seat_template_id]) // ป้องกันที่นั่งซ้ำในรอบฉาย
+  @@index([showtime_id]) // รองรับการค้นหาด้วย showtime_id
+  @@index([seat_template_id]) // รองรับการค้นหาด้วย seat_template_id
+  @@index([locked_by_user_id]) // รองรับการค้นหาด้วย locked_by_user_id
 }
 
+// ผู้ใช้: เก็บข้อมูลผู้ใช้ระบบ
 model User {
-  id           String         @id @default(uuid())
-  username     String         @unique
-  email        String         @unique
-  phone        String?        @unique
-  password     String
-  role         UserRole       @default(CUSTOMER)
-  created_at   DateTime       @default(now())
-  updated_at   DateTime       @updatedAt
-  avatar_url   String?
+  id           String         @id @default(uuid()) // รหัสเฉพาะ UUID สำหรับผู้ใช้
+  username     String         @unique // ชื่อผู้ใช้ (ต้องไม่ซ้ำ)
+  email        String         @unique // อีเมล (ต้องไม่ซ้ำ)
+  phone        String?        @unique // เบอร์โทรศัพท์ (optional, ต้องไม่ซ้ำ)
+  password     String         // รหัสผ่าน (hashed)
+  role         UserRole       @default(CUSTOMER) // บทบาทผู้ใช้ (ADMIN, CUSTOMER)
+  created_at   DateTime       @default(now()) // วันที่สร้าง
+  updated_at   DateTime       @updatedAt // วันที่อัปเดตล่าสุด
   avatar_id    String?
-  bookings     Booking[]
-  payments     Payment[]
-  locked_seats ShowtimeSeat[]
-  coupons      UserCoupon[]
+  avatar_url   String?        // URL รูปโปรไฟล์ (optional)
+  bookings     Booking[]      // การจองของผู้ใช้
+  payments     Payment[]      // การชำระเงินของผู้ใช้
+  locked_seats ShowtimeSeat[] // ที่นั่งที่ผู้ใช้ล็อก
+  coupons      UserCoupon[]   // คูปองที่ผู้ใช้เก็บ
 
-  @@index([username])
-  @@index([email])
-  @@index([phone])
+  @@index([username]) // รองรับการค้นหาด้วย username (exact และ partial match)
+  @@index([email]) // รองรับการค้นหาด้วย email
+  @@index([phone]) // รองรับการค้นหาด้วย phone
 }
 
+// การจอง: เก็บข้อมูลการจองตั๋ว
 model Booking {
-  id          String        @id @default(uuid())
-  public_id   String        @unique
-  user_id     String
-  showtime_id String
-  coupon_id   String?
-  status      BookingStatus @default(PENDING)
-  total_price Float
-  created_at  DateTime      @default(now())
-  updated_at  DateTime      @updatedAt
-  coupon      Coupon?       @relation(fields: [coupon_id], references: [id])
-  showtime    Showtime      @relation(fields: [showtime_id], references: [id], onDelete: Cascade)
-  user        User          @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  seats       BookingSeat[]
-  payment     Payment?
+  id          String        @id @default(uuid()) // รหัสเฉพาะ UUID สำหรับความสัมพันธ์ภายใน
+  public_id   String        @unique // Short UUID สำหรับลิงก์ เช่น "6m5v8x9y2z"
+  user_id     String        // รหัสผู้ใช้
+  showtime_id String        // รหัสรอบฉาย
+  coupon_id   String?       // รหัสคูปอง (optional)
+  status      BookingStatus @default(PENDING) // สถานะการจอง (PENDING, RESERVED, PAID, CANCELLED, EXPIRED)
+  total_price Float         // ราคารวม (หลังหักส่วนลด)
+  created_at  DateTime      @default(now()) // วันที่สร้าง
+  updated_at  DateTime      @updatedAt // วันที่อัปเดตล่าสุด
+  coupon      Coupon?       @relation(fields: [coupon_id], references: [id], onDelete: SetNull) // ความสัมพันธ์กับ Coupon, ตั้ง null เมื่อลบ Coupon
+  showtime    Showtime      @relation(fields: [showtime_id], references: [id], onDelete: Cascade) // ความสัมพันธ์กับ Showtime, ลบเมื่อลบ Showtime
+  user        User          @relation(fields: [user_id], references: [id], onDelete: Cascade) // ความสัมพันธ์กับ User, ลบเมื่อลบ User
+  seats       BookingSeat[] // ที่นั่งที่จอง
+  payment     Payment?      // การชำระเงินที่เกี่ยวข้อง
 
-  @@index([public_id])
-  @@index([user_id])
-  @@index([showtime_id])
-  @@index([coupon_id])
+  @@index([public_id]) // รองรับการค้นหาด้วย public_id
+  @@index([user_id]) // รองรับการค้นหาด้วย user_id
+  @@index([showtime_id]) // รองรับการค้นหาด้วย showtime_id
+  @@index([coupon_id]) // รองรับการค้นหาด้วย coupon_id
 }
 
+// ที่นั่งที่จอง: เชื่อมโยงการจองกับที่นั่งในรอบฉาย
 model BookingSeat {
-  id               String       @id @default(uuid())
-  booking_id       String
-  showtime_seat_id String
-  price            Float
-  created_at       DateTime     @default(now())
-  updated_at       DateTime     @updatedAt
-  booking          Booking      @relation(fields: [booking_id], references: [id], onDelete: Cascade)
-  showtime_seat    ShowtimeSeat @relation(fields: [showtime_seat_id], references: [id], onDelete: Cascade)
+  id               String       @id @default(uuid()) // รหัสเฉพาะ UUID สำหรับที่นั่งที่จอง
+  booking_id       String       // รหัสการจอง
+  showtime_seat_id String       // รหัสที่นั่งในรอบฉาย
+  price            Float        // ราคาที่นั่งนี้
+  created_at       DateTime     @default(now()) // วันที่สร้าง
+  updated_at       DateTime     @updatedAt // วันที่อัปเดตล่าสุด
+  booking          Booking      @relation(fields: [booking_id], references: [id], onDelete: Cascade) // ความสัมพันธ์กับ Booking, ลบเมื่อลบ Booking
+  showtime_seat    ShowtimeSeat @relation(fields: [showtime_seat_id], references: [id], onDelete: Cascade) // ความสัมพันธ์กับ ShowtimeSeat, ลบเมื่อลบ ShowtimeSeat
 
-  @@unique([booking_id, showtime_seat_id])
-  @@index([booking_id])
-  @@index([showtime_seat_id])
+  @@unique([booking_id, showtime_seat_id]) // ป้องกันการซ้ำของคู่ booking_id และ showtime_seat_id
+  @@index([booking_id]) // รองรับการค้นหาด้วย booking_id
+  @@index([showtime_seat_id]) // รองรับการค้นหาด้วย showtime_seat_id
 }
 
+// คูปอง/โปรโมชัน: รองรับส่วนลด 4 ประเภท
 model Coupon {
-  id             String       @id @default(uuid())
-  slug           String       @unique
-  code           String?      @unique
-  translations   Json?
-  discount_type  DiscountType
-  discount_value Float?
-  buy_quantity   Int?
-  get_quantity   Int?
-  gift_type      GiftType?
-  gift_details   Json?
-  status         CouponStatus @default(ACTIVE)
-  image_url      String?
-  start_date     DateTime
-  end_date       DateTime
-  max_discount   Float?
-  min_amount     Float?
-  usage_limit    Int?
-  used_count     Int          @default(0)
-  cinema_id      String?
-  movie_id       String?
-  created_at     DateTime     @default(now())
-  updated_at     DateTime     @updatedAt
-  bookings       Booking[]
-  cinema         Cinema?      @relation(fields: [cinema_id], references: [id])
-  movie          Movie?       @relation(fields: [movie_id], references: [id])
-  users          UserCoupon[]
+  id             String       @id @default(uuid()) // รหัสเฉพาะ UUID สำหรับคูปอง
+  slug           String       @unique // Slug สำหรับ URL
+  code           String?      @unique // รหัสคูปอง (optional)
+  translations   Json?        // การแปลชื่อและคำอธิบาย เช่น { "en": { "name": "", "description": "" }, "th": { ... } }
+  discount_type  DiscountType // ประเภทส่วนลด (FIXED, PERCENTAGE, BUY_X_GET_Y, GIFT)
+  discount_value Float?       // ค่าสส่วนลด (สำหรับ FIXED หรือ PERCENTAGE)
+  buy_quantity   Int?         // จำนวนซื้อ (สำหรับ BUY_X_GET_Y)
+  get_quantity   Int?         // จำนวนแถม (สำหรับ BUY_X_GET_Y)
+  gift_type      GiftType?    // ประเภทของแถม (สำหรับ GIFT)
+  gift_details   Json?        // รายละเอียดของแถม เช่น { "item": "Popcorn", "size": "M" }
+  status         CouponStatus @default(ACTIVE) // สถานะคูปอง (ACTIVE, INACTIVE, EXPIRED)
+  image_url      String?      // URL รูปภาพคูปอง (optional)
+  start_date     DateTime     // วันที่เริ่มใช้งานคูปอง
+  end_date       DateTime     // วันที่สิ้นสุดการใช้งานคูปอง
+  max_discount   Float?       // ส่วนลดสูงสุด (สำหรับ PERCENTAGE)
+  min_amount     Float?       // ยอดขั้นต่ำเพื่อใช้คูปอง
+  usage_limit    Int?         // จำนวนครั้งที่ใช้ได้ทั้งหมด
+  used_count     Int          @default(0) // จำนวนครั้งที่ใช้แล้ว
+  cinema_id      String?      // รหัสโรงภาพยนตร์ (optional)
+  movie_id       String?      // รหัสภาพยนตร์ (optional)
+  created_at     DateTime     @default(now()) // วันที่สร้าง
+  updated_at     DateTime     @updatedAt // วันที่อัปเดตล่าสุด
+  bookings       Booking[]    // การจองที่ใช้คูปองนี้
+  cinema         Cinema?      @relation(fields: [cinema_id], references: [id], onDelete: SetNull) // ความสัมพันธ์กับ Cinema, ตั้ง null เมื่อลบ Cinema
+  movie          Movie?       @relation(fields: [movie_id], references: [id], onDelete: SetNull) // ความสัมพันธ์กับ Movie, ตั้ง null เมื่อลบ Movie
+  users          UserCoupon[] // ผู้ใช้ที่เก็บคูปองนี้
 
-  @@index([slug])
-  @@index([code])
-  @@index([cinema_id])
-  @@index([movie_id])
-  @@index([start_date, end_date])
+  @@index([slug]) // รองรับการค้นหาด้วย slug
+  @@index([code]) // รองรับการค้นหาด้วย code
+  @@index([cinema_id]) // รองรับการค้นหาด้วย cinema_id
+  @@index([movie_id]) // รองรับการค้นหาด้วย movie_id
+  @@index([start_date, end_date]) // รองรับการค้นหาด้วยช่วงวันที่
 }
 
+// ความสัมพันธ์ผู้ใช้-คูปอง: เก็บข้อมูลคูปองที่ผู้ใช้เก็บหรือใช้
 model UserCoupon {
-  id           String    @id @default(uuid())
-  user_id      String
-  coupon_id    String
-  is_collected Boolean   @default(false)
-  collected_at DateTime?
-  is_used      Boolean   @default(false)
-  used_at      DateTime?
-  created_at   DateTime  @default(now())
-  updated_at   DateTime  @updatedAt
-  coupon       Coupon    @relation(fields: [coupon_id], references: [id], onDelete: Cascade)
-  user         User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  id           String    @id @default(uuid()) // รหัสเฉพาะ UUID สำหรับความสัมพันธ์
+  user_id      String    // รหัสผู้ใช้
+  coupon_id    String    // รหัสคูปอง
+  is_collected Boolean   @default(false) // สถานะการเก็บคูปอง
+  collected_at DateTime? // วันที่เก็บคูปอง (optional)
+  is_used      Boolean   @default(false) // สถานะการใช้คูปอง
+  used_at      DateTime? // วันที่ใช้คูปอง (optional)
+  created_at   DateTime  @default(now()) // วันที่สร้าง
+  updated_at   DateTime  @updatedAt // วันที่อัปเดตล่าสุด
+  coupon       Coupon    @relation(fields: [coupon_id], references: [id], onDelete: Cascade) // ความสัมพันธ์กับ Coupon, ลบเมื่อลบ Coupon
+  user         User      @relation(fields: [user_id], references: [id], onDelete: Cascade) // ความสัมพันธ์กับ User, ลบเมื่อลบ User
 
-  @@unique([user_id, coupon_id])
-  @@index([user_id])
-  @@index([coupon_id])
+  @@unique([user_id, coupon_id]) // ป้องกันการซ้ำของคู่ user_id และ coupon_id
+  @@index([user_id]) // รองรับการค้นหาด้วย user_id
+  @@index([coupon_id]) // รองรับการค้นหาด้วย coupon_id
 }
 
+// การชำระเงิน: เก็บข้อมูลการชำระเงิน
 model Payment {
-  id             String        @id @default(uuid())
-  booking_id     String        @unique
-  user_id        String
-  amount         Float
-  payment_method PaymentMethod @default(CREDIT_CARD)
-  status         PaymentStatus @default(PENDING)
-  transaction_id String?
-  created_at     DateTime      @default(now())
-  updated_at     DateTime      @updatedAt
-  booking        Booking       @relation(fields: [booking_id], references: [id], onDelete: Cascade)
-  user           User          @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  id             String        @id @default(uuid()) // รหัสเฉพาะ UUID สำหรับการชำระเงิน
+  booking_id     String        @unique // รหัสการจอง
+  user_id        String        // รหัสผู้ใช้
+  amount         Float         // จำนวนเงิน
+  payment_method PaymentMethod @default(CREDIT_CARD) // วิธีการชำระเงิน (CREDIT_CARD, QR_CODE)
+  status         PaymentStatus @default(PENDING) // สถานะการชำระ (PENDING, COMPLETED, FAILED, REFUNDED)
+  transaction_id String?       // รหัสธุรกรรม (optional)
+  created_at     DateTime      @default(now()) // วันที่สร้าง
+  updated_at     DateTime      @updatedAt // วันที่อัปเดตล่าสุด
+  booking        Booking       @relation(fields: [booking_id], references: [id], onDelete: Cascade) // ความสัมพันธ์กับ Booking, ลบเมื่อลบ Booking
+  user           User          @relation(fields: [user_id], references: [id], onDelete: Cascade) // ความสัมพันธ์กับ User, ลบเมื่อลบ User
 
-  @@index([booking_id])
-  @@index([user_id])
-  @@index([transaction_id])
+  @@index([booking_id]) // รองรับการค้นหาด้วย booking_id
+  @@index([user_id]) // รองรับการค้นหาด้วย user_id
+  @@index([transaction_id]) // รองรับการค้นหาด้วย transaction_id
 }
 
+// Enum สำหรับสถานะภาพยนตร์
 enum MovieStatus {
-  COMING_SOON
-  NOW_SHOWING
-  ENDED
+  COMING_SOON // เร็ว ๆ นี้
+  NOW_SHOWING // กำลังฉาย
+  ENDED       // สิ้นสุดการฉาย
 }
 
+// Enum สำหรับสถานะที่นั่ง
 enum SeatStatus {
   AVAILABLE
   RESERVED
@@ -377,46 +401,53 @@ enum SeatStatus {
   LOCKED
 }
 
+// Enum สำหรับสถานะการจอง
 enum BookingStatus {
-  PENDING
-  RESERVED
-  PAID
-  CANCELLED
-  EXPIRED
+  PENDING   // รอชำระ
+  RESERVED  // ล็อก
+  PAID      // ชำระแล้ว
+  CANCELLED // ยกเลิก
+  EXPIRED   // หมดอายุ
 }
 
+// Enum สำหรับบทบาทผู้ใช้
 enum UserRole {
-  ADMIN
-  CUSTOMER
+  ADMIN    // ผู้ดูแลระบบ
+  CUSTOMER // ลูกค้า
 }
 
+// Enum สำหรับสถานะคูปอง
 enum CouponStatus {
-  ACTIVE
-  INACTIVE
-  EXPIRED
+  ACTIVE   // ใช้งานได้
+  INACTIVE // ปิดใช้งาน
+  EXPIRED  // หมดอายุ
 }
 
+// Enum สำหรับประเภทส่วนลด
 enum DiscountType {
-  FIXED
-  PERCENTAGE
-  BUY_X_GET_Y
-  GIFT
+  FIXED        // ส่วนลดเงินสด
+  PERCENTAGE   // ส่วนลดเปอร์เซ็นต์
+  BUY_X_GET_Y  // ซื้อ X แถม Y
+  GIFT         // ของแถม
 }
 
+// Enum สำหรับประเภทของแถม
 enum GiftType {
-  POPCORN
-  COUPON_CODE
-  OTHER
+  POPCORN     // ป็อปคอร์น
+  COUPON_CODE // โค้ดส่วนลด
+  OTHER       // อื่น ๆ
 }
 
+// Enum สำหรับวิธีชำระเงิน
 enum PaymentMethod {
-  CREDIT_CARD
-  QR_CODE
+  CREDIT_CARD // บัตรเครดิต
+  QR_CODE     // QR Code
 }
 
+// Enum สำหรับสถานะการชำระ
 enum PaymentStatus {
-  PENDING
-  COMPLETED
-  FAILED
-  REFUNDED
+  PENDING   // รอการชำระ
+  COMPLETED // ชำระสำเร็จ
+  FAILED    // ชำระล้มเหลว
+  REFUNDED  // คืนเงิน
 }

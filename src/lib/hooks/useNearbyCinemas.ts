@@ -1,7 +1,7 @@
 import {
-  CinemaType,
   CinemaWithDistance,
   CinemaByProvince,
+  CinemaDTO,
 } from "@/types/cinema";
 import { useEffect, useState, useCallback } from "react";
 import { userService } from "@/config/userServices";
@@ -68,9 +68,9 @@ export const useNearbyCinemas = (
 
         const res = (await userService.GET_CINEMAS()) as {
           count: number;
-          data: CinemaType[];
+          data: CinemaDTO[];
         };
-        const data: CinemaType[] = res.data;
+        const data: CinemaDTO[] = res.data;
 
         const cinemasWithDistance: CinemaWithDistance[] = data.map((c) => {
           let distance: number | null = null;
@@ -94,9 +94,10 @@ export const useNearbyCinemas = (
           const province = getProvinceName(c.address || "");
           const distanceFixed =
             distance !== null ? Number(distance.toFixed(1)) : null;
-
           return {
             ...c,
+            slug: c.slug,
+            address: c.address ?? "",
             distance,
             distance_text:
               distance !== null ? `${distanceFixed} km` : undefined,

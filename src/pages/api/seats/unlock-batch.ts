@@ -1,6 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { sql } from "@/lib/db";
 import { ably } from "@/lib/ablyServer";
+import { SeatStatus } from "@/generated/prisma";
+import { PrismaClient } from "@/generated/prisma";
+
+const prisma = new PrismaClient();
 
 type Data = { success: boolean; message?: string; unlockedCount?: number };
 
@@ -23,61 +26,66 @@ export default async function handler(
   }
 
   try {
-    if (seats.length === 0) {
-      return res.status(400).json({
-        success: false,
-        message: "No seats provided",
-      });
-    }
+    // ---------------- UNLOCK SEATS ----------------
     const results = await Promise.all(
-      seats.map(
-        (seatId: string) =>
-          sql`
-          UPDATE showtime_seat
-          SET status = 'AVAILABLE', locked_by = NULL, locked_at = NULL
-          WHERE id = ${seatId}
-          RETURNING id, showtime_id;
-        `
-      )
+      seats.map(async (seatId: string) => {
+        try {
+          return await prisma.showtimeSeat.update({
+            where: { id: seatId },
+            data: {
+              status: SeatStatus.AVAILABLE,
+              locked_by_user_id: null,
+              locked_until: null,
+            },
+            select: { id: true, showtime_id: true },
+          });
+        } catch (err) {
+          console.warn(`Seat ${seatId} cannot be unlocked:`, err);
+          return null;
+        }
+      })
     );
-    const result = results.flat().filter((r) => r.id);
-    if (!result.length) {
+
+    const unlockedSeats = results.filter((r) => r !== null) as {
+      id: string;
+      showtime_id: string;
+    }[];
+
+    if (!unlockedSeats.length) {
       return res.status(400).json({
         success: false,
-        message: "No seats found",
+        message: "No seats were unlocked",
       });
     }
 
-    const showtimeGroups = result.reduce(
+    // ---------------- BROADCAST ABLY ----------------
+    const showtimeGroups = unlockedSeats.reduce(
       (acc, seat) => {
-        if (!acc[seat.showtime_id]) {
-          acc[seat.showtime_id] = [];
-        }
+        if (!acc[seat.showtime_id]) acc[seat.showtime_id] = [];
         acc[seat.showtime_id].push(seat.id);
         return acc;
       },
       {} as Record<string, string[]>
     );
 
-    const broadcastPromises = Object.entries(showtimeGroups).map(
-      ([showtimeId, seatIds]) =>
-        Promise.all(
-          seatIds.map((seatId: string) =>
-            ably.channels.get(`showtime:${showtimeId}`).publish("update", {
-              seatId,
-              status: "AVAILABLE",
-              lockedBy: null,
-              locked_at: null,
-              lockExpire: null,
-            })
-          )
-        )
+    // publish แบบ type-safe server-side (ไม่มี callback)
+    Object.entries(showtimeGroups).forEach(([showtimeId, seatIds]) => {
+      const channel = ably.channels.get(`showtime:${showtimeId}`);
+      seatIds.forEach((seatId) => {
+        channel.publish("update", {
+          seatId,
+          status: SeatStatus.AVAILABLE,
+          locked_by_user_id: null,
+          locked_until: null,
+        });
+      });
+    });
+
+    console.log(
+      `✅ Unlocked and broadcasted ${unlockedSeats.length} seats successfully`
     );
 
-    await Promise.all(broadcastPromises);
-    console.log("✅ Ably broadcast completed for", result.length, "seats");
-
-    return res.json({ success: true, unlockedCount: result.length });
+    return res.json({ success: true, unlockedCount: unlockedSeats.length });
   } catch (err) {
     console.error("Unlock batch error:", err);
     return res.status(500).json({

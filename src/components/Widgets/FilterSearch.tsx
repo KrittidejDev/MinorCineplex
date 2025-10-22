@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { SearchLight, ExpandDownLight, DateTodayLight } from "../Icons/Icons";
 import { Input } from "../ui/input";
-import axios from "axios";
 
 import {
   Select,

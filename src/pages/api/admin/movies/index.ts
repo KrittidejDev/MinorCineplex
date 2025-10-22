@@ -32,41 +32,45 @@ export default async function handler(
 
       type GenreInput = string | { id: string; name?: string; slug?: string };
 
-const genreArray: GenreInput[] = Array.isArray(genre) ? genre : genre ? [genre] : [];
+      const genreArray: GenreInput[] = Array.isArray(genre)
+        ? genre
+        : genre
+          ? [genre]
+          : [];
 
-const genrePayload = await Promise.all(
-  genreArray.map(async (g: GenreInput) => {
-    if (typeof g === "string") {
-      const slug = g.toLowerCase().replace(/\s+/g, "-");
+      const genrePayload = await Promise.all(
+        genreArray.map(async (g: GenreInput) => {
+          if (typeof g === "string") {
+            const slug = g.toLowerCase().replace(/\s+/g, "-");
 
-      const dbGenre = await prisma.genre.upsert({
-        where: { slug },
-        update: {},
-        create: { name: g, slug },
-      });
-      return { id: dbGenre.id, name: dbGenre.name, slug: dbGenre.slug };
-    } else {
-      if (!g.id) throw new Error("Genre object ต้องมี id");
+            const dbGenre = await prisma.genre.upsert({
+              where: { slug },
+              update: {},
+              create: { name: g, slug },
+            });
+            return { id: dbGenre.id, name: dbGenre.name, slug: dbGenre.slug };
+          } else {
+            if (!g.id) throw new Error("Genre object ต้องมี id");
 
-      return { id: g.id, name: g.name || g.id, slug: g.slug || g.id };
-    }
-  })
-);
+            return { id: g.id, name: g.name || g.id, slug: g.slug || g.id };
+          }
+        })
+      );
 
-const moviePayload: Omit<MovieDTO, "id"> = {
-  title,
-  translations: { th: { title, description } },
-  duration_min: Number(duration),
-  rating: rating ? String(rating) : undefined,
-  trailer_url: trailer || undefined,
-  poster_url: poster_url || undefined,
-  status: "COMING_SOON",
-  slug: "",
-  genres: genrePayload.map((g) => ({ genre: g })),
-  actors: [],
-  directors: [],
-  languages: [],
-};
+      const moviePayload: Omit<MovieDTO, "id"> = {
+        title,
+        translations: { th: { title, description } },
+        duration_min: Number(duration),
+        rating: rating ? String(rating) : undefined,
+        trailer_url: trailer || undefined,
+        poster_url: poster_url || undefined,
+        status: "COMING_SOON",
+        slug: "",
+        genres: genrePayload.map((g) => ({ genre: g })),
+        actors: [],
+        directors: [],
+        languages: [],
+      };
 
       console.log(
         "Payload sent to moviesService.createMovieForAdmin:",

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { SearchLight, ExpandDownLight, DateTodayLight } from "../Icons/Icons";
-import { Input } from "../ui/input";
+import { SearchLight, ExpandDownLight } from "../Icons/Icons";
 
 import {
   Select,
@@ -82,9 +81,9 @@ const FilterSearch: React.FC<FilterSearchProps> = ({
 
   return (
     <div className={`bg-gray-g63f rounded-lg p-4 ${className}`}>
-      <div className="flex flex-col lg:flex-row gap-10 items-center max-w-xs mx-auto lg:max-w-none lg:mx-0">
+      <div className="flex flex-col lg:flex-row gap-5 items-center max-w-xs mx-auto lg:max-w-none lg:mx-0">
         {/* Movie Dropdown */}
-        <div className="w-full lg:max-w-70">
+        <div className="w-full lg:min-w-70">
           <Select
             value={
               query?.title
@@ -128,8 +127,8 @@ const FilterSearch: React.FC<FilterSearchProps> = ({
         </div>
 
         {/* Language + Genre */}
-        <div className="flex gap-2 lg:contents">
-          <div className="w-39 lg:max-w-70">
+        <div className="flex gap-5 max-w-70">
+          <div className="w-39 lg:w-40">
             <Select
               value={query?.language || ""}
               onValueChange={(value) => handleInputChange("language", value)}

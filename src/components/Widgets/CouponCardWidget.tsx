@@ -41,7 +41,7 @@ const CouponWidget = () => {
 
   return (
     <div className="w-dvw flex justify-center items-center py-20 px-4">
-      <div className="flex flex-col gap-10 max-w-[1200px]">
+      <div className="flex flex-col gap-10 max-w-[1200px] w-full">
         {/* Header */}
         <div className="flex justify-between items-center font-bold text-2xl py-1">
           <h2 className="headline-2">Special coupons</h2>

@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import { Button } from '../ui/button'
 import AddRoundLight from '../Icons/AddRoundLight'
 import TableCard from '../Cards/TableCard'
@@ -95,15 +95,20 @@ function AdminCouponWidget() {
     })) as Record<string, unknown>[]
   }, [filteredCoupons])
 
-  // Handle Edit
-  const handleEdit = (couponId: string) => {
-    console.log('Edit coupon:', couponId)
+  // Handle Edit - ใช้ useCallback เพื่อ memoize
+  const handleEdit = useCallback((couponId: string) => {
+    console.log('🔧 Edit coupon ID:', couponId)
+    if (!couponId) {
+      console.error('❌ No coupon ID provided')
+      alert('❌ ไม่พบ ID ของคูปอง')
+      return
+    }
     setSelectedCouponId(couponId)
     setIsShowEditModal(true)
-  }
+  }, [])
 
-  // Handle Delete
-  const handleDelete = async (couponId: string) => {
+  // Handle Delete - ใช้ useCallback เพื่อ memoize
+  const handleDelete = useCallback(async (couponId: string) => {
     const coupon = coupons.find((c) => c.id === couponId)
     const couponName = coupon?.translations?.en?.name || coupon?.code || 'this coupon'
 
@@ -129,7 +134,7 @@ function AdminCouponWidget() {
         alert('❌ Failed to delete coupon')
       }
     }
-  }
+  }, [coupons])
 
   // Handle Close Edit Modal
   const handleCloseEditModal = () => {
@@ -153,7 +158,7 @@ function AdminCouponWidget() {
       onEdit: () => handleEdit(coupon.id),
       onDelete: () => handleDelete(coupon.id),
     }))
-  }, [filteredCoupons])
+  }, [filteredCoupons, handleEdit, handleDelete])
 
   if (loading) {
     return (
@@ -230,12 +235,20 @@ function AdminCouponWidget() {
       />
 
       {/* Edit Modal */}
-      {selectedCouponId && (
+      {isShowEditModal && selectedCouponId && (
         <AdminEditNewCouponForm
           isShowModal={isShowEditModal}
           onClose={handleCloseEditModal}
           couponId={selectedCouponId}
         />
+      )}
+      
+      {/* Debug Info */}
+      {process.env.NODE_ENV === 'development' && (
+        <div className="fixed bottom-4 right-4 bg-black text-white p-2 text-xs rounded shadow-lg">
+          <div>Edit Modal: {isShowEditModal ? '✅' : '❌'}</div>
+          <div>Selected ID: {selectedCouponId || 'none'}</div>
+        </div>
       )}
     </>
   )

@@ -50,25 +50,23 @@ function AdminEditNewCouponForm({
   // ✅ โหลดข้อมูลคูปองเมื่อเปิด modal
   useEffect(() => {
     const fetchCouponData = async () => {
-      console.log('🔍 useEffect triggered - couponId:', couponId, 'isShowModal:', isShowModal)
+      
       
       if (!couponId || !isShowModal) {
-        console.log('❌ Skip fetch - Missing couponId or modal closed')
+       
         return
       }
 
-      console.log('🔄 Fetching coupon data for ID:', couponId)
-      console.log('📡 Request URL:', `/api/coupons/${couponId}`)
+    
       setFetching(true)
       
       try {
         const res = await axios.get(`/api/coupons/${couponId}`)
-        console.log('✅ API Response status:', res.status)
-        console.log('✅ Fetched coupon data:', res.data)
+     
         
         // ✅ เช็คว่า response มี wrapper หรือไม่
         const coupon = res.data.coupon || res.data
-        console.log('📦 Extracted coupon:', coupon)
+       
 
         // แปลง date เป็นรูปแบบที่ input date รับได้ (YYYY-MM-DD)
         const formatDate = (date: string | Date) => {
@@ -99,7 +97,7 @@ function AdminEditNewCouponForm({
           image_url: coupon.image_url ?? null,
         }
 
-        console.log('📝 Setting form data:', formattedData)
+       
         setFormData(formattedData)
 
         // ถ้ามีรูปภาพอยู่แล้ว ให้แสดง preview
@@ -309,7 +307,7 @@ function AdminEditNewCouponForm({
         }
       }
 
-      console.log('📤 Updating payload:', JSON.stringify(payload, null, 2))
+      
 
       // ✅ ใช้ PUT หรือ PATCH สำหรับการ update
       const res = await axios.put(`/api/coupons/${couponId}`, payload)

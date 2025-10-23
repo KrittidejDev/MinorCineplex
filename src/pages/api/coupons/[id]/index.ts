@@ -1,6 +1,6 @@
 // api/coupons/[id]/index.ts
 import type { NextApiRequest, NextApiResponse } from "next";
-import { getCouponById, updateCouponById } from "@/services/couponService";
+import { getCouponById, updateCouponById, deleteCouponById } from "@/services/couponService";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import { prisma } from "@/lib/prisma";
@@ -36,6 +36,25 @@ export default async function handler(
       }
 
       return res.status(200).json({ coupon, is_collected });
+    }
+
+    if (req.method === "DELETE") {
+      // ✅ ต้อง login + เป็น admin
+      const session = await getServerSession(req, res, authOptions);
+      
+      if (!session?.user) {
+        return res.status(401).json({ error: "Unauthorized" });
+      }
+      
+      if (session.user.role !== "ADMIN") {
+        return res.status(403).json({ error: "Forbidden" });
+      }
+      
+      await deleteCouponById(id);
+      return res.status(200).json({ 
+        success: true, 
+        message: "Coupon deleted successfully" 
+      });
     }
 
     if (req.method === "PUT") {
@@ -83,6 +102,7 @@ export default async function handler(
 
       return res.status(200).json({ coupon: updatedCoupon });
     }
+    
 
     return res.status(405).json({ error: "Method not allowed" });
   } catch (error: unknown) {
@@ -92,4 +112,5 @@ export default async function handler(
     }
     return res.status(500).json({ error: "Server Error" });
   }
+  
 }

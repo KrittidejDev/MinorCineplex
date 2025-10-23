@@ -93,4 +93,16 @@ export const moviesService = {
       throw new Error("ไม่สามารถสร้างภาพยนตร์ได้");
     }
   },
+  async deleteMovieForAdmin(id: string): Promise<boolean> {
+    try {
+      const result = await moviesRepo.deleteMovieForAdmin(id);
+      if (!result) {
+        throw new Error("ลบภาพยนตร์ไม่สำเร็จ");
+      }
+      return true;
+    } catch (error) {
+      console.error("Error deleting movie:", error);
+      throw new Error("ไม่สามารถลบภาพยนตร์ได้");
+    }
+  },
 };

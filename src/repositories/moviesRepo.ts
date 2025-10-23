@@ -370,4 +370,31 @@ export const moviesRepo = {
       directors: createdMovie.directors.map((d) => ({ director: d.director })),
     };
   },
+  async deleteMovieForAdmin(id: string): Promise<boolean> {
+  try {
+
+    await prisma.movieGenre.deleteMany({
+      where: { movie_id: id },
+    });
+    await prisma.movieLanguage.deleteMany({
+      where: { movie_id: id },
+    });
+    await prisma.movieActor.deleteMany({
+      where: { movie_id: id },
+    });
+    await prisma.movieDirector.deleteMany({
+      where: { movie_id: id },
+    });
+
+
+    await prisma.movie.delete({
+      where: { id },
+    });
+
+    return true;
+  } catch (error) {
+    console.error("Error deleting movie:", error);
+    return false;
+  }
+},
 };

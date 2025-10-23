@@ -75,21 +75,21 @@ export default function TableCard({
                   <td className="text-blue-bbee px-[30px] py-[15px] text-right">
                     <div className="flex justify-end gap-2">
                       <button
-                        className="p-2 bg-green-g372 hover:bg-green-g372/90 rounded-full text-white"
+                        className="p-2 bg-green-g372 cursor-pointer hover:bg-green-g372/90 rounded-full text-white"
                         onClick={actions[index]?.onView}
                         title="View Details"
                       >
                         <Eye />
                       </button>
                       <button
-                        className="p-2 bg-blue-bbee hover:bg-blue-bbee/90 rounded-full text-white"
+                        className="p-2 bg-blue-bbee cursor-pointer hover:bg-blue-bbee/90 rounded-full text-white"
                         onClick={actions[index]?.onEdit}
                         title="Edit"
                       >
                         <EditLight />
                       </button>
                       <button
-                        className="p-2 bg-red-r64b hover:bg-red-r64b/90 rounded-full text-white"
+                        className="p-2 bg-red-r64b cursor-pointer hover:bg-red-r64b/90 rounded-full text-white"
                         onClick={actions[index]?.onDelete}
                         title="Delete"
                       >

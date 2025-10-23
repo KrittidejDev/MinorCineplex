@@ -662,7 +662,7 @@ function AdminEditNewCouponForm({
               )}
             </div>
 
-            <Button type="submit" disabled={loading || fetching}>
+            <Button className='cursor-pointer' type="submit" disabled={loading || fetching}>
               {loading ? 'Updating...' : 'Update Coupon'}
             </Button>
           </form>

@@ -579,7 +579,7 @@ function AdminCreateNewCouponForm({
             )}
           </div>
 
-          <Button type="submit" disabled={loading}>
+          <Button className='cursor-pointer' type="submit" disabled={loading}>
             {loading ? 'Saving...' : 'Save Coupon'}
           </Button>
         </form>

@@ -102,7 +102,7 @@ function AdminMovieWidget() {
       if (!confirm("Are you sure to delete this movie?")) return;
 
       try {
-        await fetch(`/api/movies/${movie.id}`, { method: "DELETE" });
+        await fetch(`/api/admin/movies/${movie.id}`, { method: "DELETE" });
         fetchMovies();
       } catch (err) {
         console.error(err);

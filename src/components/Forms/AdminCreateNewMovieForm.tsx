@@ -101,7 +101,7 @@ function AdminCreateNewMovieForm({
     const payload = {
       ...formData,
       duration: Number(formData.duration),
-      genre: selectedGenre.join(","),
+      genre: selectedGenre,
       rating: ratingValue,
       poster_url: formData.poster_url,
     };

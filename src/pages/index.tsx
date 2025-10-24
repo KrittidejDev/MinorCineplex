@@ -58,8 +58,13 @@ export default function Home() {
       if (filters) {
         if (filters.title && filters.title !== "all-movies")
           searchParamsObj.append("title", filters.title);
-        if (filters.genre && filters.genre !== "all-genres")
+        if (
+          filters.genre &&
+          filters.genre.length > 0 &&
+          !filters.genre.includes("all-genres")
+        ) {
           searchParamsObj.append("genre", filters.genre);
+        }
         if (filters.language && filters.language !== "all-languages")
           searchParamsObj.append("language", filters.language);
         if (filters.release_date)
@@ -79,19 +84,18 @@ export default function Home() {
   };
 
   useEffect(() => {
-    const filters: FilterData = {
-      title: searchParams.get("title") || "",
-      genre: searchParams.get("genre") || "",
-      language: searchParams.get("language") || "",
-      release_date: searchParams.get("release_date") || "",
-      status:
-        (searchParams.get("status") as MovieStatus) || MovieStatus.NOW_SHOWING,
-    };
+  const filters: FilterData = {
+    title: searchParams.get("title") || "",
+    genre: searchParams.get("genre") || "",
+    language: searchParams.get("language") || "",
+    release_date: searchParams.get("release_date") || "",
+    status: (searchParams.get("status") as MovieStatus) || MovieStatus.NOW_SHOWING,
+  };
 
-    const hasFilters = Object.values(filters).some((v) => v !== "");
-    setQuery(filters);
-    fetchAllMovies(hasFilters ? filters : undefined);
-  }, [searchParams]);
+  const hasFilters = Object.values(filters).some((v) => v !== "");
+  setQuery(filters);
+  fetchAllMovies(hasFilters ? filters : undefined);
+}, [searchParams]);
 
   useEffect(() => {
     const lastShown = localStorage.getItem("curtain_last_shown");

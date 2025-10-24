@@ -57,7 +57,18 @@ const FilterSearch: React.FC<FilterSearchProps> = ({
 
   const fetchGenres = async () => {
     const response = await userService.GET_FILTER_GENRE();
-    setGenreOptions(response as FilterOption[]);
+
+    const genresSet = new Set<string>();
+
+    (response as FilterOption[]).forEach((g) => {
+      g.name.split(",").forEach((genre) => {
+        if (genre.trim()) genresSet.add(genre.trim());
+      });
+    });
+
+    const uniqueGenres = Array.from(genresSet).map((name) => ({ name }));
+
+    setGenreOptions(uniqueGenres);
   };
 
   useEffect(() => {

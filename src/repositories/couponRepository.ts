@@ -72,3 +72,16 @@ export const update = async (id: string, data: Partial<CreateCouponInput>) => {
     },
   });
 };
+
+export const deleteById = async (id: string) => {
+  // ตรวจสอบว่ามีคูปองนี้อยู่จริงหรือไม่
+  const coupon = await prisma.coupon.findUnique({ where: { id } });
+  if (!coupon) {
+    throw new Error("Coupon not found");
+  }
+
+  // ลบคูปอง (ถ้ามี user_coupon ที่เชื่อมอยู่ อาจต้องลบก่อน หรือใช้ cascade delete)
+  return prisma.coupon.delete({
+    where: { id },
+  });
+};

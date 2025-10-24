@@ -39,3 +39,7 @@ export const getUserCouponByUser = async (userId: string, couponId: string) => {
 export const collectCouponByUser = async (userId: string, couponId: string) => {
   return userCouponRepo.collectCoupon(userId, couponId);
 };
+
+export const deleteCouponById = async (id: string) => {
+  return couponRepo.deleteById(id);
+};

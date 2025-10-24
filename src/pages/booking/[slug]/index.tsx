@@ -126,8 +126,8 @@ const BookingSeat: React.FC = () => {
       const res = (await axios.get(`/api/coupons/collected`, {
         signal: ac.signal,
       })) as CouponsData;
-      setCoupons(res?.coupons || []);
-      console.log("Coupons fetched:", res?.coupons);
+      setCoupons(res?.data.coupons || []);
+      console.log("Coupons fetched:", res);
     } catch (err) {
       if (!axios.isCancel(err)) {
         console.error("Fetch coupons error:", err);

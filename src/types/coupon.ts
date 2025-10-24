@@ -16,6 +16,7 @@ export interface CouponCardData {
   discount_type: "FIXED" | "PERCENTAGE" | "BUY_X_GET_Y" | "GIFT";
   buy_quantity?: number;
   get_quantity?: number;
+  min_amount?: number ;
   gift_type?: "POPCORN" | "COUPON_CODE" | "OTHER";
   gift_details?: GiftDetails;
   expiresAt?: string | null;
@@ -27,7 +28,9 @@ export interface CouponCardData {
 
 // Response wrapper
 export interface CouponsData {
-  coupons: CouponCardData[];
+  data: {
+    coupons: CouponCardData[];
+  };
 }
 
 // API Response type

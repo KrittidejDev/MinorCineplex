@@ -3,7 +3,6 @@ import React, {
   useEffect,
   useRef,
   useState,
-  useCallback,
   useMemo,
 } from "react";
 import { useRouter } from "next/router";
@@ -24,6 +23,7 @@ import { toast } from "react-toastify";
 import { useSearchParams } from "next/navigation";
 import axios, { AxiosError } from "axios";
 import ModalLogin from "@/components/Widgets/ModalLogin";
+import Ably from "ably";
 
 const BookingSeat: React.FC = () => {
   const router = useRouter();
@@ -32,7 +32,7 @@ const BookingSeat: React.FC = () => {
   const { data: session } = useSession();
 
   const [step, setStep] = useState<"1" | "2">("1");
-  const [bookingInfo, setBookingInfo] = useState<BookingInfo>();
+  const [bookingInfo, setBookingInfo] = useState<BookingInfo | null>(null);
   const [selectedSeats, setSelectedSeats] = useState<SelectedSeat[]>([]);
   const [countdown, setCountdown] = useState<number>(5 * 60);
   const [coupons, setCoupons] = useState<CouponCardData[]>([]);
@@ -43,29 +43,29 @@ const BookingSeat: React.FC = () => {
   const [paymentMethod, setPaymentMethod] = useState<
     "credit_card" | "qr_code" | undefined
   >(undefined);
-  const [_isShowModal, _setIsShowmodal] = useState<boolean>(false);
-  const [_renderModal, _setRenderModal] = useState<ReactElement | null>(null);
+  const [isShowModal, setIsShowModal] = useState<boolean>(false);
+  const [renderModal, setRenderModal] = useState<ReactElement | null>(null);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const paymentRef = useRef<PaymentFormHandles | null>(null);
   const countdownActive = useRef(false);
   const isUnlocking = useRef(false);
   const isNavigating = useRef(false);
-  const countdownInterval = useRef<number | null>(null);
+  const countdownInterval = useRef<NodeJS.Timeout | null>(null);
   const paymentSuccessful = useRef(false);
+  const ablyRef = useRef<Ably.Realtime | null>(null);
 
   const totalPrice = selectedSeats.reduce(
     (sum, seat) => sum + (seat.price || 0),
     0
   );
-  const totalPriceInSatang = totalPrice * 100; // แปลงเป็นสตางค์
+  const totalPriceInSatang = totalPrice * 100;
 
-  // ฟังก์ชันสร้าง public_id ในรูปแบบ booking-xxxxxxxxxx (17 ตัวอักษร)
   const generatePublicId = (): string => {
-    const randomStr = Math.random().toString(36).substr(2, 10); // สตริงสุ่ม 10 ตัวอักษร
-    return `booking-${randomStr}`;
+    return `booking-${Math.random().toString(36).slice(2, 12)}`;
   };
 
   const handleLogin = async (value: { email: string; password: string }) => {
@@ -77,62 +77,83 @@ const BookingSeat: React.FC = () => {
       });
       if (result?.ok) {
         setShowLoginModal(false);
-        router.push(`/booking/${id}`);
         toast.success("เข้าสู่ระบบสำเร็จ");
       } else {
         toast.error("เข้าสู่ระบบล้มเหลว");
-        setShowLoginModal(false);
       }
-    } catch (error: unknown) {
-      if (error instanceof AxiosError) {
-        console.log("Login failed:", error);
-      }
+    } catch (error) {
+      console.error("Login error:", error);
+      toast.error("เกิดข้อผิดพลาดในการเข้าสู่ระบบ");
     }
   };
 
   const fetchBookingData = async () => {
-    if (!id) return;
+    if (!id || typeof id !== "string") {
+      console.error("Invalid showtime ID:", id);
+      setError("รหัสการแสดงไม่ถูกต้อง");
+      setIsLoading(false);
+      return;
+    }
     const ac = new AbortController();
     try {
       const res = await axios.get(`/api/booking/showtimes/${id}`, {
         signal: ac.signal,
       });
+      if (!res.data) throw new Error("No data returned");
       setBookingInfo(res.data as BookingInfo);
-      setIsLoading(false);
+      setError(null);
+      console.log("Booking data fetched:", res.data);
     } catch (err) {
-      if (!axios.isCancel(err))
-        console.error("Failed to fetch booking info:", err);
+      if (!axios.isCancel(err)) {
+        console.error("Fetch booking error:", err);
+        const message =
+          err instanceof AxiosError && err.response?.data?.error
+            ? err.response.data.error
+            : "ไม่สามารถโหลดข้อมูลการจองได้";
+        setError(message);
+        toast.error(message);
+      }
+    } finally {
       setIsLoading(false);
     }
-    return () => {
-      ac.abort();
-    };
+    return () => ac.abort();
   };
 
   const fetchCouponData = async () => {
     if (!session?.user?.id) return;
+    const ac = new AbortController();
     try {
-      const res = (await axios.get(`/api/coupons/collected`)) as CouponsData;
+      const res = (await axios.get(`/api/coupons/collected`, {
+        signal: ac.signal,
+      })) as CouponsData;
       setCoupons(res?.coupons || []);
+      console.log("Coupons fetched:", res?.coupons);
     } catch (err) {
-      if (!axios.isCancel(err)) console.error("Failed to fetch coupons:", err);
+      if (!axios.isCancel(err)) {
+        console.error("Fetch coupons error:", err);
+        toast.error("ไม่สามารถโหลดคูปองได้");
+      }
     }
+    return () => ac.abort();
   };
 
-  useEffect(() => {
-    fetchBookingData();
-    fetchCouponData();
-  }, [id, session?.user?.id]);
-
-  const releaseSeatsAsync = async () => {
+  const releaseSeatsAsync = async (showAlert = false) => {
     if (
       isUnlocking.current ||
-      selectedSeats.length === 0 ||
+      !selectedSeats.length ||
       paymentSuccessful.current
     )
       return;
     isUnlocking.current = true;
     try {
+      const invalidSeats = selectedSeats.filter(
+        (seat) => !seat.id || typeof seat.id !== "string"
+      );
+      if (invalidSeats.length) {
+        throw new Error(
+          `Invalid seat IDs: ${invalidSeats.map((s) => s.id).join(", ")}`
+        );
+      }
       await fetch("/api/seats/unlock-batch", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -140,62 +161,13 @@ const BookingSeat: React.FC = () => {
       });
       setSelectedSeats([]);
       setStep("1");
-    } catch (err) {
-      console.error("❌ Failed to unlock seats:", err);
-    } finally {
-      isUnlocking.current = false;
-    }
-  };
-
-  const releaseSeatsSync = () => {
-    if (
-      isUnlocking.current ||
-      selectedSeats.length === 0 ||
-      paymentSuccessful.current
-    )
-      return;
-    isUnlocking.current = true;
-    const seatIds = selectedSeats.map((seat) => seat.id);
-    try {
-      const payload = JSON.stringify({ seats: seatIds });
-      const beaconUrl = `${window.location.origin}/api/seats/unlock-batch`;
-      const beaconSent = navigator.sendBeacon(
-        beaconUrl,
-        new Blob([payload], { type: "application/json" })
-      );
-      if (!beaconSent) {
-        try {
-          const xhr = new XMLHttpRequest();
-          xhr.open("POST", "/api/seats/unlock-batch", false);
-          xhr.setRequestHeader("Content-Type", "application/json");
-          xhr.send(payload);
-        } catch (xhrErr) {
-          console.error("❌ XHR failed:", xhrErr);
-        }
-      }
-    } catch (err) {
-      console.error("❌ Failed to unlock seats:", err);
-    } finally {
-      isUnlocking.current = false;
-    }
-  };
-
-  const releaseSeats = async (showAlert = false) => {
-    if (isUnlocking.current || paymentSuccessful.current) return;
-    isUnlocking.current = true;
-    try {
-      await Promise.all(
-        selectedSeats.map((seat) => userService.PATCH_UNLOCK_SEAT(seat.id))
-      );
-      setSelectedSeats([]);
-      setStep("1");
       if (showAlert) {
-        toast.error(
-          "เวลาชำระเงินหมด เก้าอี้ถูกปลดล็อกแล้ว กรุณาเลือกเก้าอี้ใหม่"
-        );
+        toast.error("เวลาการจองหมด กรุณาเลือกที่นั่งใหม่");
       }
+      console.log("Seats unlocked successfully");
     } catch (err) {
-      console.error(err);
+      console.error("Unlock seats error:", err);
+      toast.error("ไม่สามารถปลดล็อกที่นั่งได้");
     } finally {
       isUnlocking.current = false;
     }
@@ -206,69 +178,126 @@ const BookingSeat: React.FC = () => {
       setShowLoginModal(true);
       return;
     }
-    if (!selectedSeats.length) return;
-    const userId = session?.user?.id;
+    if (!selectedSeats.length) {
+      toast.error("กรุณาเลือกที่นั่ง");
+      return;
+    }
     try {
+      const invalidSeats = selectedSeats.filter(
+        (seat) => !seat.id || typeof seat.id !== "string"
+      );
+      if (invalidSeats.length) {
+        throw new Error(
+          `Invalid seat IDs: ${invalidSeats.map((s) => s.id).join(", ")}`
+        );
+      }
       await Promise.all(
         selectedSeats.map((seat) =>
-          userService.POST_LOCK_SEAT(seat.id, userId || "guest")
+          userService.POST_LOCK_SEAT(seat.id, session.user.id)
         )
       );
       setStep("2");
       setCountdown(5 * 60);
+      console.log("Seats locked successfully");
     } catch (err) {
-      console.error(err);
-      toast.error("ล็อกเก้าอี้ไม่สำเร็จ");
+      console.error("Lock seats error:", err);
+      toast.error("ล็อกที่นั่งไม่สำเร็จ");
+      setSelectedSeats([]);
+      setStep("1");
     }
   };
 
-  const handlePaymentClick = () => {
-    if (totalPriceInSatang < 2000) {
-      toast.error("ยอดรวมต้องอย่างน้อย 20 บาท");
-      return;
+  const checkSeatLock = async (): Promise<boolean> => {
+    if (!session?.user?.id || !selectedSeats.length) {
+      toast.error("กรุณาเข้าสู่ระบบหรือเลือกที่นั่ง");
+      setStep("1");
+      return false;
     }
-    _setRenderModal(
-      <div className="p-6 bg-gray-g63f flex flex-col items-center rounded-2xl gap-y-4">
-        <div className="text-f-20 text-white">ยืนยันการจอง</div>
-        <div className="text-fr-14 text-gray-gedd">
-          ยืนยันการจองและการชำระเงิน?
-        </div>
-        <div className="flex gap-x-4">
-          <Button
-            className="btn-base white-outline-normal"
-            onClick={_handleCloseModal}
-            disabled={isProcessing}
-          >
-            ยกเลิก
-          </Button>
-          <Button
-            className="btn-base blue-normal cursor-pointer"
-            onClick={handleConfirmPayment}
-            disabled={isProcessing}
-          >
-            {isProcessing ? "กำลังดำเนินการ..." : "ยืนยัน"}
-          </Button>
-        </div>
-      </div>
-    );
-    _setIsShowmodal(true);
+    try {
+      const responses = await Promise.all(
+        selectedSeats.map(async (seat) => {
+          if (!seat.id || typeof seat.id !== "string") {
+            throw new Error(`Invalid seat ID: ${seat.id}`);
+          }
+          const res = await axios.get(`/api/seats/status/${seat.id}`);
+          return { seatId: seat.id, data: res.data };
+        })
+      );
+
+      const now = new Date();
+      const invalidSeats = responses.filter(
+        (res) =>
+          res.data.status !== "LOCKED" ||
+          res.data.locked_by_user_id !== session.user.id ||
+          (res.data.locked_until && new Date(res.data.locked_until) < now)
+      );
+
+      if (invalidSeats.length) {
+        const seatIds = invalidSeats.map((res) => res.seatId).join(", ");
+        toast.error(`ที่นั่ง ${seatIds} ไม่ว่างหรือหมดเวลาการล็อก`);
+        await releaseSeatsAsync(true);
+        setSelectedSeats([]);
+        setStep("1");
+        return false;
+      }
+      return true;
+    } catch (err) {
+      console.error("Check seat lock error:", err);
+      toast.error("ไม่สามารถตรวจสอบสถานะที่นั่งได้");
+      return false;
+    }
   };
 
-  const handleConfirmPayment = (): void => paymentRef.current?.submitPayment();
+  const createBooking = async () => {
+    if (!bookingInfo?.id || !selectedSeats.length || !session?.user?.id) {
+      throw new Error("Invalid booking data");
+    }
+    try {
+      const publicId = generatePublicId();
+      let finalPrice = totalPriceInSatang;
+      if (selectedCoupon) {
+        if (selectedCoupon.discount_type === "FIXED") {
+          finalPrice -= (selectedCoupon.discount_value || 0) * 100;
+        } else if (selectedCoupon.discount_type === "PERCENTAGE") {
+          const discount = Math.min(
+            (finalPrice * (selectedCoupon.discount_value || 0)) / 100,
+            (selectedCoupon.max_discount || Infinity) * 100
+          );
+          finalPrice -= discount;
+        }
+      }
+      if (finalPrice < 0) finalPrice = 0;
 
-  const _handleCloseModal = () => {
-    if (!isProcessing) {
-      _setRenderModal(null);
-      _setIsShowmodal(false);
+      const response = await fetch("/api/booking/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          showtime_id: bookingInfo.id,
+          user_id: session.user.id,
+          seats: selectedSeats.map((seat) => ({
+            showtime_seat_id: seat.id,
+            price: (seat.price || 0) * 100,
+          })),
+          total_price: finalPrice / 100,
+          coupon_id: selectedCoupon?.id || null,
+          public_id: publicId,
+          status: "PENDING",
+        }),
+      });
+      const data = await response.json();
+      if (!response.ok)
+        throw new Error(data.error || "Failed to create booking");
+      console.log("Booking created:", data);
+      return { bookingId: data.bookingId, publicId };
+    } catch (err) {
+      console.error("Create booking error:", err);
+      throw err;
     }
   };
-
-  const formatTime = (sec: number) =>
-    `${Math.floor(sec / 60)
-      .toString()
-      .padStart(2, "0")}:${(sec % 60).toString().padStart(2, "0")}`;
 
   const createPayment = async (bookingId: string) => {
+    if (!bookingId || typeof bookingId !== "string")
+      throw new Error("Invalid booking ID");
     try {
       const response = await fetch("/api/payments/create", {
         method: "POST",
@@ -282,185 +311,113 @@ const BookingSeat: React.FC = () => {
       });
       const data = await response.json();
       if (!response.ok)
-        throw new Error(data.error || "การสร้างการชำระเงินล้มเหลว");
+        throw new Error(data.error || "Failed to create payment");
+      console.log("Payment created:", data);
       return data.paymentId;
     } catch (err) {
-      console.error("❌ Failed to create payment:", err);
-      throw err;
-    }
-  };
-
-  const createBooking = async () => {
-    if (!bookingInfo?.id || selectedSeats.length === 0 || !session?.user?.id) {
-      throw new Error("ข้อมูลการจองหรือผู้ใช้ไม่ถูกต้อง");
-    }
-    try {
-      // คำนวณราคารวมหลังหักส่วนลดจากคูปอง
-      let finalPrice = totalPriceInSatang;
-      if (selectedCoupon) {
-        if (selectedCoupon.discount_type === "FIXED") {
-          finalPrice -= (selectedCoupon.discount_value || 0) * 100; // แปลงส่วนลดเป็นสตางค์
-        } else if (selectedCoupon.discount_type === "PERCENTAGE") {
-          const discount = Math.min(
-            (finalPrice * (selectedCoupon.discount_value || 0)) / 100,
-            (selectedCoupon.max_discount || Infinity) * 100
-          );
-          finalPrice -= discount;
-        }
-      }
-      if (finalPrice < 0) finalPrice = 0;
-
-      // สร้าง public_id ในรูปแบบ booking-xxxxxxxxxx (17 ตัวอักษร)
-      const publicId = generatePublicId();
-
-      console.log("Sending payload to /api/bookings/create:", {
-        showtime_id: bookingInfo.id,
-        user_id: session.user.id,
-        seats: selectedSeats.map((seat) => ({
-          showtime_seat_id: seat.id,
-          price: (seat.price || 0) * 100,
-        })),
-        total_price: finalPrice / 100, // แปลงเป็น Float (บาท)
-        coupon_id: selectedCoupon?.id || null,
-        public_id: publicId,
-        status: "PENDING",
-      });
-
-      const response = await fetch("/api/bookings/create", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          showtime_id: bookingInfo.id,
-          user_id: session.user.id,
-          seats: selectedSeats.map((seat) => ({
-            showtime_seat_id: seat.id,
-            price: (seat.price || 0) * 100, // Float ในหน่วยสตางค์
-          })),
-          total_price: finalPrice / 100, // Float ในหน่วยบาท
-          coupon_id: selectedCoupon?.id || null,
-          public_id: publicId,
-          status: "PENDING",
-        }),
-      });
-      const data = await response.json();
-      if (!response.ok) {
-        console.error("❌ Booking creation failed:", data);
-        throw new Error(data.error || "การสร้างการจองล้มเหลว");
-      }
-      return { bookingId: data.bookingId, publicId: data.public_id };
-    } catch (err) {
-      console.error("❌ Failed to create booking:", err);
+      console.error("Create payment error:", err);
       throw err;
     }
   };
 
   const handlePayment = async () => {
-    if (!bookingInfo?.id || selectedSeats.length === 0 || !session?.user?.id) {
-      toast.error("ข้อมูลการจองหรือผู้ใช้ไม่ถูกต้อง");
+    if (!bookingInfo?.id || !selectedSeats.length || !session?.user?.id) {
+      toast.error("ข้อมูลการจองไม่ครบถ้วน");
       return;
     }
     setIsProcessing(true);
     try {
-      // สร้างการจองก่อน
-      const { bookingId, publicId } = await createBooking();
+      const seatsValid = await checkSeatLock();
+      if (!seatsValid) return;
 
-      // สร้างการชำระเงิน
+      const { bookingId, publicId } = await createBooking();
       const paymentId = await createPayment(bookingId);
 
-      // อัปเดตสถานะการจองเป็น PAID
-      await fetch(`/api/bookings/update-status/${bookingId}`, {
-        method: "PATCH",
+      const response = await fetch("/api/booking/complete", {
+        method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: "PAID" }),
+        body: JSON.stringify({
+          bookingId,
+          seatIds: selectedSeats.map((seat) => seat.id),
+          userId: session.user.id,
+          couponId: selectedCoupon?.id || null,
+        }),
       });
 
-      // อัปเดตสถานะที่นั่งเป็น BOOKED โดยคง locked_by_user_id
-      await Promise.all(
-        selectedSeats.map((seat) =>
-          fetch(`/api/seats/update-status/${seat.id}`, {
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ status: "BOOKED" }), // คง locked_by_user_id
-          })
-        )
-      );
+      const data = await response.json();
+      if (!response.ok)
+        throw new Error(data.error || "Failed to complete booking");
 
-      // อัปเดตสถานะคูปองถ้ามีการใช้
-      if (selectedCoupon) {
-        await fetch(`/api/coupons/use/${selectedCoupon.id}`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ user_id: session.user.id }),
-        });
-      }
-
-      // ตั้งค่าสถานะการชำระเงินสำเร็จ
       paymentSuccessful.current = true;
       toast.success("ชำระเงินและจองสำเร็จ!");
-      setBookingInfo((prev) => {
-        if (!prev) return prev;
-        return {
-          ...prev,
-          seats: prev.seats.map((row) => ({
-            ...row,
-            seats: row.seats.map((seat) =>
-              selectedSeats.some((s) => s.id === seat.id)
-                ? { ...seat, status: "BOOKED" }
-                : seat
-            ),
-          })),
-        };
-      });
-      setSelectedSeats([]);
       router.push(`/booking/${publicId}/success`);
     } catch (err) {
-      console.error(err);
-      toast.error(
-        err instanceof Error ? err.message : "ชำระเงินหรือจองไม่สำเร็จ"
-      );
-      // ไม่เรียก releaseSeatsAsync ที่นี่ เพราะจัดการใน useEffect
+      console.error("Payment error:", err);
+      toast.error("ชำระเงินหรือจองไม่สำเร็จ");
+      await releaseSeatsAsync(true);
     } finally {
       setIsProcessing(false);
     }
   };
 
-  const handlePaymentSuccess = () => {
-    setCanPay(false);
-    handlePayment();
+  const handlePaymentClick = () => {
+    if (totalPriceInSatang < 2000) {
+      toast.error("ยอดรวมต้องอย่างน้อย 20 บาท");
+      return;
+    }
+    setRenderModal(
+      <div className="p-6 bg-gray-g63f flex flex-col items-center rounded-2xl gap-y-4">
+        <div className="text-f-20 text-white">ยืนยันการจอง</div>
+        <div className="text-fr-14 text-gray-gedd">
+          ยืนยันการจองและชำระเงิน?
+        </div>
+        <div className="flex gap-x-4">
+          <Button
+            className="btn-base white-outline-normal"
+            onClick={() => setIsShowModal(false)}
+            disabled={isProcessing}
+          >
+            ยกเลิก
+          </Button>
+          <Button
+            className="btn-base blue-normal cursor-pointer"
+            onClick={handlePayment}
+            disabled={isProcessing}
+          >
+            {isProcessing ? "กำลังดำเนินการ..." : "ยืนยัน"}
+          </Button>
+        </div>
+      </div>
+    );
+    setIsShowModal(true);
   };
 
-  const onCountdown = useCallback(() => {
-    countdownActive.current = true;
-    countdownInterval.current = window.setInterval(() => {
-      setCountdown((prev) => {
-        if (prev <= 1) {
-          if (countdownInterval.current)
-            clearInterval(countdownInterval.current);
-          releaseSeats(true);
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000) as unknown as number;
+  useEffect(() => {
+    setIsLoading(true);
+    Promise.all([fetchBookingData(), fetchCouponData()]).finally(() =>
+      setIsLoading(false)
+    );
+  }, [id, session?.user?.id]);
+
+  useEffect(() => {
+    if (step === "2" && !countdownActive.current) {
+      countdownActive.current = true;
+      countdownInterval.current = setInterval(() => {
+        setCountdown((prev) => {
+          if (prev <= 1) {
+            clearInterval(countdownInterval.current!);
+            releaseSeatsAsync(true);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
     return () => {
       if (countdownInterval.current) clearInterval(countdownInterval.current);
       countdownActive.current = false;
     };
-  }, []);
-
-  const handlePaymentMethodChange = useCallback(
-    (method: "credit_card" | "qr_code") => {
-      setPaymentMethod(method);
-      console.log("Payment method changed in BookingSeat:", method); // Debug
-    },
-    []
-  );
-
-  useEffect(() => {
-    if (step === "2") {
-      onCountdown();
-    }
-  }, [step, onCountdown]);
+  }, [step]);
 
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
@@ -470,19 +427,20 @@ const BookingSeat: React.FC = () => {
         !paymentSuccessful.current
       ) {
         e.preventDefault();
-        releaseSeatsSync();
+        releaseSeatsAsync();
       }
     };
 
-    const handleRouteChange = (url: string) => {
-      if (paymentSuccessful.current) return;
-      if (selectedSeats.length === 0 || step !== "2") return;
+    const handleRouteChange = () => {
+      if (
+        paymentSuccessful.current ||
+        selectedSeats.length === 0 ||
+        step !== "2"
+      )
+        return;
       if (isUnlocking.current || isNavigating.current) return;
-
       isNavigating.current = true;
-      releaseSeatsAsync().finally(() => {
-        isNavigating.current = false;
-      });
+      releaseSeatsAsync().finally(() => (isNavigating.current = false));
     };
 
     window.addEventListener("beforeunload", handleBeforeUnload);
@@ -491,19 +449,23 @@ const BookingSeat: React.FC = () => {
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
       router.events.off("routeChangeStart", handleRouteChange);
-
       if (
         selectedSeats.length > 0 &&
         step === "2" &&
-        !paymentSuccessful.current &&
-        !isUnlocking.current
+        !paymentSuccessful.current
       ) {
-        releaseSeatsSync();
+        releaseSeatsAsync();
       }
     };
-  }, [selectedSeats, step, router]);
+  }, [selectedSeats, step]);
 
-  const memoizedCountdown = useMemo(() => formatTime(countdown), [countdown]);
+  const memoizedCountdown = useMemo(() => {
+    const minutes = Math.floor(countdown / 60)
+      .toString()
+      .padStart(2, "0");
+    const seconds = (countdown % 60).toString().padStart(2, "0");
+    return `${minutes}:${seconds}`;
+  }, [countdown]);
 
   return (
     <NavAndFooter>
@@ -511,52 +473,71 @@ const BookingSeat: React.FC = () => {
         <Stepper step={step} onClickStep={() => setStep("1")} />
       </div>
       <div className="w-full flex flex-1 justify-center py-10 md:p-20 md:gap-x-24 flex-wrap gap-y-5">
-        {step === "1" && (
-          <SeatWidget
-            data={bookingInfo}
-            selectedSeats={selectedSeats}
-            onSelectSeat={setSelectedSeats}
-            userId={session?.user?.id}
-          />
+        {isLoading ? (
+          <div className="text-white">กำลังโหลด...</div>
+        ) : error ? (
+          <div className="text-red-500">{error}</div>
+        ) : (
+          <>
+            {step === "1" && bookingInfo && (
+              <SeatWidget
+                data={bookingInfo}
+                selectedSeats={selectedSeats}
+                onSelectSeat={(seats) => {
+                  const validSeats = seats.filter(
+                    (seat) => seat.id && typeof seat.id === "string"
+                  );
+                  if (validSeats.length !== seats.length) {
+                    toast.error("ที่นั่งบางส่วนมีรูปแบบไม่ถูกต้อง");
+                    return;
+                  }
+                  setSelectedSeats(validSeats);
+                }}
+                userId={session?.user?.id}
+              />
+            )}
+            {step === "2" && (
+              <PaymentForm
+                ref={paymentRef}
+                amount={totalPrice}
+                metadata={{
+                  order_id: `ORD-${Date.now()}`,
+                  customer_id: session?.user?.id || "guest",
+                  product: "Movie Ticket",
+                }}
+                onSuccess={handlePayment}
+                onValidChange={setCanPay}
+                onPaymentMethodChange={setPaymentMethod}
+                countdown={memoizedCountdown}
+              />
+            )}
+            <div className="flex flex-1 lg:max-w-[305px]">
+              {bookingInfo && (
+                <SummaryBoxCard
+                  step={step}
+                  data={bookingInfo}
+                  lockSeats={lockSeats}
+                  totalSelected={selectedSeats}
+                  totalPrice={totalPrice}
+                  countdown={memoizedCountdown}
+                  coupons={coupons}
+                  selectedCoupon={selectedCoupon}
+                  onSelectCoupon={setSelectedCoupon}
+                  onPayment={handlePaymentClick}
+                  canPay={canPay}
+                  paymentMethod={paymentMethod}
+                />
+              )}
+            </div>
+          </>
         )}
-        {step === "2" && (
-          <PaymentForm
-            ref={paymentRef}
-            amount={totalPrice} // ส่งในหน่วยบาท (UI)
-            metadata={{
-              order_id: "ORD-" + Date.now(),
-              customer_id: session?.user?.id || "guest",
-              product: "Premium Package",
-            }}
-            onSuccess={handlePaymentSuccess}
-            onValidChange={setCanPay}
-            onPaymentMethodChange={handlePaymentMethodChange}
-            countdown={memoizedCountdown}
-          />
-        )}
-        <div className="flex flex-1 lg:max-w-[305px]">
-          {!isLoading && bookingInfo && (
-            <SummaryBoxCard
-              step={step}
-              data={bookingInfo}
-              lockSeats={lockSeats}
-              totalSelected={selectedSeats}
-              totalPrice={totalPrice}
-              countdown={memoizedCountdown}
-              coupons={coupons}
-              selectedCoupon={selectedCoupon}
-              onSelectCoupon={setSelectedCoupon}
-              onPayment={handlePaymentClick}
-              canPay={canPay}
-              paymentMethod={paymentMethod}
-            />
-          )}
-        </div>
       </div>
-      <ModalEmpty isShowModal={_isShowModal} onClose={_handleCloseModal}>
-        {_renderModal}
+      <ModalEmpty
+        isShowModal={isShowModal}
+        onClose={() => setIsShowModal(false)}
+      >
+        {renderModal}
       </ModalEmpty>
-
       <ModalLogin
         showLoginModal={showLoginModal}
         setShowLoginModal={setShowLoginModal}

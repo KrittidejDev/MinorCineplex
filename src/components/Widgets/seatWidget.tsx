@@ -16,7 +16,6 @@ const SeatWidget: React.FC<SeatWidgetProps> = ({
   onSelectSeat,
   userId,
 }) => {
-  console.log("Data seat widget", data);
   return (
     <div className="flex-1 flex flex-col px-4 md:px-6 md:max-w-[672px] items-center gap-y-7 md:gap-y-15">
       <ScreenBar />

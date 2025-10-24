@@ -19,7 +19,8 @@ interface AblySeatMessage {
   data: {
     seatId: string;
     status: string;
-    locked_by?: string | null;
+    locked_by_user_id?: string | null;
+    locked_until?: string | null;
   };
 }
 
@@ -63,11 +64,26 @@ const SeatRow: React.FC<SeatRowProps> = ({
 
     const handleUpdate = (message: InboundMessage) => {
       const msg = message as unknown as AblySeatMessage;
-      if (!msg?.data) return;
+      if (!msg?.data) {
+        console.error("Invalid Ably message data:", msg);
+        return;
+      }
 
-      const { seatId, status } = msg.data;
+      const { seatId, status, locked_by_user_id, locked_until } = msg.data;
+      console.log("Ably seat update received:", {
+        seatId,
+        status,
+        locked_by_user_id,
+        locked_until,
+      });
+
       const isValidStatus = (s: string): s is Seat["status"] =>
         ["AVAILABLE", "RESERVED", "BOOKED", "LOCKED"].includes(s);
+
+      if (!isValidStatus(status)) {
+        console.error("Invalid seat status received:", status);
+        return;
+      }
 
       setLocalSeats((prev) =>
         prev.map((row) => ({
@@ -76,7 +92,12 @@ const SeatRow: React.FC<SeatRowProps> = ({
             seat.id === seatId
               ? {
                   ...seat,
-                  status: isValidStatus(status) ? status : seat.status,
+                  status,
+                  locked_by_user_id:
+                    locked_by_user_id ?? seat.locked_by_user_id,
+                  locked_until: locked_until
+                    ? new Date(locked_until).getTime()
+                    : seat.locked_until,
                 }
               : seat
           ),
@@ -85,11 +106,19 @@ const SeatRow: React.FC<SeatRowProps> = ({
     };
 
     channel.subscribe("update", handleUpdate);
-    return () => channel.unsubscribe("update", handleUpdate);
+    console.log(`Subscribed to Ably channel showtime:${showtimeId}`);
+
+    return () => {
+      channel.unsubscribe("update", handleUpdate);
+      console.log(`Unsubscribed from Ably channel showtime:${showtimeId}`);
+    };
   }, [showtimeId]);
 
   const toSelectedSeat = (
-    seat: Seat & { locked_by?: string | null }
+    seat: Seat & {
+      locked_by_user_id?: string | null;
+      locked_until?: number | null;
+    }
   ): SelectedSeat => ({
     id: seat.id,
     seat_number: seat.seat_number,
@@ -97,12 +126,27 @@ const SeatRow: React.FC<SeatRowProps> = ({
     price: seat.price || 0,
   });
 
-  const toggleSeat = (seat: Seat & { locked_by?: string | null }) => {
+  const toggleSeat = (
+    seat: Seat & {
+      locked_by_user_id?: string | null;
+      locked_until?: number | null;
+    }
+  ) => {
     if (!showtimeId) return;
 
     const isLockedByOther =
       seat.status === "LOCKED" && seat.locked_by_user_id !== userId;
-    if (isLockedByOther || seat.status === "BOOKED") return;
+    if (
+      isLockedByOther ||
+      seat.status === "LOCKED" ||
+      seat.status === "BOOKED"
+    ) {
+      console.log(`Cannot toggle seat ${seat.id}:`, {
+        status: seat.status,
+        isLockedByOther,
+      });
+      return;
+    }
 
     const selectedSeat = toSelectedSeat(seat);
     const isSelected = selectedSeats.some((s) => s.id === seat.id);
@@ -112,9 +156,8 @@ const SeatRow: React.FC<SeatRowProps> = ({
     } else {
       onSelectSeat([...selectedSeats, selectedSeat]);
     }
+    console.log(`Toggled seat ${seat.id}, selected: ${!isSelected}`);
   };
-
-  console.log("seat data", seatsData);
 
   return (
     <div className="flex flex-col gap-[14px] md:gap-4">
@@ -127,7 +170,7 @@ const SeatRow: React.FC<SeatRowProps> = ({
             {rowData.seats.map((seat, index) => {
               const isSelected = selectedSeats.some((s) => s.id === seat.id);
               const isLockedByOther =
-                seat.status === "LOCKED" && seat.locked_by_user_id !== userId;
+                seat.status === "LOCKED" || seat.status === "BOOKED";
 
               const SeatIcon = isSelected
                 ? SeatSelected

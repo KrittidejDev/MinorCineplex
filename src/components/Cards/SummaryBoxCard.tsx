@@ -11,7 +11,7 @@ import { Button } from "../ui/button";
 import { BillInfo, BookingInfo as BookingData } from "@/types/cinema";
 import { CouponCardData } from "@/types/coupon";
 import { CloseRoundLight, ExpandRightLight } from "../Icons/Icons";
-import { Loader2 } from "lucide-react";
+import { toast } from "react-toastify";
 
 interface Props extends BillInfo {
   data?: BookingData;
@@ -41,16 +41,27 @@ export default function SummaryBoxCard({
   paymentMethod = "credit_card",
 }: Props) {
   const { i18n } = useTranslation();
-  const lang = i18n.language;
+  const lang = i18n?.language === "th" ? "th" : "en";
 
   const [isCouponModalOpen, setCouponModalOpen] = useState(false);
-  let totalPriceWithDiscount = 0;
-  const discountValue = selectedCoupon?.discount_value ?? 0;
 
+  let totalPayment = 0;
   if (selectedCoupon?.discount_type === "FIXED") {
-    totalPriceWithDiscount = totalPrice - discountValue;
-  } else if (selectedCoupon?.discount_type === "PERCENTAGE") {
-    totalPriceWithDiscount = totalPrice * (1 - discountValue / 100);
+    totalPayment = totalPrice - (selectedCoupon?.discount_value ?? 0);
+  }
+  if (selectedCoupon?.discount_type === "PERCENTAGE") {
+    totalPayment =
+      totalPrice * (1 - (selectedCoupon?.discount_value ?? 0) / 100);
+  }
+  if (selectedCoupon?.discount_type === "BUY_X_GET_Y") {
+    if (totalSelected.length < (selectedCoupon?.min_amount ?? 0)) {
+      return lang === "en"
+        ? `Please select ${selectedCoupon?.min_amount} seats or more to apply this coupon`
+        : `กรุณาเลือก ${selectedCoupon?.min_amount} ที่นั่งหรือมากกว่าที่นั่งเพื่อใช้คูปองนี้`;
+    } else {
+      totalPayment =
+        totalPrice - (data?.price ?? 0) * (selectedCoupon?.max_discount ?? 0);
+    }
   }
   return (
     <div className="w-full min-w-[305px] h-fit bg-gray-gc1b rounded-lg">
@@ -135,7 +146,7 @@ export default function SummaryBoxCard({
       {step === "1" && totalSelected.length > 0 && (
         <BookingInfo
           totalSelected={totalSelected}
-          totalPrice={totalPriceWithDiscount}
+          totalPrice={totalPayment}
           lockSeats={lockSeats}
         />
       )}
@@ -190,14 +201,12 @@ export default function SummaryBoxCard({
             <span>{totalSelected.map((s) => s.seat_number).join(", ")}</span>
           </div>
 
-          <div className="flex justify-between text-white-wfff font-bold text-lg">
-            <span>{lang === "en" ? "Discount" : "ส่วนลด"}</span>
-            <span>
-              -{selectedCoupon?.discount_value || 0}{" "}
-              {selectedCoupon?.discount_type === "PERCENTAGE" ? "%" : "THB"}
-            </span>
-          </div>
-
+          {selectedCoupon && (
+            <div className="flex justify-between text-red-r64b font-bold text-lg">
+              <span>{lang === "en" ? "Discount" : "ส่วนลด"}</span>
+              <span>-THB{totalPrice - totalPayment}</span>
+            </div>
+          )}
           <div className="flex justify-between text-gray-gedd">
             <span>{lang === "en" ? "Payment Method" : "วิธีชำระเงิน"}</span>
             <span className="capitalize text-white">
@@ -213,7 +222,9 @@ export default function SummaryBoxCard({
 
           <div className="flex justify-between text-white-wfff font-bold text-lg">
             <span>{lang === "en" ? "Total" : "รวมทั้งหมด"}</span>
-            <span>{Math.max(totalPriceWithDiscount, 0)}</span>
+            <span>
+              THB {selectedCoupon ? Math.max(totalPayment, 0) : totalPrice}
+            </span>
           </div>
 
           <Button
@@ -253,7 +264,21 @@ export default function SummaryBoxCard({
                       ? "border-gray-g3b0 bg-gray-g3b0"
                       : "border-gray-gc1b bg-gray-g63f/30 hover:bg-gray-g63f/60"
                   }`}
-                      onClick={() => onSelectCoupon && onSelectCoupon(c)}
+                      onClick={() => {
+                        if (c.discount_type === "BUY_X_GET_Y") {
+                          const minSeats = c.min_amount || 0;
+                          if (totalSelected.length < minSeats) {
+                            toast.error(
+                              lang === "en"
+                                ? `Please select at least ${minSeats} seats to use this coupon`
+                                : `กรุณาเลือกอย่างน้อย ${minSeats} ที่นั่งเพื่อใช้คูปองนี้`,
+                              { toastId: "coupon-seat-error" }
+                            );
+                            return;
+                          }
+                        }
+                        onSelectCoupon?.(c);
+                      }}
                     >
                       {/* รูป */}
                       <div className="w-24 sm:w-[174px] h-full flex-shrink-0 relative">
@@ -285,8 +310,19 @@ export default function SummaryBoxCard({
 
                         <div className="flex justify-between items-center mt-2">
                           <span className="text-blue-bbee font-bold text-sm sm:text-base">
-                            -{c.discount_value}%{" "}
-                            {lang === "en" ? "OFF" : "ส่วนลด"}
+                            {c.discount_type === "FIXED"
+                              ? `-${c.discount_value}THB `
+                              : c.discount_type === "PERCENTAGE"
+                                ? `-${c.discount_value}% `
+                                : ""}
+                            {c.discount_type === "FIXED" ||
+                            c.discount_type === "PERCENTAGE" ? (
+                              <span className="text-blue-bbee font-bold text-sm sm:text-base">
+                                {lang === "en" ? "OFF" : "ส่วนลด"}
+                              </span>
+                            ) : (
+                              ""
+                            )}
                           </span>
                           <button
                             className="text-blue-bbee text-[10px] sm:text-sm hover:underline flex items-center gap-1"

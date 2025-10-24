@@ -53,19 +53,26 @@ function AdminMovieWidget() {
   }, [movies, searchTerm]);
 
   const displayData = filteredMovies.map((movie) => ({
-    ...movie,
-    poster_url: (
-      <Image
-        src={movie.poster_url || "/images/placeholder.jpg"}
-        alt={movie.title}
-        width={48}
-        height={64}
-        className="w-12 h-16 object-cover rounded"
-      />
-    ),
-    duration_min: `${movie.duration_min} mins`,
-    rating: !movie.rating || movie.rating === "0" ? "-" : movie.rating,
-  }));
+  ...movie,
+  poster_url: (
+    <Image
+      src={movie.poster_url || "/images/placeholder.jpg"}
+      alt={movie.title}
+      width={48}
+      height={64}
+      className="w-12 h-16 object-cover rounded"
+    />
+  ),
+  duration_min: `${movie.duration_min} mins`,
+  rating: !movie.rating || movie.rating === "0" ? "-" : movie.rating,
+  genre: movie.genres
+  ?.map((g) => {
+    if ("genre" in g && g.genre?.name) return g.genre.name;
+    return undefined;
+  })
+  .filter(Boolean)
+  .join(", ") || "-"
+}));
 
   const movieColumns = [
     {

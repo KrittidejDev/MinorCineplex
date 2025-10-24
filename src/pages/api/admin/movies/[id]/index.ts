@@ -18,6 +18,23 @@ export default async function handler(
       }
       return res.status(200).json(movie);
     }
+    if (req.method === "PUT") {
+      const data = req.body;
+      if (!data || typeof data !== "object") {
+        return res.status(400).json({ error: "ข้อมูลไม่ถูกต้อง" });
+      }
+
+      const updatedMovie = await moviesService.updateMovieForAdmin(id, data);
+      if (!updatedMovie) {
+        return res.status(400).json({ error: "อัปเดตข้อมูลภาพยนตร์ไม่สำเร็จ" });
+      }
+
+      return res.status(200).json({
+        success: true,
+        message: "อัปเดตข้อมูลภาพยนตร์สำเร็จ",
+        movie: updatedMovie,
+      });
+    }
     if (req.method === "DELETE") {
       const deleted = await moviesService.deleteMovieForAdmin(id);
       if (!deleted) {

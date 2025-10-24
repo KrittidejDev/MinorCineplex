@@ -93,6 +93,68 @@ export const moviesService = {
       throw new Error("ไม่สามารถสร้างภาพยนตร์ได้");
     }
   },
+  async updateMovieForAdmin(id: string, movieData: Partial<MovieDTO>): Promise<MovieDTO> {
+  try {
+    const slug = movieData.title ? generateSlug(movieData.title) : undefined;
+
+    const genres = movieData.genres
+      ?.map((g) =>
+        "genre" in g
+          ? {
+              genre: {
+                id: g.genre.id,
+                name: g.genre.name,
+                slug: g.genre.slug,
+                translations: g.genre.translations,
+              },
+            }
+          : undefined
+      )
+      .filter(Boolean) as typeof movieData.genres;
+
+    const languages = movieData.languages
+      ?.map((l) =>
+        "language" in l
+          ? {
+              language: {
+                id: l.language.id,
+                name: l.language.name,
+                code: l.language.code,
+              },
+            }
+          : undefined
+      )
+      .filter(Boolean) as typeof movieData.languages;
+
+    const actors = movieData.actors
+      ? movieData.actors.map((a) => ({
+          actor: { id: a.actor.id, name: a.actor.name },
+        }))
+      : undefined;
+
+    const directors = movieData.directors
+      ? movieData.directors.map((d) => ({
+          director: { id: d.director.id, name: d.director.name },
+        }))
+      : undefined;
+
+    const payload: any = {
+      ...movieData,
+      ...(slug && { slug }),
+      ...(movieData.status && { status: parseMovieStatus(movieData.status) }),
+      ...(genres && { genres }),
+      ...(languages && { languages }),
+      ...(actors && { actors }),
+      ...(directors && { directors }),
+    };
+
+    const updatedMovie = await moviesRepo.updateMovieForAdmin(id, payload);
+    return updatedMovie;
+  } catch (error) {
+    console.error("Error updating movie:", error);
+    throw new Error("ไม่สามารถอัปเดตข้อมูลภาพยนตร์ได้");
+  }
+},
   async deleteMovieForAdmin(id: string): Promise<boolean> {
     try {
       const result = await moviesRepo.deleteMovieForAdmin(id);

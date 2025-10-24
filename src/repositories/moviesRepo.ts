@@ -277,9 +277,33 @@ export const moviesRepo = {
     }
   },
   async findMoviesForAdmin(): Promise<MovieDTO[]> {
-    const movies = await prisma.movie.findMany();
-    return movies as unknown as MovieDTO[];
-  },
+  const movies = await prisma.movie.findMany({
+    include: {
+      genres: { include: { genre: true } },
+      languages: { include: { language: true } },
+      actors: { include: { actor: true } },
+      directors: { include: { director: true } },
+    },
+  });
+
+  return movies.map((m) => ({
+    id: m.id,
+    slug: m.slug,
+    title: m.title,
+    translations: m.translations,
+    duration_min: m.duration_min,
+    poster_url: m.poster_url,
+    trailer_url: m.trailer_url,
+    rating: m.rating,
+    release_date: m.release_date,
+    status: m.status,
+    genres: m.genres.map((g) => ({ genre: g.genre })),
+    languages: m.languages.map((l) => ({ language: l.language })),
+    actors: m.actors.map((a) => ({ actor: a.actor })),
+    directors: m.directors.map((d) => ({ director: d.director })),
+  })) as MovieDTO[];
+},
+
   async createMovieForAdmin(
     movieData: Omit<MovieDTO, "id" | "slug"> & {
       slug: string;
@@ -370,6 +394,69 @@ export const moviesRepo = {
       directors: createdMovie.directors.map((d) => ({ director: d.director })),
     };
   },
+  async updateMovieForAdmin(id: string, data: any): Promise<MovieDTO> {
+  try {
+
+    await prisma.movieGenre.deleteMany({ where: { movie_id: id } });
+    await prisma.movieLanguage.deleteMany({ where: { movie_id: id } });
+    await prisma.movieActor.deleteMany({ where: { movie_id: id } });
+    await prisma.movieDirector.deleteMany({ where: { movie_id: id } });
+
+    const updateData: Prisma.MovieUpdateInput = {
+      title: data.title,
+      slug: data.slug,
+      poster_url: data.poster_url,
+      trailer_url: data.trailer_url,
+      release_date: data.release_date,
+      duration_min: data.duration_min,
+      rating: data.rating,
+      status: data.status,
+      translations: data.translations as Prisma.JsonObject,
+
+      genres: {
+        create:
+          data.genres?.map((g: any) => ({
+            genre: { connect: { id: g.genre.id } },
+          })) ?? [],
+      },
+      languages: {
+        create:
+          data.languages?.map((l: any) => ({
+            language: { connect: { id: l.language.id } },
+          })) ?? [],
+      },
+      actors: {
+        create:
+          data.actors?.map((a: any) => ({
+            actor: { connect: { id: a.actor.id } },
+          })) ?? [],
+      },
+      directors: {
+        create:
+          data.directors?.map((d: any) => ({
+            director: { connect: { id: d.director.id } },
+          })) ?? [],
+      },
+    };
+
+    const updated = await prisma.movie.update({
+      where: { id },
+      data: updateData,
+      include: {
+        genres: { include: { genre: true } },
+        languages: { include: { language: true } },
+        actors: { include: { actor: true } },
+        directors: { include: { director: true } },
+      },
+    });
+
+    return updated as MovieDTO;
+  } catch (error) {
+    console.error("Error in moviesRepo.updateMovieForAdmin:", error);
+    throw new Error("อัปเดตข้อมูลภาพยนตร์ไม่สำเร็จ");
+  }
+},
+
   async deleteMovieForAdmin(id: string): Promise<boolean> {
   try {
 

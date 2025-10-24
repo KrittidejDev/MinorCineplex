@@ -42,6 +42,7 @@ import {
   BookingStatusCanceled,
 } from "@/components/ui/bookingstatus";
 import AdminSidebar from "@/components/ui/adminsidebar";
+import BookingDetailModal from "@/components/Modals/BookingDetailModal";
 
 const AllWidget = () => {
   // State for radio buttons
@@ -776,6 +777,11 @@ const AllWidget = () => {
         <div className="flex gap-5">
           <AdminSidebar />
         </div>
+      </div>
+      {/* Booking Detail Modal */}
+      <div className="mt-20">
+        <h2 className="text-2xl font-bold mb-6 text-center">Booking Detail Modal</h2>
+        <BookingDetailModal />
       </div>
     </div>
   );

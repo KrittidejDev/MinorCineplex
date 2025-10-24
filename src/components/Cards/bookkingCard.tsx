@@ -16,6 +16,7 @@ interface BookingCardProps {
   ticketCount: number;
   paymentMethod: string;
   isPaid: boolean;
+  rounded?: boolean;
 }
 
 export const BookingCard: React.FC<BookingCardProps> = ({
@@ -31,6 +32,7 @@ export const BookingCard: React.FC<BookingCardProps> = ({
   ticketCount,
   paymentMethod,
   isPaid,
+  rounded = true,
 }) => {
   const movieInfo = [
     { icon: PinFill, value: location },
@@ -47,7 +49,7 @@ export const BookingCard: React.FC<BookingCardProps> = ({
     { label: "Payment method", value: paymentMethod },
   ];
   return (
-    <div className="bg-gray-gc1b rounded-lg p-4 md:p-6 text-white">
+    <div className={`bg-gray-gc1b p-4 md:p-6 text-white ${rounded ? "rounded-lg" : "rounded-none"}`}>
       {/* Movie Section */}
       <div className="flex flex-col sm:flex-row sm:justify-between gap-4 pb-4 md:pb-6 md:gap-6">
         {/* Movie Poster */}

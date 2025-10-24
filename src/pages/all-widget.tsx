@@ -43,6 +43,8 @@ import {
 } from "@/components/ui/bookingstatus";
 import AdminSidebar from "@/components/ui/adminsidebar";
 import BookingDetailModal from "@/components/Modals/BookingDetailModal";
+import ShareButton from "@/components/Widgets/ShareButton";
+
 
 const AllWidget = () => {
   // State for radio buttons
@@ -782,6 +784,13 @@ const AllWidget = () => {
       <div className="mt-20">
         <h2 className="text-2xl font-bold mb-6 text-center">Booking Detail Modal</h2>
         <BookingDetailModal />
+      </div>
+      {/* Share Button */}
+      <div className="mt-20 mb-20">
+        <h2 className="text-2xl font-bold mb-6 text-center">Share Button</h2>
+        <div className="flex gap-5">
+          <ShareButton />
+        </div>
       </div>
     </div>
   );

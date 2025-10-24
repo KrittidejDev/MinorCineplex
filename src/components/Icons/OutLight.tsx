@@ -4,12 +4,14 @@ interface OutLightProps {
   width?: string | number;
   height?: string | number;
   color?: string;
+  className?: string;
 }
 
 const OutLight: React.FC<OutLightProps> = ({
   width = "24",
   height = "24",
   color = "#FFF",
+  className = "",
 }) => {
   return (
     <svg
@@ -19,6 +21,7 @@ const OutLight: React.FC<OutLightProps> = ({
       viewBox="0 0 24 24"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      className={className}
     >
       <path
         d="M20 3V2.5H20.5V3H20ZM10.3536 13.3536C10.1583 13.5488 9.84171 13.5488 9.64645 13.3536C9.45118 13.1583 9.45118 12.8417 9.64645 12.6464L10.3536 13.3536ZM19.5 11V3H20.5V11H19.5ZM20 3.5H12V2.5H20V3.5ZM20.3536 3.35355L10.3536 13.3536L9.64645 12.6464L19.6464 2.64645L20.3536 3.35355Z"

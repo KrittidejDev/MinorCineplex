@@ -269,20 +269,20 @@ export interface ShowtimeWithRelations {
 
 export interface Seat {
   id: string;
+  showtime_id: string;
   seat_number: string;
   row: string;
   col: string;
-  number: string;
+  number?: string;
   status: "AVAILABLE" | "RESERVED" | "BOOKED" | "LOCKED";
   price?: number;
-  lockedBy?: string | null;
-  locked_by?: string | null;
-  lockExpire?: number | null;
-  seat: {
-    id: string;
-    seat_number: string;
+  locked_by_user_id?: string | null;
+  locked_until?: number | null;
+  seat_template?: {
     row: string;
     col: string;
+    seat_number: string;
+    number: string;
   };
 }
 

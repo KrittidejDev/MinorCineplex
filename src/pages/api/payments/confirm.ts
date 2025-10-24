@@ -1,19 +1,8 @@
-// pages/api/payments/confirm.ts
-import type { NextApiRequest, NextApiResponse } from "next";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "../auth/[...nextauth]";
-import { sql } from "@/lib/db";
-import { ably } from "@/lib/ablyServer";
+import { NextApiRequest, NextApiResponse } from "next";
+import { PrismaClient } from "@/generated/prisma"; // ปรับ path ตามโครงสร้างโปรเจกต์
+// import { v4 as uuidv4 } from "uuid";
 
-interface ShowtimeSeat {
-  id: string;
-  showtime_id: string;
-  seat_id: string;
-  status: "AVAILABLE" | "LOCKED" | "BOOKED";
-  price: number;
-  locked_at: string | null;
-  locked_by: string | null;
-}
+const prisma = new PrismaClient();
 
 export default async function handler(
   req: NextApiRequest,
@@ -23,117 +12,138 @@ export default async function handler(
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const session = await getServerSession(req, res, authOptions);
-
-  if (!session || !session.user) {
-    return res.status(401).json({ error: "Unauthorized" });
-  }
-
-  const { showtimeId, seats, totalPrice, couponId } = req.body as {
-    showtimeId: string;
-    seats: string[];
-    totalPrice: number;
-    couponId?: string | null;
-  };
-
-  if (!showtimeId || !seats || !Array.isArray(seats) || seats.length === 0) {
-    return res.status(400).json({ error: "Invalid request data" });
-  }
+  const { showtimeId, seatIds, userId, paymentDetails } = req.body;
 
   try {
-    // ดึงข้อมูลเก้าอี้จาก DB
-    const seatRecordsRaw: Record<string, unknown>[] = await sql`
-      SELECT id, showtime_id, seat_id, status, price, locked_at, locked_by
-      FROM showtimeSeat
-      WHERE showtime_id = ${showtimeId}
-      AND id = ANY(${seats})
-    `;
-
-    // แปลงเป็น ShowtimeSeat[]
-    const seatRecords: ShowtimeSeat[] = seatRecordsRaw.map((r) => ({
-      id: String(r.id),
-      showtime_id: String(r.showtime_id),
-      seat_id: String(r.seat_id),
-      status: r.status as "AVAILABLE" | "LOCKED" | "BOOKED",
-      price: Number(r.price ?? 0),
-      locked_at: r.locked_at ? String(r.locked_at) : null,
-      locked_by: r.locked_by ? String(r.locked_by) : null,
-    }));
-
-    console.log("🔍 Seat records found:", seatRecords.length);
-
-    // ตรวจสอบว่าเก้าอี้ถูกล็อกโดยผู้ใช้งานปัจจุบันหรือไม่
-    const invalidSeats = seatRecords.filter(
-      (seat) => seat.locked_by !== session.user.id || seat.status !== "LOCKED"
-    );
-
-    if (invalidSeats.length > 0) {
-      console.log("❌ Invalid seats:", invalidSeats);
-      return res.status(400).json({
-        error: "Some seats are not locked by you or have expired",
-        invalidSeats: invalidSeats.map((s) => s.id),
-      });
+    // Validate input
+    if (
+      !showtimeId ||
+      !seatIds ||
+      !userId ||
+      !paymentDetails ||
+      !paymentDetails.amount ||
+      !paymentDetails.transactionId
+    ) {
+      return res.status(400).json({ error: "Missing required fields" });
     }
 
-    // สร้าง booking
-    const bookingResult = await sql`
-      INSERT INTO booking (id, user_id, showtime_id, status, total_price, created_at, updated_at)
-      VALUES (gen_random_uuid(), ${session.user.id}, ${showtimeId}, 'PAID', ${totalPrice}, NOW(), NOW())
-      RETURNING id
-    `;
-    const bookingId = String(bookingResult[0].id);
-    console.log("✅ Created booking:", bookingId);
-
-    // สร้าง booking_seat
-    for (const seatRecord of seatRecords) {
-      await sql`
-        INSERT INTO booking_seat (id, booking_id, seat_id, price)
-        VALUES (gen_random_uuid(), ${bookingId}, ${seatRecord.seat_id}, ${seatRecord.price})
-      `;
-    }
-    console.log("✅ Created booking_seats:", seatRecords.length);
-
-    // อัปเดต showtime_seat เป็น BOOKED
-    await sql`
-      UPDATE showtime_seat
-      SET status = 'BOOKED', locked_by = NULL, locked_at = NULL
-      WHERE showtime_id = ${showtimeId}
-      AND id = ANY(${seats})
-    `;
-    console.log("✅ Updated showtime_seats to BOOKED");
-
-    // ส่ง event real-time ผ่าน Ably
-    const channel = ably.channels.get(`showtime:${showtimeId}`);
-    for (const seatId of seats) {
-      await channel.publish("update", {
-        seatId,
-        status: "BOOKED",
-        locked_by: null,
-        locked_at: null,
-      });
-    }
-    console.log("✅ Published Ably events");
-
-    // อัปเดต coupon ถ้ามี
-    if (couponId) {
-      await sql`
-        UPDATE coupon
-        SET used_count = used_count + 1
-        WHERE id = ${couponId}
-      `;
-      console.log("✅ Updated coupon usage");
-    }
-
-    return res.status(200).json({
-      success: true,
-      bookingId: bookingId,
-      message: "Booking completed successfully",
+    console.log("Confirming booking:", {
+      showtimeId,
+      seatIds,
+      userId,
+      paymentDetails,
     });
+
+    // เริ่ม transaction
+    const result = await prisma.$transaction(async (tx) => {
+      // ดึงข้อมูลที่นั่งจาก ShowtimeSeat
+      const seatRecords = await tx.showtimeSeat.findMany({
+        where: {
+          showtime_id: showtimeId,
+          seat_template_id: { in: seatIds },
+        },
+        select: {
+          id: true,
+          showtime_id: true,
+          seat_template_id: true,
+          status: true,
+          price: true,
+          locked_until: true,
+          locked_by_user_id: true,
+        },
+      });
+      console.log("Seat records:", seatRecords);
+
+      // ตรวจสอบว่าเก้าอี้ทั้งหมดถูกล็อกและล็อกโดย user
+      const invalidSeats = seatRecords.filter(
+        (seat) => seat.status !== "LOCKED" || seat.locked_by_user_id !== userId
+      );
+      if (invalidSeats.length > 0) {
+        throw new Error("Some seats are not available or not locked by user");
+      }
+
+      // // คำนวณราคารวม
+      // const totalPrice = seatRecords.reduce((sum, seat) => sum + (seat.price || 0), 0);
+
+      // // สร้าง Booking
+      // const publicId = uuidv4().slice(0, 10); // สร้าง public_id สั้น ๆ สำหรับลิงก์
+      // const booking = await tx.booking.create({
+      //   data: {
+      //     public_id: publicId,
+      //     user_id: userId,
+      //     showtime_id: showtimeId,
+      //     status: "PAID",
+      //     total_price: totalPrice,
+      //     created_at: new Date(),
+      //     updated_at: new Date(),
+      //   },
+      //   select: {
+      //     id: true,
+      //     public_id: true,
+      //   },
+      // });
+      // console.log("Booking created:", { bookingId: booking.id, publicId: booking.public_id });
+
+      // // สร้าง BookingSeat สำหรับแต่ละที่นั่ง
+      // await Promise.all(
+      //   seatRecords.map((seat) =>
+      //     tx.bookingSeat.create({
+      //       data: {
+      //         id: uuidv4(),
+      //         booking_id: booking.id,
+      //         showtime_seat_id: seat.id,
+      //         price: seat.price || 0,
+      //         created_at: new Date(),
+      //         updated_at: new Date(),
+      //       },
+      //     })
+      //   )
+      // );
+      // console.log("BookingSeat records created for seats:", seatIds);
+
+      // อัปเดต ShowtimeSeat เป็น BOOKED โดยคง locked_by_user_id
+      await tx.showtimeSeat.updateMany({
+        where: {
+          showtime_id: showtimeId,
+          seat_template_id: { in: seatIds },
+        },
+        data: {
+          status: "BOOKED",
+          locked_until: null,
+        },
+      });
+      console.log(
+        "ShowtimeSeat updated to BOOKED, locked_by_user_id preserved"
+      );
+
+      // // สร้าง Payment
+      // const payment = await tx.payment.create({
+      //   data: {
+      //     id: uuidv4(),
+      //     booking_id: booking.id,
+      //     user_id: userId,
+      //     amount: paymentDetails.amount,
+      //     payment_method: "CREDIT_CARD",
+      //     status: "COMPLETED",
+      //     transaction_id: paymentDetails.transactionId,
+      //     created_at: new Date(),
+      //     updated_at: new Date(),
+      //   },
+      //   select: {
+      //     id: true,
+      //   },
+      // });
+      // console.log("Payment created:", { paymentId: payment.id });
+
+      // return { bookingId: booking.id, publicId: booking.public_id };
+      return { success: true }; // ปรับ return ให้เหมาะสมเมื่อไม่มี booking
+    });
+
+    return res.status(200).json({ success: true }); // ปรับ response ให้เหมาะสม
   } catch (error) {
-    console.error("❌ Error completing booking:", error);
-    return res.status(500).json({
-      error: "Failed to complete booking",
-      details: error instanceof Error ? error.message : "Unknown error",
-    });
+    console.error("Error completing booking:", error);
+    return res.status(500).json({ error: "Failed to complete booking" });
+  } finally {
+    await prisma.$disconnect();
   }
 }

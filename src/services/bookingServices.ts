@@ -19,13 +19,17 @@ interface ShowTimeResponse {
   price: number;
 }
 
-interface ShowtimeSeat {
+export interface ShowtimeSeat {
   id: string;
-  seat_template: SeatTemplate;
-  status: string;
+  showtime_id: string;
+  seat_number: string;
+  number: string;
+  row: string;
+  col: string;
+  status: "AVAILABLE" | "RESERVED" | "BOOKED" | "LOCKED";
   price: number;
   locked_by_user_id: string | null;
-  locked_until: Date | null;
+  locked_until: number | null;
 }
 
 interface ShowtimeData {
@@ -77,23 +81,22 @@ class BookingService {
     return seatRows;
   }
 
-  private transformSeatsToRows(showtimeSeats: ShowtimeSeat[]): SeatRow[] {
+  private transformSeatsToRows(showtimeSeats: Seat[]): SeatRow[] {
     const seatsByRow = new Map<string, Seat[]>();
 
     showtimeSeats.forEach((s) => {
-      const row = s.seat_template.row;
+      const row = s.row;
       if (!seatsByRow.has(row)) seatsByRow.set(row, []);
       seatsByRow.get(row)!.push({
         id: s.id,
-        seat_number: s.seat_template.seat_number,
-        number: s.seat_template.seat_number,
+        seat_number: s.seat_number,
         row,
-        col: s.seat_template.col,
-        status: s.status as "AVAILABLE" | "RESERVED" | "BOOKED" | "LOCKED",
+        col: s.col,
+        status: s.status,
         price: s.price,
-        lockedBy: s.locked_by_user_id ?? null,
-        lockExpire: s.locked_until ? new Date(s.locked_until).getTime() : null,
-        seat: s.seat_template,
+        locked_by_user_id: s.locked_by_user_id ?? null,
+        locked_until: s.locked_until ?? null,
+        showtime_id: s.showtime_id,
       });
     });
 

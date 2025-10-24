@@ -55,7 +55,6 @@ export default async function handler(
       return res.status(404).json({ error: "Booking not found" });
     }
 
-    // Verify that the booking belongs to the current user
     if (booking.user_id !== session.user.id) {
       return res.status(403).json({ error: "Access denied" });
     }

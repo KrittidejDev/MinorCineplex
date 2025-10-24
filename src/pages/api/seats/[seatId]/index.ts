@@ -18,7 +18,6 @@ export default async function handler(
   const userId = req.body?.userId || "guest";
 
   try {
-    // ---------------- LOCK SEAT ----------------
     if (req.method === "POST") {
       const updated = await prisma.showtimeSeat.updateMany({
         where: {
@@ -28,7 +27,7 @@ export default async function handler(
         data: {
           status: SeatStatus.LOCKED,
           locked_by_user_id: userId,
-          locked_until: new Date(Date.now() + 5 * 60 * 1000), // ล็อก 5 นาที
+          locked_until: new Date(Date.now() + 5 * 60 * 1000),
         },
       });
 
@@ -38,7 +37,6 @@ export default async function handler(
           .json({ success: false, message: "Seat not available" });
       }
 
-      // ดึง showtime_id เพื่อส่ง event Ably
       const seatData = await prisma.showtimeSeat.findUnique({
         where: { id: seatId as string },
         select: { showtime_id: true },
@@ -57,7 +55,6 @@ export default async function handler(
       return res.json({ success: true });
     }
 
-    // ---------------- UNLOCK SEAT ----------------
     if (req.method === "PATCH") {
       const seat = await prisma.showtimeSeat.update({
         where: { id: seatId as string },
@@ -79,7 +76,6 @@ export default async function handler(
       return res.json({ success: true });
     }
 
-    // ---------------- INVALID METHOD ----------------
     res.setHeader("Allow", ["POST", "PATCH"]);
     return res.status(405).end(`Method ${req.method} Not Allowed`);
   } catch (err) {

@@ -76,6 +76,7 @@ export const bookingRepository = {
     });
 
     if (!showtime) return [];
+
     const seats = await prisma.showtimeSeat.findMany({
       where: { showtime_id: showtimeId },
       select: {
@@ -100,8 +101,15 @@ export const bookingRepository = {
     });
 
     return seats.map((s) => ({
-      ...s,
+      id: s.id,
+      showtime_id: showtimeId,
+      seat_number: s.seat_template.seat_number,
+      row: s.seat_template.row,
+      col: s.seat_template.col,
+      status: s.status as "AVAILABLE" | "RESERVED" | "BOOKED" | "LOCKED",
       price: showtime.price,
+      locked_by_user_id: s.locked_by_user_id ?? null,
+      locked_until: s.locked_until ? new Date(s.locked_until).getTime() : null,
     }));
   },
 };

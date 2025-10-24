@@ -16,10 +16,8 @@ export default async function handler(
   if (!userId) return res.status(401).json({ error: "Unauthorized" });
 
   try {
-    
     const coupons = await getCoupons();
 
-    
     const collectedCoupons = await Promise.all(
       coupons.map(async (c) => {
         const userCoupon = await prisma.userCoupon.findUnique({
@@ -34,9 +32,8 @@ export default async function handler(
 
         if (!userCoupon?.is_collected) return null;
 
-       
         return {
-          ...c, 
+          ...c,
           collected_at: userCoupon.collected_at,
         };
       })

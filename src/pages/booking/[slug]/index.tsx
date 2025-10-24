@@ -1,4 +1,11 @@
-import React, { ReactElement, useEffect, useRef, useState } from "react";
+import React, {
+  ReactElement,
+  useEffect,
+  useRef,
+  useState,
+  useCallback,
+  useMemo,
+} from "react";
 import { useRouter } from "next/router";
 import { signIn, useSession } from "next-auth/react";
 import NavAndFooter from "@/components/MainLayout/NavAndFooter";
@@ -44,7 +51,6 @@ const BookingSeat: React.FC = () => {
 
   const paymentRef = useRef<PaymentFormHandles | null>(null);
   const countdownActive = useRef(false);
-
   const isUnlocking = useRef(false);
   const isNavigating = useRef(false);
   const countdownInterval = useRef<number | null>(null);
@@ -54,6 +60,13 @@ const BookingSeat: React.FC = () => {
     (sum, seat) => sum + (seat.price || 0),
     0
   );
+  const totalPriceInSatang = totalPrice * 100; // แปลงเป็นสตางค์
+
+  // ฟังก์ชันสร้าง public_id ในรูปแบบ booking-xxxxxxxxxx (17 ตัวอักษร)
+  const generatePublicId = (): string => {
+    const randomStr = Math.random().toString(36).substr(2, 10); // สตริงสุ่ม 10 ตัวอักษร
+    return `booking-${randomStr}`;
+  };
 
   const handleLogin = async (value: { email: string; password: string }) => {
     try {
@@ -65,9 +78,9 @@ const BookingSeat: React.FC = () => {
       if (result?.ok) {
         setShowLoginModal(false);
         router.push(`/booking/${id}`);
-        toast.success("Login successful");
+        toast.success("เข้าสู่ระบบสำเร็จ");
       } else {
-        toast.error("Login failed");
+        toast.error("เข้าสู่ระบบล้มเหลว");
         setShowLoginModal(false);
       }
     } catch (error: unknown) {
@@ -97,13 +110,12 @@ const BookingSeat: React.FC = () => {
   };
 
   const fetchCouponData = async () => {
-    if (session?.user?.id) return;
+    if (!session?.user?.id) return;
     try {
       const res = (await axios.get(`/api/coupons/collected`)) as CouponsData;
       setCoupons(res?.coupons || []);
     } catch (err) {
-      if (!axios.isCancel(err))
-        console.error("Failed to fetch booking info:", err);
+      if (!axios.isCancel(err)) console.error("Failed to fetch coupons:", err);
     }
   };
 
@@ -112,9 +124,13 @@ const BookingSeat: React.FC = () => {
     fetchCouponData();
   }, [id, session?.user?.id]);
 
-  // ----------------- Seat release helpers -----------------
   const releaseSeatsAsync = async () => {
-    if (isUnlocking.current || selectedSeats.length === 0) return;
+    if (
+      isUnlocking.current ||
+      selectedSeats.length === 0 ||
+      paymentSuccessful.current
+    )
+      return;
     isUnlocking.current = true;
     try {
       await fetch("/api/seats/unlock-batch", {
@@ -132,7 +148,12 @@ const BookingSeat: React.FC = () => {
   };
 
   const releaseSeatsSync = () => {
-    if (isUnlocking.current || selectedSeats.length === 0) return;
+    if (
+      isUnlocking.current ||
+      selectedSeats.length === 0 ||
+      paymentSuccessful.current
+    )
+      return;
     isUnlocking.current = true;
     const seatIds = selectedSeats.map((seat) => seat.id);
     try {
@@ -160,7 +181,7 @@ const BookingSeat: React.FC = () => {
   };
 
   const releaseSeats = async (showAlert = false) => {
-    if (isUnlocking.current) return;
+    if (isUnlocking.current || paymentSuccessful.current) return;
     isUnlocking.current = true;
     try {
       await Promise.all(
@@ -180,7 +201,6 @@ const BookingSeat: React.FC = () => {
     }
   };
 
-  // ----------------- Lock seats -----------------
   const lockSeats = async () => {
     if (!session?.user) {
       setShowLoginModal(true);
@@ -202,13 +222,16 @@ const BookingSeat: React.FC = () => {
     }
   };
 
-  // ----------------- Payment handlers -----------------
   const handlePaymentClick = () => {
+    if (totalPriceInSatang < 2000) {
+      toast.error("ยอดรวมต้องอย่างน้อย 20 บาท");
+      return;
+    }
     _setRenderModal(
       <div className="p-6 bg-gray-g63f flex flex-col items-center rounded-2xl gap-y-4">
-        <div className="text-f-20 text-white">Confirm booking</div>
+        <div className="text-f-20 text-white">ยืนยันการจอง</div>
         <div className="text-fr-14 text-gray-gedd">
-          Confirm booking and payment?
+          ยืนยันการจองและการชำระเงิน?
         </div>
         <div className="flex gap-x-4">
           <Button
@@ -216,14 +239,14 @@ const BookingSeat: React.FC = () => {
             onClick={_handleCloseModal}
             disabled={isProcessing}
           >
-            Cancel
+            ยกเลิก
           </Button>
           <Button
             className="btn-base blue-normal cursor-pointer"
             onClick={handleConfirmPayment}
             disabled={isProcessing}
           >
-            {isProcessing ? "Processing..." : "Confirm"}
+            {isProcessing ? "กำลังดำเนินการ..." : "ยืนยัน"}
           </Button>
         </div>
       </div>
@@ -239,31 +262,141 @@ const BookingSeat: React.FC = () => {
       _setIsShowmodal(false);
     }
   };
+
   const formatTime = (sec: number) =>
     `${Math.floor(sec / 60)
       .toString()
       .padStart(2, "0")}:${(sec % 60).toString().padStart(2, "0")}`;
 
-  const handlePayment = async () => {
-    if (!bookingInfo?.id || selectedSeats.length === 0)
-      return toast.error("Invalid booking information");
-    setIsProcessing(true);
+  const createPayment = async (bookingId: string) => {
     try {
-      isUnlocking.current = true;
-      const response = await fetch("/api/payments/confirm", {
+      const response = await fetch("/api/payments/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          showtimeId: bookingInfo.id,
-          seats: selectedSeats.map((seat) => seat.id),
-          totalPrice: totalPrice,
-          couponId: selectedCoupon?.id || null,
+          bookingId,
+          userId: session?.user?.id || "guest",
+          amount: totalPriceInSatang,
+          paymentMethod: paymentMethod || "CREDIT_CARD",
         }),
       });
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "Payment failed");
+      if (!response.ok)
+        throw new Error(data.error || "การสร้างการชำระเงินล้มเหลว");
+      return data.paymentId;
+    } catch (err) {
+      console.error("❌ Failed to create payment:", err);
+      throw err;
+    }
+  };
+
+  const createBooking = async () => {
+    if (!bookingInfo?.id || selectedSeats.length === 0 || !session?.user?.id) {
+      throw new Error("ข้อมูลการจองหรือผู้ใช้ไม่ถูกต้อง");
+    }
+    try {
+      // คำนวณราคารวมหลังหักส่วนลดจากคูปอง
+      let finalPrice = totalPriceInSatang;
+      if (selectedCoupon) {
+        if (selectedCoupon.discount_type === "FIXED") {
+          finalPrice -= (selectedCoupon.discount_value || 0) * 100; // แปลงส่วนลดเป็นสตางค์
+        } else if (selectedCoupon.discount_type === "PERCENTAGE") {
+          const discount = Math.min(
+            (finalPrice * (selectedCoupon.discount_value || 0)) / 100,
+            (selectedCoupon.max_discount || Infinity) * 100
+          );
+          finalPrice -= discount;
+        }
+      }
+      if (finalPrice < 0) finalPrice = 0;
+
+      // สร้าง public_id ในรูปแบบ booking-xxxxxxxxxx (17 ตัวอักษร)
+      const publicId = generatePublicId();
+
+      console.log("Sending payload to /api/bookings/create:", {
+        showtime_id: bookingInfo.id,
+        user_id: session.user.id,
+        seats: selectedSeats.map((seat) => ({
+          showtime_seat_id: seat.id,
+          price: (seat.price || 0) * 100,
+        })),
+        total_price: finalPrice / 100, // แปลงเป็น Float (บาท)
+        coupon_id: selectedCoupon?.id || null,
+        public_id: publicId,
+        status: "PENDING",
+      });
+
+      const response = await fetch("/api/bookings/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          showtime_id: bookingInfo.id,
+          user_id: session.user.id,
+          seats: selectedSeats.map((seat) => ({
+            showtime_seat_id: seat.id,
+            price: (seat.price || 0) * 100, // Float ในหน่วยสตางค์
+          })),
+          total_price: finalPrice / 100, // Float ในหน่วยบาท
+          coupon_id: selectedCoupon?.id || null,
+          public_id: publicId,
+          status: "PENDING",
+        }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        console.error("❌ Booking creation failed:", data);
+        throw new Error(data.error || "การสร้างการจองล้มเหลว");
+      }
+      return { bookingId: data.bookingId, publicId: data.public_id };
+    } catch (err) {
+      console.error("❌ Failed to create booking:", err);
+      throw err;
+    }
+  };
+
+  const handlePayment = async () => {
+    if (!bookingInfo?.id || selectedSeats.length === 0 || !session?.user?.id) {
+      toast.error("ข้อมูลการจองหรือผู้ใช้ไม่ถูกต้อง");
+      return;
+    }
+    setIsProcessing(true);
+    try {
+      // สร้างการจองก่อน
+      const { bookingId, publicId } = await createBooking();
+
+      // สร้างการชำระเงิน
+      const paymentId = await createPayment(bookingId);
+
+      // อัปเดตสถานะการจองเป็น PAID
+      await fetch(`/api/bookings/update-status/${bookingId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "PAID" }),
+      });
+
+      // อัปเดตสถานะที่นั่งเป็น BOOKED โดยคง locked_by_user_id
+      await Promise.all(
+        selectedSeats.map((seat) =>
+          fetch(`/api/seats/update-status/${seat.id}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ status: "BOOKED" }), // คง locked_by_user_id
+          })
+        )
+      );
+
+      // อัปเดตสถานะคูปองถ้ามีการใช้
+      if (selectedCoupon) {
+        await fetch(`/api/coupons/use/${selectedCoupon.id}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ user_id: session.user.id }),
+        });
+      }
+
+      // ตั้งค่าสถานะการชำระเงินสำเร็จ
       paymentSuccessful.current = true;
-      toast.success("ชำระเงินสำเร็จ!");
+      toast.success("ชำระเงินและจองสำเร็จ!");
       setBookingInfo((prev) => {
         if (!prev) return prev;
         return {
@@ -272,24 +405,21 @@ const BookingSeat: React.FC = () => {
             ...row,
             seats: row.seats.map((seat) =>
               selectedSeats.some((s) => s.id === seat.id)
-                ? {
-                    ...seat,
-                    status: "BOOKED",
-                    lockedBy: null,
-                    lockExpire: null,
-                  }
+                ? { ...seat, status: "BOOKED" }
                 : seat
             ),
           })),
         };
       });
       setSelectedSeats([]);
-      router.push(`/booking/${data.bookingId}/success`);
+      router.push(`/booking/${publicId}/success`);
     } catch (err) {
       console.error(err);
-      toast.error(err instanceof Error ? err.message : "ชำระเงินไม่สำเร็จ");
+      toast.error(
+        err instanceof Error ? err.message : "ชำระเงินหรือจองไม่สำเร็จ"
+      );
+      // ไม่เรียก releaseSeatsAsync ที่นี่ เพราะจัดการใน useEffect
     } finally {
-      isUnlocking.current = false;
       setIsProcessing(false);
     }
   };
@@ -299,7 +429,7 @@ const BookingSeat: React.FC = () => {
     handlePayment();
   };
 
-  const onCountdown = () => {
+  const onCountdown = useCallback(() => {
     countdownActive.current = true;
     countdownInterval.current = window.setInterval(() => {
       setCountdown((prev) => {
@@ -316,13 +446,21 @@ const BookingSeat: React.FC = () => {
       if (countdownInterval.current) clearInterval(countdownInterval.current);
       countdownActive.current = false;
     };
-  };
+  }, []);
+
+  const handlePaymentMethodChange = useCallback(
+    (method: "credit_card" | "qr_code") => {
+      setPaymentMethod(method);
+      console.log("Payment method changed in BookingSeat:", method); // Debug
+    },
+    []
+  );
 
   useEffect(() => {
     if (step === "2") {
       onCountdown();
     }
-  }, [step]);
+  }, [step, onCountdown]);
 
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
@@ -330,8 +468,10 @@ const BookingSeat: React.FC = () => {
         selectedSeats.length > 0 &&
         step === "2" &&
         !paymentSuccessful.current
-      )
+      ) {
+        e.preventDefault();
         releaseSeatsSync();
+      }
     };
 
     const handleRouteChange = (url: string) => {
@@ -363,13 +503,12 @@ const BookingSeat: React.FC = () => {
     };
   }, [selectedSeats, step, router]);
 
-  console.log("payment change", paymentMethod);
+  const memoizedCountdown = useMemo(() => formatTime(countdown), [countdown]);
 
-  // ----------------- JSX -----------------
   return (
     <NavAndFooter>
       <div className="w-dvw flex flex-col justify-center items-center p-4 bg-gray-gc1b">
-        <Stepper step={step} />
+        <Stepper step={step} onClickStep={() => setStep("1")} />
       </div>
       <div className="w-full flex flex-1 justify-center py-10 md:p-20 md:gap-x-24 flex-wrap gap-y-5">
         {step === "1" && (
@@ -383,7 +522,7 @@ const BookingSeat: React.FC = () => {
         {step === "2" && (
           <PaymentForm
             ref={paymentRef}
-            amount={totalPrice}
+            amount={totalPrice} // ส่งในหน่วยบาท (UI)
             metadata={{
               order_id: "ORD-" + Date.now(),
               customer_id: session?.user?.id || "guest",
@@ -391,8 +530,8 @@ const BookingSeat: React.FC = () => {
             }}
             onSuccess={handlePaymentSuccess}
             onValidChange={setCanPay}
-            onPaymentMethodChange={setPaymentMethod}
-            countdown={formatTime(countdown)}
+            onPaymentMethodChange={handlePaymentMethodChange}
+            countdown={memoizedCountdown}
           />
         )}
         <div className="flex flex-1 lg:max-w-[305px]">
@@ -403,7 +542,7 @@ const BookingSeat: React.FC = () => {
               lockSeats={lockSeats}
               totalSelected={selectedSeats}
               totalPrice={totalPrice}
-              countdown={formatTime(countdown)}
+              countdown={memoizedCountdown}
               coupons={coupons}
               selectedCoupon={selectedCoupon}
               onSelectCoupon={setSelectedCoupon}

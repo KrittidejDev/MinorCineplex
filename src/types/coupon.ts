@@ -2,26 +2,27 @@
 
 // กำหนด type สำหรับรายละเอียดของ gift
 export type GiftDetails =
-  | { item: string; size?: string }        // สำหรับ POPCORN
-  | { code: string }                        // สำหรับ COUPON_CODE
-  | { other: string };               // สำหรับ OTHER
+  | { item: string; size?: string } // สำหรับ POPCORN
+  | { code: string } // สำหรับ COUPON_CODE
+  | { other: string }; // สำหรับ OTHER
 
 // ข้อมูลคูปองที่จะแสดงบน card
 export interface CouponCardData {
   id: string;
   code?: string | null;
   slug: string;
-  translations?: Record<string, { name: string; description?: string }>; // เช่น { en: { name: '', description: '' }, th: {...} }
+  translations?: Record<string, { name: string; description?: string }>;
   discount_value?: number | null;
   discount_type: "FIXED" | "PERCENTAGE" | "BUY_X_GET_Y" | "GIFT";
-  buy_quantity?: number;   // สำหรับ BUY_X_GET_Y
-  get_quantity?: number;   // สำหรับ BUY_X_GET_Y
-  gift_type?: "POPCORN" | "COUPON_CODE" | "OTHER"; // สำหรับ GIFT
+  buy_quantity?: number;
+  get_quantity?: number;
+  gift_type?: "POPCORN" | "COUPON_CODE" | "OTHER";
   gift_details?: GiftDetails;
   expiresAt?: string | null;
   end_date?: string | null;
   image_url?: string | null;
   is_collected?: boolean;
+  max_discount?: number;
 }
 
 // Response wrapper

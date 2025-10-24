@@ -5,7 +5,7 @@ import { Button } from "../ui/button";
 
 function BookingDetailModal() {
   return (
-    <div className="relative w-screen max-w-[691px] max-h-[510px] bg-gray-g63f border border-gray-gf7e rounded-md">
+    <div className="relative w-screen max-w-[691px] h-fit bg-gray-g63f border border-gray-gf7e rounded-md">
       <div className="flex justify-between py-3 px-6">
         <div className="w-24"></div>
         <h4 className="text-f-20">Booking Detail</h4>
@@ -35,36 +35,38 @@ function BookingDetailModal() {
           rounded={false}
         />
       </div>
-      <div className="max-w-[273px] pb-2 m-6 mb-2 border-b border-gray-gf7e">
-        <div className="flex flex-col gap-2">
-          <div className="flex justify-between">
-            <p className="text-fr-16">Payment method</p>
-            <span className="font-bold text-fm-16">Credit card</span>
-          </div>
-          <div className="flex justify-between">
-            <p className="text-fr-16">
-              Ticket <span>x2</span>
-            </p>
-            <span className="font-bold text-fm-16">THB300</span>
-          </div>
-          <div className="flex justify-between">
-            <p className="text-fr-16">Coupon</p>
-            <span className="font-bold text-fm-16 text-red-r64b">-THB50</span>
-          </div>
-        </div>
-      </div>
-      <div className="flex justify-between">
-        <div className="max-w-[273px] mx-6 mb-6">
-          <div className="flex justify-between">
-            <p className="text-fr-16">Total</p>
-            <span className="font-bold text-fm-16">THB250</span>
+      <div className="flex flex-col mt-22 sm:mt-0">
+        <div className="max-w-[273px] pb-2 m-6 mb-2 border-b border-gray-gf7e">
+          <div className="flex flex-col gap-2">
+            <div className="flex justify-between">
+              <p className="text-fr-16">Payment method</p>
+              <span className="font-bold text-fm-16">Credit card</span>
+            </div>
+            <div className="flex justify-between">
+              <p className="text-fr-16">
+                Ticket <span>x2</span>
+              </p>
+              <span className="font-bold text-fm-16">THB300</span>
+            </div>
+            <div className="flex justify-between">
+              <p className="text-fr-16">Coupon</p>
+              <span className="font-bold text-fm-16 text-red-r64b">-THB50</span>
+            </div>
           </div>
         </div>
-        <div className="absolute right-6 bottom-6">
-          <Button className="btn-base white-outline-normal">
-            Cancel booking
-          </Button>
-        </div>
+
+          <div className="max-w-[273px] mx-6 mb-6">
+            <div className="flex justify-between">
+              <p className="text-fr-16">Total</p>
+              <span className="font-bold text-fm-16">THB250</span>
+            </div>
+          </div>
+          <div className="sm:absolute m-6 mt-0 sm:m-0 right-6 bottom-6">
+            <Button className="btn-base white-outline-normal">
+              Cancel booking
+            </Button>
+          </div>
+
       </div>
     </div>
   );

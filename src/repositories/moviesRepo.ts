@@ -277,9 +277,32 @@ export const moviesRepo = {
     }
   },
   async findMoviesForAdmin(): Promise<MovieDTO[]> {
-    const movies = await prisma.movie.findMany();
-    return movies as unknown as MovieDTO[];
-  },
+  const movies = await prisma.movie.findMany({
+    include: {
+      genres: { include: { genre: true } },
+      languages: { include: { language: true } },
+      actors: { include: { actor: true } },
+      directors: { include: { director: true } },
+    },
+  });
+
+  return movies.map((m) => ({
+    id: m.id,
+    slug: m.slug,
+    title: m.title,
+    translations: m.translations,
+    duration_min: m.duration_min,
+    poster_url: m.poster_url,
+    trailer_url: m.trailer_url,
+    rating: m.rating,
+    release_date: m.release_date,
+    status: m.status,
+    genres: m.genres.map((g) => ({ genre: g.genre })),
+    languages: m.languages.map((l) => ({ language: l.language })),
+    actors: m.actors.map((a) => ({ actor: a.actor })),
+    directors: m.directors.map((d) => ({ director: d.director })),
+  })) as MovieDTO[];
+},
   async createMovieForAdmin(
     movieData: Omit<MovieDTO, "id" | "slug"> & {
       slug: string;

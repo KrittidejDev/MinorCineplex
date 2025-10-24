@@ -3,11 +3,13 @@ import MovieCard from "../Cards/MovieCard";
 import MovieCardInfo from "../Cards/MovieCardInfo";
 import TrailerPlayer from "../Displays/TrailerPlayer";
 import InputSearch from "../Inputs/InputSearch";
-import CitySelection from "../ui/cityselection";
 import DateSelectionBarWidget from "./DateSelectionBarWidget";
 import ShowTime from "./ShowTime";
 import { MovieDTO, ShowtimeDTO } from "@/types/movie";
 import { i18n } from "next-i18next";
+import { InputDropdown } from "../Inputs/InputDropdown";
+import InputComboBox from "../Inputs/InputComboBox";
+import { provinces } from "@/lib/data/provincesData";
 
 interface MoviesDetailWidgetProps {
   movie: MovieDTO;
@@ -15,16 +17,23 @@ interface MoviesDetailWidgetProps {
   selectedDate: Date;
   onSelectDate: (date: Date) => void;
   showtimesLoading?: boolean;
+  searchValue: string;
+  setSearchValue: (value: string) => void;
+  searchCity: string;
+  setSearchCity: (value: string) => void;
 }
 
 const MovieInfoWidget: React.FC<MoviesDetailWidgetProps> = ({
   movie,
   showtimes,
   onSelectDate,
+  searchValue,
+  setSearchValue,
+  searchCity,
+  setSearchCity,
 }) => {
   const [activeTab, setActiveTab] = useState("ข้อมูลภาพยนต์");
-
-  // ฟังก์ชันช่วยแยกชื่อ Actor/Director
+  console.log(showtimes);
   const splitName = (name: string) => {
     const [firstName, ...rest] = name.split(" ");
     return { firstName, lastName: rest.join(" ") };
@@ -34,6 +43,11 @@ const MovieInfoWidget: React.FC<MoviesDetailWidgetProps> = ({
     "bg-gray-g63f h-11 py-2 px-4 rounded-sm flex items-center";
   const filterActiveStyle =
     "bg-gray-gf7e h-11 py-1 px-4 rounded-sm flex items-center";
+
+  const handleSearch = (value: string) => {
+    setSearchValue(value);
+  };
+  console.log("searchCity", searchCity);
 
   return (
     <>
@@ -139,10 +153,20 @@ const MovieInfoWidget: React.FC<MoviesDetailWidgetProps> = ({
             <div className="mt-10">
               <div className="flex flex-col lg:flex-row gap-5 items-center justify-center px-4">
                 <div className="w-full lg:w-[895px]">
-                  <InputSearch />
+                  <InputSearch
+                    handleSearch={handleSearch}
+                    value={searchValue}
+                  />
                 </div>
                 <div className="w-full lg:w-[285px]">
-                  <CitySelection />
+                  <InputComboBox
+                    value={searchCity}
+                    options={provinces.map((province) => ({
+                      value: province.name_th,
+                      label: province.name_th,
+                    }))}
+                    onChange={setSearchCity}
+                  />
                 </div>
               </div>
 
@@ -207,10 +231,15 @@ const MovieInfoWidget: React.FC<MoviesDetailWidgetProps> = ({
           <div className="px-4 py-10">
             <div className="flex flex-col gap-5 items-center justify-center mt-5">
               <div className="w-full">
-                <InputSearch />
+                <InputSearch value={searchValue} handleSearch={handleSearch} />
               </div>
               <div className="w-full">
-                <CitySelection />
+                <InputDropdown
+                  value={searchCity}
+                  onChange={setSearchCity}
+                  options={[]}
+                  label="City"
+                />
               </div>
             </div>
 

@@ -21,6 +21,8 @@ function MovieInfo() {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [movieLoading, setMovieLoading] = useState(true);
   const [showtimesLoading, setShowtimesLoading] = useState(true);
+  const [searchValue, setSearchValue] = useState("");
+  const [searchCity, setSearchCity] = useState("");
   const {
     location,
     showModal,
@@ -67,7 +69,7 @@ function MovieInfo() {
     try {
       const dateQuery = format(date, "yyyy-MM-dd");
       const res = await axios.get(`/api/movies/${movieSlug}/showtimes`, {
-        params: { date: dateQuery },
+        params: { date: dateQuery, search: searchValue, city: searchCity },
       });
       setShowtimes(res.data);
     } catch (err) {
@@ -82,6 +84,10 @@ function MovieInfo() {
     fetchShowtimes(e);
     setSelectedDate(e);
   };
+
+  useEffect(() => {
+    fetchShowtimes(selectedDate);
+  }, [searchValue, searchCity]);
 
   if (movieLoading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
@@ -101,6 +107,10 @@ function MovieInfo() {
         selectedDate={selectedDate}
         onSelectDate={(e) => onSelectedDate(e)}
         showtimesLoading={showtimesLoading}
+        searchValue={searchValue}
+        setSearchValue={setSearchValue}
+        searchCity={searchCity}
+        setSearchCity={setSearchCity}
       />
       <CinemaLocation data={cinemas} filterCinema={handleFilter} />
       <LocationPermissionModal

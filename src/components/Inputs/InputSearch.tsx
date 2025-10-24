@@ -23,7 +23,7 @@ const InputSearch = ({
   placeholder,
   handleSearch,
   value,
-  delay = 500,
+  delay,
   label,
   require,
   errors,

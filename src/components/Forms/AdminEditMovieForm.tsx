@@ -44,16 +44,24 @@ function AdminEditMovieForm({
 
   useEffect(() => {
     if (movie) {
-      // setFormData({
-      //   title: movie.title || "",
-      //   description: movie.description || "",
-      //   duration: movie.duration_min?.toString() || "",
-      //   rating: movie.rating?.toString() || "",
-      //   trailer: movie.trailer_url || "",
-      // });
+      const description =
+        movie.translations?.th?.description ||
+        movie.translations?.en?.description ||
+        "";
 
-      // setSelectedGenre(genresArray.map((g) => g.trim()));
+      const genresArray = (movie.genres as { genre: { name: string } }[]).map(
+        (g) => g.genre.name
+      );
 
+      setFormData({
+        title: movie.title || "",
+        description: description || "",
+        duration: movie.duration_min?.toString() || "",
+        rating: movie.rating?.toString() || "",
+        trailer: movie.trailer_url || "",
+      });
+
+      setSelectedGenre(genresArray);
       setPosterPreview(movie.poster_url || null);
     }
   }, [movie]);
@@ -114,7 +122,7 @@ function AdminEditMovieForm({
 
     try {
       setLoading(true);
-      const res = await axios.put(`/api/movies/${movie.id}`, payload);
+      const res = await axios.put(`/api/admin/movies/${movie.id}`, payload);
 
       if (res.status === 200) {
         alert("แก้ไขภาพยนตร์สำเร็จ!");

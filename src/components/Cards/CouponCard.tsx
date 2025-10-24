@@ -104,14 +104,14 @@ const CouponCard = ({ coupon }: CouponCardProps) => {
             alt={titleEn}
             width={285}
             height={285}
-            className="w-full h-full object-cover rounded-t-[8px]"
+            className="w-full h-full object-cover object-center rounded-t-[8px]"
           />
         </div>
 
         <div className="flex flex-col items-center gap-3 p-4">
           <div className="flex flex-col gap-2 items-start w-full">
             <h4
-              className="text-[#FFFFFF] font-bold text-sm lg:text-xl line-clamp-2 hover:underline cursor-pointer w-full"
+              className="text-[#FFFFFF] leading-[1.25em] min-h-[2.5em] font-bold text-sm lg:text-xl line-clamp-2 hover:underline cursor-pointer w-full"
               onClick={handleClickCoupon}
             >
               {titleEn}

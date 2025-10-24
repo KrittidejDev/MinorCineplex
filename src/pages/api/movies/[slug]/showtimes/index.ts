@@ -9,12 +9,13 @@ export default async function handler(
     if (req.method === "GET") {
       const slug = req.query.slug as string;
       const date = req.query.date as string | undefined;
-
+      const search = req.query.search as string | undefined;
+      const city = req.query.city as string | undefined;
       if (!slug) {
         return res.status(400).json({ message: "Slug is required" });
       }
 
-      const showtimes = await moviesService.getMovieShowtimes(slug, date);
+      const showtimes = await moviesService.getMovieShowtimes(slug, date, search, city);
       res.status(200).json(showtimes);
     } else {
       res.setHeader("Allow", ["GET"]);

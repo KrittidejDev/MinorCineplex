@@ -57,9 +57,6 @@ export const ShowTime: React.FC<ShowTimeProps> = ({
       router.push(`/booking/${newSlug}?id=${time.id}`);
     }
   };
-
-  console.log(data);
-
   const prevAllRef = useRef<boolean>(allCollapsed);
   useEffect(() => {
     if (prevAllRef.current && !allCollapsed && listRef.current) {

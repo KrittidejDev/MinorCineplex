@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { PrismaClient } from "@/generated/prisma"; // ปรับ path ตามโครงสร้างโปรเจกต์
+import { PrismaClient, SeatStatus } from "@/generated/prisma"; // ปรับ path ตามโครงสร้างโปรเจกต์
 // import { v4 as uuidv4 } from "uuid";
 
 const prisma = new PrismaClient();
@@ -56,7 +56,7 @@ export default async function handler(
 
       // ตรวจสอบว่าเก้าอี้ทั้งหมดถูกล็อกและล็อกโดย user
       const invalidSeats = seatRecords.filter(
-        (seat) => seat.status !== "LOCKED" || seat.locked_by_user_id !== userId
+        (seat) => seat.status !== "LOCKED" as unknown as SeatStatus || seat.locked_by_user_id !== userId
       );
       if (invalidSeats.length > 0) {
         throw new Error("Some seats are not available or not locked by user");

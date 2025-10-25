@@ -138,7 +138,7 @@ export const moviesService = {
         }))
       : undefined;
 
-    const payload: any = {
+    const payload: Partial<MovieDTO> & { slug?: string; status?: string } = {
       ...movieData,
       ...(slug && { slug }),
       ...(movieData.status && { status: parseMovieStatus(movieData.status) }),
@@ -148,7 +148,7 @@ export const moviesService = {
       ...(directors && { directors }),
     };
 
-    const updatedMovie = await moviesRepo.updateMovieForAdmin(id, payload);
+    const updatedMovie = await moviesRepo.updateMovieForAdmin(id, payload as MovieDTO);
     return updatedMovie;
   } catch (error) {
     console.error("Error updating movie:", error);

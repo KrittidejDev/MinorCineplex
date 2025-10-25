@@ -228,7 +228,7 @@ export const getShowTimeById = async (id: string) => {
 };
 
 export const getBookingInfo = async (showtime_id: string) => {
-  const data = await showTimeRepo.getBookingInfoByShowtimeId(showtime_id);
+  const data = await showTimeRepo.getShowtimeById(showtime_id);
   return data;
 };
 

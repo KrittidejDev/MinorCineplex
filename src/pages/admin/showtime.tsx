@@ -173,6 +173,7 @@ export default function AdminShowtime() {
       const response = await axios.post(`/api/admin/showtimes`, {
         movie_id: formData.movie_id,
         hall_id: formData.hall_id,
+        cinema_id: formData.cinema_id,
         time_slot_id: formData.time_slot_id,
         date: formData.date,
         price: parseFloat(formData.price) || 0,
@@ -224,6 +225,7 @@ export default function AdminShowtime() {
       const response = await axios.put(`/api/showtimes/${id}`, {
         movie_id: formData.movie_id,
         hall_id: formData.hall_id,
+        cinema_id: formData.cinema_id,
         time_slot_id: formData.time_slot_id,
         date: formData.date,
         price: parseFloat(formData.price) || 0,

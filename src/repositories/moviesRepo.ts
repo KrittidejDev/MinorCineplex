@@ -1,7 +1,6 @@
 import { PrismaClient, Prisma } from "@/generated/prisma";
 import { MovieDTO, MovieFilters, Pagination, ShowtimeDTO } from "@/types/movie";
-import { startOfDay, format, endOfDay } from "date-fns";
-import { th } from "date-fns/locale";
+import { startOfDay, endOfDay } from "date-fns";
 import { MovieStatus } from "@/generated/prisma";
 
 const prisma = new PrismaClient();
@@ -405,7 +404,7 @@ export const moviesRepo = {
       directors: createdMovie.directors.map((d) => ({ director: d.director })),
     };
   },
-  async updateMovieForAdmin(id: string, data: any): Promise<MovieDTO> {
+  async updateMovieForAdmin(id: string, data: MovieDTO): Promise<MovieDTO> {
     try {
       await prisma.movieGenre.deleteMany({ where: { movie_id: id } });
       await prisma.movieLanguage.deleteMany({ where: { movie_id: id } });
@@ -420,30 +419,30 @@ export const moviesRepo = {
         release_date: data.release_date,
         duration_min: data.duration_min,
         rating: data.rating,
-        status: data.status,
+        status: data.status as MovieStatus,
         translations: data.translations as Prisma.JsonObject,
 
         genres: {
           create:
-            data.genres?.map((g: any) => ({
+            (data.genres as { genre: { id: string } }[])?.map((g) => ({
               genre: { connect: { id: g.genre.id } },
             })) ?? [],
         },
         languages: {
           create:
-            data.languages?.map((l: any) => ({
+            data.languages?.map((l: { language: { id: string } }) => ({
               language: { connect: { id: l.language.id } },
             })) ?? [],
         },
         actors: {
           create:
-            data.actors?.map((a: any) => ({
+            data.actors?.map((a: { actor: { id: string } }) => ({
               actor: { connect: { id: a.actor.id } },
             })) ?? [],
         },
         directors: {
           create:
-            data.directors?.map((d: any) => ({
+            data.directors?.map((d: { director: { id: string } }) => ({
               director: { connect: { id: d.director.id } },
             })) ?? [],
         },

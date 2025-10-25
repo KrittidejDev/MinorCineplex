@@ -31,21 +31,25 @@ const InputSearch = ({
   type = "text",
   ...props
 }: InputSearchProps) => {
-  const [_value, _setValue] = useState(value);
-
-  const _handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    _setValue(e.target.value);
-  };
+  const [internalValue, setInternalValue] = useState(value || "");
 
   useEffect(() => {
-    const handler = setTimeout(() => {
-      handleSearch?.(_value ?? "");
-    }, delay);
+    setInternalValue(value || "");
+  }, [value]);
 
-    return () => {
-      clearTimeout(handler);
-    };
-  }, [_value, delay, handleSearch]);
+  const _handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value;
+    setInternalValue(newValue);
+    
+    if (delay && delay > 0) {
+      const handler = setTimeout(() => {
+        handleSearch?.(newValue);
+      }, delay);
+      return () => clearTimeout(handler);
+    } else {
+      handleSearch?.(newValue);
+    }
+  };
 
   return (
     <div className="flex flex-col gap-1 relative">
@@ -59,7 +63,7 @@ const InputSearch = ({
           {...props}
           type={type}
           placeholder={placeholder}
-          value={value ?? ""}
+          value={internalValue}
           onChange={_handleChange}
           disabled={disabled}
           className={cx(

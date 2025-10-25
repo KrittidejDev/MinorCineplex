@@ -1,7 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { moviesService } from "@/services/movieService";
-import { NextResponse } from "next/server";
-import { PrismaClient } from "@/generated/prisma";
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse

@@ -156,11 +156,13 @@ const MovieInfoWidget: React.FC<MoviesDetailWidgetProps> = ({
                   <InputSearch
                     handleSearch={handleSearch}
                     value={searchValue}
+                    placeholder="Search cinema"
                   />
                 </div>
                 <div className="w-full lg:w-[285px]">
                   <InputComboBox
                     value={searchCity}
+                    placeholder="Search city"
                     options={provinces.map((province) => ({
                       value: province.name_th,
                       label: province.name_th,

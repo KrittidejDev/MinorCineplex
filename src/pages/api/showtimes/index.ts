@@ -41,8 +41,8 @@ export default async function handler(
     }
   }
   if (req.method === "POST") {
-    const { movie_id, hall_id, time_slot_id, date, price } = req.body;
-    if (!movie_id || !hall_id || !time_slot_id || !date || !price) {
+    const { movie_id, hall_id, cinema_id, time_slot_id, date, price } = req.body;
+    if (!movie_id || !hall_id || !cinema_id || !time_slot_id || !date || !price) {
       return res.status(400).json({
         error: "Missing required fields",
       });
@@ -51,6 +51,7 @@ export default async function handler(
       const showTime = await createShowTime({
         movie_id,
         hall_id,
+        cinema_id,
         time_slot_id,
         date,
         price,

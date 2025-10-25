@@ -2,8 +2,8 @@ import FacebookIcon from "../Icons/FacebookIcon";
 import LineIcon from "../Icons/LineIcon";
 import CopyLight from "../Icons/CopyLight";
 import EmptyModal from "../Modals/ModalEmpty";
-import MessengerIcon from "./MessengerIcon";
-import TwitterIcon from "./TwitterIcon";
+import MessengerIcon from "../Icons/MessengerIcon";
+import TwitterIcon from "../Icons/TwitterIcon";
 
 const ShareModal = ({
   isOpen,

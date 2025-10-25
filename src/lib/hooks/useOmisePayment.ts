@@ -1,3 +1,4 @@
+import { CardToken } from "@/types/omise";
 import { useState, useEffect } from "react";
 
 interface QRPaymentResponse {
@@ -5,7 +6,7 @@ interface QRPaymentResponse {
   qrCodeUrl?: string;
   chargeId?: string;
   error?: string;
-  details?: any;
+  details?: CardToken;
 }
 
 interface OmisePaymentHook {
@@ -47,7 +48,7 @@ export const useOmisePayment = ({
     let attempts = 0;
 
     const checkOmise = () => {
-      if ((window as any).Omise) {
+      if ((window as unknown as { Omise: unknown }).Omise) {
         console.log("Omise.js detected");
         setIsOmiseLoaded(true);
       } else if (attempts < maxAttempts) {
@@ -83,14 +84,14 @@ export const useOmisePayment = ({
         metadata,
       });
       if (!isOmiseLoaded) throw new Error("Omise.js is not loaded yet");
-      const Omise = (window as any).Omise;
+      const Omise = (window as unknown as { Omise: unknown }).Omise;
 
       // ตรวจสอบ public key
       const publicKey = process.env.NEXT_PUBLIC_OMISE_PUBLIC_KEY;
       if (!publicKey) {
         throw new Error("Omise public key not configured");
       }
-      Omise.setPublicKey(publicKey);
+      (Omise as { setPublicKey: (publicKey: string) => void }).setPublicKey(publicKey);
       console.log("Omise public key set:", publicKey.slice(0, 8) + "...");
 
       // Validate cardDetails
@@ -132,17 +133,17 @@ export const useOmisePayment = ({
       };
       console.log("Token payload:", payload);
 
-      const tokenResponse: any = await new Promise((resolve, reject) => {
-        Omise.createToken(
+      const tokenResponse: CardToken = await new Promise((resolve, reject) => {
+        (Omise as { createToken: (type: string, payload: Record<string, unknown>, callback: (status: number, response: CardToken) => void) => void }).createToken(
           "card",
           payload.card,
-          (status: number, response: any) => {
+          (status: number, response: CardToken) => {
             if (status === 200) {
               console.log("Token created successfully:", response.id);
               resolve(response);
             } else {
               console.error("Token creation failed:", response);
-              reject(new Error(response.message || "Failed to create token"));
+              reject(new Error((response as unknown as { message: string }).message || "Failed to create token"));
             }
           }
         );

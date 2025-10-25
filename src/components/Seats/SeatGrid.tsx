@@ -43,7 +43,7 @@ const SeatGrid: React.FC<SeatGridProps> = ({
           row: s.row,
           col: s.col || "",
         },
-      })
+      }) as unknown as Seat,
     ),
   }));
 

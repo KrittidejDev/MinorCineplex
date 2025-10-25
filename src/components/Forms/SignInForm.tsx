@@ -80,8 +80,7 @@ const SignInForm = ({ onSubmit }: SignUpFormProps) => {
         />
       </div>
 
-      <div className="w-full flex justify-between">
-        <DefaultCheckbox label="Remember" />
+      <div className="w-full">
         <Link href="/" className="text-white underline text-fm-16">
           Forget password?
         </Link>

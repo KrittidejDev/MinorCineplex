@@ -1,6 +1,7 @@
 import { Prisma, PrismaClient } from "@/generated/prisma";
 import { NextApiRequest, NextApiResponse } from "next";
 import Ably from "ably";
+import { SeatStatus } from "@/generated/prisma";
 
 const prisma = new PrismaClient();
 const ably = new Ably.Realtime({ key: process.env.ABLY_API_KEY });
@@ -42,7 +43,7 @@ export default async function handler(
     const now = new Date();
     const invalidSeats = seats.filter(
       (seat) =>
-        seat.status !== "LOCKED" ||
+        seat.status !== "LOCKED" as SeatStatus ||
         seat.locked_by_user_id !== userId ||
         (seat.locked_until && new Date(seat.locked_until) < now)
     );
@@ -57,7 +58,7 @@ export default async function handler(
         .json({ error: "Some seats are not locked or have expired" });
     }
 
-    const transactionOperations: Prisma.PrismaPromise<any>[] = [
+    const transactionOperations: Prisma.PrismaPromise<unknown>[] = [
       prisma.booking.update({
         where: { id: bookingId },
         data: { status: "PAID" },

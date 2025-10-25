@@ -1,6 +1,5 @@
 import NavAndFooter from '@/components/MainLayout/NavAndFooter'
 import React from 'react'
-import { MapPin, Calendar, Clock, Home } from 'lucide-react'
 import PinFill from '@/components/Icons/PinFill'
 import DateRangeFill from '@/components/Icons/DateRangeFill'
 import TimeFill from '@/components/Icons/TimeFill'

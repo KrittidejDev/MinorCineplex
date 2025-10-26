@@ -21,104 +21,111 @@ export default async function handler(
     typeof bookingId !== "string" ||
     !userId ||
     typeof userId !== "string" ||
+    !Array.isArray(seatIds) ||
     !seatIds.every((id: string) => typeof id === "string")
   ) {
-    console.error("Invalid input:", { bookingId, userId, seatIds });
     return res
       .status(400)
       .json({ error: "Invalid booking, user, or seat ID format" });
   }
 
   if (couponId && typeof couponId !== "string") {
-    console.error("Invalid couponId:", couponId);
     return res.status(400).json({ error: "Invalid coupon ID format" });
   }
 
   try {
+    const now = new Date();
+
+    // ดึงข้อมูล seat และ showtime
     const seats = await prisma.showtimeSeat.findMany({
       where: { id: { in: seatIds } },
-      include: { showtime: true }, // Include showtime to get showtime_id
+      include: { showtime: true },
     });
 
-    const now = new Date();
+    if (seats.length !== seatIds.length) {
+      return res.status(404).json({ error: "Some seats not found" });
+    }
+
+    // ตรวจสอบ seat ที่ถูกล็อกโดย user และยังไม่หมดเวลา
     const invalidSeats = seats.filter(
       (seat) =>
-        seat.status !== "LOCKED" as SeatStatus ||
+        seat.status !== SeatStatus.LOCKED ||
         seat.locked_by_user_id !== userId ||
         (seat.locked_until && new Date(seat.locked_until) < now)
     );
 
     if (invalidSeats.length) {
-      console.error(
-        "Invalid seats:",
-        invalidSeats.map((s) => s.id)
-      );
       return res
         .status(403)
         .json({ error: "Some seats are not locked or have expired" });
     }
 
-    const transactionOperations: Prisma.PrismaPromise<unknown>[] = [
-      prisma.booking.update({
-        where: { id: bookingId },
-        data: { status: "PAID" },
-      }),
-      prisma.showtimeSeat.updateMany({
-        where: { id: { in: seatIds } },
-        data: { status: "BOOKED", locked_by_user_id: null, locked_until: null },
-      }),
-    ];
-
+    // ตรวจสอบคูปอง
+    let userCoupon: any = null;
     if (couponId) {
-      const userCoupon = await prisma.userCoupon.findFirst({
+      userCoupon = await prisma.userCoupon.findFirst({
         where: { coupon_id: couponId, user_id: userId, is_used: false },
       });
-
       if (!userCoupon) {
-        console.error("UserCoupon not found or already used:", {
-          couponId,
-          userId,
-        });
         return res
           .status(404)
           .json({ error: "Coupon not found or already used" });
       }
-
-      transactionOperations.push(
-        prisma.userCoupon.update({
-          where: { id: userCoupon.id },
-          data: { is_used: true, used_at: new Date() },
-        })
-      );
     }
 
-    await prisma.$transaction(transactionOperations);
+    // Transaction update booking, seats และ coupon
+    const updatedSeats = await prisma.$transaction(
+      async (tx) => {
+        await tx.booking.update({
+          where: { id: bookingId },
+          data: { status: "PAID" },
+        });
 
+        const updatedSeatList: any[] = [];
+        for (const seat of seats) {
+          const updatedSeat = await tx.showtimeSeat.update({
+            where: { id: seat.id },
+            data: {
+              status: SeatStatus.BOOKED,
+              // ไม่ลบ locked_by_user_id ของคนที่จองสำเร็จ
+              locked_until: null,
+            },
+          });
+          updatedSeatList.push(updatedSeat);
+        }
+
+        if (userCoupon) {
+          await tx.userCoupon.update({
+            where: { id: userCoupon.id },
+            data: { is_used: true, used_at: now },
+          });
+        }
+
+        return updatedSeatList;
+      },
+      { maxWait: 5000 } // timeout 5 วินาที
+    );
+
+    // Publish Ably update หลังจาก DB update เสร็จแล้ว
     const showtimeId = seats[0]?.showtime_id;
     if (showtimeId) {
       const channel = ably.channels.get(`showtime:${showtimeId}`);
-      for (const seatId of seatIds) {
+      for (const seat of updatedSeats) {
         await channel.publish("update", {
-          seatId,
-          status: "BOOKED",
-          locked_by_user_id: null,
+          seatId: seat.id,
+          status: SeatStatus.BOOKED,
+          locked_by_user_id: seat.locked_by_user_id, // เก็บคนจองจริง
           locked_until: null,
         });
-        console.log(
-          `Published Ably update for seat ${seatId} to showtime:${showtimeId}`
-        );
       }
-    } else {
-      console.error("No showtimeId found for seats:", seatIds);
     }
 
-    console.log(
-      `Booking ${bookingId} completed with seats ${seatIds.join(", ")}`
-    );
-    res.status(200).json({ message: "Booking completed successfully" });
+    return res
+      .status(200)
+      .json({ message: "Booking completed successfully", seats: updatedSeats });
   } catch (error) {
     console.error("Error completing booking:", error);
-    res.status(500).json({ error: "Failed to complete booking" });
+    return res.status(500).json({ error: "Failed to complete booking" });
   } finally {
     await prisma.$disconnect();
   }

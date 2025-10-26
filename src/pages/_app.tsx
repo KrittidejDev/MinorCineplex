@@ -4,11 +4,9 @@ import { SessionProvider } from "next-auth/react";
 import type { AppProps } from "next/app";
 import Script from "next/script";
 import { ToastContainer } from "react-toastify";
+import { appWithTranslation } from "next-i18next";
 
-export default function App({
-  Component,
-  pageProps: { session, ...pageProps },
-}: AppProps) {
+function App({ Component, pageProps: { session, ...pageProps } }: AppProps) {
   return (
     <SessionProvider session={session}>
       <AuthProvider>
@@ -35,3 +33,5 @@ export default function App({
     </SessionProvider>
   );
 }
+
+export default appWithTranslation(App);

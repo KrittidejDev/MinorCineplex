@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import NavAndFooterWithBanner from "@/components/MainLayout/NavAndFooterWithBanner";
 import NowShowingComingSoon from "@/components/Widgets/NowShowingComingSoonWidget";
 import CinemaLocation from "@/components/Widgets/CinemaLocation";
@@ -13,6 +13,8 @@ import { useSearchParams } from "next/navigation";
 import { MovieAPIRespons, MovieDTO } from "@/types/movie";
 import { MovieStatus } from "@/types/enums";
 import { CinemaByProvince } from "@/types/cinema";
+import type { GetStaticProps } from "next";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
 const CurtainIntro = dynamic(
   () => import("@/components/Widgets/CurtainIntro"),
@@ -84,18 +86,19 @@ export default function Home() {
   };
 
   useEffect(() => {
-  const filters: FilterData = {
-    title: searchParams.get("title") || "",
-    genre: searchParams.get("genre") || "",
-    language: searchParams.get("language") || "",
-    release_date: searchParams.get("release_date") || "",
-    status: (searchParams.get("status") as MovieStatus) || MovieStatus.NOW_SHOWING,
-  };
+    const filters: FilterData = {
+      title: searchParams.get("title") || "",
+      genre: searchParams.get("genre") || "",
+      language: searchParams.get("language") || "",
+      release_date: searchParams.get("release_date") || "",
+      status:
+        (searchParams.get("status") as MovieStatus) || MovieStatus.NOW_SHOWING,
+    };
 
-  const hasFilters = Object.values(filters).some((v) => v !== "");
-  setQuery(filters);
-  fetchAllMovies(hasFilters ? filters : undefined);
-}, [searchParams]);
+    const hasFilters = Object.values(filters).some((v) => v !== "");
+    setQuery(filters);
+    fetchAllMovies(hasFilters ? filters : undefined);
+  }, [searchParams]);
 
   useEffect(() => {
     const lastShown = localStorage.getItem("curtain_last_shown");
@@ -131,6 +134,7 @@ export default function Home() {
     setQuery(newQuery);
     fetchAllMovies(newQuery);
   };
+
   return (
     <NavAndFooterWithBanner>
       {showCurtain && (
@@ -168,3 +172,11 @@ export default function Home() {
     </NavAndFooterWithBanner>
   );
 }
+
+export const getStaticProps: GetStaticProps = async ({ locale }) => {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale ?? "en", ["common"])),
+    },
+  };
+};

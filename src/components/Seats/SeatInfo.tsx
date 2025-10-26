@@ -1,15 +1,18 @@
 import SeatAvailable from "@/components/Icons/SeatAvailable";
 import SeatBooked from "@/components/Icons/SeatBooked";
 import SeatReserved from "@/components/Icons/SeatReserved";
+import SeatFriend from "../Icons/SeatFriend";
 
 type SeatInfoProps = {
   price?: string | number;
+  fid?: string | null;
+  hall: string;
 };
 
-const SeatInfo: React.FC<SeatInfoProps> = ({ price }) => (
+const SeatInfo: React.FC<SeatInfoProps> = ({ price, fid, hall }) => (
   <div className="w-full flex flex-col sm:flex-row border-t border-gray-gedd gap-10 py-4">
-    <div className="bg-gray-g63f max-w-[88px] py-3 px-4 rounded-sm">
-      <h1 className="text-f-24 text-gray-gedd">Hall 1</h1>
+    <div className="bg-gray-g63f max-w-[88px] py-3 px-4 rounded-sm whitespace-nowrap h-fit">
+      <h1 className="text-f-24 text-gray-gedd ">{hall}</h1>
     </div>
     <div className="flex flex-wrap gap-7">
       <div className="flex gap-4 items-center">
@@ -27,6 +30,12 @@ const SeatInfo: React.FC<SeatInfoProps> = ({ price }) => (
         <SeatReserved />
         <p className="text-gray-gedd">Reserved Seat</p>
       </div>
+      {fid && (
+        <div className="flex gap-4 items-center">
+          <SeatFriend />
+          <p className="text-gray-gedd">Friend's Seat</p>
+        </div>
+      )}
     </div>
   </div>
 );

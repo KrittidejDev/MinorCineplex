@@ -10,8 +10,11 @@ import { MovieDTO, ShowtimeDTO } from "@/types/movie";
 import { format } from "date-fns";
 import NavAndFooter from "@/components/MainLayout/NavAndFooter";
 import Image from "next/image";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import { useTranslation } from "react-i18next";
 
 function MovieInfo() {
+  const { t } = useTranslation("common");
   const params = useParams();
   const movieSlug = params?.slug as string;
   const [movie, setMovie] = useState<MovieDTO | null>(null);
@@ -45,7 +48,7 @@ function MovieInfo() {
         setMovie(res.data);
       } catch (err) {
         console.error("Error fetching movie:", err);
-        setError("ไม่สามารถโหลดข้อมูลหนังได้");
+        setError(t("cannot_load_movie") || "ไม่สามารถโหลดข้อมูลหนังได้");
       } finally {
         fetchShowtimes(selectedDate);
         setMovieLoading(false);
@@ -53,7 +56,7 @@ function MovieInfo() {
     };
 
     fetchMovie();
-  }, [movieSlug]);
+  }, [movieSlug, t]);
 
   const handleFilter = (value: string) => {
     setFilter(value);
@@ -89,23 +92,23 @@ function MovieInfo() {
     fetchShowtimes(selectedDate);
   }, [searchValue, searchCity]);
 
-  if (movieLoading) return <p>Loading...</p>;
+  if (movieLoading) return <p>{t("loading") || "Loading..."}</p>;
   if (error) return <p>{error}</p>;
-  if (!movie) return <p>ไม่พบข้อมูลหนัง</p>;
+  if (!movie) return <p>{t("movie_not_found") || "ไม่พบข้อมูลหนัง"}</p>;
 
   return (
     <NavAndFooter>
       <Image
         src="/images/cover-cinema.png"
-        alt="Cinema Interior"
+        alt={t("cinema_interior") || "Cinema Interior"}
         fill
-        className="hidden md:flex object-cover object-center w-full z-0 max-h-[100vh] overflow-hidden "
+        className="hidden md:flex object-cover object-center w-full z-0! max-h-[100vh] overflow-hidden "
       />
       <MovieInfoWidget
         movie={movie}
         showtimes={showtimes}
         selectedDate={selectedDate}
-        onSelectDate={(e) => onSelectedDate(e)}
+        onSelectDate={onSelectedDate}
         showtimesLoading={showtimesLoading}
         searchValue={searchValue}
         setSearchValue={setSearchValue}
@@ -122,6 +125,14 @@ function MovieInfo() {
       />
     </NavAndFooter>
   );
+}
+
+export async function getServerSideProps({ locale }: { locale: string }) {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale, ["common"])),
+    },
+  };
 }
 
 export default MovieInfo;

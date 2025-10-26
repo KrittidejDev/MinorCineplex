@@ -4,7 +4,11 @@ import MovieCard from "../Cards/MovieCard";
 import { MovieAPIRespons, MovieDTO } from "@/types/movie";
 import { useRouter } from "next/router";
 
-function AllMoviesWidget() {
+interface AllMoviesWidgetProps {
+  initialMovies?: MovieDTO[];
+}
+
+function AllMoviesWidget({ initialMovies = [] }: AllMoviesWidgetProps) {
   const [activeTab, setActiveTab] = useState("NOW_SHOWING");
   const [movies, setMovies] = useState<MovieDTO[]>([]);
   const [loading, setLoading] = useState(true);
@@ -26,7 +30,7 @@ function AllMoviesWidget() {
   };
 
   useEffect(() => {
-    fetchAllMovies();
+    if (!initialMovies.length) fetchAllMovies();
   }, [activeTab]);
 
   const groupedMovies =

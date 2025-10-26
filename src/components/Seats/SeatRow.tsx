@@ -6,6 +6,7 @@ import SeatSelected from "@/components/Icons/SeatSelected";
 import { SeatRowData, SelectedSeat, Seat } from "@/types/cinema";
 import { ablyClient } from "@/lib/ably";
 import type { InboundMessage } from "ably";
+import SeatFriend from "../Icons/SeatFriend";
 
 interface SeatRowProps {
   seatsData?: SeatRowData[];
@@ -13,6 +14,7 @@ interface SeatRowProps {
   onSelectSeat: (seats: SelectedSeat[]) => void;
   showtimeId?: string;
   userId?: string;
+  fid?: string | null;
 }
 
 interface AblySeatMessage {
@@ -47,6 +49,7 @@ const SeatRow: React.FC<SeatRowProps> = ({
   onSelectSeat,
   showtimeId,
   userId,
+  fid,
 }) => {
   const [localSeats, setLocalSeats] = useState<SeatRowData[]>(
     generateDefaultSeats()
@@ -54,12 +57,20 @@ const SeatRow: React.FC<SeatRowProps> = ({
 
   useEffect(() => {
     if (seatsData && seatsData.length > 0) {
+      console.log("Updating localSeats with new seatsData:", seatsData);
       setLocalSeats(seatsData);
+    } else {
+      console.warn("No seatsData provided, using default seats");
+      setLocalSeats(generateDefaultSeats());
     }
   }, [seatsData]);
 
   useEffect(() => {
-    if (!showtimeId) return;
+    if (!showtimeId) {
+      console.warn("No showtimeId provided, skipping Ably subscription");
+      return;
+    }
+
     const channel = ablyClient.channels.get(`showtime:${showtimeId}`);
 
     const handleUpdate = (message: InboundMessage) => {
@@ -85,6 +96,10 @@ const SeatRow: React.FC<SeatRowProps> = ({
         return;
       }
 
+      const isLockExpired = locked_until
+        ? new Date(locked_until).getTime() < Date.now()
+        : false;
+
       setLocalSeats((prev) =>
         prev.map((row) => ({
           ...row,
@@ -92,12 +107,15 @@ const SeatRow: React.FC<SeatRowProps> = ({
             seat.id === seatId
               ? {
                   ...seat,
-                  status,
-                  locked_by_user_id:
-                    locked_by_user_id ?? seat.locked_by_user_id,
-                  locked_until: locked_until
-                    ? new Date(locked_until).getTime()
-                    : seat.locked_until,
+                  status: isLockExpired ? "AVAILABLE" : status,
+                  locked_by_user_id: isLockExpired
+                    ? null
+                    : (locked_by_user_id ?? seat.locked_by_user_id),
+                  locked_until: isLockExpired
+                    ? null
+                    : locked_until
+                      ? new Date(locked_until).getTime()
+                      : seat.locked_until,
                 }
               : seat
           ),
@@ -132,18 +150,24 @@ const SeatRow: React.FC<SeatRowProps> = ({
       locked_until?: number | null;
     }
   ) => {
-    if (!showtimeId) return;
+    if (!showtimeId || !userId) {
+      console.warn("Missing showtimeId or userId, cannot toggle seat");
+      return;
+    }
 
+    const isLockExpired = seat.locked_until
+      ? seat.locked_until < Date.now()
+      : false;
     const isLockedByOther =
-      seat.status === "LOCKED" && seat.locked_by_user_id !== userId;
-    if (
-      isLockedByOther ||
-      seat.status === "LOCKED" ||
-      seat.status === "BOOKED"
-    ) {
+      seat.status === "LOCKED" &&
+      seat.locked_by_user_id !== userId &&
+      !isLockExpired;
+
+    if (isLockedByOther || seat.status === "BOOKED") {
       console.log(`Cannot toggle seat ${seat.id}:`, {
         status: seat.status,
         isLockedByOther,
+        locked_until: seat.locked_until,
       });
       return;
     }
@@ -169,16 +193,23 @@ const SeatRow: React.FC<SeatRowProps> = ({
           <div className="flex gap-3 md:gap-4">
             {rowData.seats.map((seat, index) => {
               const isSelected = selectedSeats.some((s) => s.id === seat.id);
+              const isLockExpired = seat.locked_until
+                ? seat.locked_until < Date.now()
+                : false;
               const isLockedByOther =
-                seat.status === "LOCKED" || seat.status === "BOOKED";
+                (seat.status === "LOCKED" &&
+                  seat.locked_by_user_id !== userId &&
+                  !isLockExpired) ||
+                seat.status === "BOOKED";
 
-              const SeatIcon = isSelected
-                ? SeatSelected
-                : seat.status === "LOCKED"
-                  ? SeatReserved
-                  : seat.status === "BOOKED"
-                    ? SeatBooked
-                    : SeatAvailable;
+              let SeatIcon;
+              if (isSelected) SeatIcon = SeatSelected;
+              else if (fid && seat.locked_by_user_id === fid && !isLockExpired)
+                SeatIcon = SeatFriend;
+              else if (seat.status === "BOOKED") SeatIcon = SeatBooked;
+              else if (seat.status === "LOCKED" && !isLockExpired)
+                SeatIcon = SeatReserved;
+              else SeatIcon = SeatAvailable;
 
               return (
                 <div key={seat.id} className="flex flex-col items-center">

@@ -6,11 +6,13 @@ import { useSession } from "next-auth/react";
 import { AxiosError } from "axios";
 import { SuccessAlert } from "@/components/ui/alert";
 import { userService } from "@/config/userServices";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
 const ResetPasswordUser = () => {
   const [isAlert, setIsAlert] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { data: session } = useSession();
+
   const handleResetPassword = async (values: FormValues, reset: () => void) => {
     try {
       setIsLoading(true);
@@ -65,5 +67,13 @@ const ResetPasswordUser = () => {
     </>
   );
 };
+
+export async function getServerSideProps({ locale }: { locale: string }) {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale, ["common"])),
+    },
+  };
+}
 
 export default ResetPasswordUser;

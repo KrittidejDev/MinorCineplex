@@ -23,7 +23,7 @@ function TrailerPlayer({ url, className, enablePIP = true }: VideoPlayerProps) {
     <>
       <div
         ref={trailerRef}
-        className={`rounded-xl overflow-hidden relative w-full h-fit lg:w-[840px] transition-opacity duration-700 ease-in-out ${
+        className={`rounded-xl overflow-hidden relative h-fit w-full max-w-[840px] transition-opacity duration-700 ease-in-out ${
           isPIPMode ? "opacity-0" : "opacity-100"
         } ${className || ""}`}
         style={{

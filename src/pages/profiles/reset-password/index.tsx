@@ -4,11 +4,10 @@ import ProfileBar from "@/components/Widgets/ProfileBar";
 import ResetPassword, { FormValues } from "@/components/Forms/ResetPassword";
 import { useSession } from "next-auth/react";
 import { AxiosError } from "axios";
-import { SuccessAlert } from "@/components/ui/alert";
 import { userService } from "@/config/userServices";
+import { toast } from "react-toastify";
 
 const ResetPasswordUser = () => {
-  const [isAlert, setIsAlert] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { data: session } = useSession();
   const handleResetPassword = async (values: FormValues, reset: () => void) => {
@@ -21,11 +20,13 @@ const ResetPasswordUser = () => {
         id: session?.user.id,
         newPassword: values.newPassword,
       });
+      toast.success("Password reset successfully");
       reset();
-      setIsAlert(true);
-    } catch (error: unknown) {
+    } catch (error) {
       if (error instanceof AxiosError) {
-        console.log(error);
+        toast.error(error.response?.data?.message);
+      } else {
+        toast.error("Failed to reset password");
       }
     } finally {
       setIsLoading(false);
@@ -51,15 +52,6 @@ const ResetPasswordUser = () => {
               />
             </div>
           </div>
-        </div>
-        <div className="absolute right-5 bottom-5">
-          {isAlert && (
-            <SuccessAlert
-              onClick={() => setIsAlert(false)}
-              header="Reset password success"
-              text="Your password has been reset successfully"
-            />
-          )}
         </div>
       </div>
     </>

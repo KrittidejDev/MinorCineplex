@@ -142,7 +142,7 @@ const MovieInfoWidget: React.FC<MoviesDetailWidgetProps> = ({
 
         {/* ข้อมูลภาพยนต์ - Desktop Only */}
         {activeTab === "ข้อมูลภาพยนต์" && (
-          <div className="hidden md:flex flex-col gap-10 mt-10">
+          <div className="hidden md:flex flex-col gap-10 mt-10 sm:mt-30">
             {/* นักแสดง */}
             <div>
               <h3 className="font-bold text-f-24">นักแสดง</h3>
@@ -163,7 +163,7 @@ const MovieInfoWidget: React.FC<MoviesDetailWidgetProps> = ({
             </div>
 
             {/* ผู้กำกับ */}
-            <div>
+            <div className="w-full">
               <h3 className="font-bold text-f-24">ผู้กำกับ</h3>
               <div className="flex flex-wrap gap-2.5 mt-5">
                 {movie.directors.map((director) => {

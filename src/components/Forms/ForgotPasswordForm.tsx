@@ -12,9 +12,10 @@ type FormValues = {
 
 type ForgotPasswordFormProps = {
   onSubmit?: (values: FormValues) => void;
+  isLoading?: boolean;
 };
 
-const ForgotPasswordForm = ({ onSubmit }: ForgotPasswordFormProps) => {
+const ForgotPasswordForm = ({ onSubmit, isLoading }: ForgotPasswordFormProps) => {
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   const schema = yup.object().shape({
@@ -92,10 +93,10 @@ const ForgotPasswordForm = ({ onSubmit }: ForgotPasswordFormProps) => {
 
       <div className="w-full">
         <Button
-          disabled={isEmpty || isSubmitting}
+          disabled={isEmpty || isSubmitting || isLoading}
           className="btn-base blue-normal cursor-pointer w-full h-12 flex rounded-b-sm justify-center items-center"
         >
-          {isSubmitting ? "Sending..." : "Send Reset Link"}
+          {(isSubmitting || isLoading) ? "Sending..." : "Send Reset Link"}
         </Button>
       </div>
 

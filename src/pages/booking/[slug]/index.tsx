@@ -24,11 +24,14 @@ import { useSearchParams } from "next/navigation";
 import axios, { AxiosError } from "axios";
 import ModalLogin from "@/components/Widgets/ModalLogin";
 import Ably from "ably";
+import { GetServerSideProps } from "next";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
 const BookingSeat: React.FC = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const id = searchParams?.get("id");
+  const fid = searchParams?.get("fid");
   const { data: session } = useSession();
 
   const [step, setStep] = useState<"1" | "2">("1");
@@ -56,7 +59,6 @@ const BookingSeat: React.FC = () => {
   const isNavigating = useRef(false);
   const countdownInterval = useRef<NodeJS.Timeout | null>(null);
   const paymentSuccessful = useRef(false);
-  const ablyRef = useRef<Ably.Realtime | null>(null);
 
   const totalPrice = selectedSeats.reduce(
     (sum, seat) => sum + (seat.price || 0),
@@ -141,7 +143,7 @@ const BookingSeat: React.FC = () => {
     if (
       isUnlocking.current ||
       !selectedSeats.length ||
-      paymentSuccessful.current
+      paymentSuccessful.current // <-- ไม่ปลดล็อกหลังจ่ายเงิน
     )
       return;
     isUnlocking.current = true;
@@ -348,9 +350,11 @@ const BookingSeat: React.FC = () => {
       if (!response.ok)
         throw new Error(data.error || "Failed to complete booking");
 
+      // ✅ ตั้งค่า payment สำเร็จก่อน route change
       paymentSuccessful.current = true;
+
       toast.success("ชำระเงินและจองสำเร็จ!");
-      router.push(`/booking/${publicId}/success`);
+      router.push(`/booking/success?pid=${publicId}`);
     } catch (err) {
       console.error("Payment error:", err);
       toast.error("ชำระเงินหรือจองไม่สำเร็จ");
@@ -397,8 +401,9 @@ const BookingSeat: React.FC = () => {
     Promise.all([fetchBookingData(), fetchCouponData()]).finally(() =>
       setIsLoading(false)
     );
-  }, [id, session?.user?.id]);
+  }, [id, session?.user?.id, fid]);
 
+  // ✅ Countdown for step 2
   useEffect(() => {
     if (step === "2" && !countdownActive.current) {
       countdownActive.current = true;
@@ -406,7 +411,8 @@ const BookingSeat: React.FC = () => {
         setCountdown((prev) => {
           if (prev <= 1) {
             clearInterval(countdownInterval.current!);
-            releaseSeatsAsync(true);
+            // ปลดล็อกเฉพาะถ้า payment ไม่สำเร็จ
+            if (!paymentSuccessful.current) releaseSeatsAsync(true);
             return 0;
           }
           return prev - 1;
@@ -449,13 +455,6 @@ const BookingSeat: React.FC = () => {
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
       router.events.off("routeChangeStart", handleRouteChange);
-      if (
-        selectedSeats.length > 0 &&
-        step === "2" &&
-        !paymentSuccessful.current
-      ) {
-        releaseSeatsAsync();
-      }
     };
   }, [selectedSeats, step]);
 
@@ -482,6 +481,8 @@ const BookingSeat: React.FC = () => {
             {step === "1" && bookingInfo && (
               <SeatWidget
                 data={bookingInfo}
+                fid={fid}
+                hall={bookingInfo?.hall?.name}
                 selectedSeats={selectedSeats}
                 onSelectSeat={(seats) => {
                   const validSeats = seats.filter(
@@ -545,6 +546,15 @@ const BookingSeat: React.FC = () => {
       />
     </NavAndFooter>
   );
+};
+
+export const getServerSideProps: GetServerSideProps = async ({ locale }) => {
+  const resolvedLocale = locale || "en";
+  return {
+    props: {
+      ...(await serverSideTranslations(resolvedLocale, ["bookingDetail"])),
+    },
+  };
 };
 
 export default BookingSeat;

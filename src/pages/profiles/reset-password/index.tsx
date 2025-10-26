@@ -5,11 +5,13 @@ import ResetPassword, { FormValues } from "@/components/Forms/ResetPassword";
 import { useSession } from "next-auth/react";
 import { AxiosError } from "axios";
 import { userService } from "@/config/userServices";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { toast } from "react-toastify";
 
 const ResetPasswordUser = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { data: session } = useSession();
+
   const handleResetPassword = async (values: FormValues, reset: () => void) => {
     try {
       setIsLoading(true);
@@ -57,5 +59,13 @@ const ResetPasswordUser = () => {
     </>
   );
 };
+
+export async function getServerSideProps({ locale }: { locale: string }) {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale, ["common"])),
+    },
+  };
+}
 
 export default ResetPasswordUser;

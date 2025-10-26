@@ -7,6 +7,7 @@ import { useSession, signOut } from "next-auth/react";
 import { userService } from "@/config/userServices";
 import { UserDataResponse } from "@/types/user";
 import NavbarMenu from "./NavbarMenu";
+import LanguageSwitcher from "./LanguageSwitcher";
 
 interface response {
   status: number;
@@ -18,7 +19,6 @@ const NavBarWidget = () => {
   const id = session?.user?.id;
   const [userData, setUserData] = useState<UserDataResponse | null>(null);
 
-  // ใช้ useCallback เพื่อให้ fetchMe เป็น dependency ของ useEffect
   const fetchMe = useCallback(async () => {
     if (!id) return;
     try {
@@ -69,11 +69,14 @@ const NavBarWidget = () => {
       </Link>
       <div className="hidden md:flex cursor-pointer">
         {status === "authenticated" ? (
-          <AvatarDisplay
-            data={userData as UserDataResponse}
-            _isOpen={_isOpen}
-            _handleOpen={_handleOpen}
-          />
+          <>
+            <AvatarDisplay
+              data={userData as UserDataResponse}
+              _isOpen={_isOpen}
+              _handleOpen={_handleOpen}
+            />
+            <LanguageSwitcher />
+          </>
         ) : (
           <div>
             <Link href={"/auth/login"}>

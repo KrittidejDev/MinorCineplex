@@ -71,13 +71,9 @@ class BookingService {
   }
 
   private async getShowtimeSeats(showtimeId: string): Promise<SeatRow[]> {
-    if (this.seatRowsCache[showtimeId]) return this.seatRowsCache[showtimeId];
-
     const showtimeSeats =
       await bookingRepository.getSeatsByShowtimeId(showtimeId);
     const seatRows = this.transformSeatsToRows(showtimeSeats as ShowtimeSeat[]);
-
-    this.seatRowsCache[showtimeId] = seatRows;
     return seatRows;
   }
 

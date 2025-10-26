@@ -5,8 +5,6 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { Button } from "../ui/button";
 import * as yup from "yup";
 import Link from "next/link";
-import { DefaultCheckbox } from "../ui/checkbox";
-
 
 type FormValues = {
   email: string;
@@ -81,7 +79,7 @@ const SignInForm = ({ onSubmit }: SignUpFormProps) => {
       </div>
 
       <div className="w-full">
-        <Link href="/" className="text-white underline text-fm-16">
+        <Link href="/auth/forgot-password" className="text-white underline text-fm-16">
           Forget password?
         </Link>
       </div>

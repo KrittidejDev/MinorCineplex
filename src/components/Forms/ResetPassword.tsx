@@ -31,7 +31,7 @@ const ResetPassword = ({ onSubmit, align, isLoading }: ResetPasswordProps) => {
   return (
     <form
       onSubmit={handleSubmit((values) => {
-        onSubmit?.(values, () => reset());
+        onSubmit?.(values, reset);
       })}
       className={`w-full flex flex-col ${align === "center" ? "items-center justify-center gap-10" : "items-start justify-start gap-6"}`}
     >
@@ -70,7 +70,7 @@ const ResetPassword = ({ onSubmit, align, isLoading }: ResetPasswordProps) => {
           />
         </div>
       </div>
-      <div className="w-full flex">
+      <div className={`w-full flex ${align === "center" ? "justify-center" : "justify-start"}`}>
         <Button
           disabled={isEmpty || isLoading}
           className={`${align === "center" ? "btn-base blue-normal cursor-pointer" : "btn-base white-outline-normal"} w-full max-w-[182px] h-12 flex rounded-b-sm justify-center items-center`}

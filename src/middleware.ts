@@ -4,32 +4,37 @@ import { NextResponse } from "next/server";
 export default withAuth(
   function middleware(req) {
     const token = req.nextauth.token;
+    const pathname = req.nextUrl.pathname;
 
-    // Protect admin
-    if (req.nextUrl.pathname.startsWith("/admin")) {
+    // Protect auth pages from logged-in users (except reset-password)
+    if (pathname.startsWith("/auth") && !pathname.startsWith("/auth/reset-password")) {
+      if (token) {
+        return NextResponse.redirect(new URL("/", req.url));
+      }
+    }
+
+    // Protect admin pages
+    if (pathname.startsWith("/admin")) {
       if (!token) {
         return NextResponse.redirect(new URL("/auth/signin", req.url));
       }
-
       if (token?.role !== "ADMIN") {
         return NextResponse.redirect(new URL("/", req.url));
       }
     }
-    if (req.nextUrl.pathname.startsWith("/profiles")) {
+
+    // Protect profiles pages
+    if (pathname.startsWith("/profiles")) {
       if (!token) {
         return NextResponse.redirect(new URL("/", req.url));
       }
     }
+
+    return NextResponse.next();
   },
   {
     callbacks: {
       authorized: ({ token, req }) => {
-        if (
-          req.nextUrl.pathname.startsWith("/admin") ||
-          req.nextUrl.pathname.startsWith("/profiles")
-        ) {
-          return !!token;
-        }
         return true;
       },
     },
@@ -37,5 +42,5 @@ export default withAuth(
 );
 
 export const config = {
-  matcher: ["/admin/:path*", "/profiles/:path*"],
+  matcher: ["/admin/:path*", "/profiles/:path*", "/auth/:path*"],
 };

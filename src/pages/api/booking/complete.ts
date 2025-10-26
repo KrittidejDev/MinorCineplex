@@ -1,4 +1,4 @@
-import { Prisma, PrismaClient } from "@/generated/prisma";
+import {  PrismaClient, ShowtimeSeat, UserCoupon } from "@/generated/prisma";
 import { NextApiRequest, NextApiResponse } from "next";
 import Ably from "ably";
 import { SeatStatus } from "@/generated/prisma";
@@ -61,7 +61,7 @@ export default async function handler(
     }
 
     // ตรวจสอบคูปอง
-    let userCoupon: any = null;
+    let userCoupon: UserCoupon | null = null;
     if (couponId) {
       userCoupon = await prisma.userCoupon.findFirst({
         where: { coupon_id: couponId, user_id: userId, is_used: false },
@@ -81,7 +81,7 @@ export default async function handler(
           data: { status: "PAID" },
         });
 
-        const updatedSeatList: any[] = [];
+        const updatedSeatList: ShowtimeSeat[] = [];
         for (const seat of seats) {
           const updatedSeat = await tx.showtimeSeat.update({
             where: { id: seat.id },

@@ -9,10 +9,10 @@ import Shop from "@/components/Icons/Shop";
 import axios from "axios";
 import { useSearchParams } from "next/navigation";
 import { useTranslation } from "react-i18next";
-import { GetServerSideProps } from "next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import ShareButton from "@/components/Widgets/ShareButton";
 
 interface BookingData {
   cinema_name: { th: string; en: string };
@@ -137,6 +137,7 @@ const BookingSuccessPage: React.FC = () => {
             </Button>
           </Link>
         </div>
+        <ShareButton/>
       </div>
     </NavAndFooter>
   );

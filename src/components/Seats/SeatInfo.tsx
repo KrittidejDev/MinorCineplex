@@ -33,7 +33,7 @@ const SeatInfo: React.FC<SeatInfoProps> = ({ price, fid, hall }) => (
       {fid && (
         <div className="flex gap-4 items-center">
           <SeatFriend />
-          <p className="text-gray-gedd">Friend's Seat</p>
+          <p className="text-gray-gedd">Friend&apos;s Seat</p>
         </div>
       )}
     </div>

@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import NavBarWidget from "@/components/Widgets/NavBarWidget";
+import Link from "next/link";
 
 const ResetPasswordPage = () => {
   const router = useRouter();
@@ -82,12 +83,12 @@ const ResetPasswordPage = () => {
           <p className="text-fm-16 mb-4">
             This reset link has expired. Please request a new one.
           </p>
-          <a
+          <Link
             href="/auth/forgot-password"
             className="text-white underline text-fm-16"
           >
             Request a new reset link
-          </a>
+          </Link>
         </div>
       </div>
     );
@@ -99,12 +100,12 @@ const ResetPasswordPage = () => {
         <div className="w-[380px] text-center text-white">
           <h2 className="text-f-36 mb-4">Invalid Reset Link</h2>
           <p className="text-fm-16 mb-4">This reset link is invalid.</p>
-          <a
+          <Link
             href="/auth/forgot-password"
             className="text-white underline text-fm-16"
           >
             Request a new reset link
-          </a>
+          </Link>
         </div>
       </div>
     );

@@ -98,6 +98,7 @@ function MovieInfo() {
 
   return (
     <NavAndFooter>
+      <div className="w-full mx-auto">
       <Image
         src="/images/cover-cinema.png"
         alt={t("cinema_interior") || "Cinema Interior"}
@@ -123,6 +124,7 @@ function MovieInfo() {
         onNeverAllow={neverAllow}
         onClose={closeModal}
       />
+      </div>
     </NavAndFooter>
   );
 }

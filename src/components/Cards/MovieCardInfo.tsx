@@ -30,10 +30,10 @@ function MovieCardInfo({
   genres,
 }: Movies) {
   return (
-    <div className="w-[345px] h-fit flex gap-5">
-      <div className="w-full">
+    <div className="w-full h-fit flex gap-5">
+      <div className="w-full max-w-[345px]">
         <HoverCard3D>
-          <div className="relative aspect-[2/3]">
+          <div className="relative aspect-[2/3] w-full">
             {" "}
             <Image
               src={poster_url || "/fallback-poster.jpg"}
@@ -45,7 +45,7 @@ function MovieCardInfo({
           </div>
         </HoverCard3D>
       </div>
-      <div>
+      <div className="w-full">
         <h4 className="font-bold text-xl line-clamp-2 min-h-[56px]">{title}</h4>
         <div className="flex gap-2.5 mt-5">
           <p className="fr-14 text-gray-g3b0">
@@ -62,7 +62,7 @@ function MovieCardInfo({
             <p className="font-medium fr-14 text-gray-g3b0">{rating || "-"}</p>
           </div>
         </div>
-        <div className="w-fit flex flex-col gap-2 mt-4">
+        <div className="w-fit flex flex-col sm:flex-row gap-2 mt-4">
           {genres?.map((g, i) => {
             let tagName = "";
             let variant: "genre" | "language" = "genre";

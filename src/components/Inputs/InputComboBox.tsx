@@ -83,13 +83,8 @@ const InputComboBox = ({
   const selectedOption = options.find((option) => option.value === value);
   const displayValue = isOpen ? searchValue : (selectedOption?.label || "");
   return (
-    <div className="w-full flex flex-col h-12 rounded-sm relative bg-gray-g63f">
-      {label && (
-        <div className="text-blue-bbee text-fr-16">
-          {label} {require && <span className="text-red-r64b">*</span>}
-        </div>
-      )}
-      <div className="relative w-full">
+    <div className="w-full flex flex-col h-12 rounded-sm bg-gray-g63f relative">
+      <div className="w-full">
         <div
           className={`${baseClass} ${errorClass} ${className} ${
             disabled ? "opacity-50 cursor-not-allowed" : ""

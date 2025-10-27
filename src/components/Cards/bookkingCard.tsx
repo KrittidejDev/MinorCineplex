@@ -5,6 +5,7 @@ import TimeFill from "../Icons/TimeFill";
 import Image from "next/image";
 import Shop from "../Icons/Shop";
 import { useTranslation } from "react-i18next";
+import { BookingStatus } from "@/types/booking";
 
 interface BookingCardProps {
   movieTitle: string;
@@ -18,7 +19,7 @@ interface BookingCardProps {
   selectedSeats: string;
   ticketCount: number;
   paymentMethod: string;
-  isPaid: boolean;
+  status: BookingStatus;
   rounded?: boolean;
 }
 
@@ -34,7 +35,7 @@ export const BookingCard: React.FC<BookingCardProps> = ({
   selectedSeats,
   ticketCount,
   paymentMethod,
-  isPaid,
+  status,
   rounded = true,
 }) => {
   const { t } = useTranslation();
@@ -47,7 +48,7 @@ export const BookingCard: React.FC<BookingCardProps> = ({
   ];
 
   const bookingInfo = [
-    { label: t("bookingNo"), value: bookingNumber },
+    { label: t("bookingNo"), value: bookingNumber.slice(8, 18) },
     { label: t("bookedDate"), value: bookedDate },
   ];
 
@@ -92,10 +93,10 @@ export const BookingCard: React.FC<BookingCardProps> = ({
           {bookingInfo.map((booking, index) => (
             <div
               key={index}
-              className="flex gap-1 md:gap-2 md:flex-row md:justify-start text-fm-14 text-gray-g3b0"
+              className="flex gap-1 md:gap-2 md:flex-row md:justify-between text-fm-14 text-gray-g3b0"
             >
-              <span>{booking.label}</span>
-              <span>{booking.value}</span>
+              <p className="text-fr-14 text-gray-g3b0">{booking.label}</p>
+              <p className="text-fm-14 text-gray-g3b0">{booking.value}</p>
             </div>
           ))}
         </div>
@@ -120,10 +121,12 @@ export const BookingCard: React.FC<BookingCardProps> = ({
         <div className="flex w-full justify-end">
           <button
             className={`px-4 py-1.5 rounded-full text-fm-14 ${
-              isPaid ? "bg-green-g372 text-white" : "bg-red-r64b text-white"
+              status === BookingStatus.PAID
+                ? "bg-green-g372 text-white"
+                : "bg-red-r64b text-white"
             }`}
           >
-            {t(isPaid ? "paid" : "unpaid")}
+            {status}
           </button>
         </div>
       </div>

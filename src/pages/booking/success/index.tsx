@@ -136,7 +136,7 @@ const BookingSuccessPage: React.FC = () => {
             </Button>
           </Link>
         </div>
-        <ShareButton publicId={public_id || ""} />
+        <ShareButton publicId={public_id || ""} text="Share This Booking" />
       </div>
     </NavAndFooter>
   );

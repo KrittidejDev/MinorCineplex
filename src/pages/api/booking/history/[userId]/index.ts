@@ -231,6 +231,7 @@ export default async function handler(
         user_id: booking.user_id,
         showtime_id: booking.showtime.id,
         booked_date: { th: bookedDateTh, en: bookedDateEn },
+        status: booking.status,
         is_paid: booking.status === "PAID",
       };
     });

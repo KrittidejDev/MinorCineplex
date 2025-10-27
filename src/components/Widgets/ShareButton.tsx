@@ -5,9 +5,11 @@ import { toast } from "react-toastify";
 
 interface ShareButtonProps {
   publicId: string;
+  text?: string;
+  color?: string;
 }
 
-const ShareButton: React.FC<ShareButtonProps> = ({ publicId }) => {
+const ShareButton: React.FC<ShareButtonProps> = ({ text, color, publicId }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const customUrl = `${window.location.origin}/booking/detail/${publicId}`;
@@ -51,11 +53,11 @@ const ShareButton: React.FC<ShareButtonProps> = ({ publicId }) => {
       <OutLight
         width="30"
         height="30"
-        color="white"
+        color={color || "white"}
         className="cursor-pointer"
       />
       <span className="text-fm-16 font-bold text-white hover:underline cursor-pointer">
-        Share This Booking
+        {text || ""}
       </span>
       {isOpen && (
         <div className="w-full max-w-[432px]">

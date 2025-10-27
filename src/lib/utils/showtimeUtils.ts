@@ -28,10 +28,30 @@ export function RUNDER_TIMESLOT(
   const [eH, eM] = end_time.split(":").map(Number);
 
   const start = toThaiTimestamp(
-    new Date(showtimeDateObj.setHours(sH, sM, 0, 0))
+    new Date(
+      showtimeDateObj.getFullYear(),
+      showtimeDateObj.getMonth(),
+      showtimeDateObj.getDate(),
+      sH,
+      sM,
+      0,
+      0
+    )
   );
-  let end = toThaiTimestamp(new Date(showtimeDateObj.setHours(eH, eM, 0, 0)));
 
+  let end = toThaiTimestamp(
+    new Date(
+      showtimeDateObj.getFullYear(),
+      showtimeDateObj.getMonth(),
+      showtimeDateObj.getDate(),
+      eH,
+      eM,
+      0,
+      0
+    )
+  );
+
+  // ✅ ข้ามวัน
   if (end < start) {
     end += 24 * 60 * 60 * 1000;
   }
@@ -85,7 +105,5 @@ export function RUNDER_TIMESLOT(
 }
 
 function toThaiTimestamp(date: Date) {
-  const utc = date.getTime();
-  const offset = 7 * 60 * 60 * 1000;
-  return utc + offset;
+  return date.getTime() + 7 * 60 * 60 * 1000;
 }

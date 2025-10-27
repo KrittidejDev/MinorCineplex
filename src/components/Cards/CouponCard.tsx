@@ -28,7 +28,13 @@ const CouponCard = ({ coupon }: CouponCardProps) => {
   const [collected, setCollected] = useState(false)
   const [loading, setLoading] = useState(false)
 
-  const titleEn = coupon.translations?.en?.name || 'No title'
+  // Get current locale from router (default to 'en')
+  const locale = router.locale || 'en'
+
+  // Get title based on current locale
+  const title = coupon.translations?.[locale as 'en' | 'th']?.name || 
+                coupon.translations?.en?.name || 
+                'No title'
 
   useEffect(() => {
     if (!session?.user?.id) return
@@ -55,8 +61,8 @@ const CouponCard = ({ coupon }: CouponCardProps) => {
     if (!session?.user?.id) {
       toast.warning(
         <div>
-          <strong>Please login</strong>
-          <div>to collect coupon 🧾</div>
+          <strong>{locale === 'th' ? 'กรุณาเข้าสู่ระบบ' : 'Please login'}</strong>
+          <div>{locale === 'th' ? 'เพื่อรับคูปอง 🧾' : 'to collect coupon 🧾'}</div>
         </div>
       )
       return
@@ -68,8 +74,12 @@ const CouponCard = ({ coupon }: CouponCardProps) => {
       setCollected(true)
       toast.success(
         <div>
-          <strong>Coupon Claimed!</strong>
-          <div>{`You can find it in the "My Coupons" menu`}</div>
+          <strong>{locale === 'th' ? 'รับคูปองสำเร็จ!' : 'Coupon Claimed!'}</strong>
+          <div>
+            {locale === 'th' 
+              ? 'คุณสามารถดูได้ในเมนู "คูปองของฉัน"' 
+              : 'You can find it in the "My Coupons" menu'}
+          </div>
         </div>
       )
     } catch (err) {
@@ -81,7 +91,7 @@ const CouponCard = ({ coupon }: CouponCardProps) => {
       const errorMessage =
         error?.response?.data?.error ||
         error?.message ||
-        'Failed to collect coupon ❌'
+        (locale === 'th' ? 'รับคูปองไม่สำเร็จ ❌' : 'Failed to collect coupon ❌')
       toast.error(errorMessage)
     } finally {
       setLoading(false)
@@ -92,6 +102,13 @@ const CouponCard = ({ coupon }: CouponCardProps) => {
     router.push(`/coupons/${coupon.id}`)
   }
 
+  // Localized text
+  const validUntilText = locale === 'th' ? 'ใช้ได้ถึง' : 'Valid until'
+  const noExpirationText = locale === 'th' ? 'ไม่มีวันหมดอายุ' : 'No expiration'
+  const viewDetailsText = locale === 'th' ? 'ดูรายละเอียด' : 'View details'
+  const getCouponText = locale === 'th' ? 'รับคูปอง' : 'Get coupon'
+  const collectingText = locale === 'th' ? 'กำลังรับ...' : 'Collecting...'
+
   return (
     <HoverCard3D>
       <div className="w-full min-w-[161px] max-w-[285px] flex flex-col rounded-[8px] bg-[#070C1B]">
@@ -101,7 +118,7 @@ const CouponCard = ({ coupon }: CouponCardProps) => {
         >
           <Image
             src={coupon.image_url || ''}
-            alt={titleEn}
+            alt={title}
             width={285}
             height={285}
             className="w-full h-full object-cover object-center rounded-t-[8px]"
@@ -114,18 +131,21 @@ const CouponCard = ({ coupon }: CouponCardProps) => {
               className="text-[#FFFFFF] leading-[1.25em] min-h-[2.5em] font-bold text-sm lg:text-xl line-clamp-2 hover:underline cursor-pointer w-full"
               onClick={handleClickCoupon}
             >
-              {titleEn}
+              {title}
             </h4>
             <div className="flex flex-col lg:flex-row gap-1 lg:gap-5 w-full text-xs lg:text-sm">
-              <p className="text-[#8B93B0]">Valid until</p>
+              <p className="text-[#8B93B0]">{validUntilText}</p>
               <p className="text-[#8B93B0]">
                 {coupon.end_date
-                  ? new Date(coupon.end_date).toLocaleDateString('en-US', {
-                      day: '2-digit',
-                      month: 'short',
-                      year: 'numeric',
-                    })
-                  : 'No expiration'}
+                  ? new Date(coupon.end_date).toLocaleDateString(
+                      locale === 'th' ? 'th-TH' : 'en-US',
+                      {
+                        day: '2-digit',
+                        month: 'short',
+                        year: 'numeric',
+                      }
+                    )
+                  : noExpirationText}
               </p>
             </div>
           </div>
@@ -136,7 +156,7 @@ const CouponCard = ({ coupon }: CouponCardProps) => {
                 className="btn-base white-outline-normal w-full h-10 lg:h-12 text-xs lg:text-base"
                 onClick={handleViewDetails}
               >
-                View details
+                {viewDetailsText}
               </Button>
             ) : (
               <Button
@@ -144,7 +164,7 @@ const CouponCard = ({ coupon }: CouponCardProps) => {
                 onClick={handleGetCoupon}
                 disabled={loading}
               >
-                {loading ? 'Collecting...' : 'Get coupon'}
+                {loading ? collectingText : getCouponText}
               </Button>
             )}
           </div>

@@ -1,4 +1,3 @@
-// pages/booking/success.tsx
 import React, { useEffect, useState } from "react";
 import NavAndFooter from "@/components/MainLayout/NavAndFooter";
 import SuccessBooking from "@/components/Icons/SuccessBooking";
@@ -125,7 +124,7 @@ const BookingSuccessPage: React.FC = () => {
             </span>
           </div>
         </div>
-        <div className="mt-4 flex gap-3">
+        <div className="my-8 flex gap-3">
           <Link href="/">
             <Button className="btn-base white-outline-normal text-fm-16 font-bold!">
               Back to home
@@ -137,7 +136,7 @@ const BookingSuccessPage: React.FC = () => {
             </Button>
           </Link>
         </div>
-        <ShareButton/>
+        <ShareButton publicId={public_id || ""} />
       </div>
     </NavAndFooter>
   );

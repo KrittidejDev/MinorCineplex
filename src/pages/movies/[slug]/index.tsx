@@ -14,7 +14,7 @@ import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { useTranslation } from "react-i18next";
 
 function MovieInfo() {
-  const { t } = useTranslation("common");
+  const { t, i18n } = useTranslation("common");
   const params = useParams();
   const movieSlug = params?.slug as string;
   const [movie, setMovie] = useState<MovieDTO | null>(null);
@@ -96,34 +96,89 @@ function MovieInfo() {
   if (error) return <p>{error}</p>;
   if (!movie) return <p>{t("movie_not_found") || "ไม่พบข้อมูลหนัง"}</p>;
 
+  console.log("movie data", movie);
+
+  function hasGenre(item: MovieDTO["genres"][number]): item is {
+    genre: {
+      id: string;
+      name: string;
+      slug: string;
+      translations?: { en?: { name: string } };
+    };
+  } {
+    return "genre" in item && typeof item.genre?.id === "string";
+  }
+
   return (
-    <NavAndFooter>
+    <NavAndFooter
+      seoProps={{
+        title: `${
+          i18n.language === "en"
+            ? movie.translations?.en?.title
+            : movie.translations?.th?.title
+        } - Minorcineplex`,
+        description: `${
+          i18n.language === "en"
+            ? movie.translations?.en?.description
+            : movie.translations?.th?.description
+        }`,
+        image: movie.poster_url,
+        imageWidth: 800,
+        imageHeight: 1200,
+        imageAlt: `โปสเตอร์ภาพยนตร์ ${movie.title}`,
+        url: `https://minor-cineplex-phi.vercel.app/movies/${movie.slug}`,
+        type: "video.movie",
+
+        movieGenre: movie.genres
+          .filter(hasGenre)
+          .map((item) => item.genre.translations?.en?.name)
+          .join(", "),
+
+        releaseDate: movie.release_date
+          ? format(new Date(movie.release_date), "dd-MM-yyyy")
+          : "",
+
+        customMetaTags: [
+          {
+            name: "keywords",
+            content: `${
+              i18n.language === "en"
+                ? movie.translations?.en?.title
+                : movie.translations?.th?.title
+            }, ${movie.genres
+              .filter(hasGenre)
+              .map((item) => item.genre.translations?.en?.name)
+              .join(", ")}, ภาพยนตร์, Minorcineplex`,
+          },
+        ],
+      }}
+    >
       <div className="w-full mx-auto">
-      <Image
-        src="/images/cover-cinema.png"
-        alt={t("cinema_interior") || "Cinema Interior"}
-        fill
-        className="hidden md:flex object-cover object-center w-full z-0! max-h-[80vh] overflow-hidden "
-      />
-      <MovieInfoWidget
-        movie={movie}
-        showtimes={showtimes}
-        selectedDate={selectedDate}
-        onSelectDate={onSelectedDate}
-        showtimesLoading={showtimesLoading}
-        searchValue={searchValue}
-        setSearchValue={setSearchValue}
-        searchCity={searchCity}
-        setSearchCity={setSearchCity}
-      />
-      <CinemaLocation data={cinemas} filterCinema={handleFilter} />
-      <LocationPermissionModal
-        isOpen={showModal}
-        onAllowSession={allowSession}
-        onAllowOnce={allowOnce}
-        onNeverAllow={neverAllow}
-        onClose={closeModal}
-      />
+        <Image
+          src="/images/cover-cinema.png"
+          alt={t("cinema_interior") || "Cinema Interior"}
+          fill
+          className="hidden md:flex object-cover object-center w-full z-0! max-h-[80vh] overflow-hidden "
+        />
+        <MovieInfoWidget
+          movie={movie}
+          showtimes={showtimes}
+          selectedDate={selectedDate}
+          onSelectDate={onSelectedDate}
+          showtimesLoading={showtimesLoading}
+          searchValue={searchValue}
+          setSearchValue={setSearchValue}
+          searchCity={searchCity}
+          setSearchCity={setSearchCity}
+        />
+        <CinemaLocation data={cinemas} filterCinema={handleFilter} />
+        <LocationPermissionModal
+          isOpen={showModal}
+          onAllowSession={allowSession}
+          onAllowOnce={allowOnce}
+          onNeverAllow={neverAllow}
+          onClose={closeModal}
+        />
       </div>
     </NavAndFooter>
   );

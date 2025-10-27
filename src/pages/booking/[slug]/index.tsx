@@ -25,6 +25,7 @@ import axios, { AxiosError } from "axios";
 import ModalLogin from "@/components/Widgets/ModalLogin";
 import { GetServerSideProps } from "next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import { i18n } from "next-i18next";
 
 const BookingSeat: React.FC = () => {
   const router = useRouter();
@@ -58,6 +59,7 @@ const BookingSeat: React.FC = () => {
   const isNavigating = useRef(false);
   const countdownInterval = useRef<NodeJS.Timeout | null>(null);
   const paymentSuccessful = useRef(false);
+  const lang = i18n?.language === "en";
 
   const totalPrice = selectedSeats.reduce(
     (sum, seat) => sum + (seat.price || 0),
@@ -103,7 +105,6 @@ const BookingSeat: React.FC = () => {
       if (!res.data) throw new Error("No data returned");
       setBookingInfo(res.data as BookingInfo);
       setError(null);
-      console.log("Booking data fetched:", res.data);
     } catch (err) {
       if (!axios.isCancel(err)) {
         console.error("Fetch booking error:", err);
@@ -128,7 +129,6 @@ const BookingSeat: React.FC = () => {
         signal: ac.signal,
       })) as CouponsData;
       setCoupons(res?.data.coupons || []);
-      console.log("Coupons fetched:", res);
     } catch (err) {
       if (!axios.isCancel(err)) {
         console.error("Fetch coupons error:", err);
@@ -189,7 +189,6 @@ const BookingSeat: React.FC = () => {
           userService.POST_LOCK_SEAT(seat.id, session.user.id)
         )
       );
-      console.log("ressss Lockseat", res);
       setStep("2");
       setCountdown(5 * 60);
       console.log("Seats locked successfully");
@@ -281,7 +280,6 @@ const BookingSeat: React.FC = () => {
       const data = await response.json();
       if (!response.ok)
         throw new Error(data.error || "Failed to create booking");
-      console.log("Booking created:", data);
       return { bookingId: data.bookingId, publicId };
     } catch (err) {
       console.error("Create booking error:", err);
@@ -306,7 +304,6 @@ const BookingSeat: React.FC = () => {
       const data = await response.json();
       if (!response.ok)
         throw new Error(data.error || "Failed to create payment");
-      console.log("Payment created:", data);
       return data.paymentId;
     } catch (err) {
       console.error("Create payment error:", err);
@@ -462,7 +459,30 @@ const BookingSeat: React.FC = () => {
   }, [countdown]);
 
   return (
-    <NavAndFooter>
+    <NavAndFooter
+      seoProps={{
+        title: `จองที่นั่ง - ${bookingInfo?.movie?.title} ${bookingInfo?.hall?.name} ${lang ? bookingInfo?.cinema?.translations?.en?.name : bookingInfo?.cinema?.translations?.th?.name}`,
+        description: bookingInfo
+          ? `จองที่นั่งสำหรับรอบ ${bookingInfo.time_slot?.name} ในฮอลล์ ${bookingInfo.hall?.name}`
+          : "ระบบจองตั๋วหนัง Minorcineplex",
+        image: bookingInfo?.movie?.poster_url || "/images/cover-cinema.png",
+        imageWidth: 800,
+        imageHeight: 1200,
+        imageAlt: bookingInfo?.movie?.title
+          ? `โปสเตอร์ภาพยนตร์ ${bookingInfo.movie.title}`
+          : "Minorcineplex",
+        url: `https://minor-cineplex-phi.vercel.app/booking/${bookingInfo?.movie?.title}-${bookingInfo?.hall?.name}-${lang ? bookingInfo?.cinema?.translations?.en?.name : bookingInfo?.cinema?.translations?.th?.name}?id=${bookingInfo?.id}`,
+        type: "website",
+        customMetaTags: [
+          {
+            name: "keywords",
+            content: `จองตั๋วหนัง, Minorcineplex, ${
+              bookingInfo?.movie?.title || ""
+            }, ฮอลล์ ${bookingInfo?.hall?.name || ""}`,
+          },
+        ],
+      }}
+    >
       <div className="w-dvw flex flex-col justify-center items-center p-4 bg-gray-gc1b">
         <Stepper step={step} onClickStep={() => setStep("1")} />
       </div>

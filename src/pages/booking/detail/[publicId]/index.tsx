@@ -98,7 +98,33 @@ const BookingDetail: React.FC = () => {
   }
 
   return (
-    <NavAndFooter>
+    <NavAndFooter
+      seoProps={{
+        title: `${
+          bookingData.movie_title[lang] || bookingData.movie_title.en
+        } - ${bookingData.cinema_name[lang] || bookingData.cinema_name.en}`,
+        description:
+          bookingData.movie_description[lang] ||
+          bookingData.movie_description.en ||
+          "Booking details for your movie ticket",
+        image: bookingData.movie_poster || "/images/fallback-poster.jpg",
+        imageWidth: 800,
+        imageHeight: 1200,
+        imageAlt: bookingData.movie_title[lang] || "Movie Poster",
+        url: `https://minor-cineplex-phi.vercel.app/booking/${bookingSlug}?id=${bookingData.showtime_id}&fid=${bookingData.user_id}`,
+        type: "website",
+        customMetaTags: [
+          {
+            name: "keywords",
+            content: `${
+              bookingData.movie_title[lang] || bookingData.movie_title.en
+            }, ${bookingData.genres.map((g) => g[lang] || g.en).join(", ")}, ${
+              bookingData.cinema_name[lang] || bookingData.cinema_name.en
+            }, Booking, Movie`,
+          },
+        ],
+      }}
+    >
       <div className="min-h-screen p-4 md:p-8">
         <div className="max-w-7xl mx-auto">
           <h1 className="text-white text-2xl md:text-3xl font-bold mb-6 md:mb-8">

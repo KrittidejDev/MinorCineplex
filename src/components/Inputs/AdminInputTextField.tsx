@@ -14,6 +14,7 @@ type AdminInputTextFieldProps = {
   className?: string;
   maxLength?: number;
   min?: string;
+  icon?: React.ReactNode;
 };
 
 const AdminInputTextField = ({
@@ -29,6 +30,7 @@ const AdminInputTextField = ({
   maxLength,
   className = "",
   min,
+  icon,
   ...props
 }: AdminInputTextFieldProps) => {
   const baseClass =
@@ -55,7 +57,7 @@ const AdminInputTextField = ({
           value={value ?? ""}
           onChange={onChange}
           disabled={disabled}
-          className={`${baseClass} ${errorClass} ${className}`}
+          className={`${baseClass} ${errorClass} ${className} ${icon ? 'pr-1' : ''}`}
         />
         <div>
           <span

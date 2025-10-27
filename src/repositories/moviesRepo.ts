@@ -10,7 +10,7 @@ export const moviesRepo = {
     filters: MovieFilters,
     pagination?: Pagination
   ): Promise<{ data: MovieDTO[]; count: number }> {
-    const { title, language, genre, release_date, status } = filters;
+    const { movie_id, title, language, genre, release_date, status } = filters;
     const { page = 1, limit = 1000 } = pagination || {};
     const today = new Date();
     const tomorrow = new Date(
@@ -21,7 +21,10 @@ export const moviesRepo = {
 
     const where: Prisma.MovieWhereInput = {};
 
-    if (title) {
+    // Filter by movie ID if provided, otherwise filter by title
+    if (movie_id) {
+      where.id = movie_id;
+    } else if (title) {
       where.title = { contains: title, mode: "insensitive" };
     }
 
@@ -30,7 +33,7 @@ export const moviesRepo = {
     }
 
     if (genre) {
-      where.genres = { some: { genre: { slug: genre } } };
+      where.genres = { some: { genre: { id: genre } } };
     }
 
     if (release_date) {

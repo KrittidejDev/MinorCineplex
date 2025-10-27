@@ -9,6 +9,7 @@ export default async function handler(
   try {
     if (req.method === "GET") {
       const filters: MovieFilters = {
+        movie_id: req.query.movie_id as string | undefined,
         title: req.query.title as string | undefined,
         language: req.query.language as string | undefined,
         genre: req.query.genre as string | undefined,

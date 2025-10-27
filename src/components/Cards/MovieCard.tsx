@@ -2,10 +2,15 @@ import StarFill from "../Icons/StarFill";
 import Tag from "../Widgets/Tag";
 import Image from "next/image";
 import { HoverCard3D } from "../Displays/HoverCard3D";
+import { useTranslation } from "react-i18next";
 
 interface MovieCardProps {
   id: string;
   title: string;
+  translations?: {
+    th?: { title: string; description: string };
+    en?: { title: string; description: string };
+  };
   poster_url?: string;
   release_date?: Date;
   rating?: string;
@@ -15,7 +20,7 @@ interface MovieCardProps {
           id: string;
           name: string;
           slug: string;
-          translations?: { en?: { name: string }; th?: { name: string } };
+          translations?: { th?: { name: string }; en?: { name: string } };
         };
       }
     | { language: { id: string; name: string; code: string } }
@@ -24,11 +29,19 @@ interface MovieCardProps {
 
 function MovieCard({
   title,
+  translations,
   poster_url,
   release_date,
   rating,
   genres,
 }: MovieCardProps) {
+  const { i18n } = useTranslation();
+
+  const displayTitle =
+    i18n.language === "th"
+      ? translations?.th?.title || title
+      : translations?.en?.title || title;
+
   return (
     <div className="w-[161px] h-fit md:w-[285px] md:h-[526px] md:mb-12 lg:mb-17 flex flex-col z-10">
       <HoverCard3D>
@@ -40,7 +53,7 @@ function MovieCard({
         >
           <Image
             src={poster_url || "/fallback-poster.jpg"}
-            alt={title}
+            alt={displayTitle}
             fill
             sizes="(max-width: 768px) 161px, 285px"
             className="rounded-sm object-cover "
@@ -62,12 +75,14 @@ function MovieCard({
             <div className="text-blue-bbee">
               <StarFill width={16} height={16} color={"#4E7BEE"} />
             </div>
-            <p className="font-medium fr-14 text-gray-g3b0">{!rating || rating === "0" ? "-" : rating}</p>
+            <p className="font-medium fr-14 text-gray-g3b0">
+              {!rating || rating === "0" ? "-" : rating}
+            </p>
           </div>
         </div>
         <div className="flex flex-col flex-1 justify-between">
           <h4 className="font-bold text-xl line-clamp-2 min-h-[56px]">
-            {title}
+            {displayTitle}
           </h4>
           <div className="flex flex-wrap gap-2 mt-4">
             {genres?.map((g, i) => {
@@ -76,13 +91,17 @@ function MovieCard({
 
               if ("genre" in g && g.genre) {
                 tagName =
-                  g.genre.translations?.en?.name ||
-                  g.genre.name ||
-                  "Unknown Genre";
+                  i18n.language === "th"
+                    ? g.genre.translations?.th?.name ||
+                      g.genre.name ||
+                      "Unknown Genre"
+                    : g.genre.translations?.en?.name ||
+                      g.genre.name ||
+                      "Unknown Genre";
                 variant = "genre";
               } else if ("language" in g && g.language) {
                 tagName =
-                  g.language.name || g.language.code || "Unknown Language";
+                  g.language.code || g.language.name || "Unknown Language";
                 variant = "language";
               }
 

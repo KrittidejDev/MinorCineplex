@@ -31,6 +31,7 @@ export interface MovieDTO {
 }
 
 export interface MovieFilters {
+  movie_id?: string;
   title?: string;
   language?: string;
   genre?: string;

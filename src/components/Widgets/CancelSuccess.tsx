@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Button } from "../ui/button";
 import DoneRound from "../Icons/DoneRound";
 
+
 const CancelSuccess = () => {
   return (
     <div className="flex items-center flex-col gap-12 w-full px-2">

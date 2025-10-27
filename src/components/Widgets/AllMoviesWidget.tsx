@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo, useRef } from "react";
 import axios from "axios";
 import MovieCard from "../Cards/MovieCard";
 import { MovieAPIRespons, MovieDTO } from "@/types/movie";
 import { useRouter } from "next/router";
+import { useTranslation } from "next-i18next";
 
 interface AllMoviesWidgetProps {
   initialMovies?: MovieDTO[];
@@ -10,27 +11,43 @@ interface AllMoviesWidgetProps {
 
 function AllMoviesWidget({ initialMovies = [] }: AllMoviesWidgetProps) {
   const [activeTab, setActiveTab] = useState("NOW_SHOWING");
-  const [movies, setMovies] = useState<MovieDTO[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [movies, setMovies] = useState<MovieDTO[]>(initialMovies);
+  const [loading, setLoading] = useState(false);
+  const isInitialMount = useRef(true);
 
   const router = useRouter();
+  const { i18n } = useTranslation();
 
-  const fetchAllMovies = async () => {
-    try {
-      setLoading(true);
-      const url = activeTab ? `/api/movies?status=${activeTab}` : "/api/movies";
-      const res = await axios.get<MovieAPIRespons>(url);
-      setMovies(res.data.data);
-    } catch (err) {
-      console.error("Failed to fetch movies", err);
-      setMovies([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const texts = useMemo(
+    () => ({
+      nowShowing: i18n.language === "th" ? "กำลังฉาย" : "Now showing",
+      comingSoon: i18n.language === "th" ? "เร็วๆ นี้" : "Coming soon",
+      loading: i18n.language === "th" ? "กำลังโหลด..." : "Loading...",
+    }),
+    [i18n.language]
+  );
 
   useEffect(() => {
-    if (!initialMovies.length) fetchAllMovies();
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+
+    const fetchMovies = async () => {
+      try {
+        setLoading(true);
+        const url = `/api/movies?status=${activeTab}`;
+        const res = await axios.get<MovieAPIRespons>(url);
+        setMovies(res.data.data);
+      } catch (err) {
+        console.error("Failed to fetch movies", err);
+        setMovies([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMovies();
   }, [activeTab]);
 
   const groupedMovies =
@@ -69,7 +86,7 @@ function AllMoviesWidget({ initialMovies = [] }: AllMoviesWidgetProps) {
                 : "text-gray-g3b0 border-b-2 border-transparent"
             }`}
           >
-            Now showing
+            {texts.nowShowing}
           </button>
           <button
             onClick={() => setActiveTab("COMING_SOON")}
@@ -79,13 +96,13 @@ function AllMoviesWidget({ initialMovies = [] }: AllMoviesWidgetProps) {
                 : "text-gray-g3b0 border-b-2 border-transparent"
             }`}
           >
-            Coming soon
+            {texts.comingSoon}
           </button>
         </div>
       </div>
       {loading ? (
         <div className="flex justify-center items-center py-20 text-white">
-          กำลังโหลด...
+          {texts.loading}
         </div>
       ) : (
         <div className="flex flex-col justify-center py-20 px-4">
@@ -107,6 +124,7 @@ function AllMoviesWidget({ initialMovies = [] }: AllMoviesWidgetProps) {
                         key={movie.id}
                         id={movie.id}
                         title={movie.title}
+                        translations={movie.translations}
                         poster_url={movie.poster_url}
                         release_date={movie.release_date ?? undefined}
                         rating={movie.rating}
@@ -119,7 +137,7 @@ function AllMoviesWidget({ initialMovies = [] }: AllMoviesWidgetProps) {
             ))
           ) : (
             <div className="flex justify-center">
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 max-w-[1200px] w-full">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10 max-w-[1200px] w-full">
                 {movies.map((movie) => (
                   <div
                     key={movie.id}
@@ -130,6 +148,7 @@ function AllMoviesWidget({ initialMovies = [] }: AllMoviesWidgetProps) {
                       key={movie.id}
                       id={movie.id}
                       title={movie.title}
+                      translations={movie.translations}
                       poster_url={movie.poster_url}
                       release_date={movie.release_date ?? undefined}
                       rating={movie.rating}

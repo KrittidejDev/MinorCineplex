@@ -2,10 +2,15 @@ import StarFill from "../Icons/StarFill";
 import Tag from "../Widgets/Tag";
 import Image from "next/image";
 import { HoverCard3D } from "../Displays/HoverCard3D";
+import { useTranslation } from "next-i18next";
 
 interface Movies {
   id?: string;
   title: string;
+  translations?: {
+    th?: { title: string; description: string };
+    en?: { title: string; description: string };
+  };
   poster_url?: string | null;
   release_date?: Date | null;
   rating?: string | null;
@@ -24,11 +29,19 @@ interface Movies {
 
 function MovieCardInfo({
   title,
+  translations,
   poster_url,
   release_date,
   rating,
   genres,
 }: Movies) {
+  const { i18n } = useTranslation();
+  
+  // Get translated title based on current language
+  const displayTitle = i18n.language === "th"
+    ? translations?.th?.title || title
+    : translations?.en?.title || title;
+  
   return (
     <div className="w-full h-fit flex gap-5">
       <div className="w-full max-w-[345px]">
@@ -37,7 +50,7 @@ function MovieCardInfo({
             {" "}
             <Image
               src={poster_url || "/fallback-poster.jpg"}
-              alt={title}
+              alt={displayTitle}
               fill
               sizes="(max-width: 768px) 161px, 285px"
               className="rounded-sm object-cover"
@@ -46,7 +59,7 @@ function MovieCardInfo({
         </HoverCard3D>
       </div>
       <div className="w-full">
-        <h4 className="font-bold text-xl line-clamp-2 min-h-[56px]">{title}</h4>
+        <h4 className="font-bold text-xl line-clamp-2 min-h-[56px]">{displayTitle}</h4>
         <div className="flex gap-2.5 mt-5">
           <p className="fr-14 text-gray-g3b0">
             {release_date
@@ -68,10 +81,10 @@ function MovieCardInfo({
             let variant: "genre" | "language" = "genre";
 
             if ("genre" in g && g.genre) {
-              tagName =
-                g.genre.translations?.en?.name ||
-                g.genre.name ||
-                "Unknown Genre";
+              // Get translated genre name based on current language
+              tagName = i18n.language === "th"
+                ? g.genre.translations?.th?.name || g.genre.name || "Unknown Genre"
+                : g.genre.translations?.en?.name || g.genre.name || "Unknown Genre";
               variant = "genre";
             } else if ("language" in g && g.language) {
               tagName =

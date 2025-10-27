@@ -1,7 +1,7 @@
 import { CinemaByProvince, CinemaDTO, CinemaType } from "@/types/cinema";
 import CinemaCard from "../Cards/CinemaCard";
 import DoneRound from "../Icons/DoneRound";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useTranslation } from "next-i18next";
 import InfiniteScroll from "react-infinite-scroll-component";
 
@@ -11,9 +11,15 @@ interface CinemaLocationProps {
 }
 
 const CinemaLocation = ({ filterCinema, data }: CinemaLocationProps) => {
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
   const [filter, setFilter] = useState<string>("1");
   const [visibleProvinces, setVisibleProvinces] = useState<number>(1);
+
+  const texts = useMemo(() => ({
+    allCinemas: i18n.language === "th" ? "โรงภาพยนตร์ทั้งหมด" : "All Cinemas",
+    browseByCity: i18n.language === "th" ? "เรียกดูตามเมือง" : "Browse by City",
+    nearestLocationFirst: i18n.language === "th" ? "ตำแหน่งใกล้ที่สุดก่อน" : "Nearest Location First",
+  }), [i18n.language]);
 
   const _handleClickFilter = (e: string) => {
     setFilter(e);
@@ -40,14 +46,14 @@ const CinemaLocation = ({ filterCinema, data }: CinemaLocationProps) => {
     <div className="flex w-screen justify-center">
       <section className="flex w-full max-w-[1440px] flex-col gap-10 justify-center py-10 sm:py-20 px-4 xl:px-30">
         <header className="flex gap-5 flex-wrap justify-between">
-          <h1 className="text-white text-4xl">All Cinemas</h1>
+          <h1 className="text-white text-4xl">{texts.allCinemas}</h1>
           <div className="flex gap-3 justify-between items-center p-1 h-12 rounded-sm bg-gray-g63f">
             <button
               className={`${filter === "1" ? filterActiveStyle : filterBtnStyle} cursor-pointer`}
               onClick={() => _handleClickFilter("1")}
             >
               {filter === "1" && <DoneRound height="30" width="30" />}
-              <p className="text-gray-gedd line-clamp-1">Browse by City</p>
+              <p className="text-gray-gedd line-clamp-1">{texts.browseByCity}</p>
             </button>
             <button
               className={`${filter === "2" ? filterActiveStyle : filterBtnStyle} cursor-pointer`}
@@ -55,7 +61,7 @@ const CinemaLocation = ({ filterCinema, data }: CinemaLocationProps) => {
             >
               {filter === "2" && <DoneRound height="30" width="30" />}
               <p className="text-gray-gedd line-clamp-1">
-                Nearest Location First
+                {texts.nearestLocationFirst}
               </p>
             </button>
           </div>

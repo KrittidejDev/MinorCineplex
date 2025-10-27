@@ -12,14 +12,25 @@ export function RUNDER_TIMESLOT(
 ): ShowtimeButtonProps {
   const today = new Date();
 
-  // ✅ แปลงให้แน่ใจว่าเป็น Date เสมอ
   const showtimeDateObj =
     showtimeDate instanceof Date ? showtimeDate : new Date(showtimeDate);
 
-  const showtimeDateStr = showtimeDateObj.toLocaleDateString("en-CA");
-  const todayStr = today.toLocaleDateString("en-CA");
+  const todayMid = new Date(today.setHours(0, 0, 0, 0)).getTime();
+  const showMid = new Date(showtimeDateObj.setHours(0, 0, 0, 0)).getTime();
 
-  if (showtimeDateStr < todayStr) {
+  const [sH, sM] = start_time.split(":").map(Number);
+  const [eH, eM] = end_time.split(":").map(Number);
+
+  const start = new Date(showtimeDateObj).setHours(sH, sM, 0, 0);
+  let end = new Date(showtimeDateObj).setHours(eH, eM, 0, 0);
+
+  if (end < start) {
+    end += 24 * 60 * 60 * 1000;
+  }
+
+  const current = now.getTime();
+
+  if (showMid < todayMid) {
     return {
       disabled: true,
       className: "white-outline-disabled",
@@ -27,22 +38,13 @@ export function RUNDER_TIMESLOT(
     };
   }
 
-  if (showtimeDateStr > todayStr) {
+  if (showMid > todayMid) {
     return {
       disabled: false,
       className: "blue-dark-normal cursor-pointer",
       label: "รอรอบ",
     };
   }
-
-  const start = new Date(`${showtimeDateStr}T${start_time}`).getTime();
-  let end = new Date(`${showtimeDateStr}T${end_time}`).getTime();
-
-  if (end < start) {
-    end += 24 * 60 * 60 * 1000;
-  }
-
-  const current = now.getTime();
 
   if (current > end) {
     return {

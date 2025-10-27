@@ -53,7 +53,8 @@ export const ShowtimeSelection: React.FC<ShowtimeSelectionProps> = ({
           const { disabled, className }: ShowtimeButtonProps = RUNDER_TIMESLOT(
             e.start_time,
             e.end_time,
-            new Date(e.date)
+            new Date(e.date),
+            now
           );
           return (
             <button

@@ -56,7 +56,7 @@ export function RUNDER_TIMESLOT(
   const endDate = new Date(showThai);
   endDate.setHours(eH, eM, 0, 0);
 
-  let start = startDate.getTime();
+  const start = startDate.getTime();
   let end = endDate.getTime();
 
   // ถ้า end < start (ข้ามวัน) เพิ่ม 24 ชั่วโมงให้ end

@@ -1,3 +1,4 @@
+//api/booing/complete.ts
 import {  PrismaClient, ShowtimeSeat, UserCoupon } from "@/generated/prisma";
 import { NextApiRequest, NextApiResponse } from "next";
 import Ably from "ably";

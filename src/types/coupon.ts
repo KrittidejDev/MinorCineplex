@@ -23,6 +23,8 @@ export interface CouponCardData {
   end_date?: string | null;
   image_url?: string | null;
   is_collected?: boolean;
+  is_used?: boolean; 
+  used_at?: Date | null;
   max_discount?: number;
 }
 

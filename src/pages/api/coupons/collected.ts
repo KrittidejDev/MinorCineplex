@@ -27,14 +27,18 @@ export default async function handler(
           select: {
             is_collected: true,
             collected_at: true,
+            is_used: true, 
+            used_at: true,
           },
         });
 
-        if (!userCoupon?.is_collected) return null;
+        if (!userCoupon?.is_collected || userCoupon.is_used) return null;
 
         return {
           ...c,
           collected_at: userCoupon.collected_at,
+          is_used: userCoupon.is_used,
+          used_at: userCoupon.used_at,
         };
       })
     );

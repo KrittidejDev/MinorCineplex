@@ -2,7 +2,11 @@ import OutLight from "../Icons/OutLight";
 import { useState } from "react";
 import ShareModal from "./ShareModal";
 import { toast } from "react-toastify";
-const ShareButton = () => {
+interface ShareButtonProps {
+  text?: string;
+  color?: string;
+}
+const ShareButton = ({ text, color }: ShareButtonProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleShareFacebook = () => {
@@ -43,11 +47,11 @@ const ShareButton = () => {
       <OutLight
         width="30"
         height="30"
-        color="white"
+        color={color || "white"}
         className="cursor-pointer"
       />
       <span className="text-fm-16 font-bold text-white hover:underline cursor-pointer">
-        Share This Booking
+        {text || ""}
       </span>
       {isOpen && (
         <div className="w-ful max-w-[432px]">

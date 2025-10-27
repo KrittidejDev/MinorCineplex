@@ -1,29 +1,38 @@
-import React from "react";
+import React, { useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import UserDuotone from "../Icons/UserDuotone";
 import NotebookLight from "../Icons/NotebookLight";
 import CouponLight from "../Icons/CouponLight";
 import RefreshLight from "../Icons/RefreshLight";
+import { useTranslation } from "next-i18next";
 
 const ProfileBar = () => {
+  const { i18n } = useTranslation();
   const router = useRouter();
   const pathname = router.pathname;
 
-  const navigationItems = [
+  const texts = useMemo(() => ({
+    bookingHistory: i18n.language === "th" ? "ประวัติการจอง" : "Booking history",
+    myCoupons: i18n.language === "th" ? "คูปองของฉัน" : "My coupons",
+    profile: i18n.language === "th" ? "ข้อมูลส่วนตัว" : "Profile",
+    resetPassword: i18n.language === "th" ? "รีเซ็ตรหัสผ่าน" : "Reset password",
+  }), [i18n.language]);
+
+  const navigationItems = useMemo(() => [
     {
       icon: <NotebookLight />,
-      label: "Booking history",
+      label: texts.bookingHistory,
       href: "/profiles/booking-history",
     },
-    { icon: <CouponLight />, label: "My coupons", href: "/profiles/my-coupon" },
-    { icon: <UserDuotone />, label: "Profile", href: "/profiles/profile" },
+    { icon: <CouponLight />, label: texts.myCoupons, href: "/profiles/my-coupon" },
+    { icon: <UserDuotone />, label: texts.profile, href: "/profiles/profile" },
     {
       icon: <RefreshLight />,
-      label: "Reset password",
+      label: texts.resetPassword,
       href: "/profiles/reset-password",
     },
-  ];
+  ], [texts.bookingHistory, texts.myCoupons, texts.profile, texts.resetPassword]);
 
   return (
     <div className="flex flex-col bg-[#070C1B] p-2 md:p-4 rounded-[8px] w-full">

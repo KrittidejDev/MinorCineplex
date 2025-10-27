@@ -59,6 +59,7 @@ const InputTextFeild = ({
             errors
               ? "border-red-r64b text-red-r64b placeholder-white"
               : "border-gray-gf7e text-white placeholder-gray-400",
+            disabled && "opacity-60 cursor-not-allowed",
             props.className
           )}
         />

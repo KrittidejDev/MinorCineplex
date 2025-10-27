@@ -1,5 +1,5 @@
 import Link from "next/link";
-import React, { useEffect, useState, useCallback, useRef } from "react";
+import React, { useEffect, useState, useCallback, useRef, useMemo } from "react";
 import { AvatarDisplay } from "../Displays/NavAvatarDisplay";
 import LogoM from "../Icons/LogoM";
 import Hamburger from "../Icons/Hamburger";
@@ -8,6 +8,7 @@ import { userService } from "@/config/userServices";
 import { UserDataResponse } from "@/types/user";
 import NavbarMenu from "./NavbarMenu";
 import LanguageSwitcher from "./LanguageSwitcher";
+import { useTranslation } from "next-i18next";
 
 interface response {
   status: number;
@@ -15,9 +16,16 @@ interface response {
 }
 
 const NavBarWidget = () => {
+  const { i18n } = useTranslation();
   const { data: session, status } = useSession();
   const id = session?.user?.id;
   const [userData, setUserData] = useState<UserDataResponse | null>(null);
+
+  const texts = useMemo(() => ({
+    login: i18n.language === "th" ? "เข้าสู่ระบบ" : "Login",
+    register: i18n.language === "th" ? "สมัครสมาชิก" : "Register",
+    logout: i18n.language === "th" ? "ออกจากระบบ" : "Logout",
+  }), [i18n.language]);
 
   const fetchMe = useCallback(async () => {
     if (!id) return;
@@ -78,15 +86,16 @@ const NavBarWidget = () => {
             <LanguageSwitcher />
           </>
         ) : (
-          <div>
+          <div className="flex items-center gap-x-2">
             <Link href={"/auth/login"}>
-              <button className="btn-base py-3! hover:underline ">Login</button>
+              <button className="btn-base py-3! hover:underline ">{texts.login}</button>
             </Link>
             <Link href={"/auth/signup"}>
               <button className="btn-base white-outline-normal py-3!">
-                Register
+                {texts.register}
               </button>
             </Link>
+            <LanguageSwitcher />
           </div>
         )}
       </div>
@@ -95,11 +104,28 @@ const NavBarWidget = () => {
         <LanguageSwitcher />
       </div>
       {_isOpen && (
-        <NavbarMenu
-          className="z-50 absolute top-18 right-0 md:right-45"
-          data={userData as UserDataResponse}
-          onLogOut={signOut}
-        />
+        <>
+          {status === "authenticated" ? (
+            <NavbarMenu
+              className="z-50 absolute top-18 right-0 md:right-45"
+              data={userData as UserDataResponse}
+              onLogOut={signOut}
+            />
+          ) : (
+            <div className="z-50 absolute top-18 right-25 md:right-35 flex flex-col p-2 w-40 bg-gray-g63f rounded-lg shadow-lg overflow-hidden mx-4">
+              <Link href="/auth/login">
+                <button className="flex items-center gap-x-2.5 py-3 px-4 w-full cursor-pointer hover:shadow-lg text-left text-b1 hover:scale-105 transition">
+                  {texts.login}
+                </button>
+              </Link>
+              <Link href="/auth/signup">
+                <button className="flex items-center gap-x-2.5 py-3 px-4 w-full cursor-pointer hover:shadow-lg text-left text-b1 hover:scale-105 transition">
+                  {texts.register}
+                </button>
+              </Link>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

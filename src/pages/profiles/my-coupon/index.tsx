@@ -54,7 +54,7 @@ const ProfileMyCoupons = () => {
         {/* Content */}
         <div className="flex flex-col px-4 gap-6 md:gap-12 justify-start items-start w-full">
           <div className="text-f-24 md:text-f-28 lg:text-f-36">
-            {t("my_coupons")}
+            My Coupons
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-2 w-full gap-x-4 lg:gap-y-10 max-w-[795px]">

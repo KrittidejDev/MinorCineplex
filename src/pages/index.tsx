@@ -160,9 +160,7 @@ export default function Home() {
           onTabClick={handleTabClick}
         />
         <Coupon />
-        <div>
-          <CinemaLocation data={dataCinemas} filterCinema={handleFilter} />
-        </div>
+        <CinemaLocation data={dataCinemas} filterCinema={handleFilter} />
       </div>
       <LocationPermissionModal
         isOpen={showModal}

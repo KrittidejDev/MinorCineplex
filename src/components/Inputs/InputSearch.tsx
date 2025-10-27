@@ -23,7 +23,7 @@ const InputSearch = ({
   placeholder,
   handleSearch,
   value,
-  delay = 500,
+  delay,
   label,
   require,
   errors,
@@ -31,21 +31,30 @@ const InputSearch = ({
   type = "text",
   ...props
 }: InputSearchProps) => {
-  const [_value, _setValue] = useState(value);
-
-  const _handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    _setValue(e.target.value);
-  };
+  const [internalValue, setInternalValue] = useState(value || "");
 
   useEffect(() => {
-    const handler = setTimeout(() => {
-      handleSearch?.(_value ?? "");
-    }, delay);
+    setInternalValue(value || "");
+  }, [value]);
 
-    return () => {
-      clearTimeout(handler);
-    };
-  }, [_value, delay, handleSearch]);
+  const _handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value;
+    setInternalValue(newValue);
+
+    if (delay && delay > 0) {
+      const handler = setTimeout(() => {
+        handleSearch?.(newValue);
+      }, delay);
+      return () => clearTimeout(handler);
+    } else {
+      handleSearch?.(newValue);
+    }
+  };
+
+  const handleClear = () => {
+    setInternalValue("");
+    handleSearch?.("");
+  };
 
   return (
     <div className="flex flex-col gap-1 relative">
@@ -59,7 +68,7 @@ const InputSearch = ({
           {...props}
           type={type}
           placeholder={placeholder}
-          value={value ?? ""}
+          value={internalValue}
           onChange={_handleChange}
           disabled={disabled}
           className={cx(
@@ -70,23 +79,17 @@ const InputSearch = ({
           )}
         />
         {/* Icon */}
-        <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none z-10">
-          <CloseRoundLight width={20} height={20} color="#C8CEDD" />
-        </div>
+        {value !== "" && (
+          <div 
+          onClick={handleClear}
+          className="absolute right-2 top-1/2 -translate-y-1/2 z-10 cursor-pointer">
+            <CloseRoundLight width={20} height={20} color="#C8CEDD" />
+          </div>
+        )}
         <div className="absolute left-2 top-1/2 -translate-y-1/2 pointer-events-none z-10">
           <SearchLight width={20} height={20} color="#C8CEDD" />
         </div>
       </div>
-      {/* <div className="h-4 mt-1">
-        <span
-          className={`text-fr-12 ${errors ? "text-red-r64b" : "text-gray-g3b0"}`}
-        >
-          {!errors && <span className="text-fr-12 text-gray-g3b0">{text}</span>}
-          {errors && (
-            <span className="text-fr-12 text-red-r64b ">{errors}</span>
-          )}
-        </span>
-      </div> */}
     </div>
   );
 };

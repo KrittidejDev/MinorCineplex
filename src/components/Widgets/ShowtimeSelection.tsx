@@ -7,9 +7,11 @@ import { useEffect, useState } from "react";
 
 export interface Showtime {
   id: string;
+  date: string;
   showtime_id?: string;
   start_time: string;
   end_time: string;
+  slug?: string;
   label?: string;
 }
 
@@ -21,18 +23,29 @@ export const ShowtimeSelection: React.FC<ShowtimeSelectionProps> = ({
   timeslot,
 }) => {
   const router = useRouter();
-  const [now, setNow] = useState<Date>(new Date());
+  const [now, setNow] = useState<Date>(
+    new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Bangkok" }))
+  );
 
   useEffect(() => {
-    const interval = setInterval(() => setNow(new Date()), 1000);
+    const interval = setInterval(() => {
+      setNow(
+        new Date(
+          new Date().toLocaleString("en-US", { timeZone: "Asia/Bangkok" })
+        )
+      );
+    }, 1000);
     return () => clearInterval(interval);
   }, []);
 
   const handleSelect = (ts: Showtime) => {
     router.push({
-      pathname: `/booking/${ts?.showtime_id}`,
+      pathname: `/booking/${ts.slug}`,
+      query: { id: ts.showtime_id },
     });
   };
+
+  console.log("Timeslot data:", timeslot);
 
   const base =
     "w-full max-w-32 flex flex-col justify-center items-center py-3 px-[41px] rounded-lg transition-colors";
@@ -50,9 +63,9 @@ export const ShowtimeSelection: React.FC<ShowtimeSelectionProps> = ({
           const { disabled, className }: ShowtimeButtonProps = RUNDER_TIMESLOT(
             e.start_time,
             e.end_time,
+            e.date,
             now
           );
-
           return (
             <button
               key={e.id}

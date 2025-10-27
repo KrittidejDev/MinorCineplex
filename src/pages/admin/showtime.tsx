@@ -41,10 +41,10 @@ export default function AdminShowtime() {
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
 
-  // Fetch Showtime Data
+// Fetch Showtime Data
   const getShowtime = useCallback(async () => {
     try {
-      const { data } = await axios.get(`/api/showtimes`, {
+      const { data } = await axios.get(`/api/admin/showtimes`, {
         params: {
           movie: query.movie,
           cinema: query.cinema,
@@ -54,28 +54,49 @@ export default function AdminShowtime() {
           page: page,
         },
       });
-      setTotal(data.total);
-      setTotalPages(data.totalPages);
-      const mappedData = data.showTimes.map((item: ShowtimeData) => ({
-        ...item,
-        movie_id: item.movie_id,
-        movie_title: item.movie_title,
-        cinema_id: item.cinema_id,
-        cinema_name: item.cinema_name,
-        hall_id: item.hall_id,
-        hall_name: item.hall_name,
-        timeslot: item.timeslot,
-        date: item.date,
-        time_slot: `${item.start_time} - ${item.end_time}`,
-      }));
-      setData(mappedData);
-      return data.totalPages;
+
+      if (data && data.showTimes) {
+        setTotal(data.total || 0);
+        setTotalPages(data.totalPages || 1);
+
+        const mappedData = data.showTimes.map((item: ShowtimeData) => ({
+          ...item,
+          movie_id: item.movie_id,
+          movie_title: item.movie_title,
+          cinema_id: item.cinema_id,
+          cinema_name: item.cinema_name,
+          hall_id: item.hall_id,
+          hall_name: item.hall_name,
+          timeslot: item.timeslot,
+          date: item.date,
+          time_slot: `${item.start_time} - ${item.end_time}`,
+        }));
+        setData(mappedData);
+        return data.totalPages || 1;
+      } else {
+        setData([]);
+        setTotal(0);
+        setTotalPages(1);
+        return 1;
+      }
     } catch (error) {
-      console.log(error);
+      console.error("Error fetching showtimes:", error);
+      setData([]);
+      setTotal(0);
+      setTotalPages(1);
       return 1;
     }
   }, [query, page]);
 
+  useEffect(() => {
+    getShowtime();
+  }, [getShowtime]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [query]);
+
+  // Clear Form Data
   const clearFormData = () => {
     setFormData({
       movie_id: "",
@@ -87,22 +108,22 @@ export default function AdminShowtime() {
     });
   };
 
-  // Fetch Data For Query
+// Fetch All Data For Query
   const fetchAll = async () => {
     try {
       const [resMovies, resCinemas, resTimeSlots] = await Promise.all([
-        axios.get(`/api/movies`),
-        axios.get(`/api/cinemas?type=dropdown`),
-        axios.get(`/api/time-slots`),
+        axios.get(`/api/admin/movies`),
+        axios.get(`/api/admin/cinemas?type=dropdown`),
+        axios.get(`/api/admin/time-slots`),
       ]);
       setMovies(
-        resMovies.data.movie.map((item: MovieBasicInfo) => ({
+        resMovies.data.map((item: MovieBasicInfo) => ({
           value: item.id,
           label: item.title,
         }))
       );
       setCinemas(
-        resCinemas.data.cinema.map((item: CinemaFromAPI) => ({
+        resCinemas.data.map((item: CinemaFromAPI) => ({
           value: item.id,
           label: item.name,
           halls: item.halls.map((hall) => ({
@@ -112,7 +133,7 @@ export default function AdminShowtime() {
         }))
       );
       setTimeSlots(
-        resTimeSlots.data.timeSlots.map((item: TimeSlotBasicInfo) => ({
+        resTimeSlots.data.map((item: TimeSlotBasicInfo) => ({
           value: item.id,
           label: `${item.start_time} - ${item.end_time}`,
         }))
@@ -122,11 +143,15 @@ export default function AdminShowtime() {
     }
   };
 
+  useEffect(() => {
+    fetchAll();
+  }, []);
+
+  // Handle Create Showtime
   const handleCreateShowtime = async (
     event: React.FormEvent<HTMLFormElement>
   ): Promise<boolean> => {
     event.preventDefault();
-
     const formValidation = validateShowtimeFormData(formData);
     if (!formValidation.isValid) {
       alert(formValidation.errorMessage);
@@ -145,9 +170,10 @@ export default function AdminShowtime() {
     }
 
     try {
-      const response = await axios.post(`/api/showtimes`, {
+      const response = await axios.post(`/api/admin/showtimes`, {
         movie_id: formData.movie_id,
         hall_id: formData.hall_id,
+        cinema_id: formData.cinema_id,
         time_slot_id: formData.time_slot_id,
         date: formData.date,
         price: parseFloat(formData.price) || 0,
@@ -176,6 +202,7 @@ export default function AdminShowtime() {
     }
   };
 
+  // Handle Update Showtime
   const handleUpdateShowtime = async (id: string): Promise<boolean> => {
     const formValidation = validateShowtimeFormData(formData);
     if (!formValidation.isValid) {
@@ -198,6 +225,7 @@ export default function AdminShowtime() {
       const response = await axios.put(`/api/showtimes/${id}`, {
         movie_id: formData.movie_id,
         hall_id: formData.hall_id,
+        cinema_id: formData.cinema_id,
         time_slot_id: formData.time_slot_id,
         date: formData.date,
         price: parseFloat(formData.price) || 0,
@@ -224,11 +252,12 @@ export default function AdminShowtime() {
     }
   };
 
+  // Handle Delete Showtime
   const handleDeleteShowtime = async (id: string) => {
     if (window.confirm("Are you sure you want to delete this showtime?")) {
       try {
-        const reponse = await axios.delete(`/api/showtimes/${id}`);
-        if (reponse.status === 200) {
+        const response = await axios.delete(`/api/showtimes/${id}`);
+        if (response.status === 200) {
           console.log("Showtime deleted successfully");
           const newTotalPages = await getShowtime();
           if (page > newTotalPages) {
@@ -242,27 +271,13 @@ export default function AdminShowtime() {
       }
     }
   };
-
-  useEffect(() => {
-    fetchAll();
-  }, []);
-
-  useEffect(() => {
-    setPage(1);
-    getShowtime();
-  }, [query, getShowtime]);
-
-  useEffect(() => {
-    getShowtime();
-  }, [page, getShowtime]);
-
   return (
     <div className="bg-white-wfff w-full">
       <div className="flex">
         <div>
           <AdminSidebar />
         </div>
-        <div className="w-ful max-w-[1200px]">
+        <div className="w-full">
           <AdminShowtimeWidget
             totalPages={totalPages}
             total={total}

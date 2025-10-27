@@ -2,9 +2,10 @@ import InputTextFeild from "@/components/Inputs/InputTextFeild";
 import ImageUploadButton from "@/components/Inputs/InputPictureProfile";
 import { Button } from "@/components/ui/button";
 import { useForm, Controller, UseFormSetError } from "react-hook-form";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { profileValidate } from "@/lib/validate/profileValidate";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useTranslation } from "next-i18next";
 
 export type ProfileFormValues = {
   username: string;
@@ -25,6 +26,7 @@ const ProfileForm = ({
   onFileSelect,
   onSave,
 }: ProfileFormProps) => {
+  const { i18n } = useTranslation();
   const {
     control,
     handleSubmit,
@@ -39,6 +41,12 @@ const ProfileForm = ({
     setValue("username", userData?.username);
     setValue("email", userData?.email);
   }, [userData, setValue]);
+
+  const texts = useMemo(() => ({
+    saving: i18n.language === "th" ? "กำลังบันทึก..." : "Saving...",
+    save: i18n.language === "th" ? "บันทึก" : "Save",
+  }), [i18n.language]);
+
   return (
     <form
       onSubmit={handleSubmit((values) => onSave?.(values, setError))}
@@ -79,7 +87,7 @@ const ProfileForm = ({
           className="btn-base white-outline-normal w-28 h-12 rounded-sm"
           disabled={isSubmitting}
         >
-          {isSubmitting ? "Saving..." : "Save"}
+          {isSubmitting ? texts.saving : texts.save}
         </Button>
       </div>
     </form>

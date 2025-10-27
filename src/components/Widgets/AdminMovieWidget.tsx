@@ -5,7 +5,7 @@ import Image from "next/image";
 import { Button } from "../ui/button";
 import AddRoundLight from "../Icons/AddRoundLight";
 import TableCard from "../Cards/TableCard";
-import { APIMovie } from "@/types/movie";
+import { MovieDTO } from "@/types/movie";
 import AdminCreateNewMovieForm from "../Forms/AdminCreateNewMovieForm";
 import AdminViewMovieForm from "../Forms/AdminViewMovieForm";
 import AdminEditMovieForm from "../Forms/AdminEditMovieForm";
@@ -13,9 +13,9 @@ import AdminSearchBar from "../Inputs/AdminSearchBar";
 
 function AdminMovieWidget() {
   const [isShowCreateModal, setIsShowCreateModal] = useState(false);
-  const [viewMovie, setViewMovie] = useState<APIMovie | null>(null);
-  const [editMovie, setEditMovie] = useState<APIMovie | null>(null);
-  const [movies, setMovies] = useState<APIMovie[]>([]);
+  const [viewMovie, setViewMovie] = useState<MovieDTO | null>(null);
+  const [editMovie, setEditMovie] = useState<MovieDTO | null>(null);
+  const [movies, setMovies] = useState<MovieDTO[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -23,13 +23,18 @@ function AdminMovieWidget() {
   const fetchMovies = async () => {
     try {
       setLoading(true);
-      const res = await fetch("/api/movies");
-      if (!res.ok) throw new Error("Failed to fetch movies");
-      const data: { movie: APIMovie[] } = await res.json();
-      setMovies(Array.isArray(data.movie) ? data.movie : []);
+      const res = await fetch("/api/admin/movies");
+      if (!res.ok) throw new Error(`Fetch failed: ${res.status}`);
+      const data = await res.json();
+
+      const movieList = Array.isArray(data)
+        ? data
+        : data.movie || data.movies || [];
+
+      setMovies(movieList);
     } catch (err) {
-      console.error(err);
-      setError("ไม่สามารถโหลดข้อมูลหนังได้");
+      console.error("Fetch movies error:", err);
+      setError("ไม่สามารถโหลดข้อมูลหนังได้ (500)");
     } finally {
       setLoading(false);
     }
@@ -42,26 +47,32 @@ function AdminMovieWidget() {
   const filteredMovies = useMemo(() => {
     if (!Array.isArray(movies)) return [];
     if (!searchTerm) return movies;
-
     return movies.filter((movie) =>
       movie.title.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }, [movies, searchTerm]);
 
   const displayData = filteredMovies.map((movie) => ({
-    ...movie,
-    poster_url: (
-      <Image
-        src={movie.poster_url || "/images/placeholder.jpg"}
-        alt={movie.title}
-        width={48}
-        height={64}
-        className="w-12 h-16 object-cover rounded"
-      />
-    ),
-    duration_min: `${movie.duration_min} mins`,
-    rating: movie.rating || "-",
-  }));
+  ...movie,
+  poster_url: (
+    <Image
+      src={movie.poster_url || "/images/placeholder.jpg"}
+      alt={movie.title}
+      width={48}
+      height={64}
+      className="w-12 h-16 object-cover rounded"
+    />
+  ),
+  duration_min: `${movie.duration_min} mins`,
+  rating: !movie.rating || movie.rating === "0" ? "-" : movie.rating,
+  genre: movie.genres
+  ?.map((g) => {
+    if ("genre" in g && g.genre?.name) return g.genre.name;
+    return undefined;
+  })
+  .filter(Boolean)
+  .join(", ") || "-"
+}));
 
   const movieColumns = [
     {
@@ -98,7 +109,7 @@ function AdminMovieWidget() {
       if (!confirm("Are you sure to delete this movie?")) return;
 
       try {
-        await fetch(`/api/movies/${movie.id}`, { method: "DELETE" });
+        await fetch(`/api/admin/movies/${movie.id}`, { method: "DELETE" });
         fetchMovies();
       } catch (err) {
         console.error(err);
@@ -115,7 +126,7 @@ function AdminMovieWidget() {
         <div className="flex items-center justify-between mt-20 px-[70px]">
           <h1 className="text-gray-g63f text-f-56 font-bold">Movies</h1>
           <Button
-            className="btn-base blue-normal text-fm-16 font-bold gap-2.5 h-12 w-[135px] rounded-[4px]"
+            className="btn-base blue-normal cursor-pointer text-fm-16 font-bold gap-2.5 h-12 w-[135px] rounded-[4px]"
             onClick={() => setIsShowCreateModal(true)}
           >
             <AddRoundLight width={24} height={24} color="white-wfff" />

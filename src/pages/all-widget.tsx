@@ -33,7 +33,6 @@ import {
 import DateSelection from "@/components/ui/dateselection";
 
 import ShowTime from "@/components/Widgets/ShowTime";
-import ShowtimeMovie from "@/components/Widgets/ShowtimeMovie";
 import ReviewCard from "@/components/Cards/ReviewCard";
 
 import {
@@ -42,10 +41,9 @@ import {
   BookingStatusCompleted,
   BookingStatusCanceled,
 } from "@/components/ui/bookingstatus";
-import SummaryBoxCard from "@/components/Cards/SummaryBoxCard";
-
 import AdminSidebar from "@/components/ui/adminsidebar";
-import FilterSearch from "@/components/Widgets/FilterSearch";
+import BookingDetailModal from "@/components/Modals/BookingDetailModal";
+import ShareButton from "@/components/Widgets/ShareButton";
 
 const AllWidget = () => {
   // State for radio buttons
@@ -64,7 +62,7 @@ const AllWidget = () => {
         <div className="flex flex-row gap-50 justify-center items-center py-10">
           {/* Column 1: Blue Buttons */}
           <div className="flex flex-col gap-10">
-            <Button className="btn-base blue-normal">
+            <Button className="btn-base blue-normal cursor-pointer">
               btn-base blue-normal
             </Button>
 
@@ -151,7 +149,7 @@ const AllWidget = () => {
       </div>
 
       {/* Booking Card */}
-      <div className="mt-20 w-full">
+      {/* <div className="mt-20 w-full">
         <BookingCard
           movieTitle="The Dark Knight"
           moviePoster="https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcQkUywIUXDjHSQJIaNHYVs08osgBpF5Ot-xmB_omyEZeeRP9Xug"
@@ -164,9 +162,9 @@ const AllWidget = () => {
           selectedSeats="C9, C10"
           ticketCount={2}
           paymentMethod="Credit card"
-          isPaid={true}
+          // isPaid={true}
         />
-      </div>
+      </div> */}
 
       {/* Icons Grid */}
       <div className="mt-20 w-full max-w-7xl px-4">
@@ -666,7 +664,7 @@ const AllWidget = () => {
         </form>
       </div>
 
-      {/* Filter Search */}
+      {/* Filter Search
       <div className="mt-20 w-full max-w-6xl px-4">
         <h2 className="text-2xl font-bold mb-6 text-center">Filter Search</h2>
         <div className="flex justify-center">
@@ -676,7 +674,7 @@ const AllWidget = () => {
             }}
           />
         </div>
-      </div>
+      </div> */}
 
       {/* Showtime Selection Preview */}
       {/* <div className="mt-20 w-full max-w-4xl px-4">
@@ -714,7 +712,7 @@ const AllWidget = () => {
         </div>
       </div> */}
       {/* ShowtimeMovie Preview */}
-      <div className="mt-20 w-full max-w-6xl px-4">
+      {/* <div className="mt-20 w-full max-w-6xl px-4">
         <h2 className="text-2xl font-bold mb-6 text-center">Showtime Movie</h2>
         <div className="w-full">
           <ShowtimeMovie
@@ -723,10 +721,12 @@ const AllWidget = () => {
               title: "Example Movie",
               genre: "Action, Adventure",
               poster_url: "/images/poster.png",
+              duration_min: 120,
+              description: "Example Description",
             }}
           />
         </div>
-      </div>
+      </div> */}
 
       {/* Showtime Preview */}
       <div className="mt-20 w-full max-w-4xl px-4">
@@ -760,7 +760,7 @@ const AllWidget = () => {
       <div className="mt-20">
         <h2 className="text-2xl font-bold mb-6 text-center">Summary Box</h2>
         <div className="flex gap-5">
-          <SummaryBoxCard canPay={true} />
+          {/* <SummaryBoxCard canPay={true} /> */}
         </div>
       </div>
 
@@ -778,6 +778,18 @@ const AllWidget = () => {
         <div className="flex gap-5">
           <AdminSidebar />
         </div>
+      </div>
+      {/* Booking Detail Modal */}
+      <div className="mt-20">
+        <h2 className="text-2xl font-bold mb-6 text-center">
+          Booking Detail Modal
+        </h2>
+        {/* <BookingDetailModal /> */}
+      </div>
+      {/* Share Button */}
+      <div className="mt-20 mb-20">
+        <h2 className="text-2xl font-bold mb-6 text-center">Share Button</h2>
+        <div className="flex gap-5">{/* <ShareButton /> */}</div>
       </div>
     </div>
   );

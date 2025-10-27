@@ -1,11 +1,11 @@
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "next-i18next";
 import LocationIconBlue from "../Icons/LocationIconBlue";
 import Link from "next/link";
-import { CinemaType } from "@/types/cinema";
+import { CinemaDTO } from "@/types/cinema"; // เปลี่ยนจาก CinemaType เป็น CinemaWithDistance
 
 type CinemaCardProps = {
   filter: string;
-  cinema: CinemaType;
+  cinema: CinemaDTO; // เปลี่ยนจาก CinemaType เป็น CinemaWithDistance
 };
 
 const CinemaCard = ({ filter, cinema }: CinemaCardProps) => {
@@ -13,9 +13,15 @@ const CinemaCard = ({ filter, cinema }: CinemaCardProps) => {
 
   const distanceText =
     i18n.language === "en" ? cinema?.distance_text : cinema?.distance_text_th;
+  const nameText =
+    i18n.language === "en" ? cinema?.translations?.en?.name : cinema?.translations?.th?.name;
+  const descriptionText =
+    i18n.language === "en" ? cinema?.translations?.en?.description : cinema?.translations?.th?.description;
+    console.log(cinema);
+    
 
   return (
-    <Link href={`/cinemas/${cinema.id}`} className="block">
+    <Link href={`/cinemas/${cinema.slug}`} className="block">
       <div className="w-full max-w-[590px] border border-gray-g63f p-4 rounded-sm hover:border-gray-gf7e transition-colors cursor-pointer">
         <div className="flex gap-4 items-center">
           <div className="size-[52px]">
@@ -23,7 +29,7 @@ const CinemaCard = ({ filter, cinema }: CinemaCardProps) => {
           </div>
           <div className="flex flex-col gap-1">
             <h3 className="text-white text-2xl font-bold line-clamp-1">
-              {cinema.name}
+              {nameText}
             </h3>
             <p className="text-gray-g3b0 line-clamp-1">
               {filter === "2" && (
@@ -31,7 +37,7 @@ const CinemaCard = ({ filter, cinema }: CinemaCardProps) => {
                   {distanceText}
                 </span>
               )}
-              {cinema.address}
+              {descriptionText}
             </p>
           </div>
         </div>

@@ -366,3 +366,60 @@ body {
 /* .container-modal {
   @apply flex flex-col border rounded-[6px] bg-[#21263F] p-5
 } */
+
+/* Picture-in-Picture Animation */
+@keyframes slideInFromBottom {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOutToBottom {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+}
+
+/* PiP Video Container */
+.pip-video-container {
+  animation: slideInFromBottom 0.3s ease-out;
+}
+
+.pip-video-container.closing {
+  animation: slideOutToBottom 0.3s ease-in;
+}
+
+/* Custom Scrollbar */
+.custom-scrollbar {
+  /* Firefox */
+  scrollbar-width: thin;
+  scrollbar-color: #4E7BEE #21263F;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #21263F;
+  border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #4E7BEE;
+  border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #1E29A8;
+}

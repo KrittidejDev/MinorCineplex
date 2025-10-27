@@ -73,10 +73,10 @@ const [selectedImage, setSelectedImage] = useState<string | null>(null);
           )}
         </div>
         <div
-          className="hover:underline cursor-pointer text-white"
+          className="hover:underline cursor-pointer border rounded-sm px-4 py-2 border-white text-white transition-all duration-200 hover:bg-gray-g63f hover:text-white"
           onClick={handleClick}
         >
-          Upload
+          Upload picture
         </div>
       </div>
     </div>

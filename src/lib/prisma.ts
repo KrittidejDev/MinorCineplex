@@ -1,4 +1,4 @@
-import { PrismaClient } from "../generated/prisma";
+import { PrismaClient } from "@/generated/prisma";
 import { PrismaNeon } from "@prisma/adapter-neon";
 
 if (!process.env.DATABASE_URL) {

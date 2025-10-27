@@ -79,7 +79,7 @@ const AdminShowtimeFilter = ({
         <div className="flex items-center gap-5">
           <div className="flex items-center gap-2">
             <p className="text-f-20 text-black">Date:</p>
-            <span className="text-f-20 text-gray-g3b0">
+            <span className="text-f-20 text-blue-b9a8">
               {query.date || "All Dates"}
             </span>
           </div>
@@ -99,7 +99,7 @@ const AdminShowtimeFilter = ({
         </div>
         <div className="flex items-center gap-2">
           <button
-            className="h-12 flex items-center justify-center btn-base blue-normal text-fm-16"
+            className="h-12 flex items-center justify-center btn-base blue-normal cursor-pointer text-fm-16"
             onClick={clearQuery}
           >
             Clear

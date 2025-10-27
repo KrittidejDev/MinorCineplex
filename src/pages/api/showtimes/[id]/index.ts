@@ -42,8 +42,8 @@ export default async function handler(
   if (req.method === "PUT") {
     try {
       const { id } = req.query;
-      const { movie_id, hall_id, time_slot_id, date, price } = req.body;
-      if (!movie_id || !hall_id || !time_slot_id || !date || !price) {
+      const { movie_id, hall_id, cinema_id, time_slot_id, date, price } = req.body;
+      if (!movie_id || !hall_id || !cinema_id || !time_slot_id || !date || !price) {
         return res.status(400).json({ error: "Missing required fields" });
       }
       if (typeof id !== "string") {
@@ -52,6 +52,7 @@ export default async function handler(
       await updateShowTimeById(id, {
         movie_id,
         hall_id,
+        cinema_id,
         time_slot_id,
         date,
         price,

@@ -25,7 +25,7 @@ export const Modal = () => {
               <Button className="btn-base white-outline-normal">btn-base white-outline-normal</Button>
 
               {/* Blue Button */}
-              <Button className="btn-base blue-normal">btn-base blue-normal</Button>
+              <Button className="btn-base blue-normal cursor-pointer">btn-base blue-normal</Button>
             </div>
           </div>
         </div>

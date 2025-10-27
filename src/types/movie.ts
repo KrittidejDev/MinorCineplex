@@ -1,71 +1,84 @@
-export interface Actor {
-  id: string;
-  name: string;
-  imageUrl?: string | null;
-}
+import { MovieStatus } from "@/generated/prisma";
 
-export interface Director {
+export interface MovieDTO {
   id: string;
-  name: string;
-  imageUrl?: string | null;
-}
-
-export interface APIMovie {
-  id: string;
+  slug: string;
   title: string;
-  duration_min: number;
-  description?: string | null;
-  poster_url?: string | null;
-  trailer_url?: string | null;
-  genre?: string | null;
-  rating?: string | null;
-  created_at: Date;
-  updated_at: Date;
-  release_date?: Date | null;
-  actors?: Actor[];
-  directors?: Director[];
-  showtimes?: string[];
-}
-
-export interface MovieCardData {
-  id: string;
-  title: string;
-  poster_url?: string | null;
-  release_date?: Date | null;
-  rating?: string | null;
-  genre?: string | null;
-}
-
-export interface MovieWithHalls {
-  id: string;
-  title: string;
+  translations?: {
+    th?: { title: string; description: string };
+    en?: { title: string; description: string };
+  };
   duration_min: number;
   poster_url?: string;
-  description?: string;
-  genre?: string;
+  trailer_url?: string;
   rating?: string;
-  halls: HallWithTimeslots[];
-}
-
-export interface HallWithTimeslots {
-  id: string;
-  name: string;
-  seat_count?: number;
-  timeslots: TimeslotData[];
-}
-
-export interface TimeslotData {
-  showtime_id: string;
-  name: string;
-  price: number;
-  date: string;
-  seats: ShowtimeSeatData[];
-}
-
-export interface ShowtimeSeatData {
-  id: string;
-  seat_id: string;
-  showtime_id: string;
+  release_date?: Date;
   status: string;
-  price: number;
+  actors: { actor: { id: string; name: string } }[];
+  directors: { director: { id: string; name: string } }[];
+  genres: (
+    | {
+        genre: {
+          id: string;
+          name: string;
+          slug: string;
+          translations?: { en?: { name: string }; th?: { name: string } };
+        };
+      }
+    | { language: { id: string; name: string; code: string } }
+  )[];
+  languages: { language: { id: string; name: string; code: string } }[];
+}
+
+export interface MovieFilters {
+  movie_id?: string;
+  title?: string;
+  language?: string;
+  genre?: string;
+  release_date?: string;
+  status?: "NOW_SHOWING" | "COMING_SOON";
+}
+
+export interface Pagination {
+  page?: number;
+  limit?: number;
+}
+
+export interface MovieAPIRespons {
+  success: boolean;
+  message?: string;
+  data: MovieDTO[];
+}
+
+export interface ShowtimeDTO {
+  slug?: string;
+  cinema: {
+    id: string;
+    slug: string;
+    name: string;
+    name_en?: string | { name: string };
+    address: string;
+    city?: string;
+  };
+  halls: {
+    hall: {
+      id: string;
+      slug: string;
+      name: string;
+      seat_count: number;
+    };
+    showtimes: {
+      id: string;
+      date: Date;
+      price: number;
+      available_seats: number;
+      total_seats: number;
+      time_slot: {
+        id: string;
+        name: string;
+        start_time: string;
+        end_time: string;
+      };
+    }[];
+  }[];
 }

@@ -4,6 +4,7 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/router";
 import { AxiosError } from "axios";
 import { ErrorAlert } from "@/components/ui/alert";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
 const Login = () => {
   const router = useRouter();
@@ -37,13 +38,21 @@ const Login = () => {
         {isAlert && (
           <ErrorAlert
             onClick={() => setIsAlert(false)}
-            header="Invalid credentials"
-            text="Please try another email or password"
+            header="Your password is incorrect or this email doesn’t exist"
+            text="Please try another password or email"
           />
         )}
       </div>
     </div>
   );
+};
+
+export const getServerSideProps = async ({ locale }: { locale: string }) => {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale, ["common"])),
+    },
+  };
 };
 
 export default Login;

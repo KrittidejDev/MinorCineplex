@@ -6,11 +6,11 @@ import { Button } from "../ui/button";
 import AdminInputTextField from "../Inputs/AdminInputTextField";
 import AdminInputTextArea from "../Inputs/AdminInputTextArea";
 import AdminDropdownInput from "../Inputs/AdminDropdownInput ";
-import { APIMovie } from "@/types/movie";
+import { MovieDTO } from "@/types/movie";
 import axios, { AxiosError } from "axios";
 
 interface EditMovieFormProps {
-  movie: APIMovie | null;
+  movie: MovieDTO | null;
   isShowModal: boolean;
   onClose: () => void;
 }
@@ -28,7 +28,6 @@ function AdminEditMovieForm({
     trailer: "",
   });
 
-  // ใช้จริงผ่าน posterPreview → eslint ไม่เตือนอีก
   const [, setPosterFile] = useState<File | null>(null);
   const [posterPreview, setPosterPreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -40,22 +39,29 @@ function AdminEditMovieForm({
     trailer: "",
   });
 
-  const [selectedGenre, setSelectedGenre] = useState("");
-  // กำหนดไว้แต่ไม่ใช้จริง → ปิด eslint เตือน
-  const [, setSelectedRating] = useState("");
+  const [selectedGenre, setSelectedGenre] = useState<string[]>([]);
   const [, setLoading] = useState(false);
 
   useEffect(() => {
     if (movie) {
+      const description =
+        movie.translations?.th?.description ||
+        movie.translations?.en?.description ||
+        "";
+
+      const genresArray = (movie.genres as { genre: { name: string } }[]).map(
+        (g) => g.genre.name
+      );
+
       setFormData({
         title: movie.title || "",
-        description: movie.description || "",
+        description: description || "",
         duration: movie.duration_min?.toString() || "",
         rating: movie.rating?.toString() || "",
         trailer: movie.trailer_url || "",
       });
-      setSelectedGenre(movie.genre?.toLowerCase() || "");
-      setSelectedRating(movie.rating?.toString() || "");
+
+      setSelectedGenre(genresArray);
       setPosterPreview(movie.poster_url || null);
     }
   }, [movie]);
@@ -110,13 +116,13 @@ function AdminEditMovieForm({
       description: formData.description,
       duration_min: Number(formData.duration),
       trailer_url: formData.trailer,
-      genre: selectedGenre,
+      genre: selectedGenre.join(","),
       rating: ratingValue.toString(),
     };
 
     try {
       setLoading(true);
-      const res = await axios.put(`/api/movies/${movie.id}`, payload);
+      const res = await axios.put(`/api/admin/movies/${movie.id}`, payload);
 
       if (res.status === 200) {
         alert("แก้ไขภาพยนตร์สำเร็จ!");
@@ -168,7 +174,10 @@ function AdminEditMovieForm({
                         </p>
                       </div>
                       <div className="mt-3.5">
-                        <Button type="button" className="btn-base blue-normal">
+                        <Button
+                          type="button"
+                          className="btn-base blue-normal cursor-pointer"
+                        >
                           Browse Files
                         </Button>
                       </div>
@@ -226,10 +235,21 @@ function AdminEditMovieForm({
                       label="Genre"
                       placeholder="Action"
                       value={selectedGenre}
-                      onChange={(value) => setSelectedGenre(value)}
+                      onChange={(value: string | string[]) => {
+                        if (Array.isArray(value)) {
+                          setSelectedGenre(value);
+                        } else {
+                          setSelectedGenre([value]);
+                        }
+                      }}
                       options={genreOptions}
-                      errors={!selectedGenre ? "Genre is required" : undefined}
+                      errors={
+                        selectedGenre.length === 0
+                          ? "Genre is required"
+                          : undefined
+                      }
                       require={true}
+                      multiple={true}
                     />
                   </div>
                   <div className="flex flex-col flex-1">
@@ -259,13 +279,13 @@ function AdminEditMovieForm({
                   <Button
                     type="button"
                     onClick={onClose}
-                    className="w-[120px] btn-base blue-normal opacity-40 text-fr-16"
+                    className="w-[120px] btn-base blue-normal  cursor-pointer opacity-40 text-fr-16"
                   >
                     Cancel
                   </Button>
                   <Button
                     type="submit"
-                    className="w-[120px] btn-base blue-normal text-fr-16"
+                    className="w-[120px] btn-base blue-normal cursor-pointer text-fr-16"
                   >
                     Save
                   </Button>

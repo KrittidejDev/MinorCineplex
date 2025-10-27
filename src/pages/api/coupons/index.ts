@@ -1,4 +1,4 @@
-//api/coupons/index.ts
+//api/ciupons/index.ts
 import { getCoupons, createCoupons } from "@/services/couponService";
 import type { NextApiRequest, NextApiResponse } from "next";
 
@@ -10,33 +10,79 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     if (req.method === "POST") {
-      const { title_en, title_th, discription_en, discription_th, code, discount_value, start_date, end_date, image, status } = req.body;
-
-      if (!code || !discount_value || !start_date || !end_date) {
+      const {
+        slug,
+        code,
+        translations,
+        discount_type,
+        discount_value,
+        buy_quantity,
+        get_quantity,
+        gift_type,
+        gift_details,
+        start_date,
+        end_date,
+        image_url,
+        status,
+        min_amount,
+        max_discount,
+        usage_limit,
+        cinema_id,
+        movie_id,
+      } = req.body;
+    
+      // ✅ แก้ validation ให้รองรับทุก discount_type
+      if (!slug || !discount_type || !start_date || !end_date) {
         return res.status(400).json({ error: "Missing required fields" });
       }
-
+    
+      // ✅ Validate ตาม discount_type
+      if (discount_type === 'FIXED' || discount_type === 'PERCENTAGE') {
+        if (discount_value == null) {
+          return res.status(400).json({ error: "discount_value is required for FIXED/PERCENTAGE" });
+        }
+      }
+    
+      if (discount_type === 'BUY_X_GET_Y') {
+        if (!buy_quantity || !get_quantity) {
+          return res.status(400).json({ error: "buy_quantity and get_quantity are required for BUY_X_GET_Y" });
+        }
+      }
+    
+      if (discount_type === 'GIFT') {
+        if (!gift_type || !gift_details) {
+          return res.status(400).json({ error: "gift_type and gift_details are required for GIFT" });
+        }
+      }
+    
       const newCoupon = await createCoupons({
+        slug,
         code,
-        title_en,
-        title_th,
-        discription_en,
-        discription_th,
-        discount_value: Number(discount_value),
+        translations,
+        discount_type,
+        discount_value: discount_value != null ? Number(discount_value) : undefined,
+        buy_quantity: buy_quantity ? Number(buy_quantity) : undefined,
+        get_quantity: get_quantity ? Number(get_quantity) : undefined,
+        gift_type,
+        gift_details,
         start_date: new Date(start_date),
         end_date: new Date(end_date),
-        image,
+        image_url,
         status,
+        min_amount: min_amount ? Number(min_amount) : undefined,
+        max_discount: max_discount ? Number(max_discount) : undefined,
+        usage_limit: usage_limit ? Number(usage_limit) : undefined,
+        cinema_id,
+        movie_id,
       });
-
+    
       return res.status(201).json({ coupon: newCoupon });
     }
 
-    return res.status(405).end();
+    return res.status(405).json({ error: "Method not allowed" });
   } catch (err: unknown) {
     console.error(err);
     const message = err instanceof Error ? err.message : "Server Error";
     return res.status(500).json({ error: message });
   }
 }
-

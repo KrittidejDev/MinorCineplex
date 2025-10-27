@@ -34,10 +34,10 @@ const InputAdminDate = (
 
   return (
     <div className="flex flex-col flex-1 gap-1 relative">
-      <label className="text-gray-gedd text-fr-16"><span className="text-blue-b9a8">{label}</span>{require && <span className="text-red">*</span>}</label>
+      <label className="text-black text-fr-16"><span>{label}</span>{require && <span className="text-red">*</span>}</label>
       <input
         type="date"
-        className="w-full bg-white border-blue-b9a8 border rounded-sm h-10 p-2"
+        className="w-full bg-white border-blue-b9a8 border rounded-sm h-10 p-2 text-gray-g3b0"
         value={formattedValue}
         onChange={(e) => onChange?.(e.target.value)}
       />

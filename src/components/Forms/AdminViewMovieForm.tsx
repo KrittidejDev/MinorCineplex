@@ -6,10 +6,10 @@ import { Button } from "../ui/button";
 import AdminInputTextField from "../Inputs/AdminInputTextField";
 import AdminInputTextArea from "../Inputs/AdminInputTextArea";
 import AdminDropdownInput from "../Inputs/AdminDropdownInput ";
-import { APIMovie } from "@/types/movie";
+import { MovieDTO } from "@/types/movie";
 
 interface ViewMovieFormProps {
-  movie: APIMovie | null;
+  movie: MovieDTO | null;
   isShowModal: boolean;
   onClose: () => void;
 }
@@ -20,30 +20,43 @@ function AdminViewMovieForm({
   onClose,
 }: ViewMovieFormProps) {
   const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    duration: "",
-    rating: "",
-    trailer: "",
-  });
+  title: "",
+  description: "",
+  duration: "",
+  rating: "",
+  trailer: "",
+  genre: "",
+});
 
   const [posterPreview, setPosterPreview] = useState<string | null>(null);
   const [selectedGenre, setSelectedGenre] = useState("");
 
   useEffect(() => {
-    if (movie) {
-      setFormData({
-        title: movie.title || "",
-        description: movie.description || "",
-        duration: movie.duration_min?.toString() || "",
-        rating: movie.rating?.toString() || "",
-        trailer: movie.trailer_url || "",
-      });
+  if (movie) {
+    const description =
+      movie.translations?.th?.description ||
+      movie.translations?.en?.description ||
+      "";
 
-      setSelectedGenre(movie.genre?.toLowerCase() || "");
-      setPosterPreview(movie.poster_url || null);
-    }
-  }, [movie]);
+    const genreString =
+      movie.genres
+        ?.map((g) => ("genre" in g ? g.genre.translations?.th?.name || g.genre.name : ""))
+        .filter(Boolean)
+        .join(", ") || "";
+
+    setFormData({
+      title: movie.title || "",
+      description: description || "",
+      duration: movie.duration_min?.toString() || "",
+      rating: movie.rating?.toString() || "",
+      trailer: movie.trailer_url || "",
+      genre: genreString,
+    });
+
+    setPosterPreview(movie.poster_url || null);
+  }
+}, [movie]);
+
 
   const genreOptions = [
     { value: "action", label: "Action" },
@@ -121,15 +134,15 @@ function AdminViewMovieForm({
                     />
                   </div>
                   <div className="flex flex-col flex-1">
-                    <AdminDropdownInput
-                      label="Genre"
-                      value={selectedGenre}
-                      onChange={() => {}}
-                      options={genreOptions}
-                      errors=""
-                      require={true}
-                      disabled
-                    />
+                    <AdminInputTextField
+                  label="Genre"
+                  value={formData.genre}
+                  onChange={() => {}}
+                  errors=""
+                  require={true}
+                  type="text"
+                  disabled
+                />
                   </div>
                   <div className="flex flex-col flex-1">
                     <AdminInputTextField
@@ -160,7 +173,7 @@ function AdminViewMovieForm({
                 <div className="flex justify-end gap-2 mt-10">
                   <Button
                     type="button"
-                    className="w-[120px] btn-base blue-normal text-fr-16"
+                    className="w-[120px] btn-base blue-normal  cursor-pointer text-fr-16"
                     onClick={onClose}
                   >
                     Close

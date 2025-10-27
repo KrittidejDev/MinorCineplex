@@ -1,106 +1,167 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo, useRef } from "react";
 import axios from "axios";
 import MovieCard from "../Cards/MovieCard";
-import { APIMovie, MovieCardData } from "@/types/movie";
+import { MovieAPIRespons, MovieDTO } from "@/types/movie";
 import { useRouter } from "next/router";
+import { useTranslation } from "next-i18next";
 
-function AllMoviesWidget() {
-  const [activeTab, setActiveTab] = useState("nowShowing");
-  const [movies, setMovies] = useState<MovieCardData[]>([]);
-  const [, setLoading] = useState(true);
-  const [, setError] = useState<string | null>(null);
+interface AllMoviesWidgetProps {
+  initialMovies?: MovieDTO[];
+}
+
+function AllMoviesWidget({ initialMovies = [] }: AllMoviesWidgetProps) {
+  const [activeTab, setActiveTab] = useState("NOW_SHOWING");
+  const [movies, setMovies] = useState<MovieDTO[]>(initialMovies);
+  const [loading, setLoading] = useState(false);
+  const isInitialMount = useRef(true);
 
   const router = useRouter();
+  const { i18n } = useTranslation();
+
+  const texts = useMemo(
+    () => ({
+      nowShowing: i18n.language === "th" ? "กำลังฉาย" : "Now showing",
+      comingSoon: i18n.language === "th" ? "เร็วๆ นี้" : "Coming soon",
+      loading: i18n.language === "th" ? "กำลังโหลด..." : "Loading...",
+    }),
+    [i18n.language]
+  );
 
   useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+
     const fetchMovies = async () => {
       try {
-        const res = await axios.get<{ movie: APIMovie[] }>("/api/movies");
-        const Movies: MovieCardData[] = res.data.movie.map((movie) => ({
-          id: movie.id,
-          title: movie.title,
-          poster_url: movie.poster_url,
-          release_date: movie.release_date
-            ? new Date(movie.release_date)
-            : null,
-          rating: movie.rating,
-          genre: movie.genre,
-        }));
-        setMovies(Movies);
+        setLoading(true);
+        const url = `/api/movies?status=${activeTab}`;
+        const res = await axios.get<MovieAPIRespons>(url);
+        setMovies(res.data.data);
       } catch (err) {
-        console.error(err);
-        setError("ไม่สามารถโหลดหนังได้");
+        console.error("Failed to fetch movies", err);
+        setMovies([]);
       } finally {
         setLoading(false);
       }
     };
 
     fetchMovies();
-  }, []);
+  }, [activeTab]);
 
-  const today = new Date();
-  const nowShowingMovies = movies.filter(
-    (m) => m.release_date && m.release_date <= today
-  );
+  const groupedMovies =
+    activeTab === "COMING_SOON"
+      ? movies.reduce((groups: Record<string, MovieDTO[]>, movie) => {
+          if (!movie.release_date) return groups;
+          const date = new Date(movie.release_date);
+          const monthYear = date.toLocaleString("en-US", {
+            month: "long",
+            year: "numeric",
+          });
 
-  const comingSoonMovies = movies.filter(
-    (m) => m.release_date && m.release_date > today
-  );
+          if (!groups[monthYear]) groups[monthYear] = [];
+          groups[monthYear].push(movie);
+          return groups;
+        }, {})
+      : null;
 
-  const moviesToDisplay =
-    activeTab === "nowShowing" ? nowShowingMovies : comingSoonMovies;
+  const sortedMonthKeys =
+    groupedMovies &&
+    Object.keys(groupedMovies).sort((a, b) => {
+      const dateA = new Date(a);
+      const dateB = new Date(b);
+      return dateA.getTime() - dateB.getTime();
+    });
 
   return (
-    <>
-      <div className="w-screen">
-        <div className="w-screen bg-gray-gc1b py-10">
-          <div className="flex justify-center gap-6">
-            <button
-              onClick={() => setActiveTab("nowShowing")}
-              className={`font-bold text-f-24 py-1 cursor-pointer ${
-                activeTab === "nowShowing"
-                  ? "text-white-wfff border-b-2 border-gray-gf7e"
-                  : "text-gray-g3b0 border-b-2 border-transparent"
-              }`}
-            >
-              Now showing
-            </button>
-            <button
-              onClick={() => setActiveTab("comingSoon")}
-              className={`font-bold text-f-24 py-1 cursor-pointer ${
-                activeTab === "comingSoon"
-                  ? "text-white-wfff border-b-2 border-gray-gf7e"
-                  : "text-gray-g3b0 border-b-2 border-transparent"
-              }`}
-            >
-              Coming soon
-            </button>
-          </div>
-        </div>
-
-        <div className="flex justify-center py-20 px-4">
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 max-w-[1200px] w-full">
-            {moviesToDisplay.map((movie) => (
-              <div
-                key={movie.id}
-                className="cursor-pointer"
-                onClick={() => router.push(`/movies/${movie.id}`)}
-              >
-                <MovieCard
-                  key={movie.id}
-                  id={movie.id}
-                  title={movie.title}
-                  poster_url={movie.poster_url}
-                  release_date={movie.release_date ?? undefined}
-                  rating={movie.rating}
-                  genre={movie.genre}
-                />
-              </div>
-            ))}
-          </div>
+    <div className="w-screen">
+      <div className="w-screen bg-gray-gc1b py-10">
+        <div className="flex justify-center gap-6">
+          <button
+            onClick={() => setActiveTab("NOW_SHOWING")}
+            className={`font-bold text-f-24 py-1 cursor-pointer ${
+              activeTab === "NOW_SHOWING"
+                ? "text-white-wfff border-b-2 border-gray-gf7e"
+                : "text-gray-g3b0 border-b-2 border-transparent"
+            }`}
+          >
+            {texts.nowShowing}
+          </button>
+          <button
+            onClick={() => setActiveTab("COMING_SOON")}
+            className={`font-bold text-f-24 py-1 cursor-pointer ${
+              activeTab === "COMING_SOON"
+                ? "text-white-wfff border-b-2 border-gray-gf7e"
+                : "text-gray-g3b0 border-b-2 border-transparent"
+            }`}
+          >
+            {texts.comingSoon}
+          </button>
         </div>
       </div>
-    </>
+      {loading ? (
+        <div className="flex justify-center items-center py-20 text-white">
+          {texts.loading}
+        </div>
+      ) : (
+        <div className="flex flex-col justify-center py-20 px-4">
+          {activeTab === "COMING_SOON" && groupedMovies ? (
+            sortedMonthKeys?.map((monthYear) => (
+              <div
+                key={monthYear}
+                className="max-w-[1200px] w-full mx-auto mb-10"
+              >
+                <h2 className="text-f-24 mb-10">{monthYear}</h2>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+                  {groupedMovies[monthYear].map((movie) => (
+                    <div
+                      key={movie.id}
+                      className="cursor-pointer"
+                      onClick={() => router.push(`/movies/${movie.slug}`)}
+                    >
+                      <MovieCard
+                        key={movie.id}
+                        id={movie.id}
+                        title={movie.title}
+                        translations={movie.translations}
+                        poster_url={movie.poster_url}
+                        release_date={movie.release_date ?? undefined}
+                        rating={movie.rating}
+                        genres={[...movie.genres, ...movie.languages]}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="flex justify-center">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10 max-w-[1200px] w-full">
+                {movies.map((movie) => (
+                  <div
+                    key={movie.id}
+                    className="cursor-pointer"
+                    onClick={() => router.push(`/movies/${movie.slug}`)}
+                  >
+                    <MovieCard
+                      key={movie.id}
+                      id={movie.id}
+                      title={movie.title}
+                      translations={movie.translations}
+                      poster_url={movie.poster_url}
+                      release_date={movie.release_date ?? undefined}
+                      rating={movie.rating}
+                      genres={[...movie.genres, ...movie.languages]}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
   );
 }
 

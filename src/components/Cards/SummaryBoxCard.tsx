@@ -1,24 +1,30 @@
-import Image from "next/image";
-import { useState } from "react";
-import { useTranslation } from "react-i18next";
-import Tag from "../Widgets/Tag";
-import PinFill from "../Icons/PinFill";
-import DateRangeFill from "../Icons/DateRangeFill";
-import TimeFill from "../Icons/TimeFill";
-import Shop from "../Icons/Shop";
-import BookingInfo from "./BookingInfo";
-import { Button } from "../ui/button";
-import { BillInfo } from "@/types/cinema";
-import { CouponCardData } from "@/types/coupon";
+//components/Cards/SummaryBoxCard.tsx
+import Image from 'next/image'
+import { useState, useMemo } from 'react'
+import { useTranslation } from 'next-i18next'
+import Tag from '../Widgets/Tag'
+import PinFill from '../Icons/PinFill'
+import DateRangeFill from '../Icons/DateRangeFill'
+import TimeFill from '../Icons/TimeFill'
+import Shop from '../Icons/Shop'
+import BookingInfo from './BookingInfo'
+import { Button } from '../ui/button'
+import { BillInfo, BookingInfo as BookingData } from '@/types/cinema'
+import { CouponCardData } from '@/types/coupon'
+import { CloseRoundLight, ExpandRightLight } from '../Icons/Icons'
+import { toast } from 'react-toastify'
 
 interface Props extends BillInfo {
-  countdown?: string;
-  coupons?: CouponCardData[];
-  selectedCoupon?: CouponCardData | null;
-  onSelectCoupon?: (coupon: CouponCardData) => void;
-  onPayment?: () => void;
-  canPay: boolean;
-  paymentMethod?: "credit_card" | "qr_code";
+  data?: BookingData
+  countdown?: string
+  coupons?: CouponCardData[]
+  selectedCoupon?: CouponCardData | null
+  onSelectCoupon?: (coupon: CouponCardData | null) => void
+  onPayment?: () => void
+  canPay: boolean
+  paymentMethod?: 'credit_card' | 'qr_code'
+  step?: '1' | '2'
+  isLoading?: boolean
 }
 
 export default function SummaryBoxCard({
@@ -33,42 +39,116 @@ export default function SummaryBoxCard({
   selectedCoupon,
   onSelectCoupon,
   onPayment,
-  paymentMethod = "credit_card",
+  paymentMethod = 'credit_card',
 }: Props) {
-  const { i18n } = useTranslation();
-  const lang = i18n.language;
+  const { i18n } = useTranslation()
+  const lang = i18n?.language === 'th' ? 'th' : 'en'
 
-  const [isCouponModalOpen, setCouponModalOpen] = useState(false);
+  const [isCouponModalOpen, setCouponModalOpen] = useState(false)
+
+  const availableCoupons = useMemo(() => {
+    return coupons.filter((c) => !c.is_used)
+  }, [coupons])
+
+  // คำนวณราคาหลังหักส่วนลด
+  let totalPayment = totalPrice
+  let discountAmount = 0
+  let couponError = ''
+
+  if (selectedCoupon) {
+    switch (selectedCoupon.discount_type) {
+      case 'FIXED':
+        // ส่วนลดเงินสด
+        discountAmount = selectedCoupon.discount_value ?? 0
+        totalPayment = Math.max(totalPrice - discountAmount, 0)
+        break
+
+      case 'PERCENTAGE':
+        // ส่วนลดเปอร์เซ็นต์
+        const percentDiscount =
+          (totalPrice * (selectedCoupon.discount_value ?? 0)) / 100
+        // ตรวจสอบส่วนลดสูงสุด
+        discountAmount = selectedCoupon.max_discount
+          ? Math.min(percentDiscount, selectedCoupon.max_discount)
+          : percentDiscount
+        totalPayment = Math.max(totalPrice - discountAmount, 0)
+        break
+
+      case 'BUY_X_GET_Y':
+        // ✅ ใช้ Field ที่ถูกต้องตาม Prisma Schema
+        const buyQty = selectedCoupon.buy_quantity ?? 0 // จำนวนที่ต้องซื้อ
+        const getQty = selectedCoupon.get_quantity ?? 0 // จำนวนที่ได้ฟรี
+
+        if (totalSelected.length < buyQty) {
+          // ไม่ครบเงื่อนไข
+          couponError =
+            lang === 'en'
+              ? `Please select at least ${buyQty} seats to apply this coupon`
+              : `กรุณาเลือกอย่างน้อย ${buyQty} ที่นั่งเพื่อใช้คูปองนี้`
+          totalPayment = totalPrice
+        } else {
+          // ลดราคาเท่ากับจำนวนที่นั่งที่ได้ฟรี
+          const seatPrice =
+            totalSelected.length > 0 ? totalPrice / totalSelected.length : 0
+          discountAmount = seatPrice * getQty
+          totalPayment = Math.max(totalPrice - discountAmount, 0)
+        }
+        break
+
+      case 'GIFT':
+        // ของแถม - ไม่มีส่วนลดราคา
+        totalPayment = totalPrice
+        break
+
+      default:
+        totalPayment = totalPrice
+    }
+  }
 
   return (
     <div className="w-full min-w-[305px] h-fit bg-gray-gc1b rounded-lg">
       {/* Movie Info */}
       <div className="p-4">
-        {step === "2" && countdown && (
+        {step === '2' && countdown && (
           <p className="text-sm text-gray-g3b0 pb-3">
-            {lang === "en" ? "Time remaining:" : "เวลาที่เหลือ:"}{" "}
+            {lang === 'en' ? 'Time remaining:' : 'เวลาที่เหลือ:'}{' '}
             <span className="text-sm text-blue-bbee pl-2">{countdown}</span>
           </p>
         )}
 
         <div className="flex gap-4 items-center">
-          <Image
-            src={data?.movie?.poster_url || "/default-poster.jpg"}
-            alt={
-              data?.movie?.title ||
-              (lang === "en" ? "Movie Poster" : "โปสเตอร์หนัง")
-            }
-            width={82}
-            height={120}
-            className="object-cover rounded-md"
-          />
+          {data?.movie?.poster_url && (
+            <Image
+              src={data?.movie?.poster_url}
+              alt={
+                data?.movie?.title ||
+                (lang === 'en' ? 'Movie Poster' : 'โปสเตอร์หนัง')
+              }
+              width={82}
+              height={120}
+              className="object-cover rounded-md"
+            />
+          )}
           <div className="flex flex-col gap-2">
             <h4 className="font-bold text-xl text-white-wfff line-clamp-2">
               {data?.movie?.title}
             </h4>
             <div className="hidden sm:flex flex-wrap gap-2">
-              {data?.movie?.genre?.split(",").map((e, i) => (
-                <Tag key={i} name={e} variant="genre" />
+              {data?.movie?.genres?.map((e, i) => {
+                return (
+                  <Tag
+                    key={i}
+                    name={
+                      lang === 'en'
+                        ? e?.genre?.translations?.en?.name
+                        : e?.genre?.translations?.th?.name
+                    }
+                    variant="genre"
+                  />
+                )
+              })}
+              {data?.movie?.languages?.map((e, i) => (
+                <Tag key={i} name={e?.language?.name} variant="genre" />
               ))}
             </div>
           </div>
@@ -77,217 +157,265 @@ export default function SummaryBoxCard({
         {/* Cinema Info */}
         <div className="flex flex-col gap-2 mt-6">
           <div className="flex items-center gap-4">
-            <PinFill width={16} height={16} color={"#565F7E"} />
-            <p className="text-gray-gedd">{data?.hall?.cinema?.name}</p>
+            <PinFill width={16} height={16} color={'#565F7E'} />
+            <p className="text-gray-gedd">
+              {lang === 'en'
+                ? data?.cinema?.translations?.en?.name
+                : data?.cinema?.translations?.th?.name}
+            </p>
           </div>
           <div className="flex items-center gap-4">
-            <DateRangeFill width={16} height={16} color={"#565F7E"} />
+            <DateRangeFill width={16} height={16} color={'#565F7E'} />
             <p className="text-gray-gedd">
               {data?.date &&
                 new Date(data.date).toLocaleDateString(
-                  lang === "en" ? "en-US" : "th-TH",
-                  { day: "numeric", month: "long", year: "numeric" }
+                  lang === 'en' ? 'en-US' : 'th-TH',
+                  { day: 'numeric', month: 'long', year: 'numeric' }
                 )}
             </p>
           </div>
           <div className="flex items-center gap-4">
-            <TimeFill width={16} height={16} color={"#565F7E"} />
-            <p className="text-gray-gedd">{data?.time_slot?.start_time}</p>
+            <TimeFill width={16} height={16} color={'#565F7E'} />
+            <p className="text-gray-gedd">{data?.time_slot?.name}</p>
           </div>
           <div className="flex items-center gap-4">
-            <Shop width={16} height={16} color={"#565F7E"} />
+            <Shop width={16} height={16} color={'#565F7E'} />
             <p className="text-gray-gedd">{data?.hall?.name}</p>
           </div>
         </div>
       </div>
 
-      {/* Step 1 Summary */}
-      {step === "1" && totalSelected.length > 0 && (
+      {step === '1' && totalSelected.length > 0 && (
         <BookingInfo
           totalSelected={totalSelected}
-          totalPrice={totalPrice}
+          totalPrice={totalPayment}
           lockSeats={lockSeats}
         />
       )}
 
-      {/* Step 2: Payment + Coupon */}
-      {step === "2" && (
+      {step === '2' && (
         <div className="p-4 flex flex-col gap-4">
-          {/* Coupon Button */}
           {coupons.length > 0 && (
-            <div className="flex justify-between items-center text-gray-gedd">
-              <span>{lang === "en" ? "Coupon" : "คูปอง"}</span>
-              <Button
-                onClick={() => setCouponModalOpen(true)}
-                className="p-2 rounded bg-gray-g3b0 text-white text-sm"
-              >
-                {selectedCoupon
-                  ? `${selectedCoupon.code} - ${selectedCoupon.discount_value}%`
-                  : lang === "en"
-                    ? "Select Coupon"
-                    : "เลือกคูปอง"}
-              </Button>
+            <div className="flex flex-col justify-start items-start text-gray-gedd gap-2">
+              <div className="flex justify-between items-center w-full">
+                <span>{lang === 'en' ? 'Coupon' : 'คูปอง'}</span>
+                <span
+                  className="text-blue-bbee cursor-pointer"
+                  onClick={() => setCouponModalOpen(true)}
+                >
+                  <ExpandRightLight width="16" height="16" color="#C8CEDD" />
+                </span>
+              </div>
+              <div className="w-full">
+                <Button
+                  className="p-2 cursor-pointer rounded bg-gray-g63f text-gray-g3b0 text-sm w-full"
+                  onClick={() => setCouponModalOpen(true)}
+                >
+                  {selectedCoupon ? (
+                    <span className="truncate ">
+                      {selectedCoupon
+                        ? selectedCoupon.translations?.[lang]?.name ||
+                          'No title'
+                        : lang === 'en'
+                          ? 'Select Coupon'
+                          : 'เลือกคูปอง'}
+                    </span>
+                  ) : lang === 'en' ? (
+                    'Select Coupon'
+                  ) : (
+                    'เลือกคูปอง'
+                  )}
+                  {selectedCoupon && (
+                    <span
+                      className="text-blue-bbee cursor-pointer"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        onSelectCoupon && onSelectCoupon(null)
+                      }}
+                    >
+                      <CloseRoundLight width="16" height="16" color="#C8CEDD" />
+                    </span>
+                  )}
+                </Button>
+              </div>
             </div>
           )}
 
-          {/* Selected Seat */}
+          {/* แสดง Error ถ้ามี */}
+          {couponError && (
+            <div className="text-red-r64b text-sm">{couponError}</div>
+          )}
+
           <div className="flex justify-between text-gray-gedd">
-            <span>{lang === "en" ? "Selected Seat" : "ที่นั่งที่เลือก"}</span>
-            <span>{totalSelected.map((s) => s.seat_number).join(", ")}</span>
+            <span>{lang === 'en' ? 'Selected Seat' : 'ที่นั่งที่เลือก'}</span>
+            <span>{totalSelected.map((s) => s.seat_number).join(', ')}</span>
           </div>
 
-          {/* Discount */}
-          <div className="flex justify-between text-white-wfff font-bold text-lg">
-            <span>{lang === "en" ? "Discount" : "ส่วนลด"}</span>
-            <span>-{selectedCoupon?.discount_value || 0}%</span>
-          </div>
+          {selectedCoupon && discountAmount > 0 && (
+            <div className="flex justify-between text-red-r64b font-bold text-lg">
+              <span>{lang === 'en' ? 'Discount' : 'ส่วนลด'}</span>
+              <span>-THB {discountAmount.toFixed(2)}</span>
+            </div>
+          )}
 
-          {/* Payment Method */}
           <div className="flex justify-between text-gray-gedd">
-            <span>{lang === "en" ? "Payment Method" : "วิธีชำระเงิน"}</span>
+            <span>{lang === 'en' ? 'Payment Method' : 'วิธีชำระเงิน'}</span>
             <span className="capitalize text-white">
-              {paymentMethod === "credit_card"
-                ? lang === "en"
-                  ? "Credit Card"
-                  : "บัตรเครดิต"
-                : lang === "en"
-                  ? "QR Code"
-                  : "คิวอาร์โค้ด"}
+              {paymentMethod === 'credit_card'
+                ? lang === 'en'
+                  ? 'Credit Card'
+                  : 'บัตรเครดิต'
+                : lang === 'en'
+                  ? 'QR Code'
+                  : 'คิวอาร์โค้ด'}
             </span>
           </div>
 
-          {/* Total */}
           <div className="flex justify-between text-white-wfff font-bold text-lg">
-            <span>{lang === "en" ? "Total" : "รวมทั้งหมด"}</span>
-            <span>
-              {new Intl.NumberFormat(lang === "en" ? "en-US" : "th-TH", {
-                style: "currency",
-                currency: "THB",
-              }).format(
-                totalPrice *
-                  (selectedCoupon ? 1 - selectedCoupon.discount_value / 100 : 1)
-              )}
-            </span>
+            <span>{lang === 'en' ? 'Total' : 'รวมทั้งหมด'}</span>
+            <span>THB {totalPayment.toFixed(2)}</span>
           </div>
 
-          {/* Payment Button */}
           <Button
-            className="btn-base blue-normal"
+            className="btn-base blue-normal cursor-pointer"
             onClick={onPayment}
-            disabled={!canPay}
+            disabled={!canPay || !!couponError}
           >
-            {lang === "en" ? "Next" : "ถัดไป"}
+            {lang === 'en' ? 'Next' : 'ถัดไป'}
           </Button>
         </div>
       )}
 
-      {/* Coupon Modal */}
       {isCouponModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50 p-4">
           <div className="relative bg-gray-g63f rounded-xl p-6 w-full max-w-[1200px] shadow-2xl">
-            {/* ปุ่ม X */}
             <button
               onClick={() => setCouponModalOpen(false)}
-              className="absolute top-3 right-3 text-gray-gedd hover:text-white transition"
+              className="absolute top-3 right-3 text-gray-gedd hover:text-white transition cursor-pointer"
             >
               ✕
             </button>
 
-            {/* หัวข้อ */}
             <h4 className="text-white-wfff font-bold mb-6 text-center text-lg">
-              {lang === "en" ? "Select Coupon" : "เลือกคูปอง"}
+              {lang === 'en' ? 'Select Coupon' : 'เลือกคูปอง'}
             </h4>
 
-            {/* รายการคูปอง */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[calc(100vh-250px)] overflow-y-auto pr-2">
-              {coupons.length > 0 ? (
-                coupons.map((c) => {
-                  const isSelected = selectedCoupon?.id === c.id;
+              {availableCoupons.length > 0 ? (
+                availableCoupons.map((c) => {
+                  const isSelected = selectedCoupon?.id === c.id
                   return (
                     <div
                       key={c.id}
                       className={`flex items-center border rounded-lg overflow-hidden transition-all duration-300 cursor-pointer
                   ${
                     isSelected
-                      ? "border-gray-g3b0 bg-gray-g3b0"
-                      : "border-gray-gc1b bg-gray-g63f/30 hover:bg-gray-g63f/60"
+                      ? 'border-gray-g3b0 bg-gray-g3b0'
+                      : 'border-gray-gc1b bg-gray-g63f/30 hover:bg-gray-g63f/60'
                   }`}
-                      onClick={() => onSelectCoupon && onSelectCoupon(c)}
+                      onClick={() => {
+                        if (c.discount_type === 'BUY_X_GET_Y') {
+                          // ✅ ใช้ buy_quantity ที่ถูกต้อง
+                          const minSeats = c.buy_quantity || 0
+                          if (totalSelected.length < minSeats) {
+                            toast.error(
+                              lang === 'en'
+                                ? `Please select at least ${minSeats} seats to use this coupon`
+                                : `กรุณาเลือกอย่างน้อย ${minSeats} ที่นั่งเพื่อใช้คูปองนี้`,
+                              { toastId: 'coupon-seat-error' }
+                            )
+                            return
+                          }
+                        }
+                        onSelectCoupon?.(c)
+                        setCouponModalOpen(false)
+                      }}
                     >
                       {/* รูป */}
                       <div className="w-24 sm:w-[174px] h-full flex-shrink-0 relative">
                         <Image
-                          src={c.image || "/default-coupon.png"}
-                          alt={c.title_en}
+                          src={c.image_url || '/default-coupon.png'}
+                          alt={c.translations?.[lang]?.name || 'Coupon'}
                           fill
                           className="object-cover"
                         />
                       </div>
 
-                      {/* ข้อมูลคูปอง */}
                       <div
                         className={`flex flex-col justify-between p-3 flex-1 transition-colors h-full
-                        ${isSelected ? "bg-gray-g3b0" : "bg-gray-gc1b"}
+                        ${isSelected ? 'bg-gray-g3b0' : 'bg-gray-gc1b'}
                         sm:p-4 sm:text-sm
                         md:p-6 md:text-base
                         `}
                       >
                         <div>
                           <h5 className="text-white-wfff font-semibold text-sm sm:text-base line-clamp-2">
-                            {lang === "en" ? c.title_en : c.title_th}
+                            {c.translations?.[lang]?.name || 'No title'}
                           </h5>
                           <p className="text-gray-gedd text-xs mt-1 sm:text-sm line-clamp-1">
-                            {lang === "en"
-                              ? `Valid until ${c.end_date ? new Date(c.end_date).toLocaleDateString() : "N/A"}`
-                              : `ใช้ได้ถึง ${c.end_date ? new Date(c.end_date).toLocaleDateString() : "N/A"}`}
+                            {lang === 'en'
+                              ? `Valid until ${c.end_date ? new Date(c.end_date).toLocaleDateString() : 'N/A'}`
+                              : `ใช้ได้ถึง ${c.end_date ? new Date(c.end_date).toLocaleDateString() : 'N/A'}`}
                           </p>
                         </div>
 
                         <div className="flex justify-between items-center mt-2">
                           <span className="text-blue-bbee font-bold text-sm sm:text-base">
-                            -{c.discount_value}%{" "}
-                            {lang === "en" ? "OFF" : "ส่วนลด"}
+                            {c.discount_type === 'FIXED'
+                              ? `-${c.discount_value}THB `
+                              : c.discount_type === 'PERCENTAGE'
+                                ? `-${c.discount_value}% `
+                                : c.discount_type === 'BUY_X_GET_Y'
+                                  ? `${lang === 'en' ? 'Buy' : 'ซื้อ'} ${c.buy_quantity} ${lang === 'en' ? 'Get' : 'แถม'} ${c.get_quantity}`
+                                  : ''}
+                            {c.discount_type === 'FIXED' ||
+                            c.discount_type === 'PERCENTAGE' ? (
+                              <span className="text-blue-bbee font-bold text-sm sm:text-base">
+                                {lang === 'en' ? 'OFF' : 'ส่วนลด'}
+                              </span>
+                            ) : (
+                              ''
+                            )}
                           </span>
                           <button
-                            className="text-blue-bbee text-[10px] sm:text-sm hover:underline flex items-center gap-1"
+                            className="text-blue-bbee cursor-pointer text-[10px] sm:text-sm hover:underline flex items-center gap-1"
                             onClick={(e) => {
-                              e.stopPropagation();
-                              window.open(`/coupons/${c.id}`, "_blank");
+                              e.stopPropagation()
+                              window.open(`/coupons/${c.id}`, '_blank')
                             }}
                           >
-                            {lang === "en" ? "View details" : "ดูรายละเอียด"} →
+                            {lang === 'en' ? 'View details' : 'ดูรายละเอียด'} →
                           </button>
                         </div>
                       </div>
                     </div>
-                  );
+                  )
                 })
               ) : (
                 <p className="text-gray-gedd text-center py-6 col-span-full">
-                  {lang === "en"
-                    ? "No available coupons"
-                    : "ไม่มีคูปองที่ใช้งานได้"}
+                  {lang === 'en'
+                    ? 'No available coupons'
+                    : 'ไม่มีคูปองที่ใช้งานได้'}
                 </p>
               )}
             </div>
 
-            {/* ปุ่ม Apply */}
             <div className="flex justify-end mt-6">
               <Button
                 disabled={!selectedCoupon}
                 onClick={() => setCouponModalOpen(false)}
-                className={`px-6 py-2 rounded-lg font-semibold transition ${
+                className={`px-6 py-2 rounded-lg font-semibold transition cursor-pointer ${
                   selectedCoupon
-                    ? "bg-blue-bbee text-white hover:bg-blue-bbee/90"
-                    : "bg-gray-g3b0 text-gray-gedd cursor-not-allowed"
+                    ? 'bg-blue-bbee text-white hover:bg-blue-bbee/90'
+                    : 'bg-gray-g3b0 text-gray-gedd cursor-not-allowed'
                 }`}
               >
-                {lang === "en" ? "Apply" : "ใช้คูปอง"}
+                {lang === 'en' ? 'Apply' : 'ใช้คูปอง'}
               </Button>
             </div>
           </div>
         </div>
       )}
     </div>
-  );
+  )
 }

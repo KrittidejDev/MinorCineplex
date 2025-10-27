@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { SearchLight, ExpandDownLight, DateTodayLight } from "../Icons/Icons";
-import { Input } from "../ui/input";
-import { useRouter } from "next/router";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
+import { SearchLight, ExpandDownLight } from "../Icons/Icons";
+
 import {
   Select,
   SelectContent,
@@ -9,155 +8,139 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import { MovieStatus } from "@/types/enums";
+import { userService } from "@/config/userServices";
+import { useTranslation } from "next-i18next";
 
 interface FilterOption {
-  value: string;
-  label: string;
+  id?: string;
+  value?: string;
+  name?: string;
+  name_en?: string;
+  name_th?: string;
 }
 
 interface FilterSearchProps {
   onSearch?: (filters: FilterData) => void;
+  query: FilterData;
+  setQuery: (query: FilterData) => void;
   className?: string;
+  movies: Movie[];
 }
 
 export interface FilterData {
-  title?: string;
+  movie_id?: string;
   genre?: string;
   language?: string;
-  city?: string;
-  releaseDate?: string;
+  release_date?: string;
+  status?: MovieStatus;
 }
 
 interface Movie {
   id: string;
   title: string;
   genre?: string;
+  translations?: {
+    th?: { title: string; description: string };
+    en?: { title: string; description: string };
+  };
   release_date?: Date;
 }
 
-const languageOptions: FilterOption[] = [
-  { value: "th", label: "ไทย" },
-  { value: "en", label: "English" },
-];
-
-const cityOptions: FilterOption[] = [
-  { value: "bangkok", label: "Bangkok" },
-  { value: "chiang-mai", label: "Chiang Mai" },
-  { value: "phuket", label: "Phuket" },
-  { value: "pattaya", label: "Pattaya" },
-  { value: "khon-kaen", label: "Khon Kaen" },
-  { value: "udon-thani", label: "Udon Thani" },
+const languageOptions = (lang: string): FilterOption[] => [
+  { value: "all-languages", name: lang === "th" ? "ทุกภาษา" : "All Languages" },
+  { value: "th", name: "TH" },
+  { value: "en", name: "EN" },
 ];
 
 const FilterSearch: React.FC<FilterSearchProps> = ({
   onSearch,
+  query,
+  setQuery,
   className = "",
+  movies,
 }) => {
-  const router = useRouter();
-  const [filters, setFilters] = useState<FilterData>({
-    title: "",
-    language: "",
-    genre: "",
-    city: "",
-    releaseDate: "",
-  });
-
-  const [, setMovies] = useState<Movie[]>([]);
-  const [movieOptions, setMovieOptions] = useState<FilterOption[]>([]);
+  const { i18n } = useTranslation();
   const [genreOptions, setGenreOptions] = useState<FilterOption[]>([]);
 
+  const texts = useMemo(
+    () => ({
+      allMovies: i18n.language === "th" ? "ภาพยนตร์ทั้งหมด" : "All Movies",
+      allGenres: i18n.language === "th" ? "ประเภททั้งหมด" : "All Genres",
+      allLanguages: i18n.language === "th" ? "ทุกภาษา" : "All Languages",
+      movie: i18n.language === "th" ? "ภาพยนตร์" : "Movie",
+      genre: i18n.language === "th" ? "ประเภท" : "Genre",
+      language: i18n.language === "th" ? "ภาษา" : "Language",
+      noGenresFound: i18n.language === "th" ? "ไม่พบประเภท" : "No genres found",
+    }),
+    [i18n.language]
+  );
+
+  const fetchGenres = useCallback(async () => {
+    const response = await userService.GET_FILTER_GENRE();
+
+    const genresArray = response as FilterOption[];
+    const genreList = genresArray.map((genre) => ({
+      id: genre.id,
+      value: genre.id, // Use ID as value instead of name
+      name: i18n.language === "th" ? genre.name_th : genre.name_en,
+    }));
+
+    setGenreOptions(genreList);
+  }, [i18n.language]);
+
   useEffect(() => {
-    const fetchMovies = async () => {
-      try {
-        const response = await fetch("/api/movies");
-        const data = await response.json();
-
-        if (data.movie) {
-          const movieList = data.movie as Movie[];
-          setMovies(movieList);
-
-          const movieOpts = movieList.map((m) => ({
-            value: m.id,
-            label: m.title,
-          }));
-          setMovieOptions(movieOpts);
-
-          const allGenres: string[] = movieList.flatMap((m) => {
-            if (!m.genre) return [];
-            if (Array.isArray(m.genre)) return m.genre;
-
-            return m.genre
-              .split(/[,|]/)
-              .map((g) => g.trim())
-              .filter((g) => g !== "");
-          });
-
-          const uniqueGenres = Array.from(new Set(allGenres));
-
-          const genreOpts = uniqueGenres.map((g) => ({
-            value: g.toLowerCase(),
-            label: g,
-          }));
-
-          setGenreOptions(genreOpts);
-        }
-      } catch (error) {
-        console.error("Error fetching movies:", error);
-      }
-    };
-
-    fetchMovies();
-  }, []);
+    if (i18n.language) fetchGenres();
+  }, [fetchGenres, i18n.language]);
 
   const handleInputChange = (field: keyof FilterData, value: string) => {
-    setFilters((prev) => ({
-      ...prev,
+    setQuery({
+      ...query,
       [field]: value,
-    }));
-  };
-
-  const handleSearch = () => {
-    if (onSearch) onSearch(filters);
-    const params = new URLSearchParams();
-    Object.entries(filters).forEach(([key, value]) => {
-      if (value) params.append(key, value);
-
-      router.push(`/?${params.toString()}`);
     });
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") handleSearch();
+  const handleSearch = () => {
+    if (onSearch) onSearch(query);
   };
 
   return (
     <div className={`bg-gray-g63f rounded-lg p-4 ${className}`}>
-      <div className="flex flex-col lg:flex-row gap-4 items-center max-w-xs mx-auto lg:max-w-none lg:mx-0">
+      <div className="flex flex-col lg:flex-row gap-5 items-center max-w-xs mx-auto lg:max-w-none lg:mx-0">
         {/* Movie Dropdown */}
-        <div className="w-full lg:w-48">
+        <div className="w-full lg:min-w-70">
           <Select
-            value={
-              movieOptions.find((m) => m.label === filters.title)?.value || ""
-            }
+            value={query?.movie_id || "all-movies"}
             onValueChange={(value) => {
-              const movie = movieOptions.find((m) => m.value === value);
-              handleInputChange("title", movie?.label || "");
+              if (value === "all-movies") {
+                handleInputChange("movie_id", "");
+              } else {
+                handleInputChange("movie_id", value); // Store movie ID directly
+              }
             }}
           >
             <SelectTrigger className="bg-gray-g63f border-gray-gf7e text-white rounded-sm h-12 focus:border-gray-g3b0 focus:ring-0 w-full relative cursor-pointer">
-              <SelectValue placeholder="Movie" />
+              <SelectValue placeholder={texts.movie} />
               <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
                 <ExpandDownLight width="16" height="16" color="#8B93B0" />
               </div>
             </SelectTrigger>
             <SelectContent className="bg-gray-g63f border-gray-gf7e">
-              {movieOptions.map((option) => (
+              <SelectItem
+                value="all-movies"
+                className="text-white hover:bg-gray-gf7e focus:bg-gray-gf7e cursor-pointer"
+              >
+                {texts.allMovies}
+              </SelectItem>
+              {movies?.map((option) => (
                 <SelectItem
-                  key={option.value}
-                  value={option.value}
+                  key={option.id}
+                  value={option.id}
                   className="text-white hover:bg-gray-gf7e focus:bg-gray-gf7e cursor-pointer"
                 >
-                  {option.label}
+                  {i18n.language === "th"
+                    ? option.translations?.th?.title
+                    : option.translations?.en?.title}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -165,26 +148,26 @@ const FilterSearch: React.FC<FilterSearchProps> = ({
         </div>
 
         {/* Language + Genre */}
-        <div className="flex gap-2 lg:contents">
-          <div className="w-39 lg:w-48">
+        <div className="flex gap-5 max-w-70">
+          <div className="w-39 lg:w-40">
             <Select
-              value={filters.language}
+              value={query?.language || ""}
               onValueChange={(value) => handleInputChange("language", value)}
             >
               <SelectTrigger className="bg-gray-g63f border-gray-gf7e text-white rounded-sm h-12 focus:border-gray-g3b0 focus:ring-0 w-full relative cursor-pointer">
-                <SelectValue placeholder="Language" />
+                <SelectValue placeholder={texts.language} />
                 <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
                   <ExpandDownLight width="16" height="16" color="#8B93B0" />
                 </div>
               </SelectTrigger>
               <SelectContent className="bg-gray-g63f border-gray-gf7e">
-                {languageOptions.map((option) => (
+                {languageOptions(i18n.language).map((option) => (
                   <SelectItem
                     key={option.value}
-                    value={option.value}
+                    value={option.value || ""}
                     className="text-white hover:bg-gray-gf7e focus:bg-gray-gf7e cursor-pointer"
                   >
-                    {option.label}
+                    {option.name}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -193,91 +176,39 @@ const FilterSearch: React.FC<FilterSearchProps> = ({
 
           <div className="w-39 lg:w-48">
             <Select
-              value={filters.genre}
+              value={query?.genre || ""}
               onValueChange={(value) => handleInputChange("genre", value)}
             >
               <SelectTrigger className="bg-gray-g63f border-gray-gf7e text-white rounded-sm h-12 focus:border-gray-g3b0 focus:ring-0 w-full relative cursor-pointer">
-                <SelectValue placeholder="Genre" />
+                <SelectValue placeholder={texts.genre} />
                 <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
                   <ExpandDownLight width="16" height="16" color="#8B93B0" />
                 </div>
               </SelectTrigger>
               <SelectContent className="bg-gray-g63f border-gray-gf7e">
+                <SelectItem
+                  value="all-genres"
+                  className="text-white hover:bg-gray-gf7e focus:bg-gray-gf7e cursor-pointer"
+                >
+                  {texts.allGenres}
+                </SelectItem>
                 {genreOptions.length > 0 ? (
-                  genreOptions.map((option) => (
+                  genreOptions.map((genre) => (
                     <SelectItem
-                      key={option.value}
-                      value={option.value}
+                      key={genre.id || genre.name}
+                      value={genre.value || genre.name || ""}
                       className="text-white hover:bg-gray-gf7e focus:bg-gray-gf7e cursor-pointer"
                     >
-                      {option.label}
+                      {genre.name}
                     </SelectItem>
                   ))
                 ) : (
                   <SelectItem disabled value="none">
-                    No genres found
+                    {texts.noGenresFound}
                   </SelectItem>
                 )}
               </SelectContent>
             </Select>
-          </div>
-        </div>
-
-        {/* City + Release Date */}
-        <div className="flex gap-2 lg:contents">
-          <div className="w-39 lg:w-48">
-            <Select
-              value={filters.city}
-              onValueChange={(value) => handleInputChange("city", value)}
-            >
-              <SelectTrigger className="bg-gray-g63f border-gray-gf7e text-white rounded-sm h-12 focus:border-gray-g3b0 focus:ring-0 w-full relative cursor-pointer">
-                <SelectValue placeholder="City" />
-                <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                  <ExpandDownLight width="16" height="16" color="#8B93B0" />
-                </div>
-              </SelectTrigger>
-              <SelectContent className="bg-gray-g63f border-gray-gf7e">
-                {cityOptions.map((option) => (
-                  <SelectItem
-                    key={option.value}
-                    value={option.value}
-                    className="text-white hover:bg-gray-gf7e focus:bg-gray-gf7e cursor-pointer"
-                  >
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Release Date */}
-          <div className="w-39 lg:w-48">
-            <div className="relative">
-              <Input
-                type="text"
-                placeholder="Release Date"
-                value={filters.releaseDate}
-                onChange={(e) =>
-                  handleInputChange("releaseDate", e.target.value)
-                }
-                onKeyPress={handleKeyPress}
-                className="bg-gray-g63f border-gray-gf7e text-white placeholder-gray-g3b0 rounded-sm h-9 pl-4 pr-12 focus:border-gray-g3b0 focus:ring-0 w-full cursor-pointer"
-              />
-              <input
-                type="date"
-                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                onChange={(e) => {
-                  if (e.target.value) {
-                    const date = new Date(e.target.value);
-                    const formattedDate = date.toLocaleDateString("en-GB");
-                    handleInputChange("releaseDate", formattedDate);
-                  }
-                }}
-              />
-              <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                <DateTodayLight width="16" height="16" color="#8B93B0" />
-              </div>
-            </div>
           </div>
         </div>
 

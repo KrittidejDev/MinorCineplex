@@ -1,21 +1,11 @@
-import { CinemaType } from "@/types/cinema";
+import {
+  CinemaWithDistance,
+  CinemaByProvince,
+  CinemaDTO,
+} from "@/types/cinema";
 import { useEffect, useState, useCallback } from "react";
 import { userService } from "@/config/userServices";
 import { getProvinceName } from "@/lib/utils/province";
-
-export interface CinemaWithDistance extends CinemaType {
-  distance: number | null;
-  distance_text?: string;
-  distance_text_th?: string;
-  provinceTh?: string;
-  provinceEn?: string;
-}
-
-export interface CinemaByProvince {
-  provinceTh?: string;
-  provinceEn?: string;
-  cinemas: CinemaWithDistance[];
-}
 
 interface UseNearbyCinemasReturn {
   cinemas: CinemaByProvince[];
@@ -24,6 +14,7 @@ interface UseNearbyCinemasReturn {
   refetch: (filter?: string) => void;
 }
 
+// Haversine formula
 const haversineDistance = (
   lat1: number,
   lon1: number,
@@ -31,7 +22,7 @@ const haversineDistance = (
   lon2: number
 ): number => {
   const toRad = (x: number) => (x * Math.PI) / 180;
-  const R = 6371;
+  const R = 6371; // km
   const dLat = toRad(lat2 - lat1);
   const dLon = toRad(lon2 - lon1);
   const a =
@@ -41,6 +32,7 @@ const haversineDistance = (
   return R * c;
 };
 
+// Group cinemas by province
 const groupByProvince = (cinemas: CinemaWithDistance[]): CinemaByProvince[] => {
   const map: Record<string, CinemaWithDistance[]> = {};
 
@@ -77,13 +69,21 @@ export const useNearbyCinemas = (
         setLoading(true);
 
         const res = (await userService.GET_CINEMAS()) as {
-          cinema: CinemaType[];
+          count: number;
+          data: CinemaDTO[];
         };
-        const data: CinemaType[] = res.cinema;
+        const data: CinemaDTO[] = res.data;
 
         const cinemasWithDistance: CinemaWithDistance[] = data.map((c) => {
           let distance: number | null = null;
-          if (userLocation && c.lat !== null && c.lng !== null) {
+
+          if (
+            userLocation &&
+            c.lat !== null &&
+            c.lng !== null &&
+            typeof c.lat === "number" &&
+            typeof c.lng === "number"
+          ) {
             distance = Math.round(
               haversineDistance(
                 userLocation.lat,
@@ -94,13 +94,19 @@ export const useNearbyCinemas = (
             );
           }
 
-          const province = getProvinceName(c.address);
+          const province = getProvinceName(c.address || "");
+          const distanceFixed =
+            distance !== null ? Number(distance.toFixed(1)) : null;
 
           return {
             ...c,
+            slug: c.slug,
+            address: c.address ?? "",
             distance,
-            distance_text: distance !== null ? `${distance} km` : undefined,
-            distance_text_th: distance !== null ? `${distance} กม.` : undefined,
+            distance_text:
+              distance !== null ? `${distanceFixed} km` : undefined,
+            distance_text_th:
+              distance !== null ? `${distanceFixed} กม.` : undefined,
             provinceTh: province.th,
             provinceEn: province.en,
           };
@@ -111,9 +117,11 @@ export const useNearbyCinemas = (
             setCinemas([]);
             return;
           }
+
+          // ใกล้ที่สุด 10 โรง
           const nearest = cinemasWithDistance
             .filter((c) => c.distance !== null)
-            .sort((a, b) => a.distance! - b.distance!)
+            .sort((a, b) => (a.distance ?? 0) - (b.distance ?? 0))
             .slice(0, 10);
 
           setCinemas([
@@ -129,7 +137,7 @@ export const useNearbyCinemas = (
         }
       } catch (err: unknown) {
         if (err instanceof Error) setError(err.message);
-        else setError("Failed to load cinemas");
+        else setError("ไม่สามารถโหลดข้อมูลโรงหนังได้");
       } finally {
         setLoading(false);
       }

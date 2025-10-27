@@ -23,9 +23,10 @@ function AdminCreateNewMovieForm({
     duration: "",
     rating: "",
     trailer: "",
+    poster_url: "",
   });
 
-  const [, setPosterFile] = useState<File | null>(null); // removed unused variable warning
+  const [, setPosterFile] = useState<File | null>(null);
   const [posterPreview, setPosterPreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [errors, setErrors] = useState({
@@ -36,11 +37,26 @@ function AdminCreateNewMovieForm({
     trailer: "",
   });
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      setPosterFile(file);
-      setPosterPreview(URL.createObjectURL(file));
+    if (!file) return;
+
+    setPosterFile(file);
+    setPosterPreview(URL.createObjectURL(file));
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await axios.post("/api/file-upload", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      setFormData((prev) => ({ ...prev, poster_url: res.data.url }));
+      setPosterPreview(res.data.url);
+    } catch (err) {
+      console.error("Upload poster failed:", err);
+      alert("ไม่สามารถอัปโหลด poster ได้");
     }
   };
 
@@ -60,8 +76,8 @@ function AdminCreateNewMovieForm({
       }
     };
 
-  const [selectedGenre, setSelectedGenre] = useState("");
-  // removed selectedRating and loading warnings by safely omitting
+  const [selectedGenre, setSelectedGenre] = useState<string[]>([]);
+
   const genreOptions = [
     { value: "Action", label: "Action" },
     { value: "Comedy", label: "Comedy" },
@@ -87,10 +103,11 @@ function AdminCreateNewMovieForm({
       duration: Number(formData.duration),
       genre: selectedGenre,
       rating: ratingValue,
+      poster_url: formData.poster_url,
     };
 
     try {
-      const res = await axios.post("/api/movies", payload);
+      const res = await axios.post("/api/admin/movies", payload);
 
       if (res.status === 201) {
         alert("เพิ่มภาพยนตร์สำเร็จ!");
@@ -138,7 +155,10 @@ function AdminCreateNewMovieForm({
                         </p>
                       </div>
                       <div className="mt-3.5">
-                        <Button type="button" className="btn-base blue-normal">
+                        <Button
+                          type="button"
+                          className="btn-base blue-normal cursor-pointer"
+                        >
                           Browse Files
                         </Button>
                       </div>
@@ -196,10 +216,21 @@ function AdminCreateNewMovieForm({
                       label="Genre"
                       placeholder="Action"
                       value={selectedGenre}
-                      onChange={(value) => setSelectedGenre(value)}
+                      onChange={(value: string | string[]) => {
+                        if (Array.isArray(value)) {
+                          setSelectedGenre(value);
+                        } else {
+                          setSelectedGenre([value]);
+                        }
+                      }}
                       options={genreOptions}
-                      errors={!selectedGenre ? "Genre is required" : undefined}
+                      errors={
+                        selectedGenre.length === 0
+                          ? "Genre is required"
+                          : undefined
+                      }
                       require={true}
+                      multiple={true}
                     />
                   </div>
                   <div className="flex flex-col flex-1">
@@ -229,13 +260,13 @@ function AdminCreateNewMovieForm({
                   <Button
                     type="button"
                     onClick={onClose}
-                    className="w-[120px] btn-base blue-normal opacity-40 text-fr-16"
+                    className="w-[120px] btn-base blue-normal  cursor-pointer opacity-40 text-fr-16"
                   >
                     Cancel
                   </Button>
                   <Button
                     type="submit"
-                    className="w-[120px] btn-base blue-normal text-fr-16"
+                    className="w-[120px] btn-base blue-normal cursor-pointer text-fr-16"
                   >
                     Save
                   </Button>

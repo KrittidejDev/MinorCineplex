@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import NavAndFooterWithBanner from "@/components/MainLayout/NavAndFooterWithBanner";
 import NowShowingComingSoon from "@/components/Widgets/NowShowingComingSoonWidget";
 import CinemaLocation from "@/components/Widgets/CinemaLocation";
@@ -7,24 +7,40 @@ import LocationPermissionModal from "@/components/Modals/LocationPermissionModal
 import { useLocationPermission } from "@/lib/hooks/useLocationPermission";
 import { useNearbyCinemas } from "@/lib/hooks/useNearbyCinemas";
 import dynamic from "next/dynamic";
-import FilterSearch from "@/components/Widgets/FilterSearch";
+import FilterSearch, { FilterData } from "@/components/Widgets/FilterSearch";
 import axios from "axios";
-import { APIMovie } from "@/types/movie";
 import { useSearchParams } from "next/navigation";
-import { CinemaByProvince } from "@/components/Widgets/CinemaLocation";
+import { MovieAPIRespons, MovieDTO } from "@/types/movie";
+import { MovieStatus } from "@/types/enums";
+import { CinemaByProvince } from "@/types/cinema";
+import type { GetStaticProps } from "next";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import ModalEmpty from "@/components/Modals/ModalEmpty";
+import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import { i18n } from "next-i18next";
 
 const CurtainIntro = dynamic(
   () => import("@/components/Widgets/CurtainIntro"),
-  { ssr: false }
+  { ssr: true }
 );
 
 export default function Home() {
   const [filter, setFilter] = useState<string>("1");
+  const [query, setQuery] = useState<FilterData>({
+    movie_id: "",
+    genre: "",
+    language: "",
+    release_date: "",
+    status: MovieStatus.NOW_SHOWING,
+  });
   const [dataCinemas, setDataCinemas] = useState<CinemaByProvince[]>([]);
-  const [showCurtain, setShowCurtain] = useState(false);
-  const [movies, setMovies] = useState<APIMovie[]>([]);
+  const [showCurtain, setShowCurtain] = useState(true);
+  const [showCondolenceModal, setShowCondolenceModal] = useState(true);
+  const [movies, setMovies] = useState<MovieDTO[]>([]);
   const [loadingMovies, setLoadingMovies] = useState(false);
   const [searchActive, setSearchActive] = useState(false);
+
   const {
     location,
     showModal,
@@ -33,33 +49,35 @@ export default function Home() {
     allowSession,
     allowOnce,
     neverAllow,
+    loading: locationLoading,
   } = useLocationPermission();
 
   const { cinemas, refetch } = useNearbyCinemas(location, filter);
   const searchParams = useSearchParams();
 
-  useEffect(() => {
-    const filters = {
-      title: searchParams.get("title") || "",
-      genre: searchParams.get("genre") || "",
-      language: searchParams.get("language") || "",
-      releaseDate: searchParams.get("releaseDate") || "",
-    };
-
-    const hasFilters = Object.values(filters).some((v) => v !== "");
-    if (hasFilters) {
-      handleSearchMovies(filters);
-    } else {
-      fetchAllMovies();
-    }
-  }, [searchParams]);
-
-  const fetchAllMovies = async () => {
+  const fetchAllMovies = async (filters?: FilterData) => {
     try {
       setLoadingMovies(true);
-      setSearchActive(false);
-      const res = await axios.get<{ movie: APIMovie[] }>("/api/movies");
-      setMovies(res.data.movie);
+      setSearchActive(
+        !!filters && Object.values(filters).some((v) => v !== "")
+      );
+      const searchParamsObj = new URLSearchParams();
+      if (filters) {
+        if (filters.movie_id && filters.movie_id !== "all-movies")
+          searchParamsObj.append("movie_id", filters.movie_id);
+        if (filters.genre && filters.genre !== "all-genres") {
+          searchParamsObj.append("genre", filters.genre);
+        }
+        if (filters.language && filters.language !== "all-languages")
+          searchParamsObj.append("language", filters.language);
+        if (filters.release_date)
+          searchParamsObj.append("release_date", filters.release_date);
+        if (filters.status) searchParamsObj.append("status", filters.status);
+      }
+      const queryString = searchParamsObj.toString();
+      const url = queryString ? `/api/movies?${queryString}` : "/api/movies";
+      const res = await axios.get<MovieAPIRespons>(url);
+      setMovies(res.data.data);
     } catch (err) {
       console.error("Failed to fetch movies", err);
       setMovies([]);
@@ -67,51 +85,40 @@ export default function Home() {
       setLoadingMovies(false);
     }
   };
+  useEffect(() => {
+    const filters: FilterData = {
+      movie_id: searchParams.get("movie_id") || "",
+      genre: searchParams.get("genre") || "",
+      language: searchParams.get("language") || "",
+      release_date: searchParams.get("release_date") || "",
+      status:
+        (searchParams.get("status") as MovieStatus) || MovieStatus.NOW_SHOWING,
+    };
+
+    const hasFilters = Object.values(filters).some((v) => v !== "");
+    setQuery(filters);
+    fetchAllMovies(hasFilters ? filters : undefined);
+  }, [searchParams]);
+
+  // useEffect(() => {
+  //   const lastShown = localStorage.getItem("curtain_last_shown");
+  //   const now = Date.now();
+  //   const fiveMinutes = 1000 * 60 * 5;
+  //   if (!lastShown || now - parseInt(lastShown, 10) > fiveMinutes) {
+  //     setShowCurtain(true);
+  //     localStorage.setItem("curtain_last_shown", now.toString());
+  //   }
+  // }, []);
 
   useEffect(() => {
-    const lastShown = localStorage.getItem("curtain_last_shown");
-    const now = Date.now();
-    const fiveMinutes = 1000 * 60 * 5;
-    if (!lastShown || now - parseInt(lastShown, 5) > fiveMinutes) {
-      setShowCurtain(true);
-      localStorage.setItem("curtain_last_shown", now.toString());
+    if (!location && !locationLoading && !showModal) {
+      openModal();
     }
-  }, []);
+  }, [location, locationLoading, showModal, openModal]);
 
   useEffect(() => {
     setDataCinemas(cinemas);
   }, [cinemas]);
-
-  const handleSearchMovies = async (filters: {
-    title?: string;
-    genre?: string;
-    language?: string;
-    releaseDate?: string;
-    id?: string;
-  }) => {
-    try {
-      setLoadingMovies(true);
-      setSearchActive(true);
-
-      const params: Record<string, string> = {};
-      if (filters.title) {
-        params.title = filters.title;
-      }
-      if (filters.genre) params.genre = filters.genre;
-      if (filters.language) params.language = filters.language;
-      if (filters.releaseDate) params.releaseDate = filters.releaseDate;
-
-      const res = await axios.get<{ movie: APIMovie[] }>("/api/movies", {
-        params,
-      });
-      setMovies(res.data.movie);
-    } catch (err) {
-      console.error("Failed to fetch movies with filters", err);
-      setMovies([]);
-    } finally {
-      setLoadingMovies(false);
-    }
-  };
 
   const handleFilter = (value: string) => {
     setFilter(value);
@@ -122,23 +129,40 @@ export default function Home() {
     refetch(value);
   };
 
+  const handleTabClick = (tab: MovieStatus) => {
+    const newQuery: FilterData = { ...query, status: tab };
+    setQuery(newQuery);
+    fetchAllMovies(newQuery);
+  };
+
+  const handleCurtainComplete = () => {
+    setShowCurtain(false);
+    setShowCondolenceModal(true);
+  };
+
   return (
     <NavAndFooterWithBanner>
       {showCurtain && (
         <CurtainIntro
           durationMs={2000}
           showLogo={true}
-          onComplete={() => setShowCurtain(false)}
+          onComplete={handleCurtainComplete}
         />
       )}
-      <div className="flex-1 max-w-[1200px]">
+      <div className="flex-1 max-w-[1440px]">
         <div className="w-dvw flex justify-center relative mx-auto -mt-10">
-          <FilterSearch onSearch={handleSearchMovies} />
+          <FilterSearch
+            onSearch={(filters) => fetchAllMovies(filters)}
+            query={query}
+            movies={movies}
+            setQuery={setQuery}
+          />
         </div>
         <NowShowingComingSoon
           movies={movies}
           loading={loadingMovies}
-          showAll={movies.length > 0 && searchActive}
+          query={query}
+          onTabClick={handleTabClick}
         />
         <Coupon />
         <CinemaLocation data={dataCinemas} filterCinema={handleFilter} />
@@ -150,6 +174,38 @@ export default function Home() {
         onNeverAllow={neverAllow}
         onClose={closeModal}
       />
+      {showCondolenceModal && (
+        <ModalEmpty
+          isShowModal={showCondolenceModal}
+          onClose={() => setShowCondolenceModal(false)}
+        >
+          <div className="flex flex-col items-center gap-y-6">
+            <div className="size-40 md:size-120">
+              <Image
+                src="https://res.cloudinary.com/dtixbqaax/image/upload/v1761568242/kjnfcqxe9husgomhtwn5.png"
+                alt="popup"
+                width={400}
+                height={400}
+                className="w-full h-auto object-contain"
+              />
+            </div>
+            <Button
+              className="btn-base transparent-underline-normal"
+              onClick={() => setShowCondolenceModal(false)}
+            >
+              {i18n?.language === "en" ? "Enter Website" : "เข้าสู่เว็บไซต์"}
+            </Button>
+          </div>
+        </ModalEmpty>
+      )}
     </NavAndFooterWithBanner>
   );
 }
+
+export const getStaticProps: GetStaticProps = async ({ locale }) => {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale ?? "en", ["common"])),
+    },
+  };
+};

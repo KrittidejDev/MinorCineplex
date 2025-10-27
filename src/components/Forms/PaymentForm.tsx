@@ -4,6 +4,7 @@ import React, {
   forwardRef,
   useState,
   useCallback,
+  useRef,
 } from "react";
 import { useForm, Controller } from "react-hook-form";
 import * as yup from "yup";
@@ -12,6 +13,7 @@ import { QRCodeType } from "@/types/omise";
 import { useOmisePayment } from "@/lib/hooks/useOmisePayment";
 import InputTextFeild from "../Inputs/InputTextFeild";
 import Image from "next/image";
+import { useTranslation } from "next-i18next";
 
 interface PaymentFormProps {
   amount: number;
@@ -84,6 +86,7 @@ const PaymentForm = forwardRef<PaymentFormHandles, PaymentFormProps>(
     },
     ref
   ) => {
+    const { t } = useTranslation("common");
     const {
       control,
       handleSubmit,
@@ -104,27 +107,36 @@ const PaymentForm = forwardRef<PaymentFormHandles, PaymentFormProps>(
     const [paymentMethod, setPaymentMethod] = useState<
       "credit_card" | "qr_code"
     >("credit_card");
-    const [qrCodeType] = useState<QRCodeType>("promptpay"); // ลบ setQrCodeType เพราะไม่ได้ใช้
+    const [qrCodeType] = useState<QRCodeType>("promptpay");
     const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
     const [qrPaid, setQrPaid] = useState(false);
     const [paymentStatus, setPaymentStatus] = useState("");
+    const qrCodeGeneratedRef = useRef(false);
+    const prevPaymentMethodRef = useRef<string | null>(null);
+    const lastOrderIdRef = useRef<string | null>(null);
 
-    const { loading, payWithCreditCard, payWithQRCode, stopPolling } =
-      useOmisePayment({
-        onSuccess: () => {
-          setPaymentStatus("Payment successful!");
-          setQrPaid(true);
-          stopPolling();
-          onSuccess?.();
-        },
-        onError: (error) => {
-          setPaymentStatus(`Error: ${error}`);
-          setQrPaid(false);
-          stopPolling();
-        },
-        onPollingUpdate: (status) =>
-          setPaymentStatus(`Waiting for payment... Status: ${status}`),
-      });
+    const {
+      loading,
+      isOmiseLoaded,
+      payWithCreditCard,
+      payWithQRCode,
+      stopPolling,
+    } = useOmisePayment({
+      onSuccess: () => {
+        setPaymentStatus("Payment successful!");
+        setQrPaid(true);
+        stopPolling();
+        onSuccess?.();
+      },
+      onError: (error) => {
+        setPaymentStatus(`Error: ${error}`);
+        setQrPaid(false);
+        stopPolling();
+        qrCodeGeneratedRef.current = false;
+      },
+      onPollingUpdate: (status) =>
+        setPaymentStatus(`Waiting for payment... Status: ${status}`),
+    });
 
     useImperativeHandle(ref, () => ({
       submitPayment: () => {
@@ -134,69 +146,144 @@ const PaymentForm = forwardRef<PaymentFormHandles, PaymentFormProps>(
     }));
 
     const onSubmitCard = async (values: FormValues) => {
+      if (!isOmiseLoaded) {
+        setPaymentStatus(
+          "Error: Payment system is not ready. Please try again later."
+        );
+        return;
+      }
       try {
         setPaymentStatus("Processing...");
         const [mm, yy] = values.expiration.split("/");
+        const expirationMonth = parseInt(mm, 10);
+        const expirationYear = 2000 + parseInt(yy, 10);
+        const securityCode = parseInt(values.security_code, 10);
+        const cardNumber = values.number.replace(/\D/g, "");
+
+        // Validate ก่อนส่ง
+        if (
+          isNaN(expirationMonth) ||
+          expirationMonth < 1 ||
+          expirationMonth > 12
+        ) {
+          throw new Error("Invalid expiration month");
+        }
+        if (
+          isNaN(expirationYear) ||
+          expirationYear < new Date().getFullYear()
+        ) {
+          throw new Error("Invalid or expired year");
+        }
+        if (isNaN(securityCode) || !/^\d{3,4}$/.test(values.security_code)) {
+          throw new Error("Invalid security code");
+        }
+        if (!/^\d{16}$/.test(cardNumber)) {
+          throw new Error("Card number must be 16 digits");
+        }
+
         await payWithCreditCard(
-          amount,
+          amount * 100,
           {
-            name: values.name,
-            number: values.number.replace(/\D/g, ""),
-            expiration_month: mm,
-            expiration_year: "20" + yy,
-            security_code: values.security_code,
+            name: values.name.trim(),
+            number: cardNumber,
+            expiration_month: expirationMonth,
+            expiration_year: expirationYear,
+            security_code: securityCode,
           },
           metadata
         );
-      } catch {
-        setPaymentStatus("Payment failed");
+      } catch (error) {
+        const errorMsg = error instanceof Error ? error.message : String(error);
+        setPaymentStatus(`Payment failed: ${errorMsg}`);
       }
     };
 
     const handleQRCodePayment = useCallback(async () => {
+      if (qrCodeUrl || loading || qrCodeGeneratedRef.current) return;
+      if (amount < 20) {
+        setPaymentStatus("Error: Amount must be at least 20 THB");
+        return;
+      }
+      const currentOrderId = metadata?.order_id
+        ? metadata.order_id.toString()
+        : null;
+      if (lastOrderIdRef.current === currentOrderId) return;
+      lastOrderIdRef.current = currentOrderId;
+      qrCodeGeneratedRef.current = true;
       try {
-        if (qrCodeUrl) return;
+        console.log("Calling /api/omise/qr-payment with:", {
+          amount: amount * 100,
+          qrCodeType,
+          metadata,
+        });
         setPaymentStatus("Generating QR code...");
-        const result = await payWithQRCode(amount, qrCodeType, metadata);
+        const result = await payWithQRCode(amount * 100, qrCodeType, metadata);
         if (result.success && result.qrCodeUrl) {
           setQrCodeUrl(result.qrCodeUrl);
           setPaymentStatus("Scan QR code to complete payment");
           setQrPaid(false);
         } else {
-          setPaymentStatus("Error: failed to generate QR code");
+          setPaymentStatus(
+            `Error: ${result.error || "Failed to generate QR code"}`
+          );
           setQrPaid(false);
+          qrCodeGeneratedRef.current = false;
         }
-      } catch {
-        setPaymentStatus("Failed to generate QR code");
+      } catch (error) {
+        const errorMsg = error instanceof Error ? error.message : String(error);
+        console.error("QR Code error:", errorMsg);
+        setPaymentStatus(`Failed to generate QR code: ${errorMsg}`);
         setQrPaid(false);
+        qrCodeGeneratedRef.current = false;
       }
-    }, [amount, qrCodeType, metadata, payWithQRCode, qrCodeUrl]);
+    }, [amount, qrCodeType, metadata, payWithQRCode, qrCodeUrl, loading]);
 
     useEffect(() => {
-      const run = async () => {
-        if (paymentMethod === "qr_code") await handleQRCodePayment();
-        else {
-          setQrCodeUrl(null);
-          setQrPaid(false);
-          setPaymentStatus("");
-        }
-      };
-      run();
-    }, [paymentMethod, qrCodeType, handleQRCodePayment]);
+      if (paymentMethod === "qr_code" && !qrCodeGeneratedRef.current) {
+        handleQRCodePayment();
+      } else if (paymentMethod !== "qr_code") {
+        setQrCodeUrl(null);
+        setQrPaid(false);
+        setPaymentStatus("");
+        qrCodeGeneratedRef.current = false;
+        lastOrderIdRef.current = null;
+        stopPolling();
+      }
+    }, [paymentMethod, handleQRCodePayment, stopPolling]);
 
     useEffect(() => {
       const cardValid =
         paymentMethod === "credit_card" &&
+        isOmiseLoaded &&
         Object.keys(errors).length === 0 &&
         watchedValues.number.length === 19 &&
         watchedValues.expiration.length === 5 &&
         watchedValues.security_code.length >= 3;
       const qrValid = paymentMethod === "qr_code" && qrPaid;
       onValidChange?.(paymentMethod === "credit_card" ? cardValid : qrValid);
-    }, [errors, watchedValues, paymentMethod, qrPaid, onValidChange]);
+    }, [
+      errors,
+      watchedValues,
+      paymentMethod,
+      qrPaid,
+      onValidChange,
+      isOmiseLoaded,
+    ]);
+
+    useEffect(() => {
+      if (
+        onPaymentMethodChange &&
+        paymentMethod &&
+        paymentMethod !== prevPaymentMethodRef.current
+      ) {
+        console.log("Calling onPaymentMethodChange with:", paymentMethod);
+        onPaymentMethodChange(paymentMethod);
+        prevPaymentMethodRef.current = paymentMethod;
+      }
+    }, [paymentMethod, onPaymentMethodChange]);
 
     return (
-      <div className="flex flex-1 flex-col w-full gap-4 px-4 md:px-0">
+      <div className="flex flex-col sm:flex-1 w-full gap-4 px-4 md:px-0">
         <div className="flex gap-4">
           {["credit_card", "qr_code"].map((method) => (
             <button
@@ -204,7 +291,6 @@ const PaymentForm = forwardRef<PaymentFormHandles, PaymentFormProps>(
               type="button"
               onClick={() => {
                 setPaymentMethod(method as "credit_card" | "qr_code");
-                onPaymentMethodChange?.(method as "credit_card" | "qr_code");
               }}
               className={`px-1 py-1 border-b-1 transition text-f-24 ${
                 paymentMethod === method
@@ -212,21 +298,26 @@ const PaymentForm = forwardRef<PaymentFormHandles, PaymentFormProps>(
                   : "border-transparent text-gray-g3b0"
               }`}
             >
-              {method === "credit_card" ? "Credit Card" : "QR Code"}
+              {method === "credit_card" ? t("credit_card") : t("qr_code")}
             </button>
           ))}
         </div>
 
         {paymentMethod === "credit_card" && (
           <div className="space-y-4">
-            <div className="flex flex-col md:flex-row md:items-center gap-x-5">
+            {!isOmiseLoaded && (
+              <div className="text-red-500 text-center">
+                {t("payment_system_loading")}
+              </div>
+            )}
+            <div className="flex flex-col lg:flex-row lg:items-center gap-x-5">
               <Controller
                 name="number"
                 control={control}
                 render={({ field }) => (
                   <InputTextFeild
                     {...field}
-                    label="Card Number"
+                    label={t("card_number")}
                     placeholder="xxxx-xxxx-xxxx-xxxx"
                     maxLength={19}
                     inputMode="numeric"
@@ -234,6 +325,7 @@ const PaymentForm = forwardRef<PaymentFormHandles, PaymentFormProps>(
                     onChange={(e) =>
                       field.onChange(formatCardNumber(e.target.value))
                     }
+                    disabled={!isOmiseLoaded}
                   />
                 )}
               />
@@ -243,9 +335,10 @@ const PaymentForm = forwardRef<PaymentFormHandles, PaymentFormProps>(
                 render={({ field }) => (
                   <InputTextFeild
                     {...field}
-                    label="Card owner"
+                    label={t("card_owner")}
                     placeholder="John Doe"
                     errors={errors.name?.message}
+                    disabled={!isOmiseLoaded}
                   />
                 )}
               />
@@ -257,7 +350,7 @@ const PaymentForm = forwardRef<PaymentFormHandles, PaymentFormProps>(
                 render={({ field }) => (
                   <InputTextFeild
                     {...field}
-                    label="Expiry date"
+                    label={t("expiry_date")}
                     placeholder="MM/YY"
                     maxLength={5}
                     inputMode="numeric"
@@ -265,6 +358,7 @@ const PaymentForm = forwardRef<PaymentFormHandles, PaymentFormProps>(
                     onChange={(e) =>
                       field.onChange(formatExpiration(e.target.value))
                     }
+                    disabled={!isOmiseLoaded}
                   />
                 )}
               />
@@ -274,7 +368,7 @@ const PaymentForm = forwardRef<PaymentFormHandles, PaymentFormProps>(
                 render={({ field }) => (
                   <InputTextFeild
                     {...field}
-                    label="CVC"
+                    label={t("cvc")}
                     placeholder="123"
                     maxLength={4}
                     inputMode="numeric"
@@ -284,48 +378,35 @@ const PaymentForm = forwardRef<PaymentFormHandles, PaymentFormProps>(
                         e.target.value.replace(/\D/g, "").slice(0, 4)
                       )
                     }
+                    disabled={!isOmiseLoaded}
                   />
                 )}
               />
             </div>
 
-            {/* For test */}
             <div className="px-5 md:px-0">
               data for test
-              <div> card number : 4242-4242-4242-4242</div>
-              <div> Card owner : John </div>
-              <div> Expiry date : 10/27 </div>
-              <div> cvc : 123 </div>
+              <div> {t("card_number")} : 4242-4242-4242-4242</div>
+              <div> {t("card_owner")} : John </div>
+              <div> {t("expiry_date")} : 10/27 </div>
+              <div> {t("cvc")} : 123 </div>
             </div>
-            
           </div>
         )}
 
         {paymentMethod === "qr_code" && (
           <div className="space-y-4 px-4">
             {!qrCodeUrl ? (
-              <button
-                type="button"
-                onClick={handleQRCodePayment}
-                disabled={loading}
-                className={`w-full py-3 rounded-lg font-medium ${
-                  loading
-                    ? "bg-gray-400 cursor-not-allowed"
-                    : "bg-blue-600 hover:bg-blue-700 text-white"
-                }`}
-              >
+              <div className="w-full py-3 rounded-lg font-medium bg-gray-400 text-center text-white">
                 {loading
-                  ? "Generating QR Code..."
-                  : `Generate QR Code (${new Intl.NumberFormat("th-TH", {
-                      style: "currency",
-                      currency: "THB",
-                    }).format(amount)})`}
-              </button>
+                  ? t("generating_qr_code")
+                  : paymentStatus || "Failed to generate QR Code"}
+              </div>
             ) : (
               <div className="space-y-3">
                 <div className="rounded bg-gray-g63f p-10 flex flex-col flex-1 items-center justify-center">
                   <div className="text-gray-g3b0 text-fr-14 mb-5">
-                    Time remaining :{" "}
+                    {t("time_remaining")} :{" "}
                     <span className="text-blue-bbee">{countdown}</span>
                   </div>
                   <Image
@@ -334,6 +415,7 @@ const PaymentForm = forwardRef<PaymentFormHandles, PaymentFormProps>(
                     width={320}
                     height={320}
                     className="object-contain mb-5"
+                    unoptimized
                   />
                   <div className="text-gray-gedd text-fr-16">
                     Minor Cineplex Public limited company

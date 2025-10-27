@@ -1,62 +1,39 @@
-import { getMovies, createMovie, MovieFilters } from "@/services/movieService";
 import type { NextApiRequest, NextApiResponse } from "next";
+import { moviesService } from "@/services/movieService";
+import { MovieFilters, Pagination } from "@/types/movie";
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  if (req.method === "GET") {
-    try {
-      const { id, title, genre, language, releaseDate, page = "1" } = req.query;
+  try {
+    if (req.method === "GET") {
+      const filters: MovieFilters = {
+        movie_id: req.query.movie_id as string | undefined,
+        title: req.query.title as string | undefined,
+        language: req.query.language as string | undefined,
+        genre: req.query.genre as string | undefined,
+        release_date: req.query.release_date as string | undefined,
+        status: req.query.status as "NOW_SHOWING" | "COMING_SOON" | undefined,
+      };
 
-      const filters: MovieFilters = {};
-      if (id) filters.id = Array.isArray(id) ? id[0] : id;
-      if (title) filters.title = Array.isArray(title) ? title[0] : title;
-      if (genre) filters.genre = Array.isArray(genre) ? genre[0] : genre;
-      if (language)
-        filters.language = Array.isArray(language) ? language[0] : language;
-      if (releaseDate)
-        filters.releaseDate = Array.isArray(releaseDate)
-          ? releaseDate[0]
-          : releaseDate;
+      const pagination: Pagination = {
+        page: req.query.page ? Number(req.query.page) : undefined,
+        limit: req.query.limit ? Number(req.query.limit) : undefined,
+      };
 
-      // ไม่จำกัด limit
-      const movies = await getMovies(filters);
+      const { data, count } = await moviesService.getMovies(
+        filters,
+        pagination
+      );
 
-      return res.status(200).json({ movie: movies });
-    } catch (error: unknown) {
-      console.error(error);
-      if (error) console.error("Failed to fetch cinemas:", error);
-
-      return res.status(500).json({ error: error });
+      res.status(200).json({ data, count });
+    } else {
+      res.setHeader("Allow", ["GET"]);
+      res.status(405).end(`Method ${req.method} Not Allowed`);
     }
+  } catch (error) {
+    console.error("Error fetching movies:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
-
-  if (req.method === "POST") {
-    try {
-      const { title, description, duration, genre, rating, trailer } = req.body;
-
-      if (!title || !description || !duration || !genre || !rating) {
-        return res.status(400).json({ error: "Missing required fields" });
-      }
-
-      const newMovie = await createMovie({
-        title,
-        description,
-        duration: Number(duration),
-        genre,
-        rating,
-        trailer,
-      });
-
-      return res
-        .status(201)
-        .json({ message: "Movie created", movie: newMovie });
-    } catch (error: unknown) {
-      console.error(error);
-      return res.status(500).json({ error: "Failed to create movie" });
-    }
-  }
-
-  return res.status(405).json({ error: "Method Not Allowed" });
 }

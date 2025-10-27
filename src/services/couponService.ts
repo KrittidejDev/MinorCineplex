@@ -1,4 +1,4 @@
-// service/couponService.ts
+//services/couponService.ts
 import * as couponRepo from "@/repositories/couponRepository";
 import { CreateCouponInput } from "@/types/coupon";
 import * as userCouponRepo from "@/repositories/userCouponRepository";
@@ -38,4 +38,8 @@ export const getUserCouponByUser = async (userId: string, couponId: string) => {
 // ผู้ใช้กดรับคูปอง
 export const collectCouponByUser = async (userId: string, couponId: string) => {
   return userCouponRepo.collectCoupon(userId, couponId);
+};
+
+export const deleteCouponById = async (id: string) => {
+  return couponRepo.deleteById(id);
 };

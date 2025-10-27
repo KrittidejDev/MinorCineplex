@@ -14,6 +14,7 @@ import EditShowtimeForm from "../Forms/EditShowtimeForm";
 import ViewShowtime from "../Forms/ViewShowtime";
 import { useState } from "react";
 import { dateFormat } from "@/lib/dateFormat";
+import AdminStPagination from "./AdminStPagination";
 
 interface AdminShowtimeWidgetProps {
   data: ShowtimeData[];
@@ -133,7 +134,7 @@ const AdminShowtimeWidget = ({
           <h1 className="text-f-56 text-gray-g63f">Showtime</h1>
           <Button
             onClick={() => setIsShowCreateModal(true)}
-            className="btn-base blue-normal text-fm-16 font-bold px-4 py-3 gap-2.5"
+            className="btn-base blue-normal cursor-pointer text-fm-16 font-bold px-4 py-3 gap-2.5"
           >
             <AddRoundLight width={24} height={24} color={"#FFFFFF"} />
             Add Showtime
@@ -157,33 +158,11 @@ const AdminShowtimeWidget = ({
             actions={showtimeActions}
           />
         </div>
-        <div className="px-15 flex items-center gap-2 justify-center">
-          <Button
-            disabled={currentPage === 1}
-            onClick={() => setCurrentPage(1)}
-          >
-            {"<<"}
-          </Button>
-          <Button
-            disabled={currentPage === 1}
-            onClick={() => setCurrentPage(currentPage - 1)}
-          >
-            {"<"}
-          </Button>
-          <span className="text-fm-14 text-gray-g63f">{`Page ${currentPage} of ${totalPages || 1}`}</span>
-          <Button
-            disabled={currentPage === totalPages || totalPages === 0}
-            onClick={() => setCurrentPage(currentPage + 1)}
-          >
-            {">"}
-          </Button>
-          <Button
-            disabled={currentPage === totalPages || totalPages === 0}
-            onClick={() => setCurrentPage(totalPages)}
-          >
-            {">>"}
-          </Button>
-        </div>
+        <AdminStPagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          setCurrentPage={setCurrentPage}
+        />
         <div className="flex justify-start px-15">
           <span className="text-fm-14 text-gray-g63f">{`Showing ${data.length} of ${total} results`}</span>
         </div>

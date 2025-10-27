@@ -10,25 +10,31 @@ export function RUNDER_TIMESLOT(
   showtimeDate: Date | string,
   now: Date = new Date()
 ): ShowtimeButtonProps {
-  const today = new Date();
-
   const showtimeDateObj =
     showtimeDate instanceof Date ? showtimeDate : new Date(showtimeDate);
 
-  const todayMid = new Date(today.setHours(0, 0, 0, 0)).getTime();
-  const showMid = new Date(showtimeDateObj.setHours(0, 0, 0, 0)).getTime();
+  const current = toThaiTimestamp(now);
+
+  const todayThai = new Date();
+  const showThai = new Date(showtimeDateObj);
+
+  todayThai.setHours(0, 0, 0, 0);
+  showThai.setHours(0, 0, 0, 0);
+
+  const todayMid = toThaiTimestamp(todayThai);
+  const showMid = toThaiTimestamp(showThai);
 
   const [sH, sM] = start_time.split(":").map(Number);
   const [eH, eM] = end_time.split(":").map(Number);
 
-  const start = new Date(showtimeDateObj).setHours(sH, sM, 0, 0);
-  let end = new Date(showtimeDateObj).setHours(eH, eM, 0, 0);
+  const start = toThaiTimestamp(
+    new Date(showtimeDateObj.setHours(sH, sM, 0, 0))
+  );
+  let end = toThaiTimestamp(new Date(showtimeDateObj.setHours(eH, eM, 0, 0)));
 
   if (end < start) {
     end += 24 * 60 * 60 * 1000;
   }
-
-  const current = now.getTime();
 
   if (showMid < todayMid) {
     return {
@@ -76,4 +82,10 @@ export function RUNDER_TIMESLOT(
     className: "blue-dark-normal cursor-pointer",
     label: "รอรอบ",
   };
+}
+
+function toThaiTimestamp(date: Date) {
+  const utc = date.getTime();
+  const offset = 7 * 60 * 60 * 1000;
+  return utc + offset;
 }

@@ -138,7 +138,7 @@ const BookingSuccessPage: React.FC = () => {
           </Link>
         </div>
         <div className="mt-15">
-          <ShareButton />
+          <ShareButton text="Share This Booking"/>
         </div>
       </div>
     </NavAndFooter>

@@ -81,8 +81,8 @@ const MovieInfoWidget: React.FC<MoviesDetailWidgetProps> = ({
   };
 
   return (
-    <div className="md:mt-6 z-10 px-4">
-      <div className="max-w-[1200px] mx-auto flex flex-col">
+    <div className="md:mt-6 z-10 px-4 xl:px-20">
+      <div className="max-w-[1440px] mx-auto flex flex-col">
         {/* Mobile Trailer */}
         <div className="md:hidden">
           <TrailerPlayer
@@ -121,9 +121,9 @@ const MovieInfoWidget: React.FC<MoviesDetailWidgetProps> = ({
         </div>
 
         {/* Tabs - Desktop Only */}
-        <div className="hidden md:flex gap-10 mt-12">
+        <div className="hidden md:flex gap-4 mt-12 z-10">
           <button
-            className={`  ${
+            className={`cursor-pointer w-40 text-lg font-semibold flex items-center justify-center ${
               activeTab === "ข้อมูลภาพยนต์" ? filterActiveStyle : filterBtnStyle
             }`}
             onClick={() => setActiveTab("ข้อมูลภาพยนต์")}
@@ -131,7 +131,7 @@ const MovieInfoWidget: React.FC<MoviesDetailWidgetProps> = ({
             ข้อมูลภาพยนต์
           </button>
           <button
-            className={`text-[20px] font-semibold cursor-pointer ${
+            className={`cursor-pointer w-40 text-lg font-semibold flex items-center justify-center ${
               activeTab === "รอบฉาย" ? filterActiveStyle : filterBtnStyle
             }`}
             onClick={() => setActiveTab("รอบฉาย")}
@@ -142,7 +142,7 @@ const MovieInfoWidget: React.FC<MoviesDetailWidgetProps> = ({
 
         {/* ข้อมูลภาพยนต์ - Desktop Only */}
         {activeTab === "ข้อมูลภาพยนต์" && (
-          <div className="hidden md:flex flex-col gap-10 mt-10 sm:mt-30">
+          <div className="hidden md:flex flex-col gap-10 mt-10">
             {/* นักแสดง */}
             <div>
               <h3 className="font-bold text-f-24">นักแสดง</h3>
@@ -163,26 +163,29 @@ const MovieInfoWidget: React.FC<MoviesDetailWidgetProps> = ({
             </div>
 
             {/* ผู้กำกับ */}
-            <div className="w-full">
-              <h3 className="font-bold text-f-24">ผู้กำกับ</h3>
-              <div className="flex flex-wrap gap-2.5 mt-5">
-                {movie.directors.map((director) => {
-                  const { firstName, lastName } = splitName(
-                    director.director.name
-                  );
-                  return (
-                    <div
-                      key={director.director.id}
-                      className="flex flex-col items-center text-white-wfff text-sm"
-                    >
-                      <span>{firstName}</span>
-                      {lastName && <span>{lastName}</span>}
-                    </div>
-                  );
-                })}
+            {movie.directors.length > 0 && (
+              <div>
+                <div className="w-full">
+                  <h3 className="font-bold text-f-24">ผู้กำกับ</h3>
+                  <div className="flex flex-wrap gap-2.5 mt-5">
+                    {movie.directors.map((director) => {
+                      const { firstName, lastName } = splitName(
+                        director.director.name
+                      );
+                      return (
+                        <div
+                          key={director.director.id}
+                          className="flex flex-col items-center text-white-wfff text-sm"
+                        >
+                          <span>{firstName}</span>
+                          {lastName && <span>{lastName}</span>}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
               </div>
-            </div>
-
+            )}
             {/* เรื่องย่อ */}
             <div>
               <h3 className="font-bold text-f-24">เรื่องย่อ</h3>

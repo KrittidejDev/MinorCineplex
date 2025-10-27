@@ -6,6 +6,7 @@ import { Button } from "../ui/button";
 import Link from "next/link";
 import { FilterData } from "./FilterSearch";
 import { MovieStatus } from "@/types/enums";
+import { useTranslation } from "next-i18next";
 
 interface NowShowingComingSoonProps {
   movies: MovieDTO[];
@@ -21,7 +22,7 @@ export default function NowShowingComingSoon({
   onTabClick,
 }: NowShowingComingSoonProps) {
   const router = useRouter();
-
+  const { t } = useTranslation("common");
   const initialTab = query.status || MovieStatus.NOW_SHOWING;
   const [activeTab, setActiveTab] = useState<MovieStatus>(initialTab);
 
@@ -48,7 +49,7 @@ export default function NowShowingComingSoon({
                   : "text-gray-g3b0 border-b border-transparent"
               }`}
             >
-              Now showing
+              {t("now_showing")}
             </button>
             <button
               onClick={() => handleTab(MovieStatus.COMING_SOON)}
@@ -58,20 +59,20 @@ export default function NowShowingComingSoon({
                   : "text-gray-g3b0 border-b border-transparent"
               }`}
             >
-              Coming soon
+              {t("coming_soon")}
             </button>
           </div>
           <Link href="/movies" passHref>
             <Button className="btn-base-transparent-underline-normal text-sm hover:underline cursor-pointer">
-              View all
+              {t("view_all")}
             </Button>
           </Link>
         </div>
 
         {loading ? (
-          <div className="text-center py-20">Loading...</div>
+          <div className="text-center py-20">{t("loading")}</div>
         ) : movies.length === 0 ? (
-          <div className="text-center py-20">No movies found</div>
+          <div className="text-center py-20">{t("movie_not_found")}</div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
             {movies.slice(0, 4).map((movie) => (

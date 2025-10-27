@@ -1,7 +1,7 @@
 //components/Cards/SummaryBoxCard.tsx
 import Image from 'next/image'
 import { useState, useMemo } from 'react'
-import { useTranslation } from 'react-i18next'
+import { useTranslation } from 'next-i18next'
 import Tag from '../Widgets/Tag'
 import PinFill from '../Icons/PinFill'
 import DateRangeFill from '../Icons/DateRangeFill'

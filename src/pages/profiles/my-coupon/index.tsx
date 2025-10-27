@@ -5,7 +5,7 @@ import CouponCard from "@/components/Cards/CouponCard";
 import { CouponCardData } from "@/types/coupon";
 import { userService } from "@/config/userServices";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "next-i18next";
 
 const ProfileMyCoupons = () => {
   const { t } = useTranslation("common"); // ใช้ i18n

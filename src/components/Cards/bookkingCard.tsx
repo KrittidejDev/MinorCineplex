@@ -4,7 +4,7 @@ import DateTodayLight from "../Icons/DateTodayLight";
 import TimeFill from "../Icons/TimeFill";
 import Image from "next/image";
 import Shop from "../Icons/Shop";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "next-i18next";
 import { BookingStatus } from "@/types/booking";
 
 interface BookingCardProps {

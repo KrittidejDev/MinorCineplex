@@ -3,7 +3,7 @@ import DateSelectionBarWidget from "./DateSelectionBarWidget";
 import Image from "next/image";
 import NavAndFooter from "../MainLayout/NavAndFooter";
 import { CinemaDetail, CinemaDTO, MovieWithHalls } from "@/types/cinema";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "next-i18next";
 import { HoverCard3D } from "../Displays/HoverCard3D";
 import axios from "axios";
 import { useParams } from "next/navigation";

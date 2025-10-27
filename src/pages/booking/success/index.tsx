@@ -7,7 +7,7 @@ import TimeFill from "@/components/Icons/TimeFill";
 import Shop from "@/components/Icons/Shop";
 import axios from "axios";
 import { useSearchParams } from "next/navigation";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "next-i18next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -101,7 +101,7 @@ const BookingSuccessPage: React.FC = () => {
             <span className="text-fr-16">{bookingData.hall[lang]}</span>
           </div>
           <div className="border-b-2 border-b-gray-g63f mb-4" />
-          <div className="text-fr-16 text-gray-g3b0 flex items-center mb-2">
+          <div className="text-fr-16 text-gray-g3b0 flex justify-between items-center mb-2">
             <span className="w-30">
               {lang === "th" ? "ที่นั่งที่เลือก" : "Selected Seats"}
             </span>
@@ -109,7 +109,7 @@ const BookingSuccessPage: React.FC = () => {
               {bookingData.seats.join(", ")}
             </span>
           </div>
-          <div className="text-fr-16 text-gray-g3b0 flex items-center mb-2">
+          <div className="text-fr-16 text-gray-g3b0 flex justify-between items-center mb-2">
             <span className="w-30">
               {lang === "th" ? "วิธีการชำระเงิน" : "Payment Method"}
             </span>
@@ -117,7 +117,7 @@ const BookingSuccessPage: React.FC = () => {
               {bookingData.payment_method[lang]}
             </span>
           </div>
-          <div className="text-fr-16 text-gray-g3b0 flex items-center mb-2">
+          <div className="text-fr-16 text-gray-g3b0 flex justify-between items-center mb-2">
             <span className="w-30">{lang === "th" ? "ราคารวม" : "Total"}</span>
             <span className="font-bold text-white">
               ฿{bookingData.total_price}
@@ -127,16 +127,16 @@ const BookingSuccessPage: React.FC = () => {
         <div className="my-8 flex gap-3">
           <Link href="/">
             <Button className="btn-base white-outline-normal text-fm-16 font-bold!">
-              Back to home
+              {lang === "th" ? "กลับหน้าหลัก" : "Back to home"}
             </Button>
           </Link>
           <Link href={`/booking/detail/${public_id}`}>
             <Button className="btn-base blue-normal text-fm-16 font-bold!">
-              Booking detail
+              {lang === "th" ? "รายละเอียด" : "Booking detail"}
             </Button>
           </Link>
         </div>
-        <ShareButton publicId={public_id || ""} text="Share This Booking" />
+        <ShareButton publicId={public_id || ""} text={lang === "th" ? "แชร์การจองนี้" : "Share This Booking"} />
       </div>
     </NavAndFooter>
   );

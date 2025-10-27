@@ -88,10 +88,10 @@ const NavBarWidget = () => {
         ) : (
           <div className="flex items-center gap-x-2">
             <Link href={"/auth/login"}>
-              <button className="btn-base py-3! hover:underline ">{texts.login}</button>
+              <button className="btn-base py-3! text-white hover:underline ">{texts.login}</button>
             </Link>
             <Link href={"/auth/signup"}>
-              <button className="btn-base white-outline-normal py-3!">
+              <button className="btn-base white-outline-normal py-3! text-white">
                 {texts.register}
               </button>
             </Link>

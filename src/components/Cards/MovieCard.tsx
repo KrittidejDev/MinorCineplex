@@ -2,7 +2,7 @@ import StarFill from "../Icons/StarFill";
 import Tag from "../Widgets/Tag";
 import Image from "next/image";
 import { HoverCard3D } from "../Displays/HoverCard3D";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "next-i18next";
 
 interface MovieCardProps {
   id: string;
@@ -76,7 +76,7 @@ function MovieCard({
           </div>
         </div>
         <div className="flex flex-col flex-1 justify-between">
-          <h4 className="font-bold text-xl line-clamp-2 min-h-[56px]">
+          <h4 className="font-bold text-xl line-clamp-2 text-white min-h-[56px]">
             {displayTitle}
           </h4>
           <div className="flex flex-wrap gap-2 mt-4">

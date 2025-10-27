@@ -47,7 +47,6 @@ const MovieInfoWidget: React.FC<MoviesDetailWidgetProps> = ({
   const handleSearch = (value: string) => {
     setSearchValue(value);
   };
-  console.log("searchCity", searchCity);
 
   const slug = (
     i18n?.language === "en"

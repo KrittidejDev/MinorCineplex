@@ -94,7 +94,7 @@ const CinemaDetailWidget: React.FC = () => {
               </HoverCard3D>
             </div>
             <div className="flex flex-col flex-1 w-full p-4 md:p-[60px]">
-              <h1 className="text-white text-2xl sm:text-3xl md:text-4xl font-bold mb-6 whitespace-pre-wrap overflow-y-auto">
+              <h1 className="text-white text-2xl sm:text-3xl md:text-4xl font-bold mb-6 whitespace-pre-wrap">
                 {i18n.language === "en"
                   ? cinemaData?.translations?.en?.name
                   : cinemaData?.translations?.th?.name}

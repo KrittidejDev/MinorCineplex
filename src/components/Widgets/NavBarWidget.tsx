@@ -90,12 +90,13 @@ const NavBarWidget = () => {
           </div>
         )}
       </div>
-      <div className="flex md:hidden cursor-pointer">
+      <div className="flex items-center gap-x-2 md:hidden cursor-pointer">
         <Hamburger onClick={_handleOpen} />
+        <LanguageSwitcher />
       </div>
       {_isOpen && (
         <NavbarMenu
-          className="z-50 "
+          className="z-50 absolute top-18 right-0 md:right-45"
           data={userData as UserDataResponse}
           onLogOut={signOut}
         />

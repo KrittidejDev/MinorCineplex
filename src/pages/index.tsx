@@ -144,7 +144,7 @@ export default function Home() {
           onComplete={() => setShowCurtain(false)}
         />
       )}
-      <div className="flex-1 max-w-[1200px]">
+      <div className="flex-1 max-w-[1440px]">
         <div className="w-dvw flex justify-center relative mx-auto -mt-10">
           <FilterSearch
             onSearch={(filters) => fetchAllMovies(filters)}
@@ -160,7 +160,9 @@ export default function Home() {
           onTabClick={handleTabClick}
         />
         <Coupon />
-        <CinemaLocation data={dataCinemas} filterCinema={handleFilter} />
+        <div>
+          <CinemaLocation data={dataCinemas} filterCinema={handleFilter} />
+        </div>
       </div>
       <LocationPermissionModal
         isOpen={showModal}

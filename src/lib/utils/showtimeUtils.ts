@@ -10,13 +10,22 @@ export function RUNDER_TIMESLOT(
   showtimeDate: Date | string,
   now: Date = new Date()
 ): ShowtimeButtonProps {
+  // แปลง now เป็นเวลาไทย (UTC+7)
   const thaiNow = new Date(
     now.toLocaleString("en-US", { timeZone: "Asia/Bangkok" })
   );
   const current = thaiNow.getTime();
 
-  const showtimeDateObj =
-    typeof showtimeDate === "string" ? new Date(showtimeDate) : showtimeDate;
+  // แปลง showtimeDate เป็นวันที่ในโซนเวลาไทย โดยใช้เฉพาะวันที่ (ไม่รวมเวลา)
+  let showtimeDateObj: Date;
+  if (typeof showtimeDate === "string") {
+    // ลบส่วนเวลาออก และตั้งเป็น 00:00:00 ในโซนเวลาไทย
+    const dateOnly = showtimeDate.split("T")[0]; // เช่น "2025-10-27"
+    showtimeDateObj = new Date(`${dateOnly}T00:00:00.000+07:00`);
+  } else {
+    showtimeDateObj = showtimeDate;
+  }
+
   if (isNaN(showtimeDateObj.getTime())) {
     console.error("Invalid showtimeDate:", showtimeDate);
     return {
@@ -26,33 +35,36 @@ export function RUNDER_TIMESLOT(
     };
   }
 
+  // ตั้งวันที่เป็น 00:00:00 ในโซนเวลาไทย
   const todayThai = new Date(
     thaiNow.toLocaleString("en-US", { timeZone: "Asia/Bangkok" })
   );
-  const showThai = new Date(
-    showtimeDateObj.toLocaleString("en-US", { timeZone: "Asia/Bangkok" })
-  );
+  const showThai = new Date(showtimeDateObj);
   todayThai.setHours(0, 0, 0, 0);
   showThai.setHours(0, 0, 0, 0);
 
   const todayMid = todayThai.getTime();
   const showMid = showThai.getTime();
 
+  // แยกชั่วโมงและนาทีจาก start_time และ end_time
   const [sH, sM] = start_time.split(":").map(Number);
   const [eH, eM] = end_time.split(":").map(Number);
 
+  // ตั้งค่าเวลาเริ่มต้นและสิ้นสุดในวันที่ของ showtime
   const startDate = new Date(showThai);
   startDate.setHours(sH, sM, 0, 0);
   const endDate = new Date(showThai);
   endDate.setHours(eH, eM, 0, 0);
 
-  const start = startDate.getTime();
+  let start = startDate.getTime();
   let end = endDate.getTime();
 
+  // ถ้า end < start (ข้ามวัน) เพิ่ม 24 ชั่วโมงให้ end
   if (end < start) {
     end += 24 * 60 * 60 * 1000;
   }
 
+  // ดีบักข้อมูล
   console.log({
     start_time,
     showtimeDate: showtimeDateObj.toISOString(),
@@ -65,6 +77,7 @@ export function RUNDER_TIMESLOT(
       showMid < todayMid || current > end || (current > start && current < end),
   });
 
+  // ตรวจสอบเงื่อนไข
   if (showMid < todayMid) {
     return {
       disabled: true,

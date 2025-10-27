@@ -136,10 +136,6 @@ function AdminCreateNewTimeSlotForm({ isShowModal, onClose }: AdminCreateNewTime
                         </div>
                     </div>
 
-                    <div className="flex items-center justify-center my-4">
-                        <div className="w-full h-px bg-blue-bbee"></div>
-                    </div>
-
 
                     <div className="flex justify-end space-x-3">
                         <button

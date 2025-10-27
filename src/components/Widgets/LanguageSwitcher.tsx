@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/router";
 import { useTranslation } from "next-i18next";
+import ThaiFlag from "../Icons/ThaiFlag";
+import EngFlag from "../Icons/EngFlag";
 
 const LanguageSwitcher: React.FC = () => {
   const router = useRouter();
@@ -11,9 +13,12 @@ const LanguageSwitcher: React.FC = () => {
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   // Language display config
-  const languageConfig: Record<string, { flag: string; name: string }> = {
-    th: { flag: "🇹🇭", name: "TH" },
-    en: { flag: "🇺🇸", name: "EN" },
+  const languageConfig: Record<
+    string,
+    { flag: React.ReactNode; name: string }
+  > = {
+    th: { flag: <ThaiFlag width="32" height="32" />, name: "TH" },
+    en: { flag: <EngFlag width="32" height="32" />, name: "EN" },
   };
 
   const currentLangConfig = languageConfig[currentLocale || "en"];
@@ -41,7 +46,7 @@ const LanguageSwitcher: React.FC = () => {
     <div ref={containerRef} className="relative inline-block z-50">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-4 py-2.5 rounded-xl backdrop-blur-sm  transition-all duration-300 text-white font-medium shadow-lg hover:shadow-xl group"
+        className="flex items-center gap-2 px-4 py-2.5 rounded-xl backdrop-blur-sm transition-all duration-300 text-white font-medium shadow-lg hover:shadow-xl group cursor-pointer"
       >
         <span className="text-xl group-hover:scale-110 transition-transform duration-300">
           {currentLangConfig?.flag || "🌐"}
@@ -86,7 +91,7 @@ const LanguageSwitcher: React.FC = () => {
                       isActive
                         ? " text-white shadow-md"
                         : "hover:bg-gray-100 text-gray-700"
-                    }`}
+                    } cursor-pointer`}
                   >
                     <span
                       className={`text-2xl transition-transform duration-200 ${

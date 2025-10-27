@@ -5,12 +5,12 @@ import DoneRound from "../Icons/DoneRound";
 
 const CancelSuccess = () => {
   return (
-    <div className="flex items-center flex-col gap-12 w-full px-2">
+    <div className="flex items-center flex-col gap-6 sm:gap-12 w-full px-2">
       <div className="w-20 h-20 rounded-full bg-green-g372 flex items-center justify-center">
         <DoneRound width={48} height={48} strokeWidth={2} />
       </div>
       <div className="flex flex-col gap-3 items-center">
-        <h1 className="text-f-36 text-white">Cancellation successfully</h1>
+        <h1 className="text-f-36 text-center text-white">Cancellation successfully</h1>
         <p className="text-fr-16 text-gray-gedd">
           The cancellation is complete.
         </p>

@@ -281,7 +281,7 @@ const PaymentForm = forwardRef<PaymentFormHandles, PaymentFormProps>(
     }, [paymentMethod, onPaymentMethodChange]);
 
     return (
-      <div className="flex flex-1 flex-col w-full gap-4 px-4 md:px-0">
+      <div className="flex flex-col sm:flex-1 w-full gap-4 px-4 md:px-0">
         <div className="flex gap-4">
           {["credit_card", "qr_code"].map((method) => (
             <button
@@ -308,7 +308,7 @@ const PaymentForm = forwardRef<PaymentFormHandles, PaymentFormProps>(
                 Payment system is loading. Please wait...
               </div>
             )}
-            <div className="flex flex-col md:flex-row md:items-center gap-x-5">
+            <div className="flex flex-col lg:flex-row lg:items-center gap-x-5">
               <Controller
                 name="number"
                 control={control}

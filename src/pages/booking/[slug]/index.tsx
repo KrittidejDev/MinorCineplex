@@ -545,7 +545,7 @@ const BookingSeat: React.FC = () => {
                 countdown={memoizedCountdown}
               />
             )}
-            <div className="flex flex-1 lg:max-w-[305px]">
+            <div className="flex flex-1 lg:max-w-[305px] sm:pr-4">
               {bookingInfo && (
                 <SummaryBoxCard
                   step={step}

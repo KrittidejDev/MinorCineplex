@@ -249,7 +249,7 @@ const BookingDetail: React.FC = () => {
                   href={`/booking/${bookingSlug}?id=${bookingData.showtime_id}&fid=${bookingData.user_id}`}
                 >
                   <Button className="btn-base blue-normal mt-4 md:mt-6 mb-4 md:mb-10">
-                    {t("book_more")}
+                    {t("Book more seats")}
                   </Button>
                 </Link>
                 {bookingData.movie_description[lang] && (

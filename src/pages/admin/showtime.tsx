@@ -277,7 +277,7 @@ export default function AdminShowtime() {
         <div>
           <AdminSidebar />
         </div>
-        <div className="w-ful max-w-[1200px]">
+        <div className="w-full">
           <AdminShowtimeWidget
             totalPages={totalPages}
             total={total}

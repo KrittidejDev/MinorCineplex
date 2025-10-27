@@ -7,6 +7,14 @@ import {
   ShowtimeButtonProps,
 } from "@/lib/utils/showtimeUtils";
 import { ShowtimeDTO } from "@/types/movie"; // import type ShowtimeDTO
+import { i18n } from "next-i18next";
+
+// Type override for name_en field
+interface ExtendedShowtimeDTO extends Omit<ShowtimeDTO, 'cinema'> {
+  cinema: Omit<ShowtimeDTO['cinema'], 'name_en'> & {
+    name_en?: string | { name: string };
+  };
+}
 
 export type Showtime = {
   id: string;
@@ -21,9 +29,8 @@ export type Showtime = {
   available_seats?: number;
   total_seats?: number;
 };
-
 export interface ShowTimeProps {
-  data?: ShowtimeDTO;
+  data?: ExtendedShowtimeDTO;
   onChange?: (time: Showtime, context: { hallId: string }) => void;
   className?: string;
   badges?: string[];
@@ -64,6 +71,7 @@ export const ShowTime: React.FC<ShowTimeProps> = ({
     }
     prevAllRef.current = allCollapsed;
   }, [allCollapsed]);
+console.log(data);
 
   const base =
     "w-full max-w-32 flex flex-col justify-center items-center py-3 px-[41px] rounded-lg transition-colors";
@@ -77,7 +85,11 @@ export const ShowTime: React.FC<ShowTimeProps> = ({
               <div className="flex items-center gap-3">
                 <LocationIconBlue />
                 <span className="font-semibold line-clamp-1">
-                  {data.cinema.name}
+                  {i18n?.language === "en" && data.cinema.name_en
+                    ? (typeof data.cinema.name_en === "string" 
+                        ? data.cinema.name_en 
+                        : data.cinema.name_en.name)
+                    : data.cinema.name}
                 </span>
               </div>
               <div className="flex flex-wrap gap-2 md:ml-2">

@@ -56,7 +56,7 @@ export interface ShowtimeDTO {
     id: string;
     slug: string;
     name: string;
-    name_en?: string;
+    name_en?: string | { name: string };
     address: string;
     city?: string;
   };

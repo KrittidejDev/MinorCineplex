@@ -6,8 +6,7 @@ import InputSearch from "../Inputs/InputSearch";
 import DateSelectionBarWidget from "./DateSelectionBarWidget";
 import ShowTime from "./ShowTime";
 import { MovieDTO, ShowtimeDTO } from "@/types/movie";
-import { i18n } from "next-i18next";
-import { InputDropdown } from "../Inputs/InputDropdown";
+import { i18n, useTranslation } from "next-i18next";
 import InputComboBox from "../Inputs/InputComboBox";
 import { provinces } from "@/lib/data/provincesData";
 
@@ -32,6 +31,7 @@ const MovieInfoWidget: React.FC<MoviesDetailWidgetProps> = ({
   searchCity,
   setSearchCity,
 }) => {
+  const { t } = useTranslation('common')
   const [activeTab, setActiveTab] = useState("ข้อมูลภาพยนต์");
   const splitName = (name: string) => {
     const [firstName, ...rest] = name.split(" ");
@@ -73,7 +73,7 @@ const MovieInfoWidget: React.FC<MoviesDetailWidgetProps> = ({
     }
     return (
       <div className="flex justify-center items-center py-20">
-        <p className="text-gray-400">ไม่พบรอบฉายในวันที่เลือก</p>
+        <p className="text-gray-400">{t("no_showtimes_found")}</p>
       </div>
     );
   };
@@ -128,7 +128,7 @@ const MovieInfoWidget: React.FC<MoviesDetailWidgetProps> = ({
             }`}
             onClick={() => setActiveTab("ข้อมูลภาพยนต์")}
           >
-            ข้อมูลภาพยนต์
+            {t("movie_info")}
           </button>
           <button
             className={`cursor-pointer w-40 text-lg text-white-wfff font-semibold flex items-center justify-center ${
@@ -136,7 +136,7 @@ const MovieInfoWidget: React.FC<MoviesDetailWidgetProps> = ({
             }`}
             onClick={() => setActiveTab("รอบฉาย")}
           >
-            รอบฉาย
+            {t("showtimes")}
           </button>
         </div>
 
@@ -209,13 +209,13 @@ const MovieInfoWidget: React.FC<MoviesDetailWidgetProps> = ({
                 <InputSearch
                   handleSearch={handleSearch}
                   value={searchValue}
-                  placeholder="Search cinema"
+                  placeholder={t("search_cinema")}
                 />
               </div>
               <div className="w-full md:w-[285px]">
                 <InputComboBox
                   value={searchCity}
-                  placeholder="Search city"
+                  placeholder={t("search_city")}
                   options={provinces.map((province) => ({
                     value: province.name_th,
                     label: province.name_th,

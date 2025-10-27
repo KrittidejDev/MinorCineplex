@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import NavBarWidget from "@/components/Widgets/NavBarWidget";
 import ProfileBar from "@/components/Widgets/ProfileBar";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "next-i18next";
 import { BookingCard } from "@/components/Cards/bookkingCard";
 import { useSession } from "next-auth/react";
 import axios from "axios";
@@ -208,7 +208,7 @@ export const getServerSideProps: GetServerSideProps = async ({ locale }) => {
   const resolvedLocale = locale || "en";
   return {
     props: {
-      ...(await serverSideTranslations(resolvedLocale, ["bookingDetail"])),
+      ...(await serverSideTranslations(resolvedLocale, ["common"])),
     },
   };
 };

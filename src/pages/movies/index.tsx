@@ -3,7 +3,7 @@ import AllMoviesWidget from "@/components/Widgets/AllMoviesWidget";
 import axios from "axios";
 import { MovieDTO, MovieAPIRespons } from "@/types/movie";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "next-i18next";
 
 interface AllMoviesProps {
   movies: MovieDTO[];

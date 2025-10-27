@@ -26,7 +26,7 @@ import axios, { AxiosError } from "axios";
 import ModalLogin from "@/components/Widgets/ModalLogin";
 import { GetServerSideProps } from "next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
-import { i18n } from "next-i18next";
+import { i18n, useTranslation } from "next-i18next";
 
 const BookingSeat: React.FC = () => {
   const router = useRouter();
@@ -61,6 +61,7 @@ const BookingSeat: React.FC = () => {
   const countdownInterval = useRef<NodeJS.Timeout | null>(null);
   const paymentSuccessful = useRef(false);
   const lang = i18n?.language === "en";
+  const { t } = useTranslation("common");
 
   const totalPrice = selectedSeats.reduce(
     (sum, seat) => sum + (seat.price || 0),
@@ -367,30 +368,29 @@ const BookingSeat: React.FC = () => {
   };
 
   const handlePaymentClick = () => {
+
     if (totalPriceInSatang < 2000) {
-      toast.error("ยอดรวมต้องอย่างน้อย 20 บาท");
+      toast.error(t("price_must_be_at_least_20_baht"));
       return;
     }
     setRenderModal(
       <div className="p-6 bg-gray-g63f flex flex-col items-center rounded-2xl gap-y-4">
-        <div className="text-f-20 text-white">ยืนยันการจอง</div>
-        <div className="text-fr-14 text-gray-gedd">
-          ยืนยันการจองและชำระเงิน?
-        </div>
+        <div className="text-f-20 text-white">{t("confirm_booking")}</div>
+        <div className="text-fr-14 text-gray-gedd">{t("confirm_booking_and_payment_message")}</div>
         <div className="flex gap-x-4">
           <Button
             className="btn-base white-outline-normal"
             onClick={() => setIsShowModal(false)}
             disabled={isProcessing}
           >
-            ยกเลิก
+            {t("cancel")}
           </Button>
           <Button
             className="btn-base blue-normal cursor-pointer"
             onClick={handlePayment}
             disabled={isProcessing}
           >
-            {isProcessing ? "กำลังดำเนินการ..." : "ยืนยัน"}
+            {isProcessing ? t("processing") : t("confirm")}
           </Button>
         </div>
       </div>
@@ -585,7 +585,7 @@ export const getServerSideProps: GetServerSideProps = async ({ locale }) => {
   const resolvedLocale = locale || "en";
   return {
     props: {
-      ...(await serverSideTranslations(resolvedLocale, ["bookingDetail"])),
+      ...(await serverSideTranslations(resolvedLocale, ["common"])),
     },
   };
 };

@@ -1,6 +1,5 @@
-//components/Cards/SummaryBoxCard.tsx
 import Image from 'next/image'
-import { useState, useMemo } from 'react'
+import { useState, useEffect } from 'react'
 import { useTranslation } from 'next-i18next'
 import Tag from '../Widgets/Tag'
 import PinFill from '../Icons/PinFill'
@@ -13,6 +12,9 @@ import { BillInfo, BookingInfo as BookingData } from '@/types/cinema'
 import { CouponCardData } from '@/types/coupon'
 import { CloseRoundLight, ExpandRightLight } from '../Icons/Icons'
 import { toast } from 'react-toastify'
+import CouponCard from './CouponCard' // Import CouponCard
+import { userService } from '@/config/userServices' // Import userService for fetching coupons
+import { APICoupon } from '@/types/coupon' // Import APICoupon type
 
 interface Props extends BillInfo {
   data?: BookingData
@@ -35,7 +37,7 @@ export default function SummaryBoxCard({
   lockSeats,
   step,
   countdown,
-  coupons = [],
+  // coupons = [], // Now using availableCouponsModal from API
   selectedCoupon,
   onSelectCoupon,
   onPayment,
@@ -45,12 +47,60 @@ export default function SummaryBoxCard({
   const lang = i18n?.language === 'th' ? 'th' : 'en'
 
   const [isCouponModalOpen, setCouponModalOpen] = useState(false)
+  const [isAllCouponsModalOpen, setAllCouponsModalOpen] = useState(false) // New state for all coupons modal
+  const [allCoupons, setAllCoupons] = useState<APICoupon[]>([]) // State to store all fetched coupons
+  const [availableCouponsModal, setAvailableCouponsModal] = useState<
+    CouponCardData[]
+  >([]) // State for coupons in select modal
+  const [isLoadingCoupons, setLoadingCoupons] = useState(false) // Loading state for fetching coupons
 
-  const availableCoupons = useMemo(() => {
-    return coupons.filter((c) => !c.is_used)
-  }, [coupons])
+  // Fetch all coupons when the all-coupons modal is opened
+  useEffect(() => {
+    if (isAllCouponsModalOpen) {
+      const fetchAllCoupons = async () => {
+        setLoadingCoupons(true)
+        try {
+          const res = (await userService.GET_COUPON()) as {
+            coupons: APICoupon[]
+          }
+          setAllCoupons(res.coupons || [])
+        } catch (err) {
+          console.error('❌ Failed to fetch all coupons:', err)
+          toast.error(
+            lang === 'en' ? 'Failed to load coupons' : 'ไม่สามารถโหลดคูปองได้'
+          )
+        } finally {
+          setLoadingCoupons(false)
+        }
+      }
+      fetchAllCoupons()
+    }
+  }, [isAllCouponsModalOpen, lang])
 
-  // คำนวณราคาหลังหักส่วนลด
+  // Fetch collected coupons when the select coupon modal is opened
+  useEffect(() => {
+    if (isCouponModalOpen) {
+      const fetchCollectedCoupons = async () => {
+        setLoadingCoupons(true)
+        try {
+          const res = (await userService.GET_COUPON_COLLECTED()) as {
+            coupons: CouponCardData[]
+          }
+          setAvailableCouponsModal(res.coupons || [])
+        } catch (err) {
+          console.error('❌ Failed to fetch collected coupons:', err)
+          toast.error(
+            lang === 'en' ? 'Failed to load coupons' : 'ไม่สามารถโหลดคูปองได้'
+          )
+        } finally {
+          setLoadingCoupons(false)
+        }
+      }
+      fetchCollectedCoupons()
+    }
+  }, [isCouponModalOpen, lang])
+
+  // Calculate price after discount
   let totalPayment = totalPrice
   let discountAmount = 0
   let couponError = ''
@@ -58,48 +108,36 @@ export default function SummaryBoxCard({
   if (selectedCoupon) {
     switch (selectedCoupon.discount_type) {
       case 'FIXED':
-        // ส่วนลดเงินสด
         discountAmount = selectedCoupon.discount_value ?? 0
         totalPayment = Math.max(totalPrice - discountAmount, 0)
         break
-
       case 'PERCENTAGE':
-        // ส่วนลดเปอร์เซ็นต์
         const percentDiscount =
           (totalPrice * (selectedCoupon.discount_value ?? 0)) / 100
-        // ตรวจสอบส่วนลดสูงสุด
         discountAmount = selectedCoupon.max_discount
           ? Math.min(percentDiscount, selectedCoupon.max_discount)
           : percentDiscount
         totalPayment = Math.max(totalPrice - discountAmount, 0)
         break
-
       case 'BUY_X_GET_Y':
-        // ✅ ใช้ Field ที่ถูกต้องตาม Prisma Schema
-        const buyQty = selectedCoupon.buy_quantity ?? 0 // จำนวนที่ต้องซื้อ
-        const getQty = selectedCoupon.get_quantity ?? 0 // จำนวนที่ได้ฟรี
-
+        const buyQty = selectedCoupon.buy_quantity ?? 0
+        const getQty = selectedCoupon.get_quantity ?? 0
         if (totalSelected.length < buyQty) {
-          // ไม่ครบเงื่อนไข
           couponError =
             lang === 'en'
               ? `Please select at least ${buyQty} seats to apply this coupon`
               : `กรุณาเลือกอย่างน้อย ${buyQty} ที่นั่งเพื่อใช้คูปองนี้`
           totalPayment = totalPrice
         } else {
-          // ลดราคาเท่ากับจำนวนที่นั่งที่ได้ฟรี
           const seatPrice =
             totalSelected.length > 0 ? totalPrice / totalSelected.length : 0
           discountAmount = seatPrice * getQty
           totalPayment = Math.max(totalPrice - discountAmount, 0)
         }
         break
-
       case 'GIFT':
-        // ของแถม - ไม่มีส่วนลดราคา
         totalPayment = totalPrice
         break
-
       default:
         totalPayment = totalPrice
     }
@@ -134,19 +172,17 @@ export default function SummaryBoxCard({
               {data?.movie?.title}
             </h4>
             <div className="hidden sm:flex flex-wrap gap-2">
-              {data?.movie?.genres?.map((e, i) => {
-                return (
-                  <Tag
-                    key={i}
-                    name={
-                      lang === 'en'
-                        ? e?.genre?.translations?.en?.name
-                        : e?.genre?.translations?.th?.name
-                    }
-                    variant="genre"
-                  />
-                )
-              })}
+              {data?.movie?.genres?.map((e, i) => (
+                <Tag
+                  key={i}
+                  name={
+                    lang === 'en'
+                      ? e?.genre?.translations?.en?.name
+                      : e?.genre?.translations?.th?.name
+                  }
+                  variant="genre"
+                />
+              ))}
               {data?.movie?.languages?.map((e, i) => (
                 <Tag key={i} name={e?.language?.name} variant="genre" />
               ))}
@@ -195,30 +231,25 @@ export default function SummaryBoxCard({
 
       {step === '2' && (
         <div className="p-4 flex flex-col gap-4">
-          {coupons.length > 0 && (
-            <div className="flex flex-col justify-start items-start text-gray-gedd gap-2">
-              <div className="flex justify-between items-center w-full">
-                <span>{lang === 'en' ? 'Coupon' : 'คูปอง'}</span>
-                <span
-                  className="text-blue-bbee cursor-pointer"
-                  onClick={() => setCouponModalOpen(true)}
-                >
-                  <ExpandRightLight width="16" height="16" color="#C8CEDD" />
-                </span>
-              </div>
-              <div className="w-full">
-                <Button
-                  className="p-2 cursor-pointer rounded bg-gray-g63f text-gray-g3b0 text-sm w-full"
-                  onClick={() => setCouponModalOpen(true)}
-                >
+          <div className="flex flex-col justify-start items-start text-gray-gedd gap-2">
+            <div className="flex justify-between items-center w-full">
+              <span>{lang === 'en' ? 'Coupon' : 'คูปอง'}</span>
+              <span
+                className="text-blue-bbee cursor-pointer"
+                onClick={() => setAllCouponsModalOpen(true)} // Open all coupons modal
+              >
+                <ExpandRightLight width="16" height="16" color="#C8CEDD" />
+              </span>
+            </div>
+            <div className="w-full">
+              <Button
+                className="p-2 cursor-pointer rounded bg-gray-g63f text-gray-g3b0 text-sm w-full"
+                onClick={() => setAllCouponsModalOpen(true)} // Open all coupons modal
+              >
+                <span className="flex items-center justify-between w-full">
                   {selectedCoupon ? (
-                    <span className="truncate ">
-                      {selectedCoupon
-                        ? selectedCoupon.translations?.[lang]?.name ||
-                          'No title'
-                        : lang === 'en'
-                          ? 'Select Coupon'
-                          : 'เลือกคูปอง'}
+                    <span className="truncate">
+                      {selectedCoupon.translations?.[lang]?.name || 'No title'}
                     </span>
                   ) : lang === 'en' ? (
                     'Select Coupon'
@@ -227,21 +258,21 @@ export default function SummaryBoxCard({
                   )}
                   {selectedCoupon && (
                     <span
-                      className="text-blue-bbee cursor-pointer"
+                      className="text-blue-bbee cursor-pointer ml-2"
                       onClick={(e) => {
                         e.stopPropagation()
-                        onSelectCoupon && onSelectCoupon(null)
+                        onSelectCoupon?.(null)
                       }}
                     >
                       <CloseRoundLight width="16" height="16" color="#C8CEDD" />
                     </span>
                   )}
-                </Button>
-              </div>
+                </span>
+              </Button>
             </div>
-          )}
+          </div>
 
-          {/* แสดง Error ถ้ามี */}
+          {/* Display coupon error if any */}
           {couponError && (
             <div className="text-red-r64b text-sm">{couponError}</div>
           )}
@@ -286,6 +317,65 @@ export default function SummaryBoxCard({
         </div>
       )}
 
+      {/* New All Coupons Modal */}
+      {isAllCouponsModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50 p-4">
+          <div className="relative bg-gray-g63f rounded-xl p-6 w-full max-w-[1200px] shadow-2xl">
+            {/* Top-left button to switch to coupon selection modal */}
+            <button
+              onClick={() => {
+                setAllCouponsModalOpen(false)
+                setCouponModalOpen(true)
+              }}
+              className="absolute top-3 left-3 text-blue-bbee hover:text-white transition cursor-pointer flex items-center gap-2"
+            >
+              <ExpandRightLight width="16" height="16" color="#C8CEDD" />
+              {lang === 'en' ? 'Select Coupon' : 'เลือกคูปอง'}
+            </button>
+
+            {/* Close button */}
+            <button
+              onClick={() => setAllCouponsModalOpen(false)}
+              className="absolute top-3 right-3 text-gray-gedd hover:text-white transition cursor-pointer"
+            >
+              ✕
+            </button>
+
+            <h4 className="text-white-wfff font-bold mb-6 text-center text-lg">
+              {lang === 'en' ? 'All Coupons' : 'คูปองทั้งหมด'}
+            </h4>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 max-h-[calc(100vh-250px)] overflow-y-auto pr-2">
+              {isLoadingCoupons ? (
+                <p className="text-white text-center col-span-full">
+                  {lang === 'en' ? 'Loading coupons...' : 'กำลังโหลดคูปอง...'}
+                </p>
+              ) : allCoupons.length > 0 ? (
+                allCoupons.map((coupon) => (
+                  <CouponCard
+                    key={coupon.id}
+                    coupon={{
+                      id: coupon.id,
+                      code: coupon.code,
+                      end_date: coupon.end_date,
+                      translations: coupon.translations,
+                      image_url: coupon.image_url,
+                    }}
+                  />
+                ))
+              ) : (
+                <p className="text-gray-gedd text-center py-6 col-span-full">
+                  {lang === 'en'
+                    ? 'No coupons available'
+                    : 'ไม่มีคูปองที่ใช้งานได้'}
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Existing Coupon Selection Modal */}
       {isCouponModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50 p-4">
           <div className="relative bg-gray-g63f rounded-xl p-6 w-full max-w-[1200px] shadow-2xl">
@@ -301,8 +391,12 @@ export default function SummaryBoxCard({
             </h4>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[calc(100vh-250px)] overflow-y-auto pr-2">
-              {availableCoupons.length > 0 ? (
-                availableCoupons.map((c) => {
+              {isLoadingCoupons ? (
+                <p className="text-white text-center col-span-full">
+                  {lang === 'en' ? 'Loading coupons...' : 'กำลังโหลดคูปอง...'}
+                </p>
+              ) : availableCouponsModal.length > 0 ? (
+                availableCouponsModal.map((c) => {
                   const isSelected = selectedCoupon?.id === c.id
                   return (
                     <div
@@ -315,7 +409,6 @@ export default function SummaryBoxCard({
                   }`}
                       onClick={() => {
                         if (c.discount_type === 'BUY_X_GET_Y') {
-                          // ✅ ใช้ buy_quantity ที่ถูกต้อง
                           const minSeats = c.buy_quantity || 0
                           if (totalSelected.length < minSeats) {
                             toast.error(
@@ -331,7 +424,6 @@ export default function SummaryBoxCard({
                         setCouponModalOpen(false)
                       }}
                     >
-                      {/* รูป */}
                       <div className="w-24 sm:w-[174px] h-full flex-shrink-0 relative">
                         <Image
                           src={c.image_url || '/default-coupon.png'}

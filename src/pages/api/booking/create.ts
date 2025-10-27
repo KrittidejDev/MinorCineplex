@@ -1,3 +1,4 @@
+//api/booking/create.ts
 import { NextApiRequest, NextApiResponse } from "next";
 import { PrismaClient } from "@/generated/prisma";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";

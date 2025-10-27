@@ -49,7 +49,7 @@ function BookingDetailModal({
         <h4 className="text-f-20">Booking Detail</h4>
         <div className="flex justify-end items-center gap-4">
           <div className="hover:cursor-pointer">
-            <ShareButton color="#C8CEDD" />
+            <ShareButton color="#C8CEDD" publicId={bookingNumber} />
           </div>
           <div onClick={onClose} className="hover:cursor-pointer">
             <CloseRoundLight width={24} height={24} />

@@ -102,7 +102,7 @@ const BookingDetail: React.FC = () => {
       seoProps={{
         title: `${
           bookingData.movie_title[lang] || bookingData.movie_title.en
-        } - ${bookingData.cinema_name[lang] || bookingData.cinema_name.en}`,
+        } - ${bookingData.cinema_name[lang] || bookingData.cinema_name.en} `,
         description:
           bookingData.movie_description[lang] ||
           bookingData.movie_description.en ||

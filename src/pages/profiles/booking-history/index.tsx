@@ -127,6 +127,8 @@ const Index = () => {
     }
   };
 
+  console.log("data info booking", bookings);
+
   return (
     <div className="bg-blue-b flex flex-col">
       <NavBarWidget />

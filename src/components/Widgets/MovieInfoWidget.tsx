@@ -33,7 +33,6 @@ const MovieInfoWidget: React.FC<MoviesDetailWidgetProps> = ({
   setSearchCity,
 }) => {
   const [activeTab, setActiveTab] = useState("ข้อมูลภาพยนต์");
-  console.log(showtimes);
   const splitName = (name: string) => {
     const [firstName, ...rest] = name.split(" ");
     return { firstName, lastName: rest.join(" ") };
@@ -81,7 +80,7 @@ const MovieInfoWidget: React.FC<MoviesDetailWidgetProps> = ({
 
   return (
     <div className="md:mt-6 z-10 px-4 xl:px-20">
-      <div className="max-w-[1440px] mx-auto flex flex-col">
+      <div className="max-w-[1200px] mx-auto flex flex-col">
         {/* Mobile Trailer */}
         <div className="md:hidden">
           <TrailerPlayer

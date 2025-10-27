@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import Tag from "../Widgets/Tag";
 import PinFill from "../Icons/PinFill";
@@ -44,6 +44,10 @@ export default function SummaryBoxCard({
   const lang = i18n?.language === "th" ? "th" : "en";
 
   const [isCouponModalOpen, setCouponModalOpen] = useState(false);
+
+  const availableCoupons = useMemo(() => {
+    return coupons.filter((c) => !c.is_used);
+  }, [coupons]);
 
   let totalPayment = 0;
   if (selectedCoupon?.discount_type === "FIXED") {
@@ -252,8 +256,8 @@ export default function SummaryBoxCard({
             </h4>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[calc(100vh-250px)] overflow-y-auto pr-2">
-              {coupons.length > 0 ? (
-                coupons.map((c) => {
+              {availableCoupons.length > 0 ? (
+                availableCoupons.map((c) => {
                   const isSelected = selectedCoupon?.id === c.id;
                   return (
                     <div

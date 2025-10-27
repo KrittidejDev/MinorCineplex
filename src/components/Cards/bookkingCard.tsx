@@ -1,11 +1,14 @@
+import React from "react";
 import PinFill from "../Icons/PinFill";
 import DateTodayLight from "../Icons/DateTodayLight";
 import TimeFill from "../Icons/TimeFill";
 import Image from "next/image";
 import Shop from "../Icons/Shop";
+import { useTranslation } from "react-i18next";
+
 interface BookingCardProps {
   movieTitle: string;
-  moviePoster: string;
+  moviePoster: string | null;
   location: string;
   date: string;
   time: string;
@@ -34,45 +37,45 @@ export const BookingCard: React.FC<BookingCardProps> = ({
   isPaid,
   rounded = true,
 }) => {
+  const { t } = useTranslation();
+
   const movieInfo = [
     { icon: PinFill, value: location },
     { icon: DateTodayLight, value: date },
     { icon: TimeFill, value: time },
     { icon: Shop, value: hall },
   ];
-  const bookingInfo = [
-    { label: "Booking No.", value: bookingNumber },
-    { label: "Booked date", value: bookedDate },
-  ];
-  const ticketInfo = [
-    { label: "Selected Seat", value: selectedSeats },
-    { label: "Payment method", value: paymentMethod },
-  ];
-  return (
-    <div className={`bg-gray-gc1b p-4 md:p-6 text-white ${rounded ? "rounded-lg" : "rounded-none"}`}>
-      {/* Movie Section */}
-      <div className="flex flex-col sm:flex-row sm:justify-between gap-4 pb-4 md:pb-6 md:gap-6">
-        {/* Movie Poster */}
-        <div className="flex items-center gap-3">
-          <div className="flex">
-            <div className="relative min-w-[97px] min-h-[140px]">
-              <Image
-                src={moviePoster}
-                alt={movieTitle}
-                fill
-                className="object-cover rounded"
-              />
-            </div>
-          </div>
 
-          {/* Movie Details */}
+  const bookingInfo = [
+    { label: t("bookingNo"), value: bookingNumber },
+    { label: t("bookedDate"), value: bookedDate },
+  ];
+
+  const ticketInfo = [
+    { label: t("selectedSeat"), value: selectedSeats },
+    { label: t("paymentMethod"), value: paymentMethod },
+  ];
+
+  const posterUrl = moviePoster || "https://via.placeholder.com/97x140";
+
+  return (
+    <div
+      className={`bg-gray-gc1b p-4 md:p-6 text-white ${rounded ? "rounded-lg" : "rounded-none"}`}
+    >
+      <div className="flex flex-col sm:flex-row sm:justify-between gap-4 pb-4 md:pb-6 md:gap-6">
+        <div className="flex items-center gap-3">
+          <div className="relative min-w-[97px] min-h-[140px]">
+            <Image
+              src={posterUrl}
+              alt={movieTitle}
+              fill
+              className="object-cover rounded"
+            />
+          </div>
           <div className="flex flex-col gap-4">
-            {/* Movie Title and Booking Info */}
             <div className="flex items-center justify-between mb-2">
               <h2 className="text-f-20 text-white">{movieTitle}</h2>
             </div>
-
-            {/* Movie Info */}
             <div className="flex flex-col gap-1">
               {movieInfo.map((info, index) => (
                 <div key={index} className="flex items-center gap-2">
@@ -85,7 +88,6 @@ export const BookingCard: React.FC<BookingCardProps> = ({
             </div>
           </div>
         </div>
-        {/* Booking Info - Right side on Desktop */}
         <div className="flex flex-col gap-1">
           {bookingInfo.map((booking, index) => (
             <div
@@ -98,20 +100,11 @@ export const BookingCard: React.FC<BookingCardProps> = ({
           ))}
         </div>
       </div>
-
-      {/* Divider */}
-      {/* <div className="border-t border-gray-g63f mb-4"></div> */}
-
-      {/* Ticket and Payment Section */}
       <div className="flex sm:items-center sm:justify-between pt-6 gap-4 md:gap-6 flex-col sm:flex-row border-t border-gray-g63f">
-        {/* Left Section - Ticket Info + Payment method under Selected Seat */}
         <div className="flex items-center gap-6 md:gap-2 w-full">
-          {/* Ticket Count Button */}
           <button className="bg-gray-g63f text-gray-gedd font-fm-16 rounded-sm px-4 py-3">
-            {ticketCount} Tickets
+            {ticketCount} {t("tickets")}
           </button>
-
-          {/* Text Details stacked */}
           <div className="flex flex-col justify-between gap-1 flex-1">
             {ticketInfo.map((ticket, index) => (
               <div
@@ -124,15 +117,13 @@ export const BookingCard: React.FC<BookingCardProps> = ({
             ))}
           </div>
         </div>
-
-        {/* Right Section - Paid Status Button only */}
         <div className="flex w-full justify-end">
           <button
             className={`px-4 py-1.5 rounded-full text-fm-14 ${
               isPaid ? "bg-green-g372 text-white" : "bg-red-r64b text-white"
             }`}
           >
-            {isPaid ? "Paid" : "Unpaid"}
+            {t(isPaid ? "paid" : "unpaid")}
           </button>
         </div>
       </div>

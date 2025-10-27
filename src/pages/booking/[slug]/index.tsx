@@ -23,7 +23,6 @@ import { toast } from "react-toastify";
 import { useSearchParams } from "next/navigation";
 import axios, { AxiosError } from "axios";
 import ModalLogin from "@/components/Widgets/ModalLogin";
-import Ably from "ably";
 import { GetServerSideProps } from "next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
@@ -143,19 +142,11 @@ const BookingSeat: React.FC = () => {
     if (
       isUnlocking.current ||
       !selectedSeats.length ||
-      paymentSuccessful.current // <-- ไม่ปลดล็อกหลังจ่ายเงิน
+      paymentSuccessful.current
     )
       return;
     isUnlocking.current = true;
     try {
-      const invalidSeats = selectedSeats.filter(
-        (seat) => !seat.id || typeof seat.id !== "string"
-      );
-      if (invalidSeats.length) {
-        throw new Error(
-          `Invalid seat IDs: ${invalidSeats.map((s) => s.id).join(", ")}`
-        );
-      }
       await fetch("/api/seats/unlock-batch", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -193,11 +184,12 @@ const BookingSeat: React.FC = () => {
           `Invalid seat IDs: ${invalidSeats.map((s) => s.id).join(", ")}`
         );
       }
-      await Promise.all(
+      const res = await Promise.all(
         selectedSeats.map((seat) =>
           userService.POST_LOCK_SEAT(seat.id, session.user.id)
         )
       );
+      console.log("ressss Lockseat", res);
       setStep("2");
       setCountdown(5 * 60);
       console.log("Seats locked successfully");
@@ -331,10 +323,8 @@ const BookingSeat: React.FC = () => {
     try {
       const seatsValid = await checkSeatLock();
       if (!seatsValid) return;
-
       const { bookingId, publicId } = await createBooking();
       const paymentId = await createPayment(bookingId);
-
       const response = await fetch("/api/booking/complete", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -349,10 +339,7 @@ const BookingSeat: React.FC = () => {
       const data = await response.json();
       if (!response.ok)
         throw new Error(data.error || "Failed to complete booking");
-
-      // ✅ ตั้งค่า payment สำเร็จก่อน route change
       paymentSuccessful.current = true;
-
       toast.success("ชำระเงินและจองสำเร็จ!");
       router.push(`/booking/success?pid=${publicId}`);
     } catch (err) {
@@ -403,7 +390,6 @@ const BookingSeat: React.FC = () => {
     );
   }, [id, session?.user?.id, fid]);
 
-  // ✅ Countdown for step 2
   useEffect(() => {
     if (step === "2" && !countdownActive.current) {
       countdownActive.current = true;
@@ -411,7 +397,6 @@ const BookingSeat: React.FC = () => {
         setCountdown((prev) => {
           if (prev <= 1) {
             clearInterval(countdownInterval.current!);
-            // ปลดล็อกเฉพาะถ้า payment ไม่สำเร็จ
             if (!paymentSuccessful.current) releaseSeatsAsync(true);
             return 0;
           }
@@ -456,7 +441,17 @@ const BookingSeat: React.FC = () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
       router.events.off("routeChangeStart", handleRouteChange);
     };
-  }, [selectedSeats, step]);
+  }, [selectedSeats]);
+
+  useEffect(() => {
+    if (
+      step === "1" &&
+      selectedSeats.length > 0 &&
+      !paymentSuccessful.current
+    ) {
+      releaseSeatsAsync(true);
+    }
+  }, [step]);
 
   const memoizedCountdown = useMemo(() => {
     const minutes = Math.floor(countdown / 60)
@@ -475,7 +470,7 @@ const BookingSeat: React.FC = () => {
         {isLoading ? (
           <div className="text-white">กำลังโหลด...</div>
         ) : error ? (
-          <div className="text-red-500">{error}</div>
+          <div className="text-white">{error}</div>
         ) : (
           <>
             {step === "1" && bookingInfo && (

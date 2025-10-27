@@ -197,10 +197,9 @@ const SeatRow: React.FC<SeatRowProps> = ({
                 ? seat.locked_until < Date.now()
                 : false;
               const isLockedByOther =
-                (seat.status === "LOCKED" &&
-                  seat.locked_by_user_id !== userId &&
-                  !isLockExpired) ||
-                seat.status === "BOOKED";
+                seat.status === "BOOKED" ||
+                (!isLockExpired && seat.status === "LOCKED") ||
+                (fid && seat.locked_by_user_id === fid);
 
               let SeatIcon;
               if (isSelected) SeatIcon = SeatSelected;

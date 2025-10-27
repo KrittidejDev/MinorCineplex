@@ -23,10 +23,18 @@ export const ShowtimeSelection: React.FC<ShowtimeSelectionProps> = ({
   timeslot,
 }) => {
   const router = useRouter();
-  const [now, setNow] = useState<Date>(new Date());
+  const [now, setNow] = useState<Date>(
+    new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Bangkok" }))
+  );
 
   useEffect(() => {
-    const interval = setInterval(() => setNow(new Date()), 1000);
+    const interval = setInterval(() => {
+      setNow(
+        new Date(
+          new Date().toLocaleString("en-US", { timeZone: "Asia/Bangkok" })
+        )
+      );
+    }, 1000);
     return () => clearInterval(interval);
   }, []);
 

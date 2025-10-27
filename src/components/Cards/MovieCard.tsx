@@ -43,14 +43,9 @@ function MovieCard({
       : translations?.en?.title || title;
 
   return (
-    <div className="w-[161px] h-fit md:w-[285px] md:h-[526px] md:mb-12 lg:mb-17 flex flex-col z-10">
+    <div className="w-full max-w-[285px] h-fit mb-8 flex flex-col z-10 sm:max-w-[220px] md:max-w-[285px]">
       <HoverCard3D>
-        <div
-          className="relative"
-          style={{
-            aspectRatio: "2 / 3",
-          }}
-        >
+        <div className="relative w-full" style={{ aspectRatio: "2 / 3" }}>
           <Image
             src={poster_url || "/fallback-poster.jpg"}
             alt={displayTitle}

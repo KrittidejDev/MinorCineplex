@@ -95,6 +95,7 @@ const MovieInfoWidget: React.FC<MoviesDetailWidgetProps> = ({
           <MovieCard
             id={movie.id}
             title={movie.title}
+            translations={movie.translations}
             poster_url={movie.poster_url || undefined}
             release_date={
               movie.release_date ? new Date(movie.release_date) : undefined
@@ -109,6 +110,7 @@ const MovieInfoWidget: React.FC<MoviesDetailWidgetProps> = ({
           <MovieCardInfo
             id={movie.id}
             title={movie.title}
+            translations={movie.translations}
             poster_url={movie.poster_url || undefined}
             release_date={
               movie.release_date ? new Date(movie.release_date) : undefined

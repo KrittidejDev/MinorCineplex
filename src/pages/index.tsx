@@ -28,7 +28,7 @@ const CurtainIntro = dynamic(
 export default function Home() {
   const [filter, setFilter] = useState<string>("1");
   const [query, setQuery] = useState<FilterData>({
-    title: "",
+    movie_id: "",
     genre: "",
     language: "",
     release_date: "",
@@ -63,13 +63,9 @@ export default function Home() {
       );
       const searchParamsObj = new URLSearchParams();
       if (filters) {
-        if (filters.title && filters.title !== "all-movies")
-          searchParamsObj.append("title", filters.title);
-        if (
-          filters.genre &&
-          filters.genre.length > 0 &&
-          !filters.genre.includes("all-genres")
-        ) {
+        if (filters.movie_id && filters.movie_id !== "all-movies")
+          searchParamsObj.append("movie_id", filters.movie_id);
+        if (filters.genre && filters.genre !== "all-genres") {
           searchParamsObj.append("genre", filters.genre);
         }
         if (filters.language && filters.language !== "all-languages")
@@ -89,10 +85,9 @@ export default function Home() {
       setLoadingMovies(false);
     }
   };
-
   useEffect(() => {
     const filters: FilterData = {
-      title: searchParams.get("title") || "",
+      movie_id: searchParams.get("movie_id") || "",
       genre: searchParams.get("genre") || "",
       language: searchParams.get("language") || "",
       release_date: searchParams.get("release_date") || "",

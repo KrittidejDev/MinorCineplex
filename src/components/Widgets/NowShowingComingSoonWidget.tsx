@@ -25,6 +25,7 @@ export default function NowShowingComingSoon({
   const initialTab = query.status || MovieStatus.NOW_SHOWING;
   const [activeTab, setActiveTab] = useState<MovieStatus>(initialTab);
 
+
   useEffect(() => {
     setActiveTab(query.status || MovieStatus.NOW_SHOWING);
   }, [query.status]);
@@ -82,6 +83,7 @@ export default function NowShowingComingSoon({
                 <MovieCard
                   id={movie.id}
                   title={movie.title}
+                  translations={movie.translations}
                   poster_url={movie.poster_url}
                   release_date={movie.release_date || undefined}
                   rating={movie.rating}

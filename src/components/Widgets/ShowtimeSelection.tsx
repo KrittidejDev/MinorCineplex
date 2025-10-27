@@ -45,6 +45,8 @@ export const ShowtimeSelection: React.FC<ShowtimeSelectionProps> = ({
     });
   };
 
+  console.log("Timeslot data:", timeslot);
+
   const base =
     "w-full max-w-32 flex flex-col justify-center items-center py-3 px-[41px] rounded-lg transition-colors";
 
@@ -61,7 +63,7 @@ export const ShowtimeSelection: React.FC<ShowtimeSelectionProps> = ({
           const { disabled, className }: ShowtimeButtonProps = RUNDER_TIMESLOT(
             e.start_time,
             e.end_time,
-            new Date(e.date),
+            e.date,
             now
           );
           return (

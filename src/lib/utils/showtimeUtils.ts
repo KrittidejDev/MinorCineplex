@@ -10,12 +10,21 @@ export function RUNDER_TIMESLOT(
   showtimeDate: Date | string,
   now: Date = new Date()
 ): ShowtimeButtonProps {
-  const showtimeDateObj =
-    showtimeDate instanceof Date ? showtimeDate : new Date(showtimeDate);
   const thaiNow = new Date(
     now.toLocaleString("en-US", { timeZone: "Asia/Bangkok" })
   );
   const current = thaiNow.getTime();
+
+  const showtimeDateObj =
+    typeof showtimeDate === "string" ? new Date(showtimeDate) : showtimeDate;
+  if (isNaN(showtimeDateObj.getTime())) {
+    console.error("Invalid showtimeDate:", showtimeDate);
+    return {
+      disabled: true,
+      className: "white-outline-disabled",
+      label: "วันที่ไม่ถูกต้อง",
+    };
+  }
 
   const todayThai = new Date(
     thaiNow.toLocaleString("en-US", { timeZone: "Asia/Bangkok" })
@@ -37,7 +46,7 @@ export function RUNDER_TIMESLOT(
   const endDate = new Date(showThai);
   endDate.setHours(eH, eM, 0, 0);
 
-  const start = startDate.getTime();
+  let start = startDate.getTime();
   let end = endDate.getTime();
 
   if (end < start) {
@@ -45,9 +54,13 @@ export function RUNDER_TIMESLOT(
   }
 
   console.log({
+    start_time,
+    showtimeDate: showtimeDateObj.toISOString(),
     now: thaiNow.toLocaleString("en-US", { timeZone: "Asia/Bangkok" }),
     start: startDate.toLocaleString("en-US", { timeZone: "Asia/Bangkok" }),
     end: endDate.toLocaleString("en-US", { timeZone: "Asia/Bangkok" }),
+    showMid: showThai.toLocaleString("en-US", { timeZone: "Asia/Bangkok" }),
+    todayMid: todayThai.toLocaleString("en-US", { timeZone: "Asia/Bangkok" }),
     disabled:
       showMid < todayMid || current > end || (current > start && current < end),
   });

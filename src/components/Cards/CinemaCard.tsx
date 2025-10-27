@@ -1,4 +1,4 @@
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "next-i18next";
 import LocationIconBlue from "../Icons/LocationIconBlue";
 import Link from "next/link";
 import { CinemaDTO } from "@/types/cinema"; // เปลี่ยนจาก CinemaType เป็น CinemaWithDistance
@@ -17,6 +17,8 @@ const CinemaCard = ({ filter, cinema }: CinemaCardProps) => {
     i18n.language === "en" ? cinema?.translations?.en?.name : cinema?.translations?.th?.name;
   const descriptionText =
     i18n.language === "en" ? cinema?.translations?.en?.description : cinema?.translations?.th?.description;
+    console.log(cinema);
+    
 
   return (
     <Link href={`/cinemas/${cinema.slug}`} className="block">

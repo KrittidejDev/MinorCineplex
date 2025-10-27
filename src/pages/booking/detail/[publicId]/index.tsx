@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { HoverCard3D } from "@/components/Displays/HoverCard3D";
 import { GetServerSideProps } from "next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "next-i18next";
 import { useRouter } from "next/router";
 import axios from "axios";
 import Link from "next/link";
@@ -34,8 +34,8 @@ interface BookingData {
 const BookingDetail: React.FC = () => {
   const router = useRouter();
   const { publicId, locale } = router.query; // ดึง publicId และ locale จาก URL
-  const { t } = useTranslation(["bookingDetail", "common"]);
-  const lang = (locale || "en") as "th" | "en"; // ใช้ locale จาก router.query แทน t("lang")
+  const { t, i18n } = useTranslation("common");
+  const lang = (locale || i18n.language || "en") as "th" | "en"; // ใช้ locale จาก router.query แทน t("lang")
   const [bookingData, setBookingData] = useState<BookingData | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -96,7 +96,7 @@ const BookingDetail: React.FC = () => {
       </NavAndFooter>
     );
   }
-
+console.log(bookingData);
   return (
     <NavAndFooter
       seoProps={{
@@ -272,10 +272,7 @@ export const getServerSideProps: GetServerSideProps = async ({ locale }) => {
   const resolvedLocale = locale || "en";
   return {
     props: {
-      ...(await serverSideTranslations(resolvedLocale, [
-        "bookingDetail",
-        "common",
-      ])),
+      ...(await serverSideTranslations(resolvedLocale, ["common"])),
     },
   };
 };

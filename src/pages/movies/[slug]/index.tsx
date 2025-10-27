@@ -11,7 +11,7 @@ import { format } from "date-fns";
 import NavAndFooter from "@/components/MainLayout/NavAndFooter";
 import Image from "next/image";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "next-i18next";
 
 function MovieInfo() {
   const { t, i18n } = useTranslation("common");
@@ -92,9 +92,9 @@ function MovieInfo() {
     fetchShowtimes(selectedDate);
   }, [searchValue, searchCity]);
 
-  if (movieLoading) return <p>{t("loading") || "Loading..."}</p>;
+  if (movieLoading) return <p>{t("loading")}</p>;
   if (error) return <p>{error}</p>;
-  if (!movie) return <p>{t("movie_not_found") || "ไม่พบข้อมูลหนัง"}</p>;
+  if (!movie) return <p>{t("movie_not_found")}</p>;
 
   console.log("movie data", movie);
 

@@ -345,7 +345,7 @@ export default function SummaryBoxCard({
               {lang === 'en' ? 'All Coupons' : 'คูปองทั้งหมด'}
             </h4>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 max-h-[calc(100vh-250px)] overflow-y-auto pr-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 max-h-[calc(100vh-250px)] overflow-y-auto pr-4 scrollbar-gutter-stable">
               {isLoadingCoupons ? (
                 <p className="text-white text-center col-span-full">
                   {lang === 'en' ? 'Loading coupons...' : 'กำลังโหลดคูปอง...'}
@@ -390,7 +390,7 @@ export default function SummaryBoxCard({
               {lang === 'en' ? 'Select Coupon' : 'เลือกคูปอง'}
             </h4>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[calc(100vh-250px)] overflow-y-auto pr-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[calc(100vh-250px)] overflow-y-auto pr-4 scrollbar-gutter-stable">
               {isLoadingCoupons ? (
                 <p className="text-white text-center col-span-full">
                   {lang === 'en' ? 'Loading coupons...' : 'กำลังโหลดคูปอง...'}

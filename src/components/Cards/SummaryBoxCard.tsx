@@ -1,3 +1,4 @@
+//components/Cards/SummaryBoxCard.tsx
 import Image from "next/image";
 import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
@@ -49,24 +50,58 @@ export default function SummaryBoxCard({
     return coupons.filter((c) => !c.is_used);
   }, [coupons]);
 
-  let totalPayment = 0;
-  if (selectedCoupon?.discount_type === "FIXED") {
-    totalPayment = totalPrice - (selectedCoupon?.discount_value ?? 0);
-  }
-  if (selectedCoupon?.discount_type === "PERCENTAGE") {
-    totalPayment =
-      totalPrice * (1 - (selectedCoupon?.discount_value ?? 0) / 100);
-  }
-  if (selectedCoupon?.discount_type === "BUY_X_GET_Y") {
-    if (totalSelected.length < (selectedCoupon?.min_amount ?? 0)) {
-      return lang === "en"
-        ? `Please select ${selectedCoupon?.min_amount} seats or more to apply this coupon`
-        : `กรุณาเลือก ${selectedCoupon?.min_amount} ที่นั่งหรือมากกว่าที่นั่งเพื่อใช้คูปองนี้`;
-    } else {
-      totalPayment =
-        totalPrice - (data?.price ?? 0) * (selectedCoupon?.max_discount ?? 0);
+  // คำนวณราคาหลังหักส่วนลด
+  let totalPayment = totalPrice;
+  let discountAmount = 0;
+  let couponError = "";
+
+  if (selectedCoupon) {
+    switch (selectedCoupon.discount_type) {
+      case "FIXED":
+        // ส่วนลดเงินสด
+        discountAmount = selectedCoupon.discount_value ?? 0;
+        totalPayment = Math.max(totalPrice - discountAmount, 0);
+        break;
+
+      case "PERCENTAGE":
+        // ส่วนลดเปอร์เซ็นต์
+        const percentDiscount = (totalPrice * (selectedCoupon.discount_value ?? 0)) / 100;
+        // ตรวจสอบส่วนลดสูงสุด
+        discountAmount = selectedCoupon.max_discount 
+          ? Math.min(percentDiscount, selectedCoupon.max_discount)
+          : percentDiscount;
+        totalPayment = Math.max(totalPrice - discountAmount, 0);
+        break;
+
+      case "BUY_X_GET_Y":
+        // ✅ ใช้ Field ที่ถูกต้องตาม Prisma Schema
+        const buyQty = selectedCoupon.buy_quantity ?? 0;  // จำนวนที่ต้องซื้อ
+        const getQty = selectedCoupon.get_quantity ?? 0;  // จำนวนที่ได้ฟรี
+        
+        if (totalSelected.length < buyQty) {
+          // ไม่ครบเงื่อนไข
+          couponError = lang === "en"
+            ? `Please select at least ${buyQty} seats to apply this coupon`
+            : `กรุณาเลือกอย่างน้อย ${buyQty} ที่นั่งเพื่อใช้คูปองนี้`;
+          totalPayment = totalPrice;
+        } else {
+          // ลดราคาเท่ากับจำนวนที่นั่งที่ได้ฟรี
+          const seatPrice = data?.price ?? 0;
+          discountAmount = seatPrice * getQty;
+          totalPayment = Math.max(totalPrice - discountAmount, 0);
+        }
+        break;
+
+      case "GIFT":
+        // ของแถม - ไม่มีส่วนลดราคา
+        totalPayment = totalPrice;
+        break;
+
+      default:
+        totalPayment = totalPrice;
     }
   }
+
   return (
     <div className="w-full min-w-[305px] h-fit bg-gray-gc1b rounded-lg">
       {/* Movie Info */}
@@ -170,11 +205,11 @@ export default function SummaryBoxCard({
               </div>
               <div className="w-full">
                 <Button
-                  className="p-2 rounded bg-gray-g63f text-gray-g3b0 text-sm w-full"
+                  className="p-2 cursor-pointer rounded bg-gray-g63f text-gray-g3b0 text-sm w-full"
                   onClick={() => setCouponModalOpen(true)}
                 >
                   {selectedCoupon ? (
-                    <span className="truncate">
+                    <span className="truncate ">
                       {selectedCoupon
                         ? selectedCoupon.translations?.[lang]?.name ||
                           "No title"
@@ -190,7 +225,10 @@ export default function SummaryBoxCard({
                   {selectedCoupon && (
                     <span
                       className="text-blue-bbee cursor-pointer"
-                      onClick={() => onSelectCoupon && onSelectCoupon(null)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onSelectCoupon && onSelectCoupon(null);
+                      }}
                     >
                       <CloseRoundLight width="16" height="16" color="#C8CEDD" />
                     </span>
@@ -200,17 +238,25 @@ export default function SummaryBoxCard({
             </div>
           )}
 
+          {/* แสดง Error ถ้ามี */}
+          {couponError && (
+            <div className="text-red-r64b text-sm">
+              {couponError}
+            </div>
+          )}
+
           <div className="flex justify-between text-gray-gedd">
             <span>{lang === "en" ? "Selected Seat" : "ที่นั่งที่เลือก"}</span>
             <span>{totalSelected.map((s) => s.seat_number).join(", ")}</span>
           </div>
 
-          {selectedCoupon && (
+          {selectedCoupon && discountAmount > 0 && (
             <div className="flex justify-between text-red-r64b font-bold text-lg">
               <span>{lang === "en" ? "Discount" : "ส่วนลด"}</span>
-              <span>-THB{totalPrice - totalPayment}</span>
+              <span>-THB {discountAmount.toFixed(2)}</span>
             </div>
           )}
+
           <div className="flex justify-between text-gray-gedd">
             <span>{lang === "en" ? "Payment Method" : "วิธีชำระเงิน"}</span>
             <span className="capitalize text-white">
@@ -226,15 +272,13 @@ export default function SummaryBoxCard({
 
           <div className="flex justify-between text-white-wfff font-bold text-lg">
             <span>{lang === "en" ? "Total" : "รวมทั้งหมด"}</span>
-            <span>
-              THB {selectedCoupon ? Math.max(totalPayment, 0) : totalPrice}
-            </span>
+            <span>THB {totalPayment.toFixed(2)}</span>
           </div>
 
           <Button
             className="btn-base blue-normal cursor-pointer"
             onClick={onPayment}
-            disabled={!canPay}
+            disabled={!canPay || !!couponError}
           >
             {lang === "en" ? "Next" : "ถัดไป"}
           </Button>
@@ -270,7 +314,8 @@ export default function SummaryBoxCard({
                   }`}
                       onClick={() => {
                         if (c.discount_type === "BUY_X_GET_Y") {
-                          const minSeats = c.min_amount || 0;
+                          // ✅ ใช้ buy_quantity ที่ถูกต้อง
+                          const minSeats = c.buy_quantity || 0;
                           if (totalSelected.length < minSeats) {
                             toast.error(
                               lang === "en"
@@ -282,6 +327,7 @@ export default function SummaryBoxCard({
                           }
                         }
                         onSelectCoupon?.(c);
+                        setCouponModalOpen(false);
                       }}
                     >
                       {/* รูป */}
@@ -318,7 +364,9 @@ export default function SummaryBoxCard({
                               ? `-${c.discount_value}THB `
                               : c.discount_type === "PERCENTAGE"
                                 ? `-${c.discount_value}% `
-                                : ""}
+                                : c.discount_type === "BUY_X_GET_Y"
+                                  ? `${lang === "en" ? "Buy" : "ซื้อ"} ${c.buy_quantity} ${lang === "en" ? "Get" : "แถม"} ${c.get_quantity}`
+                                  : ""}
                             {c.discount_type === "FIXED" ||
                             c.discount_type === "PERCENTAGE" ? (
                               <span className="text-blue-bbee font-bold text-sm sm:text-base">
@@ -329,7 +377,7 @@ export default function SummaryBoxCard({
                             )}
                           </span>
                           <button
-                            className="text-blue-bbee text-[10px] sm:text-sm hover:underline flex items-center gap-1"
+                            className="text-blue-bbee cursor-pointer text-[10px] sm:text-sm hover:underline flex items-center gap-1"
                             onClick={(e) => {
                               e.stopPropagation();
                               window.open(`/coupons/${c.id}`, "_blank");

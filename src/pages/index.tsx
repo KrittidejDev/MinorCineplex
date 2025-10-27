@@ -15,10 +15,14 @@ import { MovieStatus } from "@/types/enums";
 import { CinemaByProvince } from "@/types/cinema";
 import type { GetStaticProps } from "next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import ModalEmpty from "@/components/Modals/ModalEmpty";
+import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import { i18n } from "next-i18next";
 
 const CurtainIntro = dynamic(
   () => import("@/components/Widgets/CurtainIntro"),
-  { ssr: false }
+  { ssr: true }
 );
 
 export default function Home() {
@@ -31,7 +35,8 @@ export default function Home() {
     status: MovieStatus.NOW_SHOWING,
   });
   const [dataCinemas, setDataCinemas] = useState<CinemaByProvince[]>([]);
-  const [showCurtain, setShowCurtain] = useState(false);
+  const [showCurtain, setShowCurtain] = useState(true);
+  const [showCondolenceModal, setShowCondolenceModal] = useState(true);
   const [movies, setMovies] = useState<MovieDTO[]>([]);
   const [loadingMovies, setLoadingMovies] = useState(false);
   const [searchActive, setSearchActive] = useState(false);
@@ -100,15 +105,15 @@ export default function Home() {
     fetchAllMovies(hasFilters ? filters : undefined);
   }, [searchParams]);
 
-  useEffect(() => {
-    const lastShown = localStorage.getItem("curtain_last_shown");
-    const now = Date.now();
-    const fiveMinutes = 1000 * 60 * 5;
-    if (!lastShown || now - parseInt(lastShown, 10) > fiveMinutes) {
-      setShowCurtain(true);
-      localStorage.setItem("curtain_last_shown", now.toString());
-    }
-  }, []);
+  // useEffect(() => {
+  //   const lastShown = localStorage.getItem("curtain_last_shown");
+  //   const now = Date.now();
+  //   const fiveMinutes = 1000 * 60 * 5;
+  //   if (!lastShown || now - parseInt(lastShown, 10) > fiveMinutes) {
+  //     setShowCurtain(true);
+  //     localStorage.setItem("curtain_last_shown", now.toString());
+  //   }
+  // }, []);
 
   useEffect(() => {
     if (!location && !locationLoading && !showModal) {
@@ -135,13 +140,18 @@ export default function Home() {
     fetchAllMovies(newQuery);
   };
 
+  const handleCurtainComplete = () => {
+    setShowCurtain(false);
+    setShowCondolenceModal(true);
+  };
+
   return (
     <NavAndFooterWithBanner>
       {showCurtain && (
         <CurtainIntro
           durationMs={2000}
           showLogo={true}
-          onComplete={() => setShowCurtain(false)}
+          onComplete={handleCurtainComplete}
         />
       )}
       <div className="flex-1 max-w-[1440px]">
@@ -169,6 +179,30 @@ export default function Home() {
         onNeverAllow={neverAllow}
         onClose={closeModal}
       />
+      {showCondolenceModal && (
+        <ModalEmpty
+          isShowModal={showCondolenceModal}
+          onClose={() => setShowCondolenceModal(false)}
+        >
+          <div className="flex flex-col items-center gap-y-6">
+            <div className="size-40 md:size-120">
+              <Image
+                src="https://res.cloudinary.com/dtixbqaax/image/upload/v1761568242/kjnfcqxe9husgomhtwn5.png"
+                alt="popup"
+                width={400}
+                height={400}
+                className="w-full h-auto object-contain"
+              />
+            </div>
+            <Button
+              className="btn-base transparent-underline-normal"
+              onClick={() => setShowCondolenceModal(false)}
+            >
+              {i18n?.language === "en" ? "Enter Website" : "เข้าสู่เว็บไซต์"}
+            </Button>
+          </div>
+        </ModalEmpty>
+      )}
     </NavAndFooterWithBanner>
   );
 }

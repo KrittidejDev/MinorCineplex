@@ -45,7 +45,6 @@ import AdminSidebar from "@/components/ui/adminsidebar";
 import BookingDetailModal from "@/components/Modals/BookingDetailModal";
 import ShareButton from "@/components/Widgets/ShareButton";
 
-
 const AllWidget = () => {
   // State for radio buttons
   const [selectedRadio, setSelectedRadio] = useState("option2");
@@ -150,7 +149,7 @@ const AllWidget = () => {
       </div>
 
       {/* Booking Card */}
-      <div className="mt-20 w-full">
+      {/* <div className="mt-20 w-full">
         <BookingCard
           movieTitle="The Dark Knight"
           moviePoster="https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcQkUywIUXDjHSQJIaNHYVs08osgBpF5Ot-xmB_omyEZeeRP9Xug"
@@ -163,9 +162,9 @@ const AllWidget = () => {
           selectedSeats="C9, C10"
           ticketCount={2}
           paymentMethod="Credit card"
-          isPaid={true}
+          // isPaid={true}
         />
-      </div>
+      </div> */}
 
       {/* Icons Grid */}
       <div className="mt-20 w-full max-w-7xl px-4">
@@ -782,15 +781,15 @@ const AllWidget = () => {
       </div>
       {/* Booking Detail Modal */}
       <div className="mt-20">
-        <h2 className="text-2xl font-bold mb-6 text-center">Booking Detail Modal</h2>
-        <BookingDetailModal />
+        <h2 className="text-2xl font-bold mb-6 text-center">
+          Booking Detail Modal
+        </h2>
+        {/* <BookingDetailModal /> */}
       </div>
       {/* Share Button */}
       <div className="mt-20 mb-20">
         <h2 className="text-2xl font-bold mb-6 text-center">Share Button</h2>
-        <div className="flex gap-5">
-          <ShareButton />
-        </div>
+        <div className="flex gap-5">{/* <ShareButton /> */}</div>
       </div>
     </div>
   );

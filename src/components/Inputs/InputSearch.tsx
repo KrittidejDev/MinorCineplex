@@ -40,7 +40,7 @@ const InputSearch = ({
   const _handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
     setInternalValue(newValue);
-    
+
     if (delay && delay > 0) {
       const handler = setTimeout(() => {
         handleSearch?.(newValue);
@@ -49,6 +49,11 @@ const InputSearch = ({
     } else {
       handleSearch?.(newValue);
     }
+  };
+
+  const handleClear = () => {
+    setInternalValue("");
+    handleSearch?.("");
   };
 
   return (
@@ -74,23 +79,17 @@ const InputSearch = ({
           )}
         />
         {/* Icon */}
-        <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none z-10">
-          <CloseRoundLight width={20} height={20} color="#C8CEDD" />
-        </div>
+        {value !== "" && (
+          <div 
+          onClick={handleClear}
+          className="absolute right-2 top-1/2 -translate-y-1/2 z-10 cursor-pointer">
+            <CloseRoundLight width={20} height={20} color="#C8CEDD" />
+          </div>
+        )}
         <div className="absolute left-2 top-1/2 -translate-y-1/2 pointer-events-none z-10">
           <SearchLight width={20} height={20} color="#C8CEDD" />
         </div>
       </div>
-      {/* <div className="h-4 mt-1">
-        <span
-          className={`text-fr-12 ${errors ? "text-red-r64b" : "text-gray-g3b0"}`}
-        >
-          {!errors && <span className="text-fr-12 text-gray-g3b0">{text}</span>}
-          {errors && (
-            <span className="text-fr-12 text-red-r64b ">{errors}</span>
-          )}
-        </span>
-      </div> */}
     </div>
   );
 };

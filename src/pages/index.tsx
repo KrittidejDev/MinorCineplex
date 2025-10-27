@@ -144,7 +144,7 @@ export default function Home() {
           onComplete={() => setShowCurtain(false)}
         />
       )}
-      <div className="flex-1 max-w-[1200px]">
+      <div className="flex-1 max-w-[1440px]">
         <div className="w-dvw flex justify-center relative mx-auto -mt-10">
           <FilterSearch
             onSearch={(filters) => fetchAllMovies(filters)}

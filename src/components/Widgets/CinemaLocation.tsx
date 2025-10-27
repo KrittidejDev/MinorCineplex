@@ -37,8 +37,8 @@ const CinemaLocation = ({ filterCinema, data }: CinemaLocationProps) => {
   };
 
   return (
-    <div className="flex w-screen justify-center">
-      <section className="flex w-full max-w-[1440px] flex-col gap-10 justify-center py-10 sm:py-20 px-4 xl:px-30">
+    <div className="flex w-screen justify-center px-4 xl:px-20">
+      <section className="flex w-full max-w-[1440px] flex-col gap-10 justify-center py-10 sm:py-20">
         <header className="flex gap-5 flex-wrap justify-between">
           <h1 className="text-white text-4xl">All Cinemas</h1>
           <div className="flex gap-3 justify-between items-center p-1 h-12 rounded-sm bg-gray-g63f">

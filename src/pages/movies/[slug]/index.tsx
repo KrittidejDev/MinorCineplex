@@ -103,7 +103,7 @@ function MovieInfo() {
         src="/images/cover-cinema.png"
         alt={t("cinema_interior") || "Cinema Interior"}
         fill
-        className="hidden md:flex object-cover object-center w-full z-0! max-h-[100vh] overflow-hidden "
+        className="hidden md:flex object-cover object-center w-full z-0! max-h-[80vh] overflow-hidden "
       />
       <MovieInfoWidget
         movie={movie}

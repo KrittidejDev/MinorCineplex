@@ -62,7 +62,7 @@ function MovieCardInfo({
             <p className="font-medium fr-14 text-gray-g3b0">{rating || "-"}</p>
           </div>
         </div>
-        <div className="w-fit flex flex-col sm:flex-row gap-2 mt-4">
+        <div className="w-fit flex flex-wrap gap-2 mt-4">
           {genres?.map((g, i) => {
             let tagName = "";
             let variant: "genre" | "language" = "genre";

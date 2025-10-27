@@ -79,7 +79,7 @@ export default function TableCard({
                         onClick={actions[index]?.onView}
                         title="View Details"
                       >
-                        <Eye />
+                        <Eye  />
                       </button>
                       <button
                         className="p-2 bg-blue-bbee cursor-pointer hover:bg-blue-bbee/90 rounded-full text-white"

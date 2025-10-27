@@ -1,3 +1,4 @@
+//pages/booking/[slug]/index.tsx
 import React, {
   ReactElement,
   useEffect,
@@ -257,8 +258,25 @@ const BookingSeat: React.FC = () => {
             (selectedCoupon.max_discount || Infinity) * 100
           );
           finalPrice -= discount;
+        } else if (selectedCoupon.discount_type === "BUY_X_GET_Y") {
+          const buyQty = selectedCoupon.buy_quantity || 0;
+          const getQty = selectedCoupon.get_quantity || 0;
+          const totalSeats = selectedSeats.length;
+      
+          if (buyQty > 0 && getQty > 0 && totalSeats >= buyQty) {
+            const freeSets = Math.floor(totalSeats / buyQty);
+            const freeSeats = freeSets * getQty;
+      
+            const avgPrice =
+              selectedSeats.reduce((sum, s) => sum + (s.price || 0), 0) /
+              totalSeats;
+      
+            const discount = freeSeats * avgPrice * 100;
+            finalPrice -= discount;
+          }
         }
       }
+      
       if (finalPrice < 0) finalPrice = 0;
 
       const response = await fetch("/api/booking/create", {

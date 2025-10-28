@@ -48,7 +48,6 @@ const BookingSeat: React.FC = () => {
     "credit_card" | "qr_code" | undefined
   >(undefined);
   const [isShowModal, setIsShowModal] = useState<boolean>(false);
-  const [renderModal, setRenderModal] = useState<ReactElement | null>(null);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -82,20 +81,20 @@ const BookingSeat: React.FC = () => {
       });
       if (result?.ok) {
         setShowLoginModal(false);
-        toast.success("เข้าสู่ระบบสำเร็จ");
+        toast.success(t("Login successfully!"));
       } else {
-        toast.error("เข้าสู่ระบบล้มเหลว");
+        toast.error(t("Login failed"));
       }
     } catch (error) {
       console.error("Login error:", error);
-      toast.error("เกิดข้อผิดพลาดในการเข้าสู่ระบบ");
+      toast.error(t("An error occurred"));
     }
   };
 
   const fetchBookingData = async () => {
     if (!id || typeof id !== "string") {
       console.error("Invalid showtime ID:", id);
-      setError("รหัสการแสดงไม่ถูกต้อง");
+      setError(t("Invalid showtime ID"));
       setIsLoading(false);
       return;
     }
@@ -113,7 +112,7 @@ const BookingSeat: React.FC = () => {
         const message =
           err instanceof AxiosError && err.response?.data?.error
             ? err.response.data.error
-            : "ไม่สามารถโหลดข้อมูลการจองได้";
+            : t("Failed to load booking data");
         setError(message);
         toast.error(message);
       }
@@ -134,7 +133,7 @@ const BookingSeat: React.FC = () => {
     } catch (err) {
       if (!axios.isCancel(err)) {
         console.error("Fetch coupons error:", err);
-        toast.error("ไม่สามารถโหลดคูปองได้");
+        toast.error(t("Failed to load coupons"));
       }
     }
     return () => ac.abort();
@@ -167,11 +166,11 @@ const BookingSeat: React.FC = () => {
 
       setSelectedSeats([]);
       setStep("1");
-      if (showAlert) toast.error("เวลาการจองหมด กรุณาเลือกที่นั่งใหม่");
+      if (showAlert) toast.error(t("Booking time expired"));
       console.log("✅ Seats unlocked successfully");
     } catch (err) {
       console.error("Unlock seats error:", err);
-      toast.error("ไม่สามารถปลดล็อกที่นั่งได้");
+      toast.error(t("Failed to unlock seats"));
     } finally {
       isUnlocking.current = false;
     }
@@ -183,7 +182,7 @@ const BookingSeat: React.FC = () => {
       return;
     }
     if (!selectedSeats.length) {
-      toast.error("กรุณาเลือกที่นั่ง");
+      toast.error(t("Please select seats"));
       return;
     }
     try {
@@ -205,7 +204,7 @@ const BookingSeat: React.FC = () => {
       console.log("Seats locked successfully");
     } catch (err) {
       console.error("Lock seats error:", err);
-      toast.error("ล็อกที่นั่งไม่สำเร็จ");
+      toast.error(t("Failed to lock seats"));
       setSelectedSeats([]);
       setStep("1");
     }
@@ -213,7 +212,7 @@ const BookingSeat: React.FC = () => {
 
   const checkSeatLock = async (): Promise<boolean> => {
     if (!session?.user?.id || !selectedSeats.length) {
-      toast.error("กรุณาเข้าสู่ระบบหรือเลือกที่นั่ง");
+      toast.error(t("Please login or select seats"));
       setStep("1");
       return false;
     }
@@ -238,7 +237,7 @@ const BookingSeat: React.FC = () => {
 
       if (invalidSeats.length) {
         const seatIds = invalidSeats.map((res) => res.seatId).join(", ");
-        toast.error(`ที่นั่ง ${seatIds} ไม่ว่างหรือหมดเวลาการล็อก`);
+        toast.error(t("Seats {{seatIds}} are not available or expired", { seatIds }));
         await releaseSeatsAsync(true);
         setSelectedSeats([]);
         setStep("1");
@@ -247,14 +246,14 @@ const BookingSeat: React.FC = () => {
       return true;
     } catch (err) {
       console.error("Check seat lock error:", err);
-      toast.error("ไม่สามารถตรวจสอบสถานะที่นั่งได้");
+      toast.error(t("Failed to check seat lock"));
       return false;
     }
   };
 
   const createBooking = async () => {
     if (!bookingInfo?.id || !selectedSeats.length || !session?.user?.id) {
-      throw new Error("Invalid booking data");
+      throw new Error(t("Invalid booking data"));
     }
     try {
       const publicId = generatePublicId();
@@ -307,7 +306,7 @@ const BookingSeat: React.FC = () => {
       });
       const data = await response.json();
       if (!response.ok)
-        throw new Error(data.error || "Failed to create booking");
+        throw new Error(data.error || t("Failed to create booking"));
       return { bookingId: data.bookingId, publicId };
     } catch (err) {
       console.error("Create booking error:", err);
@@ -317,7 +316,7 @@ const BookingSeat: React.FC = () => {
 
   const createPayment = async (bookingId: string) => {
     if (!bookingId || typeof bookingId !== "string")
-      throw new Error("Invalid booking ID");
+      throw new Error(t("Invalid booking ID"));
     try {
       const response = await fetch("/api/payments/create", {
         method: "POST",
@@ -331,7 +330,7 @@ const BookingSeat: React.FC = () => {
       });
       const data = await response.json();
       if (!response.ok)
-        throw new Error(data.error || "Failed to create payment");
+        throw new Error(data.error || t("Failed to create payment"));
       return data.paymentId;
     } catch (err) {
       console.error("Create payment error:", err);
@@ -341,7 +340,7 @@ const BookingSeat: React.FC = () => {
 
   const handlePayment = async () => {
     if (!bookingInfo?.id || !selectedSeats.length || !session?.user?.id) {
-      toast.error("ข้อมูลการจองไม่ครบถ้วน");
+      toast.error(t("Booking data incomplete"));
       return;
     }
     setIsProcessing(true);
@@ -365,48 +364,23 @@ const BookingSeat: React.FC = () => {
       if (!response.ok)
         throw new Error(data.error || "Failed to complete booking");
       paymentSuccessful.current = true;
-      toast.success("ชำระเงินและจองสำเร็จ!");
+      toast.success(t("Payment and booking success"));
       router.push(`/booking/success?pid=${publicId}`);
     } catch (err) {
       console.error("Payment error:", err);
-      toast.error("ชำระเงินหรือจองไม่สำเร็จ");
+      toast.error(t("Failed to complete payment or booking"));
       await releaseSeatsAsync(true);
     } finally {
       setIsProcessing(false);
     }
   };
-
-  const handlePaymentClick = () => {
-    if (totalPriceInSatang < 2000) {
-      toast.error(t("price_must_be_at_least_20_baht"));
-      return;
-    }
-    setRenderModal(
-      <div className="p-6 bg-gray-g63f flex flex-col items-center rounded-2xl gap-y-4">
-        <div className="text-f-20 text-white">{t("confirm_booking")}</div>
-        <div className="text-fr-14 text-gray-gedd">
-          {t("confirm_booking_and_payment_message")}
-        </div>
-        <div className="flex gap-x-4">
-          <Button
-            className="btn-base white-outline-normal"
-            onClick={() => setIsShowModal(false)}
-            disabled={isProcessing}
-          >
-            {t("cancel")}
-          </Button>
-          <Button
-            className="btn-base blue-normal cursor-pointer"
-            onClick={handlePayment}
-            disabled={isProcessing}
-          >
-            {isProcessing ? t("processing") : t("confirm")}
-          </Button>
-        </div>
-      </div>
-    );
-    setIsShowModal(true);
-  };
+    const handlePaymentClick = () => {
+      if (totalPriceInSatang < 2000) {
+        toast.error(t("Price must be at least 20 baht"));
+        return;
+      }
+      setIsShowModal(true);
+    };
 
   useEffect(() => {
     setIsLoading(true);
@@ -534,7 +508,7 @@ const BookingSeat: React.FC = () => {
       </div>
       <div className="w-full flex flex-1 justify-center py-10 md:p-20 md:gap-x-24 flex-wrap gap-y-5">
         {isLoading ? (
-          <div className="text-white">กำลังโหลด...</div>
+          <div className="text-white">{t("Loading...")}</div>
         ) : error ? (
           <div className="text-white">{error}</div>
         ) : (
@@ -550,7 +524,7 @@ const BookingSeat: React.FC = () => {
                     (seat) => seat.id && typeof seat.id === "string"
                   );
                   if (validSeats.length !== seats.length) {
-                    toast.error("ที่นั่งบางส่วนมีรูปแบบไม่ถูกต้อง");
+                      toast.error(t("Invalid seat format"));
                     return;
                   }
                   setSelectedSeats(validSeats);
@@ -594,12 +568,35 @@ const BookingSeat: React.FC = () => {
           </>
         )}
       </div>
-      <ModalEmpty
-        isShowModal={isShowModal}
-        onClose={() => setIsShowModal(false)}
-      >
-        {renderModal}
-      </ModalEmpty>
+      {isShowModal && (
+        <ModalEmpty
+          isShowModal={isShowModal}
+          onClose={() => setIsShowModal(false)}
+        >
+          <div className="p-6 bg-gray-g63f flex flex-col items-center rounded-2xl gap-y-4">
+            <div className="text-f-20 text-white">{t("Confirm Booking")}</div>
+            <div className="text-fr-14 text-gray-gedd">
+              {t("Confirm Booking and Payment")}
+            </div>
+            <div className="flex gap-x-4">
+              <Button
+                className="btn-base white-outline-normal"
+                onClick={() => setIsShowModal(false)}
+                disabled={isProcessing}
+              >
+                {t("Cancel")}
+              </Button>
+              <Button
+                className="btn-base blue-normal cursor-pointer"
+                onClick={handlePayment}
+                disabled={isProcessing}
+              >
+                {isProcessing ? t("Processing") : t("Confirm")}
+              </Button>
+            </div>
+          </div>
+        </ModalEmpty>
+      )}
       <ModalLogin
         showLoginModal={showLoginModal}
         setShowLoginModal={setShowLoginModal}

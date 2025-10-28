@@ -23,7 +23,7 @@ const ProfileMyCoupons = () => {
         if (isMounted.current) setCoupons(res.coupons);
       } catch (err) {
         console.error(err);
-        if (isMounted.current) setError(t("cannot_load_coupons")); // แปลภาษา
+        if (isMounted.current) setError(t("Cannot load coupons")); // แปลภาษา
       } finally {
         if (isMounted.current) setLoading(false);
       }
@@ -39,7 +39,7 @@ const ProfileMyCoupons = () => {
     };
   }, [fetchCollectedCoupons]);
 
-  if (loading) return <p className="text-center py-10">{t("loading")}...</p>;
+  if (loading) return <p className="text-center py-10">{t("Loading...")}...</p>;
   if (error) return <p className="text-center py-10">{error}</p>;
 
   return (

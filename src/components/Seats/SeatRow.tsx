@@ -11,6 +11,7 @@ import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import ModalLogin from "../Widgets/ModalLogin";
 import { signIn } from "next-auth/react";
+import { useTranslation } from "next-i18next";
 
 interface SeatRowProps {
   seatsData?: SeatRowData[];
@@ -60,7 +61,7 @@ const SeatRow: React.FC<SeatRowProps> = ({
   );
   const [showLoginModal, setShowLoginModal] = useState<boolean>(false);
   const router = useRouter();
-
+  const { t } = useTranslation("common");
   useEffect(() => {
     if (seatsData && seatsData.length > 0) {
       // console.log("Updating localSeats with new seatsData:", seatsData);
@@ -162,7 +163,7 @@ const SeatRow: React.FC<SeatRowProps> = ({
     }
 
     if (!userId) {
-      toast.warning("กรุณาเข้าสู่ระบบ");
+      toast.warning(t("Please login"));
       setShowLoginModal(true);
       return;
     }
@@ -204,13 +205,13 @@ const SeatRow: React.FC<SeatRowProps> = ({
       });
       if (result?.ok) {
         setShowLoginModal(false);
-        toast.success("เข้าสู่ระบบสำเร็จ");
+        toast.success(t("Login successfully!"));
       } else {
-        toast.error("เข้าสู่ระบบล้มเหลว");
+        toast.error(t("Login failed"));
       }
     } catch (error) {
       console.error("Login error:", error);
-      toast.error("เกิดข้อผิดพลาดในการเข้าสู่ระบบ");
+      toast.error(t("An error occurred"));
     }
   };
 

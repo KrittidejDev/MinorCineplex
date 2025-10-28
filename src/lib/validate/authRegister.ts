@@ -110,15 +110,15 @@ export const createResetPasswordSchema = (t: (key: string) => string) => {
   return yup.object().shape({
     newPassword: yup
       .string()
-      .required(t("forgot_password_email_required"))
-      .min(8, t("password_min_error"))
-      .matches(/[A-Z]/, t("password_uppercase_error"))
-      .matches(/[a-z]/, t("password_lowercase_error"))
-      .matches(/[0-9]/, t("password_number_error")),
+      .required(t("Email is required"))
+      .min(8, t("Password must be at least 8 characters"))
+      .matches(/[A-Z]/, t("Password must contain at least one uppercase letter"))
+      .matches(/[a-z]/, t("Password must contain at least one lowercase letter"))
+      .matches(/[0-9]/, t("Password must contain at least one number")),
     confirmPassword: yup
       .string()
-      .required(t("forgot_password_email_required"))
-      .oneOf([yup.ref("newPassword")], t("password_mismatch_error")),
+      .required(t("Email is required"))
+      .oneOf([yup.ref("newPassword")], t("Passwords must match")),
   });
 };
 

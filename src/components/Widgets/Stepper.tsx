@@ -22,7 +22,7 @@ export const Stepper: React.FC<StepperProps> = ({ step, onClickStep }) => {
       <div className="absolute top-[22px] left-[50px] w-[132px] mx-auto h-[1px] bg-blue-bbee z-1" />
       <div onClick={onClickStep} className="cursor-pointer">
         <Step
-          label={t("select_showtime")}
+          label={t("Select showtime")}
           number={
             getStatus(1) === "done" ? <Check size={20} strokeWidth={2} /> : 1
           }
@@ -30,7 +30,7 @@ export const Stepper: React.FC<StepperProps> = ({ step, onClickStep }) => {
         />
       </div>
       <Step
-        label={t("select_seat")}
+        label={t("Select seat")}
         number={
           getStatus(2) === "done" ? <Check size={20} strokeWidth={2} /> : 2
         }
@@ -40,7 +40,7 @@ export const Stepper: React.FC<StepperProps> = ({ step, onClickStep }) => {
         className={`absolute top-[22px] right-[50px] w-[132px] mx-auto h-[1px] ${step === "3" ? "bg-blue-bbee" : "bg-gray-g63f"}`}
       />
       <Step
-        label={t("payment")}
+        label={t("Payment")}
         number={
           getStatus(3) === "done" ? <Check size={20} strokeWidth={2} /> : 3
         }

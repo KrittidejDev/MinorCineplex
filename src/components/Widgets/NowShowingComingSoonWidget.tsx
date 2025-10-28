@@ -49,7 +49,7 @@ export default function NowShowingComingSoon({
                   : "text-gray-g3b0 border-b border-transparent"
               }`}
             >
-              {t("now_showing")}
+              {t("Now showing")}
             </button>
             <button
               onClick={() => handleTab(MovieStatus.COMING_SOON)}
@@ -59,20 +59,20 @@ export default function NowShowingComingSoon({
                   : "text-gray-g3b0 border-b border-transparent"
               }`}
             >
-              {t("coming_soon")}
+              {t("Coming soon")}
             </button>
           </div>
           <Link href="/movies" passHref>
             <Button className="btn-base-transparent-underline-normal text-sm hover:underline cursor-pointer">
-              {t("view_all")}
+              {t("View All")}
             </Button>
           </Link>
         </div>
 
         {loading ? (
-          <div className="text-center py-20">{t("loading")}</div>
+          <div className="text-center py-20">{t("Loading...")}</div>
         ) : movies.length === 0 ? (
-          <div className="text-center py-20">{t("movie_not_found")}</div>
+          <div className="text-center py-20">{t("Movie not found")}</div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
             {movies.slice(0, 4).map((movie) => (

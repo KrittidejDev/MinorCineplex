@@ -37,18 +37,18 @@ const CouponWidget = () => {
 
   
 
-  if (loading) return <p>{t("loading")}</p>
-  if (error) return <p>{t("error")}</p>
+  if (loading) return <p>{t("Loading...")}</p>
+  if (error) return <p>{t("Error")}</p>
 
   return (
     <div className="w-dvw flex justify-center items-center py-20 px-4">
       <div className="flex flex-col gap-10 max-w-[1200px] w-full">
         {/* Header */}
         <div className="flex justify-between items-center font-bold text-2xl py-1">
-          <h2 className="headline-2 text-white">{t("special_coupons")}</h2>
+          <h2 className="headline-2 text-white">{t("Special Coupons")}</h2>
           <Link href="/coupons" passHref>
             <Button className="btn-base-transparent-underline-normal text-sm hover:underline cursor-pointer">
-              {t("view_all")}
+              {t("View All")}
             </Button>
           </Link>
         </div>

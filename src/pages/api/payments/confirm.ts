@@ -27,12 +27,12 @@ export default async function handler(
       return res.status(400).json({ error: "Missing required fields" });
     }
 
-    console.log("Confirming booking:", {
-      showtimeId,
-      seatIds,
-      userId,
-      paymentDetails,
-    });
+    // console.log("Confirming booking:", {
+    //   showtimeId,
+    //   seatIds,
+    //   userId,
+    //   paymentDetails,
+    // });
 
     // เริ่ม transaction
     const result = await prisma.$transaction(async (tx) => {
@@ -52,11 +52,13 @@ export default async function handler(
           locked_by_user_id: true,
         },
       });
-      console.log("Seat records:", seatRecords);
+      // console.log("Seat records:", seatRecords);
 
       // ตรวจสอบว่าเก้าอี้ทั้งหมดถูกล็อกและล็อกโดย user
       const invalidSeats = seatRecords.filter(
-        (seat) => seat.status !== "LOCKED" as unknown as SeatStatus || seat.locked_by_user_id !== userId
+        (seat) =>
+          seat.status !== ("LOCKED" as unknown as SeatStatus) ||
+          seat.locked_by_user_id !== userId
       );
       if (invalidSeats.length > 0) {
         throw new Error("Some seats are not available or not locked by user");
@@ -112,9 +114,9 @@ export default async function handler(
           locked_until: null,
         },
       });
-      console.log(
-        "ShowtimeSeat updated to BOOKED, locked_by_user_id preserved"
-      );
+      // console.log(
+      //   "ShowtimeSeat updated to BOOKED, locked_by_user_id preserved"
+      // );
 
       // // สร้าง Payment
       // const payment = await tx.payment.create({

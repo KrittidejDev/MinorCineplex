@@ -47,7 +47,6 @@ const Index = () => {
       setLoading(true);
       const response = await axios.get(`/api/booking/history/${userId}`);
       const data = response.data;
-      console.log("res booking", data);
       if (!data.success) {
         throw new Error(data.message || t("error"));
       }
@@ -126,8 +125,6 @@ const Index = () => {
       setModal(false);
     }
   };
-
-  console.log("data info booking", bookings);
 
   return (
     <div className="bg-blue-b flex flex-col">

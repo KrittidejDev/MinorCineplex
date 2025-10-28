@@ -71,7 +71,7 @@ export const ShowTime: React.FC<ShowTimeProps> = ({
     }
     prevAllRef.current = allCollapsed;
   }, [allCollapsed]);
-  console.log(data);
+  // console.log(data);
 
   const base =
     "w-full max-w-32 flex flex-col justify-center items-center py-3 px-[41px] rounded-lg transition-colors";

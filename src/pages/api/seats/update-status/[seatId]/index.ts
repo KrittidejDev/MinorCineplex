@@ -62,9 +62,9 @@ export default async function handler(
       },
     });
 
-    console.log(
-      `Seat ${seatId} updated to ${status} by user ${userId || "none"}`
-    );
+    // console.log(
+    //   `Seat ${seatId} updated to ${status} by user ${userId || "none"}`
+    // );
     res.status(200).json(updatedSeat);
   } catch (error) {
     console.error("Error updating seat:", error);

@@ -63,7 +63,7 @@ const SeatRow: React.FC<SeatRowProps> = ({
 
   useEffect(() => {
     if (seatsData && seatsData.length > 0) {
-      console.log("Updating localSeats with new seatsData:", seatsData);
+      // console.log("Updating localSeats with new seatsData:", seatsData);
       setLocalSeats(seatsData);
     } else {
       console.warn("No seatsData provided, using default seats");
@@ -87,12 +87,12 @@ const SeatRow: React.FC<SeatRowProps> = ({
       }
 
       const { seatId, status, locked_by_user_id, locked_until } = msg.data;
-      console.log("Ably seat update received:", {
-        seatId,
-        status,
-        locked_by_user_id,
-        locked_until,
-      });
+      // console.log("Ably seat update received:", {
+      //   seatId,
+      //   status,
+      //   locked_by_user_id,
+      //   locked_until,
+      // });
 
       const isValidStatus = (s: string): s is Seat["status"] =>
         ["AVAILABLE", "RESERVED", "BOOKED", "LOCKED"].includes(s);
@@ -130,11 +130,11 @@ const SeatRow: React.FC<SeatRowProps> = ({
     };
 
     channel.subscribe("update", handleUpdate);
-    console.log(`Subscribed to Ably channel showtime:${showtimeId}`);
+    // console.log(`Subscribed to Ably channel showtime:${showtimeId}`);
 
     return () => {
       channel.unsubscribe("update", handleUpdate);
-      console.log(`Unsubscribed from Ably channel showtime:${showtimeId}`);
+      // console.log(`Unsubscribed from Ably channel showtime:${showtimeId}`);
     };
   }, [showtimeId]);
 
@@ -176,11 +176,11 @@ const SeatRow: React.FC<SeatRowProps> = ({
       !isLockExpired;
 
     if (isLockedByOther || seat.status === "BOOKED") {
-      console.log(`Cannot toggle seat ${seat.id}:`, {
-        status: seat.status,
-        isLockedByOther,
-        locked_until: seat.locked_until,
-      });
+      // console.log(`Cannot toggle seat ${seat.id}:`, {
+      //   status: seat.status,
+      //   isLockedByOther,
+      //   locked_until: seat.locked_until,
+      // });
       return;
     }
 
@@ -192,7 +192,7 @@ const SeatRow: React.FC<SeatRowProps> = ({
     } else {
       onSelectSeat([...selectedSeats, selectedSeat]);
     }
-    console.log(`Toggled seat ${seat.id}, selected: ${!isSelected}`);
+    // console.log(`Toggled seat ${seat.id}, selected: ${!isSelected}`);
   };
 
   const handleLogin = async (value: { email: string; password: string }) => {

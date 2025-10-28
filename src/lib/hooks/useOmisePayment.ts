@@ -49,12 +49,12 @@ export const useOmisePayment = ({
 
     const checkOmise = () => {
       if ((window as unknown as { Omise: unknown }).Omise) {
-        console.log("Omise.js detected");
+        // console.log("Omise.js detected");
         setIsOmiseLoaded(true);
       } else if (attempts < maxAttempts) {
-        console.log(
-          `Omise.js not yet loaded, attempt ${attempts + 1}/${maxAttempts}`
-        );
+        // console.log(
+        //   `Omise.js not yet loaded, attempt ${attempts + 1}/${maxAttempts}`
+        // );
         attempts++;
         setTimeout(checkOmise, 100);
       } else {
@@ -78,11 +78,11 @@ export const useOmisePayment = ({
   ) => {
     setLoading(true);
     try {
-      console.log("Calling /api/omise/charges with:", {
-        amount,
-        cardDetails,
-        metadata,
-      });
+      // console.log("Calling /api/omise/charges with:", {
+      //   amount,
+      //   cardDetails,
+      //   metadata,
+      // });
       if (!isOmiseLoaded) throw new Error("Omise.js is not loaded yet");
       const Omise = (window as unknown as { Omise: unknown }).Omise;
 
@@ -91,8 +91,10 @@ export const useOmisePayment = ({
       if (!publicKey) {
         throw new Error("Omise public key not configured");
       }
-      (Omise as { setPublicKey: (publicKey: string) => void }).setPublicKey(publicKey);
-      console.log("Omise public key set:", publicKey.slice(0, 8) + "...");
+      (Omise as { setPublicKey: (publicKey: string) => void }).setPublicKey(
+        publicKey
+      );
+      // console.log("Omise public key set:", publicKey.slice(0, 8) + "...");
 
       // Validate cardDetails
       if (!cardDetails.name || cardDetails.name.trim() === "") {
@@ -131,19 +133,32 @@ export const useOmisePayment = ({
           security_code: cardDetails.security_code,
         },
       };
-      console.log("Token payload:", payload);
+      // console.log("Token payload:", payload);
 
       const tokenResponse: CardToken = await new Promise((resolve, reject) => {
-        (Omise as { createToken: (type: string, payload: Record<string, unknown>, callback: (status: number, response: CardToken) => void) => void }).createToken(
+        (
+          Omise as {
+            createToken: (
+              type: string,
+              payload: Record<string, unknown>,
+              callback: (status: number, response: CardToken) => void
+            ) => void;
+          }
+        ).createToken(
           "card",
           payload.card,
           (status: number, response: CardToken) => {
             if (status === 200) {
-              console.log("Token created successfully:", response.id);
+              // console.log("Token created successfully:", response.id);
               resolve(response);
             } else {
               console.error("Token creation failed:", response);
-              reject(new Error((response as unknown as { message: string }).message || "Failed to create token"));
+              reject(
+                new Error(
+                  (response as unknown as { message: string }).message ||
+                    "Failed to create token"
+                )
+              );
             }
           }
         );
@@ -185,11 +200,11 @@ export const useOmisePayment = ({
   ): Promise<QRPaymentResponse> => {
     setLoading(true);
     try {
-      console.log("Calling /api/omise/qr-payment with:", {
-        amount,
-        qrCodeType,
-        metadata,
-      });
+      // console.log("Calling /api/omise/qr-payment with:", {
+      //   amount,
+      //   qrCodeType,
+      //   metadata,
+      // });
       const response = await fetch("/api/omise/qr-payment", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

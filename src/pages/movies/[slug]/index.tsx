@@ -96,8 +96,6 @@ function MovieInfo() {
   if (error) return <p>{error}</p>;
   if (!movie) return <p>{t("movie_not_found")}</p>;
 
-  console.log("movie data", movie);
-
   function hasGenre(item: MovieDTO["genres"][number]): item is {
     genre: {
       id: string;

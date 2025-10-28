@@ -35,7 +35,7 @@ export default async function handler(
       return res.status(404).json({ error: `Seat ${seatId} not found` });
     }
 
-    console.log(`Fetched status for seat ${seatId}`);
+    // console.log(`Fetched status for seat ${seatId}`);
     res.status(200).json(seat);
   } catch (error) {
     console.error("Error fetching seat status:", error);

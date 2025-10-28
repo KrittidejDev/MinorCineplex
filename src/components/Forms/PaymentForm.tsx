@@ -211,11 +211,11 @@ const PaymentForm = forwardRef<PaymentFormHandles, PaymentFormProps>(
       lastOrderIdRef.current = currentOrderId;
       qrCodeGeneratedRef.current = true;
       try {
-        console.log("Calling /api/omise/qr-payment with:", {
-          amount: amount * 100,
-          qrCodeType,
-          metadata,
-        });
+        // console.log("Calling /api/omise/qr-payment with:", {
+        //   amount: amount * 100,
+        //   qrCodeType,
+        //   metadata,
+        // });
         setPaymentStatus("Generating QR code...");
         const result = await payWithQRCode(amount * 100, qrCodeType, metadata);
         if (result.success && result.qrCodeUrl) {

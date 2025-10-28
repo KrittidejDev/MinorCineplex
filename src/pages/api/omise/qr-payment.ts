@@ -19,11 +19,9 @@ export default async function handler(
   }
 
   if (amount < 2000) {
-    return res
-      .status(400)
-      .json({
-        error: "Invalid amount: Amount must be at least 2000 satang (20 THB)",
-      });
+    return res.status(400).json({
+      error: "Invalid amount: Amount must be at least 2000 satang (20 THB)",
+    });
   }
 
   if (!OMISE_SECRET_KEY) {

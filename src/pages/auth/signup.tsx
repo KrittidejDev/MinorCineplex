@@ -8,7 +8,7 @@ import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { useTranslation } from "next-i18next";
 
 const Signup = () => {
-  const { i18n } = useTranslation();
+  const { i18n } = useTranslation("common");
   const [success, setSuccess] = useState<boolean>(false);
 
   const errorMessages = useMemo(() => {

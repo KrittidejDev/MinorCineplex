@@ -11,7 +11,7 @@ interface CinemaLocationProps {
 }
 
 const CinemaLocation = ({ filterCinema, data }: CinemaLocationProps) => {
-  const { i18n} = useTranslation();
+  const { i18n} = useTranslation("common");
   const [filter, setFilter] = useState<string>("1");
   const [visibleProvinces, setVisibleProvinces] = useState<number>(1);
 

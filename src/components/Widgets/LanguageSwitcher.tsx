@@ -6,7 +6,7 @@ import EngFlag from "../Icons/EngFlag";
 
 const LanguageSwitcher: React.FC = () => {
   const router = useRouter();
-  const { i18n } = useTranslation();
+  const { i18n } = useTranslation("common");
   const { pathname, query, asPath, locales, locale: currentLocale } = router;
   const languages = locales || [];
   const [isOpen, setIsOpen] = useState(false);

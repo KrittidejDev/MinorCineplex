@@ -9,7 +9,7 @@ type CinemaCardProps = {
 };
 
 const CinemaCard = ({ filter, cinema }: CinemaCardProps) => {
-  const { i18n } = useTranslation();
+  const { i18n } = useTranslation("common");
 
   const distanceText =
     i18n.language === "en" ? cinema?.distance_text : cinema?.distance_text_th;

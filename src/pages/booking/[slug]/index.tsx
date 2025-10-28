@@ -26,7 +26,7 @@ import axios, { AxiosError } from "axios";
 import ModalLogin from "@/components/Widgets/ModalLogin";
 import { GetServerSideProps } from "next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
-import { i18n, useTranslation } from "next-i18next";
+import { useTranslation } from "next-i18next";
 
 const BookingSeat: React.FC = () => {
   const router = useRouter();
@@ -60,8 +60,8 @@ const BookingSeat: React.FC = () => {
   const isNavigating = useRef(false);
   const countdownInterval = useRef<NodeJS.Timeout | null>(null);
   const paymentSuccessful = useRef(false);
+  const { t, i18n } = useTranslation("common");
   const lang = i18n?.language === "en";
-  const { t } = useTranslation("common");
 
   const totalPrice = selectedSeats.reduce(
     (sum, seat) => sum + (seat.price || 0),

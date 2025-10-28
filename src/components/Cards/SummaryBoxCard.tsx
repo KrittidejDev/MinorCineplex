@@ -27,6 +27,7 @@ interface Props extends BillInfo {
   paymentMethod?: 'credit_card' | 'qr_code'
   step?: '1' | '2'
   isLoading?: boolean
+  isProcessing?: boolean
 }
 
 export default function SummaryBoxCard({
@@ -37,13 +38,14 @@ export default function SummaryBoxCard({
   lockSeats,
   step,
   countdown,
+  isProcessing = false,
   // coupons = [], // Now using availableCouponsModal from API
   selectedCoupon,
   onSelectCoupon,
   onPayment,
   paymentMethod = 'credit_card',
 }: Props) {
-  const { i18n } = useTranslation("common")
+  const { i18n, t } = useTranslation("common")
   const lang = i18n?.language === 'th' ? 'th' : 'en'
 
   const [isCouponModalOpen, setCouponModalOpen] = useState(false)
@@ -226,6 +228,7 @@ export default function SummaryBoxCard({
           totalSelected={totalSelected}
           totalPrice={totalPayment}
           lockSeats={lockSeats}
+          isProcessing={isProcessing}
         />
       )}
 
@@ -310,9 +313,9 @@ export default function SummaryBoxCard({
           <Button
             className="btn-base blue-normal cursor-pointer"
             onClick={onPayment}
-            disabled={!canPay || !!couponError}
+            disabled={!canPay || !!couponError || isProcessing }
           >
-            {lang === 'en' ? 'Next' : 'ถัดไป'}
+            {isProcessing ? t("Processing") : t("Next")}
           </Button>
         </div>
       )}

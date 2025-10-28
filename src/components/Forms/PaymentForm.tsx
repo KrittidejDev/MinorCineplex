@@ -276,7 +276,6 @@ const PaymentForm = forwardRef<PaymentFormHandles, PaymentFormProps>(
         paymentMethod &&
         paymentMethod !== prevPaymentMethodRef.current
       ) {
-        console.log("Calling onPaymentMethodChange with:", paymentMethod);
         onPaymentMethodChange(paymentMethod);
         prevPaymentMethodRef.current = paymentMethod;
       }

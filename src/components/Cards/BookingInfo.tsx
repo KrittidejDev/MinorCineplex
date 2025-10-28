@@ -2,7 +2,7 @@ import { BillInfo, SelectedSeat } from "@/types/cinema";
 import { Button } from "../ui/button";
 import { useTranslation } from "next-i18next";
 
-const BookingInfo = ({ totalSelected, lockSeats }: BillInfo) => {
+const BookingInfo = ({ totalSelected, lockSeats, isProcessing }: BillInfo & { isProcessing?: boolean }) => {
   const { t } = useTranslation("common");
   if (!totalSelected || totalSelected.length === 0) return null;
 
@@ -43,8 +43,9 @@ const BookingInfo = ({ totalSelected, lockSeats }: BillInfo) => {
       <Button
         className="btn-base blue-normal cursor-pointer"
         onClick={lockSeats}
+        disabled={isProcessing}
       >
-        {t("Next")}
+        {isProcessing ? t("Processing") : t("Next")}
       </Button>
     </div>
   );

@@ -48,7 +48,7 @@ const Index = () => {
       const response = await axios.get(`/api/booking/history/${userId}`);
       const data = response.data;
       if (!data.success) {
-        throw new Error(data.message || t("error"));
+        throw new Error(data.message || t("Error"));
       }
       const formattedBookings: Booking[] = data.data.map(
         (booking: BookingAPIResponse) => ({
@@ -92,7 +92,7 @@ const Index = () => {
         err instanceof Error
           ? (err.message as string)
           : (err as { response?: { data?: { message?: string } } })?.response
-              ?.data?.message || t("error");
+              ?.data?.message || t("Error");
 
       setError(msg);
     } finally {
@@ -141,7 +141,7 @@ const Index = () => {
           <div className="flex flex-col gap-5 w-full">
             <div className="text-f-36 text-white">{t("Booking history")}</div>
             {loading ? (
-              <div className="text-white">{t("loading")}</div>
+              <div className="text-white">{t("Loading...")}</div>
             ) : error ? (
               <div className="text-white">{error}</div>
             ) : bookings.length === 0 ? (

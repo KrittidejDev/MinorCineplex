@@ -42,7 +42,7 @@ const ResetPasswordPage = () => {
     reset: () => void
   ) => {
     if (!email) {
-      toast.error(t("forgot_password_email_required"));
+      toast.error(t("Email is required"));
       return;
     }
 
@@ -56,10 +56,10 @@ const ResetPasswordPage = () => {
       const data = response.data;
 
       if (response.status !== 200) {
-        throw new Error(data.message || t("reset_password_failed"));
+        throw new Error(data.message || t("Password reset failed"));
       }
 
-      toast.success(t("reset_password_success"));
+      toast.success(t("Password reset successfully!"));
       reset();
       router.push("/auth/login");
     } catch (error) {
@@ -69,7 +69,7 @@ const ResetPasswordPage = () => {
         toast.error(message);
       } else {
         toast.error(
-          error instanceof Error ? error.message : t("reset_password_failed")
+          error instanceof Error ? error.message : t("Password reset failed")
         );
       }
     } finally {
@@ -81,13 +81,13 @@ const ResetPasswordPage = () => {
     return (
       <div className="min-h-screen w-full flex items-center justify-center px-4">
         <div className="w-[380px] text-center text-white">
-          <h2 className="text-f-36 mb-4">{t("reset_password_link_expired")}</h2>
-          <p className="text-fm-16 mb-4">{t("reset_password_link_expired")}</p>
+          <h2 className="text-f-36 mb-4">{t("This reset link has expired. Please request a new one.")}</h2>
+          <p className="text-fm-16 mb-4">{t("This reset link has expired. Please request a new one.")}</p>
           <Link
             href="/auth/forgot-password"
             className="text-white underline text-fm-16"
           >
-            {t("reset_password_request_new_link")}
+            {t("Request a new reset link")}
           </Link>
         </div>
       </div>
@@ -98,13 +98,13 @@ const ResetPasswordPage = () => {
     return (
       <div className="min-h-screen w-full flex items-center justify-center px-4">
         <div className="w-[380px] text-center text-white">
-          <h2 className="text-f-36 mb-4">{t("reset_password_link_invalid")}</h2>
-          <p className="text-fm-16 mb-4">{t("reset_password_link_invalid")}</p>
+          <h2 className="text-f-36 mb-4">{t("This reset link is invalid.")}</h2>
+          <p className="text-fm-16 mb-4">{t("This reset link is invalid.")}</p>
           <Link
             href="/auth/forgot-password"
             className="text-white underline text-fm-16"
           >
-            {t("reset_password_request_new_link")}
+            {t("Request a new reset link")}
           </Link>
         </div>
       </div>

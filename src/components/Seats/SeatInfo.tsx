@@ -21,22 +21,22 @@ const SeatInfo: React.FC<SeatInfoProps> = ({ price, fid, hall }) => {
       <div className="flex gap-4 items-center">
         <SeatAvailable className="" />
         <div className="flex flex-col justify-center">
-          <p className="text-gray-gedd">{t("available_seat")}</p>
+          <p className="text-gray-gedd">{t("Available Seat")}</p>
           <p className="text-gray-gedd">THB {price}</p>
         </div>
       </div>
       <div className="flex gap-4 items-center">
         <SeatBooked />
-        <p className="text-gray-gedd">{t("booked_seat")}</p>
+        <p className="text-gray-gedd">{t("Booked Seat")}</p>
       </div>
       <div className="flex gap-4 items-center">
         <SeatReserved />
-        <p className="text-gray-gedd">{t("reserved_seat")}</p>
+        <p className="text-gray-gedd">{t("Reserved Seat")}</p>
       </div>
       {fid && (
         <div className="flex gap-4 items-center">
           <SeatFriend />
-          <p className="text-gray-gedd">{t("friend_seat")}</p>
+          <p className="text-gray-gedd">{t("Friend's Seat")}</p>
         </div>
       )}
     </div>

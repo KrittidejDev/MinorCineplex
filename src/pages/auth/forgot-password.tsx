@@ -16,14 +16,14 @@ const ForgotPassword = () => {
       const data = response.data;
 
       if (data.resetLink) {
-        toast.success(t("forgot_password_reset_link_sent_toast"));
+        toast.success(t("Reset link sent to your email"));
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
         const message = error.response?.data?.message || error.message;
         toast.error(message);
       } else {
-        toast.error(error instanceof Error ? error.message : t("forgot_password_error"));
+        toast.error(error instanceof Error ? error.message : t("An error occurred"));
       }
     } finally {
       setIsLoading(false);

@@ -58,7 +58,7 @@ const BookingDetail: React.FC<BookingDetailProps> = ({
     return (
       <NavAndFooter>
         <div className="min-h-screen p-4 md:p-8 flex items-center justify-center">
-          <div className="text-white text-2xl">{t("error_not_found")}</div>
+          <div className="text-white text-2xl">{t("Booking not found")}</div>
         </div>
       </NavAndFooter>
     );
@@ -130,7 +130,7 @@ const BookingDetail: React.FC<BookingDetailProps> = ({
                         key={index}
                         className="flex items-center px-3 min-h-[32px] bg-[#21263F] text-[#8B93B0] rounded text-sm"
                       >
-                        {genre[lang] || t("unknown_genre")}
+                        {genre[lang] || t("Unknown genre")}
                       </span>
                     ))}
                     {bookingData.languages.map((language, index) => (
@@ -170,25 +170,25 @@ const BookingDetail: React.FC<BookingDetailProps> = ({
                   </button>
                   <div className="px-4 py-2">
                     <span className="text-slate-300 text-sm md:text-base">
-                      {t("selected_seat")}
+                      {t("Seats:")}
                     </span>
                   </div>
                   <div className="px-4 py-2">
                     <span className="text-white font-semibold text-sm md:text-base">
-                      {bookingData.seats.join(", ") || t("no_seats")}
+                      {bookingData.seats.join(", ") || t("No seats")}
                     </span>
                   </div>
                 </div>
 
                 <div className="space-y-3 text-[#C8CEDD] text-sm md:text-base">
                   <div className="flex items-center gap-3">
-                    <span className="w-32">{t("payment_method")}</span>
+                    <span className="w-32">{t("Payment Method")}</span>
                     <span className="font-bold text-white">
                       {bookingData.payment_method[lang]}
                     </span>
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className="w-32">{t("total")}</span>
+                    <span className="w-32">{t("Total")}</span>
                     <span className="font-bold text-white">
                       ฿{bookingData.total_price.toFixed(2)}
                     </span>

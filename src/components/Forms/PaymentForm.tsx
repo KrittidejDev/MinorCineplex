@@ -298,7 +298,7 @@ const PaymentForm = forwardRef<PaymentFormHandles, PaymentFormProps>(
                   : "border-transparent text-gray-g3b0"
               }`}
             >
-              {method === "credit_card" ? t("credit_card") : t("qr_code")}
+              {method === "credit_card" ? t("Credit Card") : t("QR Code")}
             </button>
           ))}
         </div>
@@ -307,7 +307,7 @@ const PaymentForm = forwardRef<PaymentFormHandles, PaymentFormProps>(
           <div className="space-y-4">
             {!isOmiseLoaded && (
               <div className="text-red-500 text-center">
-                {t("payment_system_loading")}
+                {t("Payment system is loading. Please wait...")}
               </div>
             )}
             <div className="flex flex-col lg:flex-row lg:items-center gap-x-5">
@@ -317,7 +317,7 @@ const PaymentForm = forwardRef<PaymentFormHandles, PaymentFormProps>(
                 render={({ field }) => (
                   <InputTextFeild
                     {...field}
-                    label={t("card_number")}
+                    label={t("Card Number")}
                     placeholder="xxxx-xxxx-xxxx-xxxx"
                     maxLength={19}
                     inputMode="numeric"
@@ -335,7 +335,7 @@ const PaymentForm = forwardRef<PaymentFormHandles, PaymentFormProps>(
                 render={({ field }) => (
                   <InputTextFeild
                     {...field}
-                    label={t("card_owner")}
+                    label={t("Card Owner")}
                     placeholder="John Doe"
                     errors={errors.name?.message}
                     disabled={!isOmiseLoaded}
@@ -350,7 +350,7 @@ const PaymentForm = forwardRef<PaymentFormHandles, PaymentFormProps>(
                 render={({ field }) => (
                   <InputTextFeild
                     {...field}
-                    label={t("expiry_date")}
+                    label={t("Expiry Date")}
                     placeholder="MM/YY"
                     maxLength={5}
                     inputMode="numeric"
@@ -368,7 +368,7 @@ const PaymentForm = forwardRef<PaymentFormHandles, PaymentFormProps>(
                 render={({ field }) => (
                   <InputTextFeild
                     {...field}
-                    label={t("cvc")}
+                    label={t("CVC")}
                     placeholder="123"
                     maxLength={4}
                     inputMode="numeric"
@@ -386,10 +386,10 @@ const PaymentForm = forwardRef<PaymentFormHandles, PaymentFormProps>(
 
             <div className="px-5 md:px-0">
               data for test
-              <div> {t("card_number")} : 4242-4242-4242-4242</div>
-              <div> {t("card_owner")} : John </div>
-              <div> {t("expiry_date")} : 10/27 </div>
-              <div> {t("cvc")} : 123 </div>
+              <div> {t("Card Number")} : 4242-4242-4242-4242</div>
+              <div> {t("Card Owner")} : John </div>
+              <div> {t("Expiry Date")} : 10/27 </div>
+              <div> {t("CVC")} : 123 </div>
             </div>
           </div>
         )}
@@ -399,14 +399,14 @@ const PaymentForm = forwardRef<PaymentFormHandles, PaymentFormProps>(
             {!qrCodeUrl ? (
               <div className="w-full py-3 rounded-lg font-medium bg-gray-400 text-center text-white">
                 {loading
-                  ? t("generating_qr_code")
+                  ? t("Generating QR Code...")
                   : paymentStatus || "Failed to generate QR Code"}
               </div>
             ) : (
               <div className="space-y-3">
                 <div className="rounded bg-gray-g63f p-10 flex flex-col flex-1 items-center justify-center">
                   <div className="text-gray-g3b0 text-fr-14 mb-5">
-                    {t("time_remaining")} :{" "}
+                    {t("Time remaining")} :{" "}
                     <span className="text-blue-bbee">{countdown}</span>
                   </div>
                   <Image

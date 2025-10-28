@@ -48,7 +48,7 @@ function MovieInfo() {
         setMovie(res.data);
       } catch (err) {
         console.error("Error fetching movie:", err);
-        setError(t("cannot_load_movie") || "ไม่สามารถโหลดข้อมูลหนังได้");
+        setError(t("Cannot load movie") || "ไม่สามารถโหลดข้อมูลหนังได้");
       } finally {
         fetchShowtimes(selectedDate);
         setMovieLoading(false);
@@ -92,9 +92,9 @@ function MovieInfo() {
     fetchShowtimes(selectedDate);
   }, [searchValue, searchCity]);
 
-  if (movieLoading) return <p>{t("loading")}</p>;
+  if (movieLoading) return <p>{t("Loading...")}</p>;
   if (error) return <p>{error}</p>;
-  if (!movie) return <p>{t("movie_not_found")}</p>;
+  if (!movie) return <p>{t("Movie not found")}</p>;
 
   function hasGenre(item: MovieDTO["genres"][number]): item is {
     genre: {
@@ -154,7 +154,7 @@ function MovieInfo() {
       <div className="w-full mx-auto">
         <Image
           src="/images/cover-cinema.png"
-          alt={t("cinema_interior") || "Cinema Interior"}
+          alt={t("Cinema interior") || "Cinema Interior"}
           fill
           className="hidden md:flex object-cover object-center w-full -z-50! max-h-[100vh] overflow-hidden "
         />

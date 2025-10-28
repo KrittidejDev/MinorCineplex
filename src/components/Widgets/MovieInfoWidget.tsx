@@ -73,7 +73,7 @@ const MovieInfoWidget: React.FC<MoviesDetailWidgetProps> = ({
     }
     return (
       <div className="flex justify-center items-center py-20">
-        <p className="text-gray-400">{t("no_showtimes_found")}</p>
+        <p className="text-gray-400">{t("No showtimes found")}</p>
       </div>
     );
   };
@@ -128,7 +128,7 @@ const MovieInfoWidget: React.FC<MoviesDetailWidgetProps> = ({
             }`}
             onClick={() => setActiveTab("ข้อมูลภาพยนต์")}
           >
-            {t("movie_info")}
+            {t("Movie Info")}
           </button>
           <button
             className={`cursor-pointer w-40 text-lg text-white-wfff font-semibold flex items-center justify-center ${
@@ -136,7 +136,7 @@ const MovieInfoWidget: React.FC<MoviesDetailWidgetProps> = ({
             }`}
             onClick={() => setActiveTab("รอบฉาย")}
           >
-            {t("showtimes")}
+            {t("Showtimes")}
           </button>
         </div>
 
@@ -145,7 +145,7 @@ const MovieInfoWidget: React.FC<MoviesDetailWidgetProps> = ({
           <div className="hidden md:flex flex-col gap-10 mt-10">
             {/* นักแสดง */}
             <div>
-              <h3 className="font-bold text-f-24 text-white-wfff">{t("actors")}</h3>
+              <h3 className="font-bold text-f-24 text-white-wfff">{t("Actors")}</h3>
               <div className="flex flex-wrap gap-2.5 mt-5">
                 {movie.actors.map((actor) => {
                   const { firstName, lastName } = splitName(actor.actor.name);
@@ -166,7 +166,7 @@ const MovieInfoWidget: React.FC<MoviesDetailWidgetProps> = ({
             {movie.directors.length > 0 && (
               <div>
                 <div className="w-full">
-                  <h3 className="font-bold text-f-24 text-white-wfff">{t("directors")}</h3>
+                  <h3 className="font-bold text-f-24 text-white-wfff">{t("Directors")}</h3>
                   <div className="flex flex-wrap gap-2.5 mt-5">
                     {movie.directors.map((director) => {
                       const { firstName, lastName } = splitName(
@@ -188,7 +188,7 @@ const MovieInfoWidget: React.FC<MoviesDetailWidgetProps> = ({
             )}
             {/* เรื่องย่อ */}
             <div>
-              <h3 className="font-bold text-f-24 text-white-wfff">{t("synopsis")}</h3>
+              <h3 className="font-bold text-f-24 text-white-wfff">{t("Synopsis")}</h3>
               <div className="mt-5">
                 <p
                   className="font-semibold text-xl text-white-wfff"
@@ -208,13 +208,13 @@ const MovieInfoWidget: React.FC<MoviesDetailWidgetProps> = ({
                 <InputSearch
                   handleSearch={handleSearch}
                   value={searchValue}
-                  placeholder={t("search_cinema")}
+                  placeholder={t("Search Cinema")}
                 />
               </div>
               <div className="w-full md:w-[285px]">
                 <InputComboBox
                   value={searchCity}
-                  placeholder={t("search_city")}
+                  placeholder={t("Search City")}
                   options={provinces.map((province) => ({
                     value: province.name_th,
                     label: province.name_th,

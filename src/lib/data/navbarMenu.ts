@@ -1,18 +1,18 @@
 export const navbarMenuCustomer = [
     {
-        label: "booking_history",
+        label: "Booking history",
         href: "/profiles/booking-history",
     },
     {
-        label: "my_coupons",
+        label: "My Coupons",
         href: "/profiles/my-coupon",
     },
     {
-        label: "profile",
+        label: "Profile",
         href: "/profiles/profile",
     },
     {
-        label: "reset_password",
+        label: "Reset password",
         href: "/profiles/reset-password",
     },
 ]

@@ -41,7 +41,7 @@ const ResetPassword = ({ onSubmit, align, isLoading }: ResetPasswordProps) => {
       })}
       className={`w-full flex flex-col ${align === "center" ? "items-center justify-center gap-10" : "items-start justify-start gap-6"}`}
     >
-      <h2 className="text-f-36 text-center text-white">{t("reset_password_title")}</h2>
+      <h2 className="text-f-36 text-center text-white">{t("Reset Password")}</h2>
       <div className="w-full flex flex-col gap-4">
         <div className="w-full">
           <Controller
@@ -50,8 +50,8 @@ const ResetPassword = ({ onSubmit, align, isLoading }: ResetPasswordProps) => {
               <InputPassword
                 {...field}
                 type={"password"}
-                label={t("reset_password_new_password")}
-                placeholder={t("reset_password_new_password_placeholder")}
+                label={t("New password")}
+                placeholder={t("New password")}
                 errors={errors.newPassword?.message}
               />
             )}
@@ -66,8 +66,8 @@ const ResetPassword = ({ onSubmit, align, isLoading }: ResetPasswordProps) => {
               <InputPassword
                 {...field}
                 type={"password"}
-                label={t("reset_password_confirm_password")}
-                placeholder={t("reset_password_confirm_password_placeholder")}
+                label={t("Confirm password")}
+                placeholder={t("Confirm new password")}
                 errors={errors.confirmPassword?.message}
               />
             )}
@@ -81,7 +81,7 @@ const ResetPassword = ({ onSubmit, align, isLoading }: ResetPasswordProps) => {
           disabled={isEmpty || isLoading}
           className={`${align === "center" ? "btn-base blue-normal cursor-pointer" : "btn-base white-outline-normal"} w-full max-w-[182px] h-12 flex rounded-b-sm justify-center items-center`}
         >
-          {isLoading ? t("reset_password_loading") : t("reset_password_button")}
+          {isLoading ? t("Loading...") : t("Reset Password")}
         </Button>
       </div>
     </form>

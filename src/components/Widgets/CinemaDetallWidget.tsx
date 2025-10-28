@@ -139,9 +139,11 @@ const CinemaDetailWidget: React.FC = () => {
             )}
           </div>
         </div>
-        <section className="w-dvw z-1">
-          <DateSelectionBarWidget onSelectDate={handleSelectDate} />
-        </section>
+        <div className="z-1 w-full flex justify-center items-center">
+          <div className="max-w-[1200px]">
+            <DateSelectionBarWidget onSelectDate={handleSelectDate} />
+          </div>
+        </div>
         <section className="w-dvw py-4 sm:px-0">
           <div className="space-y-6 py-10 md:py-20">
             {showtimesData?.map((movie) => (

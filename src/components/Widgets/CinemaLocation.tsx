@@ -1,4 +1,4 @@
-import { CinemaByProvince, CinemaDTO, CinemaType } from "@/types/cinema";
+import { CinemaByProvince } from "@/types/cinema";
 import CinemaCard from "../Cards/CinemaCard";
 import DoneRound from "../Icons/DoneRound";
 import { useState, useMemo } from "react";
@@ -11,7 +11,7 @@ interface CinemaLocationProps {
 }
 
 const CinemaLocation = ({ filterCinema, data }: CinemaLocationProps) => {
-  const { i18n, t } = useTranslation();
+  const { i18n} = useTranslation();
   const [filter, setFilter] = useState<string>("1");
   const [visibleProvinces, setVisibleProvinces] = useState<number>(1);
 

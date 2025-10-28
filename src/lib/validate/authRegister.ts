@@ -105,6 +105,24 @@ export const signupFormSchema = signupSchema.shape({
 
 
 
+// Function to create reset password schema with translation
+export const createResetPasswordSchema = (t: (key: string) => string) => {
+  return yup.object().shape({
+    newPassword: yup
+      .string()
+      .required(t("forgot_password_email_required"))
+      .min(8, t("password_min_error"))
+      .matches(/[A-Z]/, t("password_uppercase_error"))
+      .matches(/[a-z]/, t("password_lowercase_error"))
+      .matches(/[0-9]/, t("password_number_error")),
+    confirmPassword: yup
+      .string()
+      .required(t("forgot_password_email_required"))
+      .oneOf([yup.ref("newPassword")], t("password_mismatch_error")),
+  });
+};
+
+// Keep old schema for backward compatibility
 export const resetPasswordSchema = yup.object().shape({
   newPassword: yup
   .string()

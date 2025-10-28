@@ -5,6 +5,7 @@ import { Button } from "../ui/button";
 import * as yup from "yup";
 import Link from "next/link";
 import { useState } from "react";
+import { useTranslation } from "next-i18next";
 
 type FormValues = {
   email: string;
@@ -16,13 +17,14 @@ type ForgotPasswordFormProps = {
 };
 
 const ForgotPasswordForm = ({ onSubmit, isLoading }: ForgotPasswordFormProps) => {
+  const { t } = useTranslation("common");
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   const schema = yup.object().shape({
     email: yup
       .string()
-      .required("Email is required")
-      .matches(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, "Invalid email format"),
+      .required(t("forgot_password_email_required"))
+      .matches(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, t("forgot_password_invalid_email")),
   });
 
   const {
@@ -49,20 +51,20 @@ const ForgotPasswordForm = ({ onSubmit, isLoading }: ForgotPasswordFormProps) =>
   if (isSubmitted) {
     return (
       <div className="w-full flex flex-col items-center gap-6">
-        <h2 className="text-f-36 text-center text-white">Check Your Email</h2>
+        <h2 className="text-f-36 text-center text-white">{t("forgot_password_check_email")}</h2>
         <div className="text-center text-white">
           <p className="text-fm-16 mb-4">
-            We&apos;ve sent a password reset link to your email address.
+            {t("forgot_password_reset_link_sent")}
           </p>
           <p className="text-fr-14 text-gray-g3b0">
-            Please check your email and click the link to reset your password.
+            {t("forgot_password_check_email_instructions")}
           </p>
         </div>
         <Link
           href="/auth/login"
           className="text-white underline text-fm-16"
         >
-          Back to Login
+          {t("forgot_password_back_to_login")}
         </Link>
       </div>
     );
@@ -74,15 +76,15 @@ const ForgotPasswordForm = ({ onSubmit, isLoading }: ForgotPasswordFormProps) =>
       onSubmit={handleSubmit(handleFormSubmit)}
       className="w-full flex flex-col items-center gap-10"
     >
-      <h2 className="text-f-36 text-center text-white">Forgot Password</h2>
+      <h2 className="text-f-36 text-center text-white">{t("forgot_password")}</h2>
       <div className="w-full flex flex-col gap-4">
         <Controller
           control={control}
           render={({ field }) => (
             <InputTextFeild
               {...field}
-              label={"Email"}
-              placeholder="Enter your email"
+              label={t("forgot_password_email")}
+              placeholder={t("forgot_password_email_placeholder")}
               errors={errors.email?.message}
             />
           )}
@@ -96,17 +98,17 @@ const ForgotPasswordForm = ({ onSubmit, isLoading }: ForgotPasswordFormProps) =>
           disabled={isEmpty || isSubmitting || isLoading}
           className="btn-base blue-normal cursor-pointer w-full h-12 flex rounded-b-sm justify-center items-center"
         >
-          {(isSubmitting || isLoading) ? "Sending..." : "Send Reset Link"}
+          {(isSubmitting || isLoading) ? t("forgot_password_sending") : t("forgot_password_send_link")}
         </Button>
       </div>
 
       <div className="text-fr-16 text-gray-g3b0 flex gap-2 justify-center">
-        Remember your password?
+        {t("forgot_password_remember_password")}
         <Link
           href="/auth/login"
           className="text-white text-fm-16 underline cursor-pointer"
         >
-          Login
+          {t("login")}
         </Link>
       </div>
     </form>

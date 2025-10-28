@@ -186,7 +186,7 @@ const BookingSeat: React.FC = () => {
           `Invalid seat IDs: ${invalidSeats.map((s) => s.id).join(", ")}`
         );
       }
-      const res = await Promise.all(
+      await Promise.all(
         selectedSeats.map((seat) =>
           userService.POST_LOCK_SEAT(seat.id, session.user.id)
         )
@@ -263,21 +263,21 @@ const BookingSeat: React.FC = () => {
           const buyQty = selectedCoupon.buy_quantity || 0;
           const getQty = selectedCoupon.get_quantity || 0;
           const totalSeats = selectedSeats.length;
-      
+
           if (buyQty > 0 && getQty > 0 && totalSeats >= buyQty) {
             const freeSets = Math.floor(totalSeats / buyQty);
             const freeSeats = freeSets * getQty;
-      
+
             const avgPrice =
               selectedSeats.reduce((sum, s) => sum + (s.price || 0), 0) /
               totalSeats;
-      
+
             const discount = freeSeats * avgPrice * 100;
             finalPrice -= discount;
           }
         }
       }
-      
+
       if (finalPrice < 0) finalPrice = 0;
 
       const response = await fetch("/api/booking/create", {
@@ -368,7 +368,6 @@ const BookingSeat: React.FC = () => {
   };
 
   const handlePaymentClick = () => {
-
     if (totalPriceInSatang < 2000) {
       toast.error(t("price_must_be_at_least_20_baht"));
       return;
@@ -376,7 +375,9 @@ const BookingSeat: React.FC = () => {
     setRenderModal(
       <div className="p-6 bg-gray-g63f flex flex-col items-center rounded-2xl gap-y-4">
         <div className="text-f-20 text-white">{t("confirm_booking")}</div>
-        <div className="text-fr-14 text-gray-gedd">{t("confirm_booking_and_payment_message")}</div>
+        <div className="text-fr-14 text-gray-gedd">
+          {t("confirm_booking_and_payment_message")}
+        </div>
         <div className="flex gap-x-4">
           <Button
             className="btn-base white-outline-normal"

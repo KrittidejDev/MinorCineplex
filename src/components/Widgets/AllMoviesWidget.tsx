@@ -16,7 +16,7 @@ function AllMoviesWidget({ initialMovies = [] }: AllMoviesWidgetProps) {
   const isInitialMount = useRef(true);
 
   const router = useRouter();
-  const { i18n } = useTranslation();
+  const { i18n } = useTranslation("common");
 
   const texts = useMemo(
     () => ({

@@ -130,15 +130,33 @@ export const moviesRepo = {
         return [];
       }
     }
+
+    const cinemaFilters: Prisma.CinemaWhereInput[] = [];
+
     if (search) {
-      where.cinema = {
-        name: { contains: search, mode: "insensitive" },
-      };
+      // Search in name field only
+      cinemaFilters.push({
+        OR: [
+          {
+            translations: {
+              path: ["en", "name"],
+              string_contains: search,
+              mode: "insensitive",
+            },
+          },
+          {
+            translations: {
+              path: ["th", "name"],
+              string_contains: search,
+              mode: "insensitive",
+            },
+          },
+        ],
+      });
     }
-    if (city) {
-      where.cinema = {
-        city: { contains: city, mode: "insensitive" },
-      };
+    if (cinemaFilters.length > 0) {
+      where.cinema =
+        cinemaFilters.length === 1 ? cinemaFilters[0] : { AND: cinemaFilters };
     }
     const showtimes = await prisma.showtime.findMany({
       where,

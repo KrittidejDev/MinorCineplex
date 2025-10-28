@@ -5,13 +5,15 @@ import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import NavBarWidget from "@/components/Widgets/NavBarWidget";
 import Link from "next/link";
+import { useTranslation } from "next-i18next";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
 const ResetPasswordPage = () => {
+  const { t } = useTranslation("common");
   const router = useRouter();
   const [email, setEmail] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
   const [isExpired, setIsExpired] = useState(false);
-
   useEffect(() => {
     if (router.isReady) {
       const { email: emailParam, token } = router.query;
@@ -40,7 +42,7 @@ const ResetPasswordPage = () => {
     reset: () => void
   ) => {
     if (!email) {
-      alert("Email is required");
+      toast.error(t("forgot_password_email_required"));
       return;
     }
 
@@ -54,10 +56,10 @@ const ResetPasswordPage = () => {
       const data = response.data;
 
       if (response.status !== 200) {
-        throw new Error(data.message || "Failed to reset password");
+        throw new Error(data.message || t("reset_password_failed"));
       }
 
-      toast.success("Password reset successfully!");
+      toast.success(t("reset_password_success"));
       reset();
       router.push("/auth/login");
     } catch (error) {
@@ -67,7 +69,7 @@ const ResetPasswordPage = () => {
         toast.error(message);
       } else {
         toast.error(
-          error instanceof Error ? error.message : "An error occurred"
+          error instanceof Error ? error.message : t("reset_password_failed")
         );
       }
     } finally {
@@ -79,15 +81,13 @@ const ResetPasswordPage = () => {
     return (
       <div className="min-h-screen w-full flex items-center justify-center px-4">
         <div className="w-[380px] text-center text-white">
-          <h2 className="text-f-36 mb-4">Link Expired</h2>
-          <p className="text-fm-16 mb-4">
-            This reset link has expired. Please request a new one.
-          </p>
+          <h2 className="text-f-36 mb-4">{t("reset_password_link_expired")}</h2>
+          <p className="text-fm-16 mb-4">{t("reset_password_link_expired")}</p>
           <Link
             href="/auth/forgot-password"
             className="text-white underline text-fm-16"
           >
-            Request a new reset link
+            {t("reset_password_request_new_link")}
           </Link>
         </div>
       </div>
@@ -98,13 +98,13 @@ const ResetPasswordPage = () => {
     return (
       <div className="min-h-screen w-full flex items-center justify-center px-4">
         <div className="w-[380px] text-center text-white">
-          <h2 className="text-f-36 mb-4">Invalid Reset Link</h2>
-          <p className="text-fm-16 mb-4">This reset link is invalid.</p>
+          <h2 className="text-f-36 mb-4">{t("reset_password_link_invalid")}</h2>
+          <p className="text-fm-16 mb-4">{t("reset_password_link_invalid")}</p>
           <Link
             href="/auth/forgot-password"
             className="text-white underline text-fm-16"
           >
-            Request a new reset link
+            {t("reset_password_request_new_link")}
           </Link>
         </div>
       </div>
@@ -125,6 +125,14 @@ const ResetPasswordPage = () => {
       </div>
     </div>
   );
+};
+
+export const getServerSideProps = async ({ locale }: { locale: string }) => {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale, ["common"])),
+    },
+  };
 };
 
 export default ResetPasswordPage;

@@ -30,7 +30,7 @@ const BookingSuccessPage: React.FC = () => {
   const [bookingData, setBookingData] = useState<BookingData | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const { i18n } = useTranslation();
+  const { i18n } = useTranslation("common");
   const lang = i18n.language as "th" | "en";
 
   const fetchBookingData = async () => {
@@ -80,25 +80,25 @@ const BookingSuccessPage: React.FC = () => {
         <div className="mb-6">
           <SuccessBooking />
         </div>
-        <div className="text-f-36 mb-12">
+        <div className="text-f-36 text-white mb-12">
           {lang === "th" ? "การจองสำเร็จ" : "Booking Success"}
         </div>
         <div className="p-6 rounded-2xl bg-gray-gc1b w-full max-w-[386px] flex flex-col mb-12">
           <div className="mb-2 flex items-center gap-x-3">
             <PinFill width={16} height={16} color="#565F7E" />
-            <span className="text-fr-16">{bookingData.cinema_name[lang]}</span>
+            <span className="text-fr-16 text-white">{bookingData.cinema_name[lang]}</span>
           </div>
           <div className="mb-2 flex items-center gap-x-3">
             <DateRangeFill width={16} height={16} color="#565F7E" />
-            <span className="text-fr-16">{bookingData.date[lang]}</span>
+            <span className="text-fr-16 text-white">{bookingData.date[lang]}</span>
           </div>
           <div className="mb-2 flex items-center gap-x-3">
             <TimeFill width={16} height={16} color="#565F7E" />
-            <span className="text-fr-16">{bookingData.time}</span>
+            <span className="text-fr-16 text-white">{bookingData.time}</span>
           </div>
           <div className="mb-4 flex items-center gap-x-3">
             <Shop width={16} height={16} color="#565F7E" />
-            <span className="text-fr-16">{bookingData.hall[lang]}</span>
+            <span className="text-fr-16 text-white">{bookingData.hall[lang]}</span>
           </div>
           <div className="border-b-2 border-b-gray-g63f mb-4" />
           <div className="text-fr-16 text-gray-g3b0 flex justify-between items-center mb-2">
@@ -148,7 +148,7 @@ const BookingSuccessPage: React.FC = () => {
 export async function getServerSideProps({ locale }: { locale: string }) {
   return {
     props: {
-      ...(await serverSideTranslations(locale, ["common", "booking"])),
+      ...(await serverSideTranslations(locale, ["common"])),
     },
   };
 }

@@ -2,7 +2,10 @@ import InputPassword from "../Inputs/InputPassword";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Button } from "../ui/button";
-import { resetPasswordSchema } from "../../lib/validate/authRegister";
+import { createResetPasswordSchema } from "../../lib/validate/authRegister";
+import { useTranslation } from "next-i18next";
+import { useMemo } from "react";
+
 export type FormValues = {
   newPassword: string;
   confirmPassword: string;
@@ -15,6 +18,9 @@ type ResetPasswordProps = {
 };
 
 const ResetPassword = ({ onSubmit, align, isLoading }: ResetPasswordProps) => {
+  const { t } = useTranslation("common");
+  const schema = useMemo(() => createResetPasswordSchema(t), [t]);
+  
   const {
     control,
     watch,
@@ -22,7 +28,7 @@ const ResetPassword = ({ onSubmit, align, isLoading }: ResetPasswordProps) => {
     reset,
     formState: { errors },
   } = useForm<FormValues>({
-    resolver: yupResolver(resetPasswordSchema),
+    resolver: yupResolver(schema),
   });
 
   const { newPassword, confirmPassword } = watch();
@@ -35,7 +41,7 @@ const ResetPassword = ({ onSubmit, align, isLoading }: ResetPasswordProps) => {
       })}
       className={`w-full flex flex-col ${align === "center" ? "items-center justify-center gap-10" : "items-start justify-start gap-6"}`}
     >
-      <h2 className="text-f-36 text-center text-white">Reset Password</h2>
+      <h2 className="text-f-36 text-center text-white">{t("reset_password_title")}</h2>
       <div className="w-full flex flex-col gap-4">
         <div className="w-full">
           <Controller
@@ -44,8 +50,8 @@ const ResetPassword = ({ onSubmit, align, isLoading }: ResetPasswordProps) => {
               <InputPassword
                 {...field}
                 type={"password"}
-                label={"New password"}
-                placeholder="New password"
+                label={t("reset_password_new_password")}
+                placeholder={t("reset_password_new_password_placeholder")}
                 errors={errors.newPassword?.message}
               />
             )}
@@ -60,8 +66,8 @@ const ResetPassword = ({ onSubmit, align, isLoading }: ResetPasswordProps) => {
               <InputPassword
                 {...field}
                 type={"password"}
-                label={"Confirm password"}
-                placeholder="Confirm new password"
+                label={t("reset_password_confirm_password")}
+                placeholder={t("reset_password_confirm_password_placeholder")}
                 errors={errors.confirmPassword?.message}
               />
             )}
@@ -75,7 +81,7 @@ const ResetPassword = ({ onSubmit, align, isLoading }: ResetPasswordProps) => {
           disabled={isEmpty || isLoading}
           className={`${align === "center" ? "btn-base blue-normal cursor-pointer" : "btn-base white-outline-normal"} w-full max-w-[182px] h-12 flex rounded-b-sm justify-center items-center`}
         >
-          {isLoading ? "Loading..." : "Reset Password"}
+          {isLoading ? t("reset_password_loading") : t("reset_password_button")}
         </Button>
       </div>
     </form>

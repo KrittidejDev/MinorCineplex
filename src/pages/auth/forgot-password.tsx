@@ -2,8 +2,11 @@ import ForgotPasswordForm from "@/components/Forms/ForgotPasswordForm";
 import { useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { useTranslation } from "next-i18next";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
 const ForgotPassword = () => {
+  const { t } = useTranslation("common");
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (values: { email: string }) => {
@@ -13,15 +16,14 @@ const ForgotPassword = () => {
       const data = response.data;
 
       if (data.resetLink) {
-        toast.success("Reset link sent to your email");
+        toast.success(t("forgot_password_reset_link_sent_toast"));
       }
     } catch (error) {
-      console.error("Error:", error);
       if (axios.isAxiosError(error)) {
         const message = error.response?.data?.message || error.message;
         toast.error(message);
       } else {
-        toast.error(error instanceof Error ? error.message : "An error occurred");
+        toast.error(error instanceof Error ? error.message : t("forgot_password_error"));
       }
     } finally {
       setIsLoading(false);
@@ -35,6 +37,14 @@ const ForgotPassword = () => {
       </div>
     </div>
   );
+};
+
+export const getServerSideProps = async ({ locale }: { locale: string }) => {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale, ["common"])),
+    },
+  };
 };
 
 export default ForgotPassword;

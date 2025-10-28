@@ -33,7 +33,7 @@ interface Booking {
 }
 
 const Index = () => {
-  const { t, i18n } = useTranslation();
+  const { t, i18n } = useTranslation("common");
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

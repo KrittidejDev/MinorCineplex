@@ -50,6 +50,7 @@ const BookingSeat: React.FC = () => {
   const [isShowModal, setIsShowModal] = useState<boolean>(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isLockingSeats, setIsLockingSeats] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -148,6 +149,7 @@ const BookingSeat: React.FC = () => {
       return;
 
     isUnlocking.current = true;
+    setIsProcessing(true);
     try {
       const seatIds = selectedSeats.map((seat) => seat.id);
       const body = JSON.stringify({ seats: seatIds });
@@ -172,6 +174,7 @@ const BookingSeat: React.FC = () => {
       console.error("Unlock seats error:", err);
       toast.error(t("Failed to unlock seats"));
     } finally {
+      setIsProcessing(false);
       isUnlocking.current = false;
     }
   };
@@ -185,6 +188,7 @@ const BookingSeat: React.FC = () => {
       toast.error(t("Please select seats"));
       return;
     }
+    setIsLockingSeats(true);
     try {
       const invalidSeats = selectedSeats.filter(
         (seat) => !seat.id || typeof seat.id !== "string"
@@ -201,12 +205,13 @@ const BookingSeat: React.FC = () => {
       );
       setStep("2");
       setCountdown(5 * 60);
-      console.log("Seats locked successfully");
     } catch (err) {
       console.error("Lock seats error:", err);
       toast.error(t("Failed to lock seats"));
       setSelectedSeats([]);
       setStep("1");
+    } finally {
+      setIsLockingSeats(false);
     }
   };
 
@@ -216,6 +221,7 @@ const BookingSeat: React.FC = () => {
       setStep("1");
       return false;
     }
+    setIsProcessing(true);
     try {
       const responses = await Promise.all(
         selectedSeats.map(async (seat) => {
@@ -237,7 +243,9 @@ const BookingSeat: React.FC = () => {
 
       if (invalidSeats.length) {
         const seatIds = invalidSeats.map((res) => res.seatId).join(", ");
-        toast.error(t("Seats {{seatIds}} are not available or expired", { seatIds }));
+        toast.error(
+          t("Seats {{seatIds}} are not available or expired", { seatIds })
+        );
         await releaseSeatsAsync(true);
         setSelectedSeats([]);
         setStep("1");
@@ -248,6 +256,8 @@ const BookingSeat: React.FC = () => {
       console.error("Check seat lock error:", err);
       toast.error(t("Failed to check seat lock"));
       return false;
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -255,6 +265,7 @@ const BookingSeat: React.FC = () => {
     if (!bookingInfo?.id || !selectedSeats.length || !session?.user?.id) {
       throw new Error(t("Invalid booking data"));
     }
+    setIsProcessing(true);
     try {
       const publicId = generatePublicId();
       let finalPrice = totalPriceInSatang;
@@ -311,12 +322,15 @@ const BookingSeat: React.FC = () => {
     } catch (err) {
       console.error("Create booking error:", err);
       throw err;
+    } finally {
+      setIsProcessing(false);
     }
   };
 
   const createPayment = async (bookingId: string) => {
     if (!bookingId || typeof bookingId !== "string")
       throw new Error(t("Invalid booking ID"));
+    setIsProcessing(true);
     try {
       const response = await fetch("/api/payments/create", {
         method: "POST",
@@ -335,6 +349,8 @@ const BookingSeat: React.FC = () => {
     } catch (err) {
       console.error("Create payment error:", err);
       throw err;
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -374,13 +390,13 @@ const BookingSeat: React.FC = () => {
       setIsProcessing(false);
     }
   };
-    const handlePaymentClick = () => {
-      if (totalPriceInSatang < 2000) {
-        toast.error(t("Price must be at least 20 baht"));
-        return;
-      }
-      setIsShowModal(true);
-    };
+  const handlePaymentClick = () => {
+    if (totalPriceInSatang < 2000) {
+      toast.error(t("Price must be at least 20 baht"));
+      return;
+    }
+    setIsShowModal(true);
+  };
 
   useEffect(() => {
     setIsLoading(true);
@@ -524,7 +540,7 @@ const BookingSeat: React.FC = () => {
                     (seat) => seat.id && typeof seat.id === "string"
                   );
                   if (validSeats.length !== seats.length) {
-                      toast.error(t("Invalid seat format"));
+                    toast.error(t("Invalid seat format"));
                     return;
                   }
                   setSelectedSeats(validSeats);
@@ -552,6 +568,7 @@ const BookingSeat: React.FC = () => {
                 <SummaryBoxCard
                   step={step}
                   data={bookingInfo}
+                  isProcessing={isLockingSeats}
                   lockSeats={lockSeats}
                   totalSelected={selectedSeats}
                   totalPrice={totalPrice}
@@ -573,21 +590,21 @@ const BookingSeat: React.FC = () => {
           isShowModal={isShowModal}
           onClose={() => setIsShowModal(false)}
         >
-          <div className="p-6 bg-gray-g63f flex flex-col items-center rounded-2xl gap-y-4">
+          <div className="p-6 max-w-200 bg-gray-g63f px-15 flex flex-col items-center rounded-2xl gap-y-4">
             <div className="text-f-20 text-white">{t("Confirm Booking")}</div>
             <div className="text-fr-14 text-gray-gedd">
               {t("Confirm Booking and Payment")}
             </div>
             <div className="flex gap-x-4">
               <Button
-                className="btn-base white-outline-normal"
+                className="btn-base white-outline-normal w-35"
                 onClick={() => setIsShowModal(false)}
                 disabled={isProcessing}
               >
                 {t("Cancel")}
               </Button>
               <Button
-                className="btn-base blue-normal cursor-pointer"
+                className="btn-base blue-normal cursor-pointer w-35"
                 onClick={handlePayment}
                 disabled={isProcessing}
               >

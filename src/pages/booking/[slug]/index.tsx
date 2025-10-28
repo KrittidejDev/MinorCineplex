@@ -147,19 +147,28 @@ const BookingSeat: React.FC = () => {
       paymentSuccessful.current
     )
       return;
+
     isUnlocking.current = true;
     try {
-      await fetch("/api/seats/unlock-batch", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ seats: selectedSeats.map((seat) => seat.id) }),
-      });
+      const seatIds = selectedSeats.map((seat) => seat.id);
+      const body = JSON.stringify({ seats: seatIds });
+      const url = "/api/seats/unlock-batch";
+
+      const blob = new Blob([body], { type: "application/json" });
+      const ok = navigator.sendBeacon(url, blob);
+
+      if (!ok) {
+        await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body,
+        });
+      }
+
       setSelectedSeats([]);
       setStep("1");
-      if (showAlert) {
-        toast.error("เวลาการจองหมด กรุณาเลือกที่นั่งใหม่");
-      }
-      console.log("Seats unlocked successfully");
+      if (showAlert) toast.error("เวลาการจองหมด กรุณาเลือกที่นั่งใหม่");
+      console.log("✅ Seats unlocked successfully");
     } catch (err) {
       console.error("Unlock seats error:", err);
       toast.error("ไม่สามารถปลดล็อกที่นั่งได้");
@@ -468,6 +477,24 @@ const BookingSeat: React.FC = () => {
       releaseSeatsAsync(true);
     }
   }, [step]);
+
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (
+        document.visibilityState === "hidden" &&
+        step === "2" &&
+        selectedSeats.length > 0 &&
+        !paymentSuccessful.current
+      ) {
+        releaseSeatsAsync();
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [selectedSeats, step]);
 
   const memoizedCountdown = useMemo(() => {
     const minutes = Math.floor(countdown / 60)

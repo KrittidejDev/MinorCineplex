@@ -18,7 +18,7 @@ type SignUpFormProps = {
 };
 
 const SignInForm = ({ onSubmit }: SignUpFormProps) => {
-  const { i18n } = useTranslation();
+  const { i18n } = useTranslation("common");
   const texts = useMemo(() => ({
     email: i18n.language === "th" ? "อีเมล" : "Email",
     password: i18n.language === "th" ? "รหัสผ่าน" : "Password",

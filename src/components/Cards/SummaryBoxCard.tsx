@@ -43,7 +43,7 @@ export default function SummaryBoxCard({
   onPayment,
   paymentMethod = 'credit_card',
 }: Props) {
-  const { i18n } = useTranslation()
+  const { i18n } = useTranslation("common")
   const lang = i18n?.language === 'th' ? 'th' : 'en'
 
   const [isCouponModalOpen, setCouponModalOpen] = useState(false)

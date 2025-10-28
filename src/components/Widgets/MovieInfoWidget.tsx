@@ -191,11 +191,10 @@ const MovieInfoWidget: React.FC<MoviesDetailWidgetProps> = ({
               <h3 className="font-bold text-f-24 text-white-wfff">{t("synopsis")}</h3>
               <div className="mt-5">
                 <p
-                  className="font-bold text-white-wfff"
-                  dangerouslySetInnerHTML={{
-                    __html: movie.translations?.th?.description || movie.title,
-                  }}
-                />
+                  className="font-semibold text-xl text-white-wfff"
+                >
+                  {i18n?.language === "th" ? movie.translations?.th?.description || "" : movie.translations?.en?.description || ""}
+                </p>
               </div>
             </div>
           </div>

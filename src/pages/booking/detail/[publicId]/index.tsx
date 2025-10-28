@@ -35,6 +35,8 @@ interface BookingDetailProps {
   error: string | null;
 }
 
+const BASE_URL = "https://minor-cineplex-phi.vercel.app";
+
 const BookingDetail: React.FC<BookingDetailProps> = ({
   bookingData,
   error,
@@ -62,23 +64,33 @@ const BookingDetail: React.FC<BookingDetailProps> = ({
     );
   }
 
-  const bookingSlug = `${bookingData.movie_title.en}-${bookingData.cinema_name.en}-${bookingData.hall.en}`;
+  const absoluteImage = bookingData.movie_poster
+    ? bookingData.movie_poster.startsWith("http")
+      ? bookingData.movie_poster
+      : `${BASE_URL}${bookingData.movie_poster.startsWith("/") ? "" : "/"}${bookingData.movie_poster}`
+    : `${BASE_URL}/images/fallback-poster.jpg`;
+
+  const currentUrl = `${BASE_URL}/booking/detail/booking-${bookingData.showtime_id}`;
+
+  const bookingSlug =
+    `${bookingData.movie_title.en}-${bookingData.cinema_name.en}-${bookingData.hall.en}`
+      .replace(/\s+/g, "-")
+      .toLowerCase();
 
   return (
     <NavAndFooter
       seoProps={{
-        title: `${
-          bookingData.movie_title[lang] || bookingData.movie_title.en
-        } - ${bookingData.cinema_name[lang] || bookingData.cinema_name.en}`,
+        title: `${bookingData.movie_title[lang]} - ${bookingData.cinema_name[lang]} | MinorCineplex`,
         description:
           bookingData.movie_description[lang] ||
-          bookingData.movie_description.en ||
-          "Booking details for your movie ticket",
-        image: bookingData.movie_poster || "/images/fallback-poster.jpg",
+          `จองตั๋วภาพยนตร์ ${bookingData.movie_title[lang]} เรียบร้อยแล้ว วันที่ ${bookingData.date[lang]} รอบ ${bookingData.time} ที่นั่ง ${bookingData.seats.join(", ")}`,
+        image: absoluteImage,
         imageWidth: 800,
         imageHeight: 1200,
-        imageAlt: bookingData.movie_title[lang] || "Movie Poster",
-        url: `https://minor-cineplex-phi.vercel.app/booking/${bookingSlug}?id=${bookingData.showtime_id}&fid=${bookingData.user_id}`,
+        imageAlt: `${bookingData.movie_title[lang]} - โปสเตอร์ภาพยนตร์`,
+        url: currentUrl,
+        type: "website",
+        siteName: "MinorCineplex",
       }}
     >
       <div className="min-h-screen p-4 md:p-8">
@@ -92,16 +104,13 @@ const BookingDetail: React.FC<BookingDetailProps> = ({
                 <div className="relative w-full">
                   <div className="w-full aspect-[280/408] md:aspect-[387/565] rounded-lg overflow-hidden shadow-2xl shadow-cyan-500/30 relative">
                     <Image
-                      src={
-                        bookingData.movie_poster ||
-                        "/images/fallback-poster.jpg"
-                      }
+                      src={absoluteImage}
                       alt={bookingData.movie_title[lang] || "Movie Poster"}
                       fill
                       className="object-cover"
                       loading="lazy"
                       onError={(e) => {
-                        e.currentTarget.src = "/images/fallback-poster.jpg";
+                        e.currentTarget.src = `${BASE_URL}/images/fallback-poster.jpg`;
                       }}
                     />
                   </div>
@@ -213,12 +222,19 @@ const BookingDetail: React.FC<BookingDetailProps> = ({
 export default BookingDetail;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
+  context.res.setHeader(
+    "Cache-Control",
+    "no-store, no-cache, must-revalidate, proxy-revalidate"
+  );
+
   const { params, locale } = context;
   const publicId = Array.isArray(params?.publicId)
     ? params?.publicId[0]
     : params?.publicId;
 
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+  const baseUrl =
+    process.env.NEXT_PUBLIC_BASE_URL || "https://minor-cineplex-phi.vercel.app";
+
   try {
     const res = await axios.get(
       `${baseUrl}/api/booking/success/${encodeURIComponent(publicId as string)}`
@@ -233,7 +249,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   } catch (err: unknown) {
     console.error(
-      "❌ [getServerSideProps] booking fetch error:",
+      "[getServerSideProps] booking fetch error:",
       err instanceof Error ? err.message : err
     );
     return {

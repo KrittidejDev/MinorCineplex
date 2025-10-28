@@ -12,7 +12,7 @@ import ShowtimeMovie from "./ShowtimeMovie";
 const CinemaDetailWidget: React.FC = () => {
   const params = useParams();
   const cinemaSlug = params?.slug as string;
-  const { i18n } = useTranslation();
+  const { i18n } = useTranslation("common");
   const [cinemaData, setCinemaData] = useState<CinemaDTO>();
   const [filterDate, setFilterDate] = useState<Date>();
   const [showtimesData, setShowtimesData] = useState<MovieWithHalls[]>();

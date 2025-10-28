@@ -10,8 +10,8 @@ import { ShowtimeDTO } from "@/types/movie"; // import type ShowtimeDTO
 import { i18n } from "next-i18next";
 
 // Type override for name_en field
-interface ExtendedShowtimeDTO extends Omit<ShowtimeDTO, 'cinema'> {
-  cinema: Omit<ShowtimeDTO['cinema'], 'name_en'> & {
+interface ExtendedShowtimeDTO extends Omit<ShowtimeDTO, "cinema"> {
+  cinema: Omit<ShowtimeDTO["cinema"], "name_en"> & {
     name_en?: string | { name: string };
   };
 }
@@ -71,7 +71,7 @@ export const ShowTime: React.FC<ShowTimeProps> = ({
     }
     prevAllRef.current = allCollapsed;
   }, [allCollapsed]);
-console.log(data);
+  console.log(data);
 
   const base =
     "w-full max-w-32 flex flex-col justify-center items-center py-3 px-[41px] rounded-lg transition-colors";
@@ -86,9 +86,9 @@ console.log(data);
                 <LocationIconBlue />
                 <span className="font-semibold line-clamp-1">
                   {i18n?.language === "en" && data.cinema.name_en
-                    ? (typeof data.cinema.name_en === "string" 
-                        ? data.cinema.name_en 
-                        : data.cinema.name_en.name)
+                    ? typeof data.cinema.name_en === "string"
+                      ? data.cinema.name_en
+                      : data.cinema.name_en.name
                     : data.cinema.name}
                 </span>
               </div>

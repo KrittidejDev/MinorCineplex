@@ -7,6 +7,10 @@ import { SeatRowData, SelectedSeat, Seat } from "@/types/cinema";
 import { ablyClient } from "@/lib/ably";
 import type { InboundMessage } from "ably";
 import SeatFriend from "../Icons/SeatFriend";
+import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
+import ModalLogin from "../Widgets/ModalLogin";
+import { signIn } from "next-auth/react";
 
 interface SeatRowProps {
   seatsData?: SeatRowData[];
@@ -54,6 +58,8 @@ const SeatRow: React.FC<SeatRowProps> = ({
   const [localSeats, setLocalSeats] = useState<SeatRowData[]>(
     generateDefaultSeats()
   );
+  const [showLoginModal, setShowLoginModal] = useState<boolean>(false);
+  const router = useRouter();
 
   useEffect(() => {
     if (seatsData && seatsData.length > 0) {
@@ -150,8 +156,14 @@ const SeatRow: React.FC<SeatRowProps> = ({
       locked_until?: number | null;
     }
   ) => {
-    if (!showtimeId || !userId) {
-      console.warn("Missing showtimeId or userId, cannot toggle seat");
+    if (!showtimeId) {
+      console.warn("Missing showtimeId, cannot toggle seat");
+      return;
+    }
+
+    if (!userId) {
+      toast.warning("กรุณาเข้าสู่ระบบ");
+      setShowLoginModal(true);
       return;
     }
 
@@ -183,52 +195,82 @@ const SeatRow: React.FC<SeatRowProps> = ({
     console.log(`Toggled seat ${seat.id}, selected: ${!isSelected}`);
   };
 
+  const handleLogin = async (value: { email: string; password: string }) => {
+    try {
+      const result = await signIn("credentials", {
+        redirect: false,
+        identifier: value.email,
+        password: value.password,
+      });
+      if (result?.ok) {
+        setShowLoginModal(false);
+        toast.success("เข้าสู่ระบบสำเร็จ");
+      } else {
+        toast.error("เข้าสู่ระบบล้มเหลว");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      toast.error("เกิดข้อผิดพลาดในการเข้าสู่ระบบ");
+    }
+  };
+
   return (
-    <div className="flex flex-col gap-[14px] md:gap-4">
-      {localSeats.map((rowData, i) => (
-        <div key={i} className="flex items-center">
-          <span className="text-white font-bold w-6 text-center text-[7.47px] md:text-fm-16">
-            {rowData.row}
-          </span>
-          <div className="flex gap-3 md:gap-4">
-            {rowData.seats.map((seat, index) => {
-              const isSelected = selectedSeats.some((s) => s.id === seat.id);
-              const isLockExpired = seat.locked_until
-                ? seat.locked_until < Date.now()
-                : false;
-              const isLockedByOther =
-                seat.status === "BOOKED" ||
-                (!isLockExpired && seat.status === "LOCKED") ||
-                (fid && seat.locked_by_user_id === fid);
+    <>
+      <div className="flex flex-col gap-[14px] md:gap-4">
+        {localSeats.map((rowData, i) => (
+          <div key={i} className="flex items-center">
+            <span className="text-white font-bold w-6 text-center text-[7.47px] md:text-fm-16">
+              {rowData.row}
+            </span>
+            <div className="flex gap-3 md:gap-4">
+              {rowData.seats.map((seat, index) => {
+                const isSelected = selectedSeats.some((s) => s.id === seat.id);
+                const isLockExpired = seat.locked_until
+                  ? seat.locked_until < Date.now()
+                  : false;
+                const isLockedByOther =
+                  seat.status === "BOOKED" ||
+                  (!isLockExpired && seat.status === "LOCKED") ||
+                  (fid && seat.locked_by_user_id === fid);
 
-              let SeatIcon;
-              if (isSelected) SeatIcon = SeatSelected;
-              else if (fid && seat.locked_by_user_id === fid && !isLockExpired)
-                SeatIcon = SeatFriend;
-              else if (seat.status === "BOOKED") SeatIcon = SeatBooked;
-              else if (seat.status === "LOCKED" && !isLockExpired)
-                SeatIcon = SeatReserved;
-              else SeatIcon = SeatAvailable;
+                let SeatIcon;
+                if (isSelected) SeatIcon = SeatSelected;
+                else if (
+                  fid &&
+                  seat.locked_by_user_id === fid &&
+                  !isLockExpired
+                )
+                  SeatIcon = SeatFriend;
+                else if (seat.status === "BOOKED") SeatIcon = SeatBooked;
+                else if (seat.status === "LOCKED" && !isLockExpired)
+                  SeatIcon = SeatReserved;
+                else SeatIcon = SeatAvailable;
 
-              return (
-                <div key={seat.id} className="flex flex-col items-center">
-                  <SeatIcon
-                    className={`w-[clamp(20px,5vw,40px)] h-[clamp(20px,5vw,40px)]
+                return (
+                  <div key={seat.id} className="flex flex-col items-center">
+                    <SeatIcon
+                      className={`w-[clamp(20px,5vw,40px)] h-[clamp(20px,5vw,40px)]
                       ${isLockedByOther ? "cursor-not-allowed opacity-50" : "cursor-pointer"} 
                       ${index === 5 ? "ml-2 sm:ml-4 md:ml-12" : ""}
                     `}
-                    onClick={() => !isLockedByOther && toggleSeat(seat)}
-                  />
-                </div>
-              );
-            })}
+                      onClick={() => !isLockedByOther && toggleSeat(seat)}
+                    />
+                  </div>
+                );
+              })}
+            </div>
+            <span className="text-white font-bold w-6 text-center text-[7.47px] md:text-fm-16">
+              {rowData.row}
+            </span>
           </div>
-          <span className="text-white font-bold w-6 text-center text-[7.47px] md:text-fm-16">
-            {rowData.row}
-          </span>
-        </div>
-      ))}
-    </div>
+        ))}
+      </div>
+      <ModalLogin
+        showLoginModal={showLoginModal}
+        setShowLoginModal={setShowLoginModal}
+        onLogin={handleLogin}
+      />
+    </>
   );
 };
 

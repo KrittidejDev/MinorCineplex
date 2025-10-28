@@ -59,23 +59,22 @@ export function RUNDER_TIMESLOT(
   const start = startDate.getTime();
   let end = endDate.getTime();
 
-  // ถ้า end < start (ข้ามวัน) เพิ่ม 24 ชั่วโมงให้ end
   if (end < start) {
     end += 24 * 60 * 60 * 1000;
   }
 
   // ดีบักข้อมูล
-  console.log({
-    start_time,
-    showtimeDate: showtimeDateObj.toISOString(),
-    now: thaiNow.toLocaleString("en-US", { timeZone: "Asia/Bangkok" }),
-    start: startDate.toLocaleString("en-US", { timeZone: "Asia/Bangkok" }),
-    end: endDate.toLocaleString("en-US", { timeZone: "Asia/Bangkok" }),
-    showMid: showThai.toLocaleString("en-US", { timeZone: "Asia/Bangkok" }),
-    todayMid: todayThai.toLocaleString("en-US", { timeZone: "Asia/Bangkok" }),
-    disabled:
-      showMid < todayMid || current > end || (current > start && current < end),
-  });
+  // console.log({
+  //   start_time,
+  //   showtimeDate: showtimeDateObj.toISOString(),
+  //   now: thaiNow.toLocaleString("en-US", { timeZone: "Asia/Bangkok" }),
+  //   start: startDate.toLocaleString("en-US", { timeZone: "Asia/Bangkok" }),
+  //   end: endDate.toLocaleString("en-US", { timeZone: "Asia/Bangkok" }),
+  //   showMid: showThai.toLocaleString("en-US", { timeZone: "Asia/Bangkok" }),
+  //   todayMid: todayThai.toLocaleString("en-US", { timeZone: "Asia/Bangkok" }),
+  //   disabled:
+  //     showMid < todayMid || current > end || (current > start && current < end),
+  // });
 
   // ตรวจสอบเงื่อนไข
   if (showMid < todayMid) {

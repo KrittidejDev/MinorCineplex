@@ -96,7 +96,6 @@ const BookingDetail: React.FC = () => {
       </NavAndFooter>
     );
   }
-console.log(bookingData);
   return (
     <NavAndFooter
       seoProps={{

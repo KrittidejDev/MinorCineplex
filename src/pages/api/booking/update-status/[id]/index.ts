@@ -41,7 +41,7 @@ export default async function handler(
       data: { status },
     });
 
-    console.log(`Booking ${id} updated to status ${status}`);
+    // console.log(`Booking ${id} updated to status ${status}`);
     res.status(200).json(updatedBooking);
   } catch (error) {
     console.error("Error updating booking status:", error);

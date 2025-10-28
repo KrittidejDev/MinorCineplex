@@ -14,11 +14,13 @@ const CinemaCard = ({ filter, cinema }: CinemaCardProps) => {
   const distanceText =
     i18n.language === "en" ? cinema?.distance_text : cinema?.distance_text_th;
   const nameText =
-    i18n.language === "en" ? cinema?.translations?.en?.name : cinema?.translations?.th?.name;
+    i18n.language === "en"
+      ? cinema?.translations?.en?.name
+      : cinema?.translations?.th?.name;
   const descriptionText =
-    i18n.language === "en" ? cinema?.translations?.en?.description : cinema?.translations?.th?.description;
-    console.log(cinema);
-    
+    i18n.language === "en"
+      ? cinema?.translations?.en?.description
+      : cinema?.translations?.th?.description;
 
   return (
     <Link href={`/cinemas/${cinema.slug}`} className="block">

@@ -35,7 +35,7 @@ function MovieCardInfo({
   rating,
   genres,
 }: Movies) {
-  const { i18n } = useTranslation();
+  const { i18n } = useTranslation("common");
   
   // Get translated title based on current language
   const displayTitle = i18n.language === "th"

@@ -8,7 +8,7 @@ import RefreshLight from "../Icons/RefreshLight";
 import { useTranslation } from "next-i18next";
 
 const ProfileBar = () => {
-  const { i18n } = useTranslation();
+  const { i18n } = useTranslation("common");
   const router = useRouter();
   const pathname = router.pathname;
 

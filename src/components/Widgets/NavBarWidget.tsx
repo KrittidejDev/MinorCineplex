@@ -16,7 +16,7 @@ interface response {
 }
 
 const NavBarWidget = () => {
-  const { i18n } = useTranslation();
+  const { i18n } = useTranslation("common");
   const { data: session, status } = useSession();
   const id = session?.user?.id;
   const [userData, setUserData] = useState<UserDataResponse | null>(null);

@@ -38,7 +38,7 @@ export const BookingCard: React.FC<BookingCardProps> = ({
   status,
   rounded = true,
 }) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation("common");
 
   const movieInfo = [
     { icon: PinFill, value: location },

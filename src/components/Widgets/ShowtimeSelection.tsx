@@ -1,8 +1,11 @@
+"use client";
+
 import {
   RUNDER_TIMESLOT,
   ShowtimeButtonProps,
 } from "@/lib/utils/showtimeUtils";
 import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 
 export interface Showtime {
   id: string;
@@ -22,6 +25,15 @@ export const ShowtimeSelection: React.FC<ShowtimeSelectionProps> = ({
   timeslot,
 }) => {
   const router = useRouter();
+  const [now, setNow] = useState<Date | null>(null);
+
+  useEffect(() => {
+    setNow(new Date());
+    const interval = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  if (!now) return null; // รอ client ก่อน render
 
   const handleSelect = (ts: Showtime) => {
     router.push({
@@ -46,7 +58,8 @@ export const ShowtimeSelection: React.FC<ShowtimeSelectionProps> = ({
           const { disabled, className }: ShowtimeButtonProps = RUNDER_TIMESLOT(
             e.start_time,
             e.end_time,
-            e.date
+            new Date(e.date),
+            now // ส่ง now จาก client
           );
           return (
             <button

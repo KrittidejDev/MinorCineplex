@@ -1,5 +1,5 @@
 import NavAndFooter from "@/components/MainLayout/NavAndFooter";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import PinFill from "@/components/Icons/PinFill";
 import DateRangeFill from "@/components/Icons/DateRangeFill";
 import TimeFill from "@/components/Icons/TimeFill";
@@ -10,9 +10,8 @@ import { HoverCard3D } from "@/components/Displays/HoverCard3D";
 import { GetServerSideProps } from "next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { useTranslation } from "next-i18next";
-import { useRouter } from "next/router";
-import axios from "axios";
 import Link from "next/link";
+import axios from "axios";
 
 interface BookingData {
   cinema_name: { th: string; en: string };
@@ -31,57 +30,23 @@ interface BookingData {
   showtime_id: string;
 }
 
-const BookingDetail: React.FC = () => {
-  const router = useRouter();
-  const { publicId, locale } = router.query; // ดึง publicId และ locale จาก URL
+interface BookingDetailProps {
+  bookingData: BookingData | null;
+  error: string | null;
+}
+
+const BookingDetail: React.FC<BookingDetailProps> = ({
+  bookingData,
+  error,
+}) => {
   const { t, i18n } = useTranslation("common");
-  const lang = (locale || i18n.language || "en") as "th" | "en"; // ใช้ locale จาก router.query แทน t("lang")
-  const [bookingData, setBookingData] = useState<BookingData | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-
-  const bookingSlug = `${bookingData?.movie_title?.en}-${bookingData?.cinema_name?.en}-${bookingData?.hall?.en}`;
-
-  const fetchBookingData = async (id: string) => {
-    try {
-      const response = await axios.get(`/api/booking/success/${id}`);
-      if (response.data.success) {
-        setBookingData(response.data.data);
-      } else {
-        setError(response.data.message || t("error_fetch_data"));
-      }
-    } catch (err) {
-      setError(t("error_fetch_booking"));
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    const id = Array.isArray(publicId) ? publicId[0] : publicId;
-    if (id) {
-      fetchBookingData(id);
-    } else {
-      setError(t("error_no_booking_id"));
-      setLoading(false);
-    }
-  }, [publicId, t]);
-
-  if (loading) {
-    return (
-      <NavAndFooter>
-        <div className="min-h-screen p-4 md:p-8 flex items-center justify-center">
-          <div className="text-white text-2xl">{t("loading")}</div>
-        </div>
-      </NavAndFooter>
-    );
-  }
+  const lang = (i18n.language || "en") as "th" | "en";
 
   if (error) {
     return (
       <NavAndFooter>
         <div className="min-h-screen p-4 md:p-8 flex items-center justify-center">
-          <div className="text-red-500 text-2xl">{error}</div>
+          <div className="text-white text-2xl">{error}</div>
         </div>
       </NavAndFooter>
     );
@@ -96,12 +61,15 @@ const BookingDetail: React.FC = () => {
       </NavAndFooter>
     );
   }
+
+  const bookingSlug = `${bookingData.movie_title.en}-${bookingData.cinema_name.en}-${bookingData.hall.en}`;
+
   return (
     <NavAndFooter
       seoProps={{
         title: `${
           bookingData.movie_title[lang] || bookingData.movie_title.en
-        } - ${bookingData.cinema_name[lang] || bookingData.cinema_name.en} `,
+        } - ${bookingData.cinema_name[lang] || bookingData.cinema_name.en}`,
         description:
           bookingData.movie_description[lang] ||
           bookingData.movie_description.en ||
@@ -111,17 +79,6 @@ const BookingDetail: React.FC = () => {
         imageHeight: 1200,
         imageAlt: bookingData.movie_title[lang] || "Movie Poster",
         url: `https://minor-cineplex-phi.vercel.app/booking/${bookingSlug}?id=${bookingData.showtime_id}&fid=${bookingData.user_id}`,
-        type: "website",
-        customMetaTags: [
-          {
-            name: "keywords",
-            content: `${
-              bookingData.movie_title[lang] || bookingData.movie_title.en
-            }, ${bookingData.genres.map((g) => g[lang] || g.en).join(", ")}, ${
-              bookingData.cinema_name[lang] || bookingData.cinema_name.en
-            }, Booking, Movie`,
-          },
-        ],
       }}
     >
       <div className="min-h-screen p-4 md:p-8">
@@ -131,9 +88,9 @@ const BookingDetail: React.FC = () => {
           </h1>
           <div className="flex flex-col md:flex-row gap-6 md:gap-8">
             <HoverCard3D>
-              <div className="w-full md:min-w-[387px] md:max-w-[387px] md:flex-shrink-0">
-                <div className="relative w-full md:w-fit mx-auto md:mx-0">
-                  <div className="w-full aspect-[280/408] md:aspect-[387/565] md:min-w-[387px] md:max-w-[387px] md:min-h-[565px] md:max-h-[565px] rounded-lg overflow-hidden shadow-2xl shadow-cyan-500/30 relative">
+              <div className="w-full md:min-w-[387px] md:max-w-[387px]">
+                <div className="relative w-full">
+                  <div className="w-full aspect-[280/408] md:aspect-[387/565] rounded-lg overflow-hidden shadow-2xl shadow-cyan-500/30 relative">
                     <Image
                       src={
                         bookingData.movie_poster ||
@@ -141,7 +98,6 @@ const BookingDetail: React.FC = () => {
                       }
                       alt={bookingData.movie_title[lang] || "Movie Poster"}
                       fill
-                      sizes="(max-width: 768px) 100vw, 387px"
                       className="object-cover"
                       loading="lazy"
                       onError={(e) => {
@@ -152,13 +108,12 @@ const BookingDetail: React.FC = () => {
                 </div>
               </div>
             </HoverCard3D>
+
             <div className="flex-1 rounded-lg p-5 md:p-8 bg-[#070C1BB2]">
               <div className="space-y-5 md:space-y-6">
                 <div>
                   <h2 className="text-[#FFFFFF] text-2xl md:text-4xl font-bold mb-3">
-                    {bookingData.movie_title[lang] ||
-                      bookingData.movie_title.en ||
-                      bookingData.movie_title.th}
+                    {bookingData.movie_title[lang]}
                   </h2>
                   <div className="flex flex-wrap gap-2">
                     {bookingData.genres.map((genre, index) => (
@@ -166,10 +121,7 @@ const BookingDetail: React.FC = () => {
                         key={index}
                         className="flex items-center px-3 min-h-[32px] bg-[#21263F] text-[#8B93B0] rounded text-sm"
                       >
-                        {genre[lang] ||
-                          genre.en ||
-                          genre.th ||
-                          t("unknown_genre")}
+                        {genre[lang] || t("unknown_genre")}
                       </span>
                     ))}
                     {bookingData.languages.map((language, index) => (
@@ -182,22 +134,15 @@ const BookingDetail: React.FC = () => {
                     ))}
                   </div>
                 </div>
+
                 <div className="space-y-3 text-[#C8CEDD] text-sm md:text-base">
                   <div className="flex items-center gap-3">
                     <PinFill color="#565F7E" />
-                    <span>
-                      {bookingData.cinema_name[lang] ||
-                        bookingData.cinema_name.en ||
-                        bookingData.cinema_name.th}
-                    </span>
+                    <span>{bookingData.cinema_name[lang]}</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <DateRangeFill color="#565F7E" />
-                    <span>
-                      {bookingData.date[lang] ||
-                        bookingData.date.en ||
-                        bookingData.date.th}
-                    </span>
+                    <span>{bookingData.date[lang]}</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <TimeFill color="#565F7E" />
@@ -205,15 +150,12 @@ const BookingDetail: React.FC = () => {
                   </div>
                   <div className="flex items-center gap-3">
                     <Shop color="#565F7E" />
-                    <span>
-                      {bookingData.hall[lang] ||
-                        bookingData.hall.en ||
-                        bookingData.hall.th}
-                    </span>
+                    <span>{bookingData.hall[lang]}</span>
                   </div>
                 </div>
-                <div className="flex flex-wrap items-center gap-3 md:gap-4 pt-4">
-                  <button className="bg-gray-g63f text-gray-gedd font-fm-16 rounded-sm px-4 py-3">
+
+                <div className="flex flex-wrap items-center gap-3 pt-4">
+                  <button className="bg-gray-g63f text-gray-gedd rounded-sm px-4 py-3">
                     {bookingData.seats.length}{" "}
                     {t(bookingData.seats.length > 1 ? "tickets" : "ticket")}
                   </button>
@@ -228,13 +170,12 @@ const BookingDetail: React.FC = () => {
                     </span>
                   </div>
                 </div>
+
                 <div className="space-y-3 text-[#C8CEDD] text-sm md:text-base">
                   <div className="flex items-center gap-3">
                     <span className="w-32">{t("payment_method")}</span>
                     <span className="font-bold text-white">
-                      {bookingData.payment_method[lang] ||
-                        bookingData.payment_method.en ||
-                        bookingData.payment_method.th}
+                      {bookingData.payment_method[lang]}
                     </span>
                   </div>
                   <div className="flex items-center gap-3">
@@ -244,6 +185,7 @@ const BookingDetail: React.FC = () => {
                     </span>
                   </div>
                 </div>
+
                 <Link
                   href={`/booking/${bookingSlug}?id=${bookingData.showtime_id}&fid=${bookingData.user_id}`}
                 >
@@ -251,6 +193,7 @@ const BookingDetail: React.FC = () => {
                     {t("Book more seats")}
                   </Button>
                 </Link>
+
                 {bookingData.movie_description[lang] && (
                   <div className="space-y-4 pt-4 md:pt-10 border-t border-[#21263F]/50">
                     <p className="text-[#C8CEDD] leading-relaxed text-sm md:text-base">
@@ -267,13 +210,38 @@ const BookingDetail: React.FC = () => {
   );
 };
 
-export const getServerSideProps: GetServerSideProps = async ({ locale }) => {
-  const resolvedLocale = locale || "en";
-  return {
-    props: {
-      ...(await serverSideTranslations(resolvedLocale, ["common"])),
-    },
-  };
-};
-
 export default BookingDetail;
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const { params, locale } = context;
+  const publicId = Array.isArray(params?.publicId)
+    ? params?.publicId[0]
+    : params?.publicId;
+
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+  try {
+    const res = await axios.get(
+      `${baseUrl}/api/booking/success/${encodeURIComponent(publicId as string)}`
+    );
+
+    return {
+      props: {
+        bookingData: res.data?.data || null,
+        error: res.data?.success ? null : "ไม่พบข้อมูลการจอง",
+        ...(await serverSideTranslations(locale || "en", ["common"])),
+      },
+    };
+  } catch (err: unknown) {
+    console.error(
+      "❌ [getServerSideProps] booking fetch error:",
+      err instanceof Error ? err.message : err
+    );
+    return {
+      props: {
+        bookingData: null,
+        error: "เกิดข้อผิดพลาดในการโหลดข้อมูลจากเซิร์ฟเวอร์",
+        ...(await serverSideTranslations(locale || "en", ["common"])),
+      },
+    };
+  }
+};

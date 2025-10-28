@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import LocationIconBlue from "@/components/Icons/LocationIconBlue";
@@ -6,10 +8,9 @@ import {
   RUNDER_TIMESLOT,
   ShowtimeButtonProps,
 } from "@/lib/utils/showtimeUtils";
-import { ShowtimeDTO } from "@/types/movie"; // import type ShowtimeDTO
+import { ShowtimeDTO } from "@/types/movie";
 import { i18n } from "next-i18next";
 
-// Type override for name_en field
 interface ExtendedShowtimeDTO extends Omit<ShowtimeDTO, "cinema"> {
   cinema: Omit<ShowtimeDTO["cinema"], "name_en"> & {
     name_en?: string | { name: string };
@@ -29,6 +30,7 @@ export type Showtime = {
   available_seats?: number;
   total_seats?: number;
 };
+
 export interface ShowTimeProps {
   data?: ExtendedShowtimeDTO;
   onChange?: (time: Showtime, context: { hallId: string }) => void;
@@ -47,15 +49,26 @@ export const ShowTime: React.FC<ShowTimeProps> = ({
 }) => {
   const router = useRouter();
   const [allCollapsedInternal, setAllCollapsedInternal] = useState(false);
+  const [now, setNow] = useState<Date | null>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const allCollapsed =
     typeof collapsed === "boolean" ? collapsed : allCollapsedInternal;
 
+  // ตั้งเวลา client เท่านั้น
+  useEffect(() => {
+    setNow(new Date());
+    const interval = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(interval);
+  }, []);
+
   const handleSelect = (hall_slug: string, time: Showtime) => {
+    if (!now) return;
+
     const { disabled } = RUNDER_TIMESLOT(
       time.time_slot.start_time,
       time.time_slot.end_time,
-      time.date
+      time.date,
+      now
     );
 
     const newSlug = `${data?.slug}-${hall_slug}`;
@@ -64,6 +77,7 @@ export const ShowTime: React.FC<ShowTimeProps> = ({
       router.push(`/booking/${newSlug}?id=${time.id}`);
     }
   };
+
   const prevAllRef = useRef<boolean>(allCollapsed);
   useEffect(() => {
     if (prevAllRef.current && !allCollapsed && listRef.current) {
@@ -71,7 +85,8 @@ export const ShowTime: React.FC<ShowTimeProps> = ({
     }
     prevAllRef.current = allCollapsed;
   }, [allCollapsed]);
-  // console.log(data);
+
+  if (!now) return null; // รอ client
 
   const base =
     "w-full max-w-32 flex flex-col justify-center items-center py-3 px-[41px] rounded-lg transition-colors";
@@ -151,7 +166,8 @@ export const ShowTime: React.FC<ShowTimeProps> = ({
                   }: ShowtimeButtonProps = RUNDER_TIMESLOT(
                     time.time_slot.start_time,
                     time.time_slot.end_time,
-                    time.date
+                    time.date,
+                    now // ใช้ now จาก client
                   );
 
                   return (

@@ -136,7 +136,10 @@ const BookingSuccessPage: React.FC = () => {
             </Button>
           </Link>
         </div>
-        <ShareButton publicId={public_id || ""} text={lang === "th" ? "แชร์การจองนี้" : "Share This Booking"} />
+        <ShareButton
+          publicId={public_id || ""}
+          text={lang === "th" ? "แชร์การจองนี้" : "Share This Booking"}
+        />
       </div>
     </NavAndFooter>
   );

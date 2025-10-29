@@ -23,8 +23,8 @@ const ForgotPasswordForm = ({ onSubmit, isLoading }: ForgotPasswordFormProps) =>
   const schema = yup.object().shape({
     email: yup
       .string()
-      .required(t("forgot_password_email_required"))
-      .matches(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, t("forgot_password_invalid_email")),
+      .required(t("Email is required"))
+      .matches(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, t("Invalid email format")),
   });
 
   const {
@@ -51,20 +51,20 @@ const ForgotPasswordForm = ({ onSubmit, isLoading }: ForgotPasswordFormProps) =>
   if (isSubmitted) {
     return (
       <div className="w-full flex flex-col items-center gap-6">
-        <h2 className="text-f-36 text-center text-white">{t("forgot_password_check_email")}</h2>
+        <h2 className="text-f-36 text-center text-white">{t("Check Your Email")}</h2>
         <div className="text-center text-white">
           <p className="text-fm-16 mb-4">
-            {t("forgot_password_reset_link_sent")}
+            {t("We've sent a password reset link to your email address.")}
           </p>
           <p className="text-fr-14 text-gray-g3b0">
-            {t("forgot_password_check_email_instructions")}
+            {t("Please check your email and click the link to reset your password.")}
           </p>
         </div>
         <Link
           href="/auth/login"
           className="text-white underline text-fm-16"
         >
-          {t("forgot_password_back_to_login")}
+          {t("Back to Login")}
         </Link>
       </div>
     );
@@ -76,15 +76,15 @@ const ForgotPasswordForm = ({ onSubmit, isLoading }: ForgotPasswordFormProps) =>
       onSubmit={handleSubmit(handleFormSubmit)}
       className="w-full flex flex-col items-center gap-10"
     >
-      <h2 className="text-f-36 text-center text-white">{t("forgot_password")}</h2>
+      <h2 className="text-f-36 text-center text-white">{t("Forgot Password")}</h2>
       <div className="w-full flex flex-col gap-4">
         <Controller
           control={control}
           render={({ field }) => (
             <InputTextFeild
               {...field}
-              label={t("forgot_password_email")}
-              placeholder={t("forgot_password_email_placeholder")}
+              label={t("Email")}
+              placeholder={t("Enter your email")}
               errors={errors.email?.message}
             />
           )}
@@ -98,17 +98,17 @@ const ForgotPasswordForm = ({ onSubmit, isLoading }: ForgotPasswordFormProps) =>
           disabled={isEmpty || isSubmitting || isLoading}
           className="btn-base blue-normal cursor-pointer w-full h-12 flex rounded-b-sm justify-center items-center"
         >
-          {(isSubmitting || isLoading) ? t("forgot_password_sending") : t("forgot_password_send_link")}
+          {(isSubmitting || isLoading) ? t("Sending...") : t("Send Reset Link")}
         </Button>
       </div>
 
       <div className="text-fr-16 text-gray-g3b0 flex gap-2 justify-center">
-        {t("forgot_password_remember_password")}
+        {t("Remember your password?")}
         <Link
           href="/auth/login"
           className="text-white text-fm-16 underline cursor-pointer"
         >
-          {t("login")}
+          {t("Login")}
         </Link>
       </div>
     </form>

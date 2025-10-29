@@ -48,13 +48,13 @@ export const BookingCard: React.FC<BookingCardProps> = ({
   ];
 
   const bookingInfo = [
-    { label: t("bookingNo"), value: bookingNumber.slice(8, 18) },
-    { label: t("bookedDate"), value: bookedDate },
+    { label: t("Booking No"), value: bookingNumber.slice(8, 18) },
+    { label: t("Booked Date"), value: bookedDate },
   ];
 
   const ticketInfo = [
-    { label: t("selectedSeat"), value: selectedSeats },
-    { label: t("paymentMethod"), value: paymentMethod },
+    { label: t("Selected Seat"), value: selectedSeats },
+    { label: t("Payment Method"), value: paymentMethod },
   ];
 
   const posterUrl = moviePoster || "https://via.placeholder.com/97x140";

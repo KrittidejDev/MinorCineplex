@@ -26,7 +26,7 @@ const NavbarMenu = ({ data, onLogOut, className }: NavbarMenuProps) => {
       {data?.role === "ADMIN" && (
         <button className={btnProfileStyle} onClick={_handleClickAdmin}>
           {/* <AdminBook /> */}
-          {t("dashboard")}
+          {t("Dashboard")}
         </button>
       )}
       {navbarMenuCustomer.map((item) => (
@@ -39,7 +39,7 @@ const NavbarMenu = ({ data, onLogOut, className }: NavbarMenuProps) => {
       <Link href="/">
         <button onClick={onLogOut} className={btnProfileStyle}>
           {/* <SignOutIcon /> */}
-          {t("logout")}
+          {t("Logout")}
         </button>
       </Link>
     </div>

@@ -382,14 +382,6 @@ const PaymentForm = forwardRef<PaymentFormHandles, PaymentFormProps>(
                 )}
               />
             </div>
-
-            <div className="px-5 md:px-0">
-              data for test
-              <div> {t("Card Number")} : 4242-4242-4242-4242</div>
-              <div> {t("Card Owner")} : John </div>
-              <div> {t("Expiry Date")} : 10/27 </div>
-              <div> {t("CVC")} : 123 </div>
-            </div>
           </div>
         )}
 

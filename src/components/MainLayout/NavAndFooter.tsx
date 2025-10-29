@@ -13,7 +13,7 @@ const NavAndFooter = ({ children, seoProps }: NavAndFooterProps) => {
     title: "MinorCineplex - โรงภาพยนตร์ชั้นนำของประเทศไทย",
     description:
       "จองตั๋วภาพยนตร์ ดูรอบฉาย และรับโปรโมชันสุดพิเศษจาก Minorcineplex โรงภาพยนตร์ที่ดีที่สุดในประเทศไทย",
-    image: "https://cdn.majorcineplex.com/uploads/movie/3698/thumb_3698.jpg",
+    image: "https://cdn.majorcineplex.com/uploads/movie/4852/thumb_4852.jpg",
     imageWidth: 800,
     imageHeight: 1200,
     imageAlt: "โปสเตอร์หน้าแรก Minorcineplex",

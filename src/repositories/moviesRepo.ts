@@ -116,15 +116,35 @@ export const moviesRepo = {
 
     if (date) {
       try {
-        const parsedDate = new Date(date);
-        if (isNaN(parsedDate.getTime())) {
-          throw new Error("Invalid date format");
+        // Parse เป็น local day แล้วคำนวณช่วงเวลาเป็น UTC เพื่อ match ค่าที่เก็บแบบ ISO UTC ใน DB
+        // เช่น ถ้าเลือก 2025-11-12 ในโซนเวลา +07:00 → ช่วง UTC คือ 2025-11-11T17:00:00.000Z ถึง 2025-11-12T16:59:59.999Z
+        let y: number, m: number, d: number;
+        if (/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+          const parts = date.split("-").map(Number);
+          y = parts[0];
+          m = parts[1];
+          d = parts[2];
+        } else {
+          const tmp = new Date(date);
+          if (isNaN(tmp.getTime())) throw new Error("Invalid date format");
+          y = tmp.getFullYear();
+          m = tmp.getMonth() + 1;
+          d = tmp.getDate();
         }
-        // ฟิลเตอร์รอบฉายในวันที่เลือก (เฉพาะวันที่ ไม่รวมเวลา)
+
+        // Local start/end of day
+        const localStart = new Date(y, (m || 1) - 1, d || 1, 0, 0, 0, 0);
+        const localEnd = new Date(y, (m || 1) - 1, d || 1, 23, 59, 59, 999);
+        const offsetMs = localStart.getTimezoneOffset() * 60 * 1000;
+        const startUtc = new Date(localStart.getTime() - offsetMs);
+        const endUtc = new Date(localEnd.getTime() - offsetMs);
+
         where.date = {
-          gte: startOfDay(parsedDate),
-          lte: endOfDay(parsedDate),
+          gte: startUtc,
+          lte: endUtc,
         };
+
+        // (debug removed)
       } catch (error) {
         console.error("Invalid date parameter:", date, error);
         return [];
@@ -158,6 +178,17 @@ export const moviesRepo = {
       where.cinema =
         cinemaFilters.length === 1 ? cinemaFilters[0] : { AND: cinemaFilters };
     }
+    if (city) {
+      const cityFilter: Prisma.CinemaWhereInput = {
+        OR: [
+          { city: { contains: city, mode: "insensitive" } },
+          { city_en: { contains: city, mode: "insensitive" } },
+        ],
+      };
+      where.cinema = where.cinema
+        ? { AND: [where.cinema as Prisma.CinemaWhereInput, cityFilter] }
+        : cityFilter;
+    }
     const showtimes = await prisma.showtime.findMany({
       where,
       include: {
@@ -169,6 +200,7 @@ export const moviesRepo = {
             translations: true,
             address: true,
             city: true,
+            city_en: true,
           },
         },
         hall: {
@@ -201,7 +233,6 @@ export const moviesRepo = {
 
     if (!showtimes.length) return [];
 
-    // --- Group showtimes ---
     type ShowtimeAcc = Record<
       string,
       {

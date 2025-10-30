@@ -49,11 +49,7 @@ export const ShowtimeSelection: React.FC<ShowtimeSelectionProps> = ({
     <div className="flex flex-wrap gap-3 sm:gap-4 md:gap-6">
       {timeslot
         ?.slice()
-        .sort(
-          (a, b) =>
-            new Date(`1970-01-01T${a.start_time}`).getTime() -
-            new Date(`1970-01-01T${b.start_time}`).getTime()
-        )
+        .sort((a, b) => a.start_time.localeCompare(b.start_time))
         .map((e) => {
           const { disabled, className }: ShowtimeButtonProps = RUNDER_TIMESLOT(
             e.start_time,

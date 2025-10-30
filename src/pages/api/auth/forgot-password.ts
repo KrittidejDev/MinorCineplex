@@ -19,9 +19,18 @@ export default async function handler(
     if (!email) {
       return res.status(400).json({ message: "Email is required" });
     }
-
-    const result = await sendResetPasswordEmail(email);
-    return res.status(200).json(result);
+    const normalizedEmail = String(email).toLowerCase().trim();
+    // Small delay to reduce enumeration speed
+    await new Promise((r) => setTimeout(r, 400));
+    try {
+      await sendResetPasswordEmail(normalizedEmail);
+    } catch (e) {
+      // Swallow specific errors to avoid email enumeration
+    }
+    // Always respond generically
+    return res
+      .status(200)
+      .json({ message: "If that account exists, we'll email a reset link." });
   } catch (err: unknown) {
     const error = err as ServiceError;
     if (error.status) {

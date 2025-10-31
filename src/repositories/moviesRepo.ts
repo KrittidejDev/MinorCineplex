@@ -20,8 +20,6 @@ export const moviesRepo = {
     );
 
     const where: Prisma.MovieWhereInput = {};
-
-    // Filter by movie ID if provided, otherwise filter by title
     if (movie_id) {
       where.id = movie_id;
     } else if (title) {
@@ -116,8 +114,6 @@ export const moviesRepo = {
 
     if (date) {
       try {
-        // Parse เป็น local day แล้วคำนวณช่วงเวลาเป็น UTC เพื่อ match ค่าที่เก็บแบบ ISO UTC ใน DB
-        // เช่น ถ้าเลือก 2025-11-12 ในโซนเวลา +07:00 → ช่วง UTC คือ 2025-11-11T17:00:00.000Z ถึง 2025-11-12T16:59:59.999Z
         let y: number, m: number, d: number;
         if (/^\d{4}-\d{2}-\d{2}$/.test(date)) {
           const parts = date.split("-").map(Number);
@@ -132,7 +128,6 @@ export const moviesRepo = {
           d = tmp.getDate();
         }
 
-        // Local start/end of day
         const localStart = new Date(y, (m || 1) - 1, d || 1, 0, 0, 0, 0);
         const localEnd = new Date(y, (m || 1) - 1, d || 1, 23, 59, 59, 999);
         const offsetMs = localStart.getTimezoneOffset() * 60 * 1000;
@@ -144,7 +139,6 @@ export const moviesRepo = {
           lte: endUtc,
         };
 
-        // (debug removed)
       } catch (error) {
         console.error("Invalid date parameter:", date, error);
         return [];
@@ -154,7 +148,6 @@ export const moviesRepo = {
     const cinemaFilters: Prisma.CinemaWhereInput[] = [];
 
     if (search) {
-      // Search in name field only
       cinemaFilters.push({
         OR: [
           {
@@ -318,13 +311,13 @@ export const moviesRepo = {
 
   async updateMovieStatusToNowShowing(): Promise<number> {
     try {
-      const today = startOfDay(new Date()); // วันที่ปัจจุบัน (00:00:00 UTC+07:00)
+      const today = startOfDay(new Date());
 
       const updatedMovies = await prisma.movie.updateMany({
         where: {
           status: "COMING_SOON",
           release_date: {
-            lte: today, // รวม release_date ที่เก่ากว่าหรือเท่ากับวันนี้
+            lte: today,
           },
         },
         data: {

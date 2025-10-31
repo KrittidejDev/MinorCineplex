@@ -10,11 +10,10 @@ export function RUNDER_TIMESLOT(
   start_time: string,
   end_time: string,
   showtimeDate: Date | string,
-  now: Date // ต้องส่งเข้ามาเสมอ
+  now: Date
 ): ShowtimeButtonProps {
-  // ดึง Y/M/D โดยพยายามยึดตามส่วนวันที่ของ ISO string เพื่อกัน timezone shift
   let showY: number;
-  let showM: number; // 0-based หลังคำนวณ
+  let showM: number;
   let showD: number;
   if (typeof showtimeDate === "string" && /\d{4}-\d{2}-\d{2}T/.test(showtimeDate)) {
     const [y, m, d] = showtimeDate.split("T")[0].split("-").map(Number);
@@ -31,7 +30,6 @@ export function RUNDER_TIMESLOT(
   const nowY = now.getFullYear();
   const nowM = now.getMonth();
   const nowD = now.getDate();
-  // เปรียบเทียบวันที่แบบไม่อิง timezone string parsing
   const isBeforeToday =
     showY < nowY ||
     (showY === nowY && (showM < nowM || (showM === nowM && showD < nowD)));

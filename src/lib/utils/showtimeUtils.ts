@@ -10,15 +10,34 @@ export function RUNDER_TIMESLOT(
   start_time: string,
   end_time: string,
   showtimeDate: Date | string,
-  now: Date // ต้องส่งเข้ามาเสมอ
+  now: Date
 ): ShowtimeButtonProps {
-  const showtimeDateObj =
-    showtimeDate instanceof Date ? showtimeDate : new Date(showtimeDate);
+  let showY: number;
+  let showM: number;
+  let showD: number;
+  if (typeof showtimeDate === "string" && /\d{4}-\d{2}-\d{2}T/.test(showtimeDate)) {
+    const [y, m, d] = showtimeDate.split("T")[0].split("-").map(Number);
+    showY = y;
+    showM = (m || 1) - 1;
+    showD = d || 1;
+  } else {
+    const showtimeDateObj =
+      showtimeDate instanceof Date ? showtimeDate : new Date(showtimeDate);
+    showY = showtimeDateObj.getFullYear();
+    showM = showtimeDateObj.getMonth();
+    showD = showtimeDateObj.getDate();
+  }
+  const nowY = now.getFullYear();
+  const nowM = now.getMonth();
+  const nowD = now.getDate();
+  const isBeforeToday =
+    showY < nowY ||
+    (showY === nowY && (showM < nowM || (showM === nowM && showD < nowD)));
+  const isAfterToday =
+    showY > nowY ||
+    (showY === nowY && (showM > nowM || (showM === nowM && showD > nowD)));
 
-  const showtimeDateStr = showtimeDateObj.toLocaleDateString("en-CA");
-  const todayStr = now.toLocaleDateString("en-CA");
-
-  if (showtimeDateStr < todayStr) {
+  if (isBeforeToday) {
     return {
       disabled: true,
       className: "white-outline-disabled",
@@ -26,7 +45,7 @@ export function RUNDER_TIMESLOT(
     };
   }
 
-  if (showtimeDateStr > todayStr) {
+  if (isAfterToday) {
     return {
       disabled: false,
       className: "blue-dark-normal cursor-pointer",
@@ -34,8 +53,13 @@ export function RUNDER_TIMESLOT(
     };
   }
 
-  const start = new Date(`${showtimeDateStr}T${start_time}`).getTime();
-  let end = new Date(`${showtimeDateStr}T${end_time}`).getTime();
+  const [sh, sm, ssStr = "0"] = start_time.split(":").map(Number);
+  const [eh, em, esStr = "0"] = end_time.split(":").map(Number);
+  const ss = Number(ssStr);
+  const es = Number(esStr);
+
+  const start = new Date(showY, showM, showD, sh, sm, ss).getTime();
+  let end = new Date(showY, showM, showD, eh, em, es).getTime();
 
   if (end < start) {
     end += 24 * 60 * 60 * 1000;

@@ -19,13 +19,22 @@ export default async function handler(
     if (!email) {
       return res.status(400).json({ message: "Email is required" });
     }
-
-    const result = await sendResetPasswordEmail(email);
-    return res.status(200).json(result);
+    const normalizedEmail = String(email).toLowerCase().trim();
+    await new Promise((r) => setTimeout(r, 400));
+    try {
+      await sendResetPasswordEmail(normalizedEmail);
+    } catch (e) {
+      console.error("Error sending reset password email:", e);
+    }
+    return res
+      .status(200)
+      .json({ message: "If that account exists, we'll email a reset link." });
   } catch (err: unknown) {
     const error = err as ServiceError;
     if (error.status) {
-      return res.status(error.status).json({ status: error.status, message: error.message });
+      return res
+        .status(error.status)
+        .json({ status: error.status, message: error.message });
     }
     return res.status(500).json({ error: "Server Error" });
   }

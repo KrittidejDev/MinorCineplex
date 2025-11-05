@@ -83,7 +83,6 @@ export const provinceMap: Record<string, string> = {
 export const getProvinceName = (address: string | null | undefined) => {
   if (!address) return { th: "Other", en: "Other" };
 
-  // ตรวจสอบทุกจังหวัดใน map ว่าอยู่ใน string หรือไม่
   const foundTh = Object.keys(provinceMap).find((prov) =>
     address.includes(prov)
   );

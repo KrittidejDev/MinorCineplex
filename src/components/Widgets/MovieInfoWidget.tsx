@@ -214,10 +214,10 @@ const MovieInfoWidget: React.FC<MoviesDetailWidgetProps> = ({
               <div className="w-full md:w-[285px]">
                 <InputComboBox
                   value={searchCity}
-                  placeholder={t("Search City")}
+                  placeholder={i18n?.language === "th" ? t("Search City") : t("Search City")}
                   options={provinces.map((province) => ({
-                    value: province.name_th,
-                    label: province.name_th,
+                    value: i18n?.language === "th" ? province.name_th : province.name_en,
+                    label: i18n?.language === "th" ? province.name_th : province.name_en,
                   }))}
                   onChange={setSearchCity}
                 />
